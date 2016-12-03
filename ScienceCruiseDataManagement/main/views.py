@@ -1,6 +1,9 @@
+import geojson
+import json
 from django.shortcuts import render
 from django.views.generic import TemplateView
-
+from django.http import JsonResponse
+from main.models import Event
 
 # Create your views here.
 class MainMenuView(TemplateView):
@@ -19,3 +22,11 @@ class MainMapView(TemplateView):
         context = super(MainMapView, self).get_context_data(**kwargs)
 
         return context
+
+def EventsJson(response):
+    events = []
+    for event in Event.objects.all():
+        events.append((event.longitude, event.latitude))
+
+    points = geojson.MultiPoint(events)
+    return JsonResponse(points, safe=False)
