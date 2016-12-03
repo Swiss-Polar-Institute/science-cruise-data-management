@@ -61,7 +61,8 @@
 						{
 							return { color: 'black',
 								weight: 1,
-								fillOpacity: 0
+								fillColor: 'white',
+								fillOpacity: 1
 					      			}
 						};
 				
@@ -96,6 +97,9 @@
     });
 
     L.marker([-54.8, -68.3], {icon: icon}).addTo(map);
+
+    // Adds circle for up to 30 degrees.
+    L.circle([-90, 0], 7150000).addTo(map);
 }
 
 	</script>
