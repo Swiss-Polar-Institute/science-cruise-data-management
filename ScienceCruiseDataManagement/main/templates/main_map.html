@@ -1,0 +1,109 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+        <title>General map of ACE</title>
+
+        <!-- Leaflet -->
+        <script src={% static "js/leaflet.js" %}></script>
+        <script src={% static "/js/proj4.js" %}></script>
+	    <script src={% static "/js/proj4leaflet.js" %}></script>
+        
+	    <link rel="stylesheet" href={% static "/css/leaflet.css" %}/>
+
+        <!-- Jquery -->
+        <link rel="stylesheet" href={% static "/css/jquery-ui.css" %} type="text/css"/>
+        <script src={% static "/js/jquery-1.12.0.min.js" %}></script>
+
+</head>
+<body>
+	<div id="map"></div>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			main();
+		});
+
+		function main() {
+		proj4.defs("EPSG:3031","+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs");
+		proj4.defs("urn:ogc:def:crs:EPSG::3031","+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs");
+		var initialZoom = 0;
+
+		var crs = new L.Proj.CRS('EPSG:3031', '+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs',
+		                        {
+						origin: [-90, 0],
+						resolutions: [ 40000.0, 20000.0, 10000.0, 5000.0, 2500.0, 1250.0]
+					}
+				);
+
+		var map = L.map('map', {
+			maxZoom: crs.options.resolutions.length,
+			minZoom: 0,
+			continuousWorld: true,
+			zoomControl: true,
+			initialZoom: 2,
+			center: [-90, 0],
+			crs: crs
+		}).setView([-90, 0], initialZoom);
+
+		function makeMap(data, style) {
+			var darkMap = L.tileLayer('').addTo(map);
+
+			boroughLayer = L.Proj.geoJson(data, {
+				style: style
+				}
+				).addTo(map);
+		}
+		$.getJSON("{% static "maps/Coastline_high_res_polygon.geojson" %}",
+			function(data)
+			{
+				var style = function(feature)
+						{
+							return { color: 'black',
+								weight: 1,
+								fillOpacity: 0
+					      			}
+						};
+				
+				makeMap(data, style);
+			}
+		);
+		$.getJSON("{% static "maps/Sub-antarctic_coastline_high_res_polygon_to30S.geojson" %}",
+			function(data)
+			{
+				var style = function(feature)
+					{
+						return { color: 'black',
+							weight: 1,
+							fillColor: 'green',
+							fillOpacity: 1
+							}
+					};
+				
+				makeMap(data, style);
+			}
+		);
+
+    // This marker has everything off-line
+    var Marker = L.Icon.extend({
+        options: {
+        iconUrl: '{% static "images/marker-icon.png" %}',
+        shadowUrl: '{% static "images/marker-shadow.png" %}',
+    }
+    });
+
+    var marker = new Marker();
+
+    var marker = L.marker([-54.8, -68.3], {icon: marker}).addTo(map);
+}
+
+	</script>
+	<style>
+    		html, body, #map {
+			height: 100%;
+			width: 100%;
+		}
+
+	</style>
+</body>
+</html>
