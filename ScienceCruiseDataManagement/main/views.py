@@ -23,10 +23,12 @@ class MainMapView(TemplateView):
 
         return context
 
-def EventsJson(response):
-    events = []
-    for event in Event.objects.all():
-        events.append((event.longitude, event.latitude))
 
-    points = geojson.MultiPoint(events)
-    return JsonResponse(points, safe=False)
+def EventsJson(response):
+    features = []
+    for event in Event.objects.all():
+        point = geojson.Point((event.longitude, event.latitude))
+
+        features.append(geojson.Feature(geometry=point, properties={'id': str(event.event_number), 'text': 'this element'}))
+
+    return JsonResponse(geojson.FeatureCollection(features), safe=False)

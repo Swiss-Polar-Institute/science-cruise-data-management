@@ -108,8 +108,12 @@
 
 				};
 
+				var onEachFeature = function(feature, layer) {
+					layer.bindPopup(feature.properties.id + " - " + feature.properties.text);
 
-				L.geoJSON(data, {pointToLayer: pointToLayer}).addTo(map);
+				};
+
+				L.geoJSON(data, {pointToLayer: pointToLayer, onEachFeature: onEachFeature}).addTo(map);
 
 			}
 		);
