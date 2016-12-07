@@ -1,7 +1,7 @@
 import geojson
 import json
 from django.shortcuts import render
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 from django.http import JsonResponse
 from main.models import Event
 
@@ -24,11 +24,14 @@ class MainMapView(TemplateView):
         return context
 
 
-def EventsJson(response):
-    features = []
-    for event in Event.objects.all():
-        point = geojson.Point((event.longitude, event.latitude))
+class EventsJson(View):
+    def get(self, request):
+        # print("-----------", request.GET['newer_than'])
+        features = []
+        for event in Event.objects.all():
+            point = geojson.Point((event.longitude, event.latitude))
 
-        features.append(geojson.Feature(geometry=point, properties={'id': str(event.event_number), 'text': 'this element'}))
+            features.append(
+                geojson.Feature(geometry=point, properties={'id': str(event.event_number), 'text': 'this element'}))
 
-    return JsonResponse(geojson.FeatureCollection(features), safe=False)
+        return JsonResponse(geojson.FeatureCollection(features))

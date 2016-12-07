@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
 
 from main.views import MainMenuView
@@ -25,7 +25,12 @@ from django.conf.urls.static import static
 urlpatterns = [
     url(r'^$', MainMenuView.as_view()),
     url(r'^main_map.html$', MainMapView.as_view()),
-    url(r'^api/events.geojson', EventsJson),
+    url(r'^api/events.geojson', EventsJson.as_view()),
     url(r'^admin/', admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ]

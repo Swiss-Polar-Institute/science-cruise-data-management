@@ -5,26 +5,26 @@
         <title>General map of ACE</title>
 
         <!-- Leaflet -->
-        <script src={% static "js/leaflet.js" %}></script>
-        <script src={% static "/js/proj4.js" %}></script>
-	    <script src={% static "/js/proj4leaflet.js" %}></script>
+        <script src="{% static '/js/leaflet.js' %}"></script>
+        <script src="{% static '/js/proj4.js' %}"></script>
+	    <script src="{% static '/js/proj4leaflet.js' %}"></script>
         
-	    <link rel="stylesheet" href={% static "/css/leaflet.css" %}/>
+	    <link rel="stylesheet" href="{% static '/css/leaflet.css' %}"/>
 
         <!-- Jquery -->
-        <link rel="stylesheet" href={% static "/css/jquery-ui.css" %} type="text/css"/>
-        <script src={% static "/js/jquery-1.12.0.min.js" %}></script>
-
+        <link rel="stylesheet" href="{% static '/css/jquery-ui.css' %}" type="text/css"/>
+        <script src="{% static '/js/jquery-1.12.0.min.js' %}"></script>
 </head>
 <body>
 	<div id="map"></div>
 
 	<script type="text/javascript">
 		$(document).ready(function() {
-			main();
+		    var maps_url="{% static '/maps/' %}";
+			main(maps_url);
 		});
     
-		function main() {
+		function main(maps_url) {
 		proj4.defs("EPSG:3031","+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs");
 		proj4.defs("urn:ogc:def:crs:EPSG::3031","+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs");
 		var initialZoom = 0;

@@ -25,6 +25,10 @@ SECRET_KEY = '*gb+gevd#dx0euc(#$4ts!37w%9m#kbjlz_4k9@&62ok+=w_*2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# INTERNAL_IPS = ["127.0.0.1",]
+INTERNAL_IPS = []   # Used by the Debugger console. The maps/some pages might not work
+                    # offline because the debugger tries to load an external JQurey
+
 # NOTE: by default this is an empty list. Check documentation.
 ALLOWED_HOSTS = ['*']
 
@@ -38,10 +42,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'csvimport.app.CSVImportConf',
+    'debug_toolbar',
     'main'  # ScienceCruiseManagement main app
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
