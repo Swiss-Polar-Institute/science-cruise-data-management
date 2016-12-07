@@ -17,14 +17,15 @@
 
         <!-- Our Antarctic map related code -->
         <script src="{% static '/js/antarctic_map.js' %}"></script>
+		<script src="{% static '/js/main_map.js' %}"></script>
 </head>
 <body>
 	<div id="map"></div>
 
 	<script type="text/javascript">
 		$(document).ready(function() {
-		    var static_url="{% static '/' %}";
-			main(static_url);
+		    STATIC_URL="{% static '/' %}";
+			main();
 		});
 	</script>
 	<style>
