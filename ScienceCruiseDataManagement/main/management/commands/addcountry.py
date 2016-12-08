@@ -9,5 +9,5 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         country = Country()
-        country.name = "Test"
+        country.name = options['name']
         country.save()
