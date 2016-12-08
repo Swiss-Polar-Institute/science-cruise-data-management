@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'csvimport.app.CSVImportConf',
+    # 'csvimport.app.CSVImportConf',
     'debug_toolbar',
     'main'  # ScienceCruiseManagement main app
 ]
@@ -82,10 +82,22 @@ WSGI_APPLICATION = 'ScienceCruiseDataManagement.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
+# This project could just use sqlite3 for testing purposes. Then
+# the DATABASES dictionary would be like:
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+#
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'OPTIONS': {
+            'read_default_file': '/etc/mysql/ace.cnf'
+        },
     }
 }
 
