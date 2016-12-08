@@ -42,8 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'csvimport.app.CSVImportConf',
+     # 'csvimport.app.CSVImportConf',
     'debug_toolbar',
+    'django_extensions',
     'main'  # ScienceCruiseManagement main app
 ]
 
