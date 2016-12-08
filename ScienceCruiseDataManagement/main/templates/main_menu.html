@@ -1,18 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-Welcome to ACE cruise.<br>
-Have a good trip and research!<p>
-    Interesting links:
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Welcome</h1>
+    </div>
+
+    Have a good trip and research!<p>
+    Links:
     <ul>
-    <li><a href="main_map.html">Map</a></li>
+      <li><a href="main_map.html">Map</a></li>
     </ul>
-</ul>
-</h1>
-</p>
-</body>
-</html>
+{% endblock %}
