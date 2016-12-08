@@ -1,0 +1,8 @@
+<h1>Countries</h1>
+<ul>
+{% for country in object_list %}
+    <li>{{ country.name }} - {{ article.now }}</li>
+{% empty %}
+    <li>No countries yet.</li>
+{% endfor %}
+</ul>

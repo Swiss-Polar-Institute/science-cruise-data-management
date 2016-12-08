@@ -1,9 +1,10 @@
 import geojson
 import json
 from django.shortcuts import render
-from django.views.generic import TemplateView, View
+from django.views.generic import TemplateView, View, ListView
 from django.http import JsonResponse
-from main.models import Event
+from main.models import Event, Country
+from django.utils import timezone
 
 # Create your views here.
 class MainMenuView(TemplateView):
@@ -35,3 +36,11 @@ class EventsJson(View):
                 geojson.Feature(geometry=point, properties={'id': str(event.event_number), 'text': 'this element'}))
 
         return JsonResponse(geojson.FeatureCollection(features))
+
+class CountryListView(ListView):
+    model = Country
+
+    def get_context_data(self, **kwargs):
+        context = super(CountryListView, self).get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        return context
