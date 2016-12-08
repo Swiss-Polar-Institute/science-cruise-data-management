@@ -5,4 +5,5 @@ function main() {
     L.marker([-54.8, -68.3], {icon: offLineIcon("yellow")}).addTo(map);
 
     loadAndPlotGeojsonMarkers(STATIC_URL + "api/events.geojson");
+    map.invalidateSize();
 }
