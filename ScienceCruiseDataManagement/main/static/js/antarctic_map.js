@@ -62,7 +62,7 @@ function addGeojsonLayer(data, style) {
     newLayer.addTo(map);
 }
 
-function loadAndPlotGeojsonMarkers(url, icon) {
+function loadAndPlotGeojsonMarkers(url) {
     $.getJSON("/api/events.geojson",
         function(geojson)
         {

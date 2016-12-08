@@ -18,8 +18,17 @@ class Event(models.Model):
     def __str__(self):
         return "{}".format(self.id)
 
-class Project(models.Model):
-    name=models.CharField(max_length=255)
+class Country(models.Model):
+    name = models.CharField(max_length=255)
 
     def __str__(self):
         return "{}".format(self.name)
+
+class Project(models.Model):
+    name=models.CharField(max_length=255)
+    country=models.ForeignKey(Country, null=True)
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
