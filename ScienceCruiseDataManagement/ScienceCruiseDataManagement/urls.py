@@ -20,15 +20,17 @@ from main.views import MainMenuView
 from main.views import MainMapView
 from main.views import EventsJson
 from main.views import CountryListView
+from main.views import StorageView
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^$', MainMenuView.as_view()),
-    url(r'^main_map.html$', MainMapView.as_view()),
+    url(r'^map/$', MainMapView.as_view()),
     url(r'^api/events.geojson', EventsJson.as_view()),
     url(r'^admin/', admin.site.urls),
     url(r'^country/list$', CountryListView.as_view(), name='article-list'),
+    url(r'^storage/', StorageView.as_view()),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:

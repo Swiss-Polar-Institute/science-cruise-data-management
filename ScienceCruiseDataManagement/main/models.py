@@ -31,4 +31,24 @@ class Project(models.Model):
     def __str__(self):
         return "{}".format(self.name)
 
+class Instrument(models.Model):
+    name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return "{}".format(self.name)
+
+class Storage(models.Model):
+    instrument=models.ForeignKey(Instrument, null=True)
+    relative_path=models.CharField(max_length=255)
+    kilobytes = models.BigIntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}-{}".format(self.instrument.name, self.kilobytes)
+
+class General_Storage(models.Model):
+    used = models.BigIntegerField()
+    free = models.BigIntegerField()
+    date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return "{}-{}".format(self.used, self.free)

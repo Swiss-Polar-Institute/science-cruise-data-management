@@ -1,13 +1,14 @@
 from django.contrib import admin
 
-from main.models import Project
-from main.models import Event
-from main.models import Country
+from main.models import Project, Event, Country, Instrument, Storage, General_Storage
 
 # Register your models here.
 # admin.site.register(Project)
 admin.site.register(Event)
 admin.site.register(Country)
+admin.site.register(Instrument)
+admin.site.register(Storage)
+admin.site.register(General_Storage)
 
 class ProjectsStartsWithA(admin.SimpleListFilter):
     title = "Projects starts with A"

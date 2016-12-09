@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Storage{% endblock %}
+{% load static %}
+{% block extra_head %}
+<script type="text/javascript" src="{% static '/js/external/Chart.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<h1>General view</h1>
+<canvas id="general_storage" width="400" height="60"></canvas>
+<script>
+function plot(canvas_name, title, data, stacked) {
+var canvas = document.getElementById(canvas_name);
+var chart = new Chart(canvas, {
+    type: 'horizontalBar',
+    data: data,
+    options: {
+        tooltips: {
+            enabled: true
+        },
+        legend: {
+            display: false,
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true,
+                },
+                stacked: stacked
+            }],
+            xAxes: [{
+                ticks: {
+                    beginAtZero:true,
+                },
+                stacked: stacked
+            }]
+        }
+    }
+});
+}
+</script>
+
+<script>
+    var general_storage_json = JSON.parse('{{ general_storage_json | escapejs }}');
+
+    var general_data = {};
+    general_data['labels'] = ['Total'];
+
+    general_data['datasets'] = [{
+        data: [general_storage_json.used],
+        backgroundColor: "rgba(63,103,126,1)",
+        label: "{{units}}"
+    },
+    {    data: [general_storage_json.free],
+        backgroundColor: "rgba(255,0,0,1)",
+        label: "{{units}}"
+    }
+    ];
+
+    plot("general_storage", "General storage", general_data, true);
+</script>
+
+<ul>
+    <li>Total: {{general_storage_size}} {{units}}</li>
+    <li><span style="color:rgba(50,90,100,1);"><b>Used:</b> {{general_storage_used}} {{units}}</span></li>
+    <li><span style="color:rgba(163,103,126);"><b>Free:</b>{{general_storage_free}} {{units}}</span></li>
+</ul>
+
+<h1>Detailed view</h1>
+<canvas id="detailed_storage" width="400" height="60"></canvas>
+
+<script>
+    var detailed_storage = JSON.parse('{{ detailed_storage_json | escapejs }}');
+
+    var data = {};
+    data['labels'] = [];
+
+    var data_numbers = [];
+    for (var i = 0; i < detailed_storage.length; i++) {
+        data_numbers.push(detailed_storage[i].{{units}});
+        data['labels'].push(detailed_storage[i].instrument);
+    }
+
+    data['datasets'] = [{
+        label: '{{units}}',
+        borderWidth: 1,
+        data: data_numbers
+    }];
+
+    plot("detailed_storage", "Detailed storage", data, false);
+
+</script>
+
+    <table class="table table-striped">
+        <thead>
+            <th>Instrument</th><th>Data size ({{units}})</th>
+        </thead>
+{% for storage in storages %}
+    <tr><td>{{storage.instrument}}</td><td>{{storage.kilobytes}}</td>
+{% endfor %}
+</table>
+{% endblock %}
