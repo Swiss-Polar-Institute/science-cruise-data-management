@@ -5,7 +5,10 @@ from django.utils import timezone
 def next_event_number():
     latest = Event.objects.all().aggregate(Max('event_number'))
 
-    return latest.get("event_number__max", 0) + 1
+    if latest['user_id__max'] == None:
+        return 1
+    else:
+        return latest["user_id__max"] + 1
 
 # Create your models here.
 class Event(models.Model):
@@ -53,10 +56,33 @@ class General_Storage(models.Model):
     def __str__(self):
         return "{}-{}".format(self.used, self.free)
 
-class Poi(models.Model):
+def next_position_number():
+    latest = Position.objects.all().aggregate(Max('number'))
+
+    if latest['number__max'] == None:
+        return 1
+    else:
+        return latest["number__max"] + 1
+
+class PositionType(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
+class Position(models.Model):
+    number = models.IntegerField(default=next_position_number, unique=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     text = models.CharField(max_length=255, blank=True, null=True)
+    position_type = models.ForeignKey(PositionType)
+
+    def save(self, *args, **kwargs):
+        if self.number is None:
+            self.number = next_position_number()
+
+        super(Position, self).save(*args, **kwargs)
 
     def __str__(self):
-        return "{}-{}-({}, {})".format(self.id, self.text, self.latitude, self.longitude)
+        return "{}-{}-{}-({}, {})".format(self.id, self.number, self.text, self.latitude, self.longitude)

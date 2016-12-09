@@ -1,8 +1,10 @@
+var endpoint = "/api/positions";
+
 function post_marker(marker) {
     updating_marker = marker;
     $.post
     ({
-        url: "/api/pois.json",
+        url: endpoint,
         dataType: "json",
         headers: {
             "X-CSRFToken": getCookie("csrftoken")
@@ -13,8 +15,6 @@ function post_marker(marker) {
         }),
         success: function(data) {
             updating_marker.id = data.id;
-
-            // Text for the marker
             updating_marker.bindPopup(popupContent(data.id, data.text));
         }
     });
@@ -24,7 +24,7 @@ function put_marker(event) {
     updating_marker = event.target;
     $.ajax
     ({
-        url: "/api/pois.json",
+        url: endpoint,
         dataType: "json",
         type: "PUT",
         headers: {
@@ -45,15 +45,15 @@ function put_marker(event) {
 function update_text(id, text) {
     $.ajax
     ({
-        url: "/api/pois.json",
+        url: endpoint,
         dataType: "json",
         type: "PUT",
         headers: {
             "X-CSRFToken": getCookie("csrftoken")
         },
         data: JSON.stringify ({
-            id: updating_marker.id,
-            text: text
+            id: id,
+            text: marker_text
         }),
         success: function(data) {
             updating_marker.bindPopup(popupContent(data.id, data.text));
@@ -66,30 +66,41 @@ function update_text(id, text) {
 }
 
 
-function send_form() {
-    alert("test");
-}
-
-var markerText = '';
+var marker_text = '';
+var marker_id = 0;
+var updating_marker = null;
 
 function adjustTextAreaUpdateChange(textArea) {
-    markerText = $(textArea).val();
+    marker_text = $(textArea).val();
 }
-
-function popupContent(marker_id, text) {
-    return '<textarea class="custom_marker_text" onchange="adjustTextAreaUpdateChange(this)" name="'+marker_id+'" placeholder="Press to write a note...">'+text+'</textarea>';
+function popupContent(id, text) {
+    return 'Internal id:' + id +
+        '<br><textarea class="custom_marker_text" ' +
+        'onchange="adjustTextAreaUpdateChange(this)" ' +
+        'name="'+id+'">' + text+
+        '</textarea>';
 }
 
 function main() {
     antarctic_map_main();
 
     // To add a marker (in Ushuaia)
-    L.marker([-54.8, -68.3], {icon: offLineIcon("yellow")}).addTo(map);
+    // L.marker([-54.8, -68.3], {icon: offLineIcon("yellow")}).addTo(map);
 
     map.on('contextmenu',function(mouseEvent){
         // Creates new marker and sends it to the API
         var marker = L.marker(mouseEvent.latlng, {icon: offLineIcon("red"), draggable: true});
         marker.addTo(map);
+
+        marker.on('click', function(e) {
+            updating_marker = e.target;
+        });
+        marker.id = 0;
+        marker.text = "";
+
+        // Text for the marker
+        marker.bindPopup(popupContent(marker.id, marker.text));
+
         post_marker(marker);
 
         // Updates the marker
@@ -108,9 +119,8 @@ function main() {
 
         var id = textArea.attr('name');
 
-        update_text(id, markerText);
+        update_text(id, marker_text);
     });
 
-    map.on('drag')
-    loadAndPlotGeojsonMarkers(STATIC_URL + "api/events.geojson");
+    loadAndPlotGeojsonMarkers(endpoint);
 }

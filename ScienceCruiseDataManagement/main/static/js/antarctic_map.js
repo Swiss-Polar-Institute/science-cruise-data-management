@@ -63,15 +63,23 @@ function addGeojsonLayer(data, style) {
 }
 
 function loadAndPlotGeojsonMarkers(url) {
-    $.getJSON("/api/events.geojson",
+    $.getJSON(url,
         function(geojson)
         {
             var pointToLayer = function(feature, latlng) {
-                return L.marker(latlng, {icon: offLineIcon()});
+                var marker = L.marker(latlng, {icon: offLineIcon()});
+                return marker;
             };
 
             var onEachFeature = function(feature, layer) {
-                layer.bindPopup(feature.properties.id + " - " + feature.properties.text);
+                    layer.text = layer.feature.properties.text;
+                    layer.id = layer.feature.properties.id;
+
+                    layer.bindPopup(popupContent(layer.id, layer.text));
+
+                    layer.on('click', function(e) {
+                        updating_marker = e.target;
+                    });
             };
 
             L.geoJSON(geojson, {pointToLayer: pointToLayer, onEachFeature: onEachFeature}).addTo(map);

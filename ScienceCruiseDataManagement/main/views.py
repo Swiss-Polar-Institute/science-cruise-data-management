@@ -5,7 +5,7 @@ from debug_toolbar.panels import request
 from django.shortcuts import render
 from django.views.generic import TemplateView, View, ListView
 from django.http import JsonResponse
-from main.models import Event, Country, Storage, General_Storage, Poi
+from main.models import Event, Country, Storage, General_Storage, Position, PositionType
 from django.utils import timezone
 
 
@@ -48,27 +48,46 @@ class EventsJson(View):
 
         return JsonResponse(geojson.FeatureCollection(features))
 
-class PoisJson(View):
+class PositionsJson(View):
     def get(self, request):
-        return JsonResponse({'result': "Not done yet"})
+        # print("-----------", request.GET['newer_than'])
+        features = []
+        for position in Position.objects.all():
+            point = geojson.Point((position.longitude, position.latitude))
+
+            text = position.text
+            if text is None:
+                text = ""
+
+            features.append(
+                geojson.Feature(geometry=point, properties={'id': position.id,
+                                                            'number': position.number,
+                                                            'text': text,
+                                                            'type': position.position_type.name
+                                                            }))
+
+        return JsonResponse(geojson.FeatureCollection(features))
 
     def post(self, request):
         decoded_data = request.body.decode('utf-8')
         json_data = json.loads(decoded_data)
 
         # new POI to be inserted
-        poi = Poi()
+        poi = Position()
         poi.latitude = json_data['latitude']
         poi.longitude = json_data['longitude']
+        poi.position_type = PositionType.objects.get(name='Event')
         poi.save()
 
-        return JsonResponse({'id': poi.id})
+        print("POST",poi)
+
+        return JsonResponse({'id': poi.id, 'text': poi.text})
 
     def put(self, request):
         decoded_data = request.body.decode('utf-8')
         json_data = json.loads(decoded_data)
 
-        poi = Poi.objects.get(id=json_data['id'])
+        poi = Position.objects.get(id=json_data['id'])
 
         if 'latitude' in json_data:
             poi.latitude = json_data['latitude']
@@ -80,7 +99,7 @@ class PoisJson(View):
             poi.text = json_data['text']
 
         poi.save()
-
+        print("PUT ",poi)
         response = JsonResponse({'id': poi.id, 'text': poi.text})
 
         return response

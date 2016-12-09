@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from main.models import Project, Event, Country, Instrument, Storage, General_Storage, Poi
+from main.models import Project, Event, Country, Instrument, Storage, General_Storage, Position, PositionType
 
 # Register your models here.
 # admin.site.register(Project)
@@ -9,7 +9,7 @@ admin.site.register(Country)
 admin.site.register(Instrument)
 admin.site.register(Storage)
 admin.site.register(General_Storage)
-admin.site.register(Poi)
+admin.site.register(PositionType)
 
 class ProjectsStartsWithA(admin.SimpleListFilter):
     title = "Projects starts with A"
@@ -31,5 +31,9 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = ('name', 'country')
     list_filter = (ProjectsStartsWithA, )
 
+class PositionAdmin(admin.ModelAdmin):
+    list_display=('number', 'text', 'latitude', 'longitude')
+    ordering = ('number',)
 
 admin.site.register(Project, ProjectAdmin)
+admin.site.register(Position, PositionAdmin)
