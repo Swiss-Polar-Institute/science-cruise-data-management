@@ -62,9 +62,10 @@ class StorageView(TemplateView):
 
         context['detailed_storage_json'] = json.dumps(detailed_storage)
         last_general_storage = General_Storage.objects.latest('date')
+
+        context['general_storage_free'] = last_general_storage.free
+        context['general_storage_used'] = last_general_storage.used
+        context['general_storage_size'] = context['general_storage_free'] + context['general_storage_used']
         context['general_storage_json'] = json.dumps({'used': last_general_storage.used, 'free': last_general_storage.free})
 
-        context['general_storage_free'] = 10;
-        context['general_storage_used'] = 20;
-        context['general_storage_size'] = context['general_storage_free'] + context['general_storage_used']
         return context
