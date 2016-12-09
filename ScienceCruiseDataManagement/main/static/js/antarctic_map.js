@@ -75,16 +75,23 @@ function loadAndPlotGeojsonMarkers(url) {
                     layer.text = layer.feature.properties.text;
                     layer.id = layer.feature.properties.id;
 
-                    layer.bindPopup(popupContent(layer.id, layer.text));
-
-                    layer.on('click', function(e) {
-                        updating_marker = e.target;
-                    });
+                    make_marker_clickable(layer);
             };
 
             L.geoJSON(geojson, {pointToLayer: pointToLayer, onEachFeature: onEachFeature}).addTo(map);
         }
     );
+}
+
+function make_marker_clickable(marker) {
+    marker.bindPopup(popupContent(marker.id, marker.text));
+
+    marker.on('click', function(e) {
+        updating_marker = e.target;
+    });
+
+    // Updates the marker
+    marker.on('dragend', put_marker);
 }
 
 function loadAndPlotGeojsonPolygon(url, style) {

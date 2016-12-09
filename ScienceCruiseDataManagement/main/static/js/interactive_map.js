@@ -89,22 +89,15 @@ function main() {
 
     map.on('contextmenu',function(mouseEvent){
         // Creates new marker and sends it to the API
-        var marker = L.marker(mouseEvent.latlng, {icon: offLineIcon("red"), draggable: true});
+        var marker = L.marker(mouseEvent.latlng, {icon: offLineIcon("blue"), draggable: true});
         marker.addTo(map);
 
-        marker.on('click', function(e) {
-            updating_marker = e.target;
-        });
         marker.id = 0;
         marker.text = "";
 
-        // Text for the marker
-        marker.bindPopup(popupContent(marker.id, marker.text));
+        make_marker_clickable(marker);
 
         post_marker(marker);
-
-        // Updates the marker
-        marker.on('dragend', put_marker);
     });
 
     map.on('popupclose', function(e) {
