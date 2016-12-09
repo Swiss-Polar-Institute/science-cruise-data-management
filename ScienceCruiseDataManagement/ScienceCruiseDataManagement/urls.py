@@ -16,11 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-from main.views import MainMenuView
-from main.views import MainMapView
-from main.views import EventsJson
-from main.views import CountryListView
-from main.views import StorageView
+from main.views import MainMenuView, MainMapView, EventsJson, CountryListView, StorageView, InteractiveMapView, PoisJson
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -28,9 +24,11 @@ urlpatterns = [
     url(r'^$', MainMenuView.as_view()),
     url(r'^map/$', MainMapView.as_view()),
     url(r'^api/events.geojson', EventsJson.as_view()),
+    url(r'^api/poi', PoisJson.as_view()),
     url(r'^admin/', admin.site.urls),
     url(r'^country/list$', CountryListView.as_view(), name='article-list'),
     url(r'^storage/', StorageView.as_view()),
+    url(r'^map/interactive/$', InteractiveMapView.as_view()),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:

@@ -30,7 +30,7 @@ function antarctic_map_main() {
                         fillOpacity: 1
                         };
 
-    loadAndPlotGeojsonPolygon(STATIC_URL + "maps/Coastline_high_res_polygon.geojson", antarctic_style);
+    // loadAndPlotGeojsonPolygon(STATIC_URL + "maps/Coastline_high_res_polygon.geojson", antarctic_style);
     loadAndPlotGeojsonPolygon(STATIC_URL + "maps/Sub-antarctic_coastline_high_res_polygon_to30S.geojson", continents_style);
 
     // Adds circle for up to 30 degrees.

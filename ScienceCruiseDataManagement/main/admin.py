@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from main.models import Project, Event, Country, Instrument, Storage, General_Storage
+from main.models import Project, Event, Country, Instrument, Storage, General_Storage, Poi
 
 # Register your models here.
 # admin.site.register(Project)
@@ -9,6 +9,7 @@ admin.site.register(Country)
 admin.site.register(Instrument)
 admin.site.register(Storage)
 admin.site.register(General_Storage)
+admin.site.register(Poi)
 
 class ProjectsStartsWithA(admin.SimpleListFilter):
     title = "Projects starts with A"

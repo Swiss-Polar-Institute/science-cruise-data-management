@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Map{% endblock %}
+{% block title %}Interactive map{% endblock %}
 {% load static %}
 {% block extra_head %}
         <!-- Leaflet -->
@@ -11,7 +11,8 @@
 
         <!-- Our Antarctic map related code -->
         <script src="{% static '/js/antarctic_map.js' %}"></script>
-		<script src="{% static '/js/main_map.js' %}"></script>
+		<script src="{% static '/js/interactive_map.js' %}"></script>
+        <script src="{% static '/js/utils.js' %}"></script>
 {% endblock %}
 
 {% block content %}
