@@ -52,7 +52,7 @@ class PositionsJson(View):
     def get(self, request):
         # print("-----------", request.GET['newer_than'])
         features = []
-        for position in Position.objects.all():
+        for position in Position.objects.order_by('number'):
             point = geojson.Point((position.longitude, position.latitude))
 
             text = position.text

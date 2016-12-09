@@ -62,12 +62,15 @@ function addGeojsonLayer(data, style) {
     newLayer.addTo(map);
 }
 
+ordered_markers = [];
+var polyline = null;
+
 function loadAndPlotGeojsonMarkers(url) {
     $.getJSON(url,
         function(geojson)
         {
             var pointToLayer = function(feature, latlng) {
-                var marker = L.marker(latlng, {icon: offLineIcon()});
+                var marker = L.marker(latlng, {icon: offLineIcon(), draggable: true});
                 return marker;
             };
 
@@ -76,11 +79,36 @@ function loadAndPlotGeojsonMarkers(url) {
                     layer.id = layer.feature.properties.id;
 
                     make_marker_clickable(layer);
+
+                    ordered_markers.push(layer.getLatLng());
+
             };
 
             L.geoJSON(geojson, {pointToLayer: pointToLayer, onEachFeature: onEachFeature}).addTo(map);
+            polyline = new L.Polyline(ordered_markers).addTo(map);
         }
     );
+}
+
+function dragStartHandler (e) {
+    var latlngs = polyline.getLatLngs(),
+        latlng = this.getLatLng();
+    for (var i = 0; i < latlngs.length; i++) {
+        if (latlng.equals(latlngs[i])) {
+            this.polylineLatlng = i;
+        }
+    }
+}
+
+function dragHandler (e) {
+    var latlngs = polyline.getLatLngs(),
+        latlng = this.getLatLng();
+    latlngs.splice(this.polylineLatlng, 1, latlng);
+    polyline.setLatLngs(latlngs);
+}
+
+function dragEndHandler (e) {
+    delete this.polylineLatlng;
 }
 
 function make_marker_clickable(marker) {
@@ -90,7 +118,9 @@ function make_marker_clickable(marker) {
         updating_marker = e.target;
     });
 
-    // Updates the marker
+    marker.on('dragstart', dragStartHandler);
+    marker.on('drag', dragHandler);
+    marker.on('dragend', dragEndHandler);
     marker.on('dragend', put_marker);
 }
 
