@@ -56,7 +56,7 @@ class General_Storage(models.Model):
 class Poi(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
-    text = models.FloatField(blank=True, null=True)
+    text = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return "{}-{}-({}, {})".format(self.id, self.text, self.latitude, self.longitude)

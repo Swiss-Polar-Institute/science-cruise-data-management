@@ -69,12 +69,21 @@ class PoisJson(View):
         json_data = json.loads(decoded_data)
 
         poi = Poi.objects.get(id=json_data['id'])
-        poi.latitude = json_data['latitude']
-        poi.longitude = json_data['longitude']
+
+        if 'latitude' in json_data:
+            poi.latitude = json_data['latitude']
+
+        if 'longitude' in json_data:
+            poi.latitude = json_data['longitude']
+
+        if 'text' in json_data:
+            poi.text = json_data['text']
 
         poi.save()
 
-        return JsonResponse({'id': poi.id})
+        response = JsonResponse({'id': poi.id, 'text': poi.text})
+
+        return response
 
 
 class CountryListView(ListView):
