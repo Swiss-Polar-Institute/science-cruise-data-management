@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-     # 'csvimport.app.CSVImportConf',
+    'import_export',
     'debug_toolbar',
     'django_extensions',
     'main'  # ScienceCruiseManagement main app
@@ -144,3 +144,7 @@ STATIC_URL = '/static/'
 
 # Should be moved out from here, just for development at the moment
 BASE_STORAGE_DIRECTORY = os.environ["HOME"]
+
+# Added for importer-exporter
+PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
