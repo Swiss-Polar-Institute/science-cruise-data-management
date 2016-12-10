@@ -64,16 +64,17 @@ function addGeojsonLayer(data, style) {
 
 function show_distance(line) {
     var distance = line._latlngs[0].distanceTo(line._latlngs[1]);
-    $(message).text("Distance: " + distance/1000 + " Km");
+    var nautical_miles = (distance/1000) * 0.539957;
+
+    $(message).text("Distance: " + nautical_miles.toFixed(2) + " Nautical miles");
 }
 
-ordered_markers = [];
 var lines = [];
+last_added_marker = null;
 
 function loadAndPlotGeojsonMarkers(url) {
     $.getJSON(url,
-        function(geojson)
-        {
+        function(geojson) {
             var pointToLayer = function(feature, latlng) {
                 var marker = L.marker(latlng, {icon: offLineIcon(), draggable: true});
                 return marker;
@@ -84,23 +85,9 @@ function loadAndPlotGeojsonMarkers(url) {
                     layer.id = layer.feature.properties.id;
 
                     make_marker_clickable(layer);
-
-                    ordered_markers.push(layer.getLatLng());
-
             };
 
             L.geoJSON(geojson, {pointToLayer: pointToLayer, onEachFeature: onEachFeature}).addTo(map);
-
-            var previous;
-            for (var i=0; i < ordered_markers.length; i++) {
-                if (i != 0) {
-                    var line = new L.Polyline([previous, ordered_markers[i]]);
-                    line.on('mouseover', function(e) { show_distance(e.target); });
-                    line.addTo(map);
-                    lines.push(line);
-                }
-                previous = ordered_markers[i];
-            }
         }
     );
 }
@@ -121,10 +108,12 @@ function dragStartHandler (e) {
 }
 
 function dragHandler (e) {
-    var line_latlng = lines[this.movingLine]._latlngs;
-    line_latlng[this.movingLineIndex] = e.latlng;
-    lines[this.movingLine].setLatLngs(line_latlng);
-    show_distance(lines[this.movingLine]);;
+    if (typeof(this.movingLine) !== 'undefined') {
+        var line_latlng = lines[this.movingLine]._latlngs;
+        line_latlng[this.movingLineIndex] = e.latlng;
+        lines[this.movingLine].setLatLngs(line_latlng);
+        show_distance(lines[this.movingLine]);
+    }
 }
 
 function dragEndHandler (e) {
@@ -143,6 +132,21 @@ function make_marker_clickable(marker) {
     marker.on('drag', dragHandler);
     marker.on('dragend', dragEndHandler);
     marker.on('dragend', put_marker);
+
+    if (last_added_marker != null) {
+        var line = new L.Polyline([last_added_marker.getLatLng(), marker.getLatLng()]);
+        line.on('mouseover', function(e) {
+            show_distance(e.target);
+            e.target.setStyle({color: '#ff0000'});
+        });
+        line.on('mouseout', function(e) {
+            e.target.setStyle({color: '#3388ff'});
+        });
+        line.addTo(map);
+        lines.push(line);
+    }
+
+    last_added_marker = marker;
 }
 
 function loadAndPlotGeojsonPolygon(url, style) {

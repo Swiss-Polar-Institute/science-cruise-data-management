@@ -93,10 +93,12 @@ class PositionsJson(View):
             poi.latitude = json_data['latitude']
 
         if 'longitude' in json_data:
-            poi.latitude = json_data['longitude']
+            poi.longitude = json_data['longitude']
 
         if 'text' in json_data:
             poi.text = json_data['text']
+        else:
+            poi.text = ""
 
         poi.save()
         print("PUT ",poi)
