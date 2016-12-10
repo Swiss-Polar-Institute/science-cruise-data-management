@@ -62,11 +62,26 @@ function addGeojsonLayer(data, style) {
     newLayer.addTo(map);
 }
 
-function show_distance(line) {
-    var distance = line._latlngs[0].distanceTo(line._latlngs[1]);
-    var nautical_miles = (distance/1000) * 0.539957;
+function m_to_formatted_nautical_miles(distance_m) {
+    var nautical_miles = (distance_m/1000) * 0.539957;
 
-    $(message).text("Distance: " + nautical_miles.toFixed(2) + " Nautical miles");
+    return nautical_miles.toFixed(2);
+}
+
+function show_distance(line) {
+    var line_distance = line._latlngs[0].distanceTo(line._latlngs[1]);
+    var line_nautical_miles = m_to_formatted_nautical_miles(line_distance);
+
+    var total_distance = 0;
+    for (var i = 0; i < lines.length; i++) {
+        var lat_longs = lines[i].getLatLngs();
+
+        total_distance += lat_longs[0].distanceTo(lat_longs[1]);
+    }
+
+    var total_nautical_miles = m_to_formatted_nautical_miles(total_distance);
+
+    $(message).html("<b>Line:</b> " + line_nautical_miles + " Nautical miles | <b>Total:</b> " + total_nautical_miles + " Nautical miles");
 }
 
 var lines = [];

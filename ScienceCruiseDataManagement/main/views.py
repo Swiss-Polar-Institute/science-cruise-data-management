@@ -97,8 +97,6 @@ class PositionsJson(View):
 
         if 'text' in json_data:
             poi.text = json_data['text']
-        else:
-            poi.text = ""
 
         poi.save()
         print("PUT ",poi)

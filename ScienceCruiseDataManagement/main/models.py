@@ -82,6 +82,9 @@ class Position(models.Model):
         if self.number is None:
             self.number = next_position_number()
 
+        if self.text is None:
+            self.text = ""
+
         super(Position, self).save(*args, **kwargs)
 
     def __str__(self):
