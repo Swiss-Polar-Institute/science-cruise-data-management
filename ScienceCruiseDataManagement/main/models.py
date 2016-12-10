@@ -97,7 +97,7 @@ class Position(models.Model):
 
 
 ############################################### SERIOUS STUFF
-class Instrument(models.Model):
+class Device(models.Model):
     code = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
 
@@ -122,7 +122,7 @@ class PositionUncertainty(models.Model):
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return "{}".format(self.name)
+        return "{}-{}".format(self.code, self.name)
 
 
 class TimeUncertainty(models.Model):
@@ -162,14 +162,74 @@ class Leg(models.Model):
         return "{}".format(self.name)
 
 
+class Storage(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+
+
+class Preservation(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+
+
+class SpeciesClassification(models.Model):
+    phylum = models.CharField(max_length=255)
+    class2 = models.CharField('Class', db_column='class', max_length=255)
+    order = models.CharField(max_length=255)
+    family = models.CharField(max_length=255)
+    genus = models.CharField(max_length=255)
+    species = models.CharField(max_length=255)
+
+    class Meta:
+        verbose_name_plural="Species"
+
+
+class SampleContent(models.Model):
+    type = models.CharField(max_length=255)
+    species_classification = models.ForeignKey(SpeciesClassification)
+    description = models.TextField()
+
+    def __str__(self):
+        return "{}".format(type)
+
+
+class Person(models.Model):
+    first_name = models.CharField(max_length=255)
+    surname = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{} {}".format(self.first_name, self.surname)
+
+    class Meta:
+        verbose_name_plural="People"
+
+
 class Event(models.Model):
     number = models.IntegerField(default=next_event_number, unique=True)
-    leg = models.ForeignKey(Leg, default="")
-    device = models.ForeignKey(Instrument)
+    device = models.ForeignKey(Device)
 
     def __str__(self):
         return "{}".format(self.number)
 
+
+class Sample(models.Model):
+    code = models.CharField(max_length=255)
+    event = models.ForeignKey(Event)
+    storage = models.ForeignKey(Storage)
+    preservation = models.ForeignKey(Preservation)
+    owner = models.ForeignKey(Person)
+    contents = models.ForeignKey(SampleContent)
+    destination = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{}".format(code)
+
+
+class StationType(models.Model):
+    type = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{}".format(self.type)
 
 class EventActionDescription(models.Model):
     code = models.CharField(max_length=255)
@@ -206,6 +266,28 @@ class PositionSource(models.Model):
     def __str__(self):
         return "{}".format(self.name)
 
+
+class Station(models.Model):
+    name = models.CharField(max_length=255)
+    type = models.ForeignKey(StationType)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    leg = models.ForeignKey(Leg)
+    arrival_time = models.DateTimeField()
+    departure_time = models.DateTimeField()
+    time_source = models.ForeignKey(TimeSource)
+    time_uncertainty = models.ForeignKey(TimeUncertainty)
+    position_source = models.ForeignKey(PositionSource)
+    position_uncertainty = models.ForeignKey(PositionUncertainty)
+    water_depth = models.FloatField(null=True, blank=True)
+    comment = models.TextField(null=True, blank=True)
+
+
+class StorageCrate(models.Model):
+    name = models.CharField(max_length=255)
+    location = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, null=True, blank=True)
+    comment = models.TextField(null=True, blank=True)
 
 class EventAction(models.Model):
     event = models.ForeignKey(Event)

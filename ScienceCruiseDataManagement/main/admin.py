@@ -6,13 +6,11 @@ from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
 # Register your models here.
-# admin.site.register(Project)
 admin.site.register(main.models.Country)
-admin.site.register(main.models.Instrument)
+admin.site.register(main.models.Device)
 admin.site.register(main.models.Storage)
 admin.site.register(main.models.General_Storage)
 admin.site.register(main.models.PositionType)
-# admin.site.register(main.models.EventAction)
 admin.site.register(main.models.Leg)
 admin.site.register(main.models.Port)
 admin.site.register(main.models.EventActionType)
@@ -20,7 +18,10 @@ admin.site.register(main.models.PositionUncertainty)
 admin.site.register(main.models.PositionSource)
 admin.site.register(main.models.TimeUncertainty)
 admin.site.register(main.models.TimeSource)
-admin.site.register(main.models.EventActionDescription)
+admin.site.register(main.models.Preservation)
+admin.site.register(main.models.SpeciesClassification)
+admin.site.register(main.models.SampleContent)
+admin.site.register(main.models.Sample)
 
 
 class ProjectsStartsWithLetter(admin.SimpleListFilter):
@@ -48,6 +49,7 @@ class EventAdmin(admin.ModelAdmin):
             kwargs["queryset"] = main.models.Leg.objects.filter(name="Leg 1")
         return super(EventAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+
 class PositionResource(resources.ModelResource):
     class Meta:
         model = main.models.Position
@@ -60,16 +62,22 @@ class PositionAdmin(ImportExportModelAdmin):
     search_fields = ['text']
     # exclude = ('text',)
 
+
 class EventActionAdmin(ImportExportModelAdmin):
-    list_display = ('event_id', 'date_time', 'latitude', 'longitude')
+    list_display = ('event_id', 'date_time', 'latitude', 'longitude', 'position_uncertainty')
     ordering = ['event_id']
+
+class EventActionDescriptionAdmin(admin.ModelAdmin):
+    list_display = ('code', 'name', 'description')
+    ordering = ['code']
 
 
 admin.site.register(main.models.Project, ProjectAdmin)
 admin.site.register(main.models.Position, PositionAdmin)
 admin.site.register(main.models.EventAction, EventActionAdmin)
 admin.site.register(main.models.Event, EventAdmin)
+admin.site.register(main.models.EventActionDescription, EventActionDescriptionAdmin)
 
 admin.site.site_header = 'ACE Data'
 admin.site.site_title = 'ACE Data Admin'
-admin.site.site_header = 'ACE administration'
+admin.site.site_header = 'ACE Data Administration'
