@@ -62,8 +62,13 @@ function addGeojsonLayer(data, style) {
     newLayer.addTo(map);
 }
 
+function show_distance(line) {
+    var distance = line._latlngs[0].distanceTo(line._latlngs[1]);
+    $(message).text("Distance: " + distance/1000 + " Km");
+}
+
 ordered_markers = [];
-var polyline = null;
+var lines = [];
 
 function loadAndPlotGeojsonMarkers(url) {
     $.getJSON(url,
@@ -85,30 +90,46 @@ function loadAndPlotGeojsonMarkers(url) {
             };
 
             L.geoJSON(geojson, {pointToLayer: pointToLayer, onEachFeature: onEachFeature}).addTo(map);
-            polyline = new L.Polyline(ordered_markers).addTo(map);
+
+            var previous;
+            for (var i=0; i < ordered_markers.length; i++) {
+                if (i != 0) {
+                    var line = new L.Polyline([previous, ordered_markers[i]]);
+                    line.on('mouseover', function(e) { show_distance(e.target); });
+                    line.addTo(map);
+                    lines.push(line);
+                }
+                previous = ordered_markers[i];
+            }
         }
     );
 }
 
 function dragStartHandler (e) {
-    var latlngs = polyline.getLatLngs(),
-        latlng = this.getLatLng();
-    for (var i = 0; i < latlngs.length; i++) {
-        if (latlng.equals(latlngs[i])) {
-            this.polylineLatlng = i;
+    var latlng = this.getLatLng();
+
+    for (var i = 0; i < lines.length; i++) {
+        if (latlng.equals(lines[i]._latlngs[0])) {
+            this.movingLine = i;
+            this.movingLineIndex = 0;
+        }
+        else if (latlng.equals(lines[i]._latlngs[1])) {
+            this.movingLine = i;
+            this.movingLineIndex = 1;
         }
     }
 }
 
 function dragHandler (e) {
-    var latlngs = polyline.getLatLngs(),
-        latlng = this.getLatLng();
-    latlngs.splice(this.polylineLatlng, 1, latlng);
-    polyline.setLatLngs(latlngs);
+    var line_latlng = lines[this.movingLine]._latlngs;
+    line_latlng[this.movingLineIndex] = e.latlng;
+    lines[this.movingLine].setLatLngs(line_latlng);
+    show_distance(lines[this.movingLine]);;
 }
 
 function dragEndHandler (e) {
-    delete this.polylineLatlng;
+    delete this.movingLineIndex;
+    delete this.movingLine;
 }
 
 function make_marker_clickable(marker) {

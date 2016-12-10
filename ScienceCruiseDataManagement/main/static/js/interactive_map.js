@@ -96,6 +96,12 @@ function main() {
         marker.text = "";
 
         make_marker_clickable(marker);
+/*
+        var line = new L.polyline([lines[lines.length-1], mouseEvent.latlng]);
+        line.on('mouseover', function(e) { show_distance(e.target); });
+        line.addTo(map);
+        lines.push(line);
+*/
 
         post_marker(marker);
     });
