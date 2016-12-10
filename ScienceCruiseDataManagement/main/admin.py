@@ -69,3 +69,7 @@ admin.site.register(main.models.Project, ProjectAdmin)
 admin.site.register(main.models.Position, PositionAdmin)
 admin.site.register(main.models.EventAction, EventActionAdmin)
 admin.site.register(main.models.Event, EventAdmin)
+
+admin.site.site_header = 'ACE Data'
+admin.site.site_title = 'ACE Data Admin'
+admin.site.site_header = 'ACE administration'
