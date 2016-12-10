@@ -27,6 +27,9 @@ class Country(models.Model):
     def __str__(self):
         return "{}".format(self.name)
 
+    class Meta:
+        verbose_name_plural="Countries"
+
 class Project(models.Model):
     name=models.CharField(max_length=255)
     country=models.ForeignKey(Country, null=True)
@@ -72,11 +75,12 @@ class PositionType(models.Model):
 
 
 class Position(models.Model):
-    number = models.IntegerField(default=next_position_number, unique=True)
+    number = models.IntegerField("Event number", help_text="User controlled ID", default=next_position_number, unique=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     text = models.CharField(max_length=255, blank=True, null=True)
     position_type = models.ForeignKey(PositionType)
+
 
     def save(self, *args, **kwargs):
         if self.number is None:

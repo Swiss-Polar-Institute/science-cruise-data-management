@@ -34,6 +34,8 @@ class ProjectAdmin(admin.ModelAdmin):
 class PositionAdmin(admin.ModelAdmin):
     list_display=('number', 'text', 'latitude', 'longitude')
     ordering = ('number',)
+    # exclude = ('text',)
+
 
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Position, PositionAdmin)
