@@ -37,13 +37,6 @@ class Project(models.Model):
     def __str__(self):
         return "{}".format(self.name)
 
-#class Instrument(models.Model):
-#    name = models.CharField(max_length=255)
-#
-#    def __str__(self):
-#        return "{}".format(self.name)
-#
-
 class Storage(models.Model):
     #instrument=models.ForeignKey(Instrument, null=True)
     relative_path=models.CharField(max_length=255)
@@ -103,6 +96,7 @@ class Device(models.Model):
 
     def __str__(self):
         return "{}".format(self.name)
+
 
 class EventActionType(models.Model):
     code = models.CharField(max_length=255)
@@ -204,42 +198,6 @@ class Person(models.Model):
         verbose_name_plural="People"
 
 
-class Event(models.Model):
-    number = models.IntegerField(default=next_event_number, unique=True)
-    device = models.ForeignKey(Device)
-
-    def __str__(self):
-        return "{}".format(self.number)
-
-
-class Sample(models.Model):
-    code = models.CharField(max_length=255)
-    event = models.ForeignKey(Event)
-    storage = models.ForeignKey(Storage)
-    preservation = models.ForeignKey(Preservation)
-    owner = models.ForeignKey(Person)
-    contents = models.ForeignKey(SampleContent)
-    destination = models.CharField(max_length=255)
-
-    def __str__(self):
-        return "{}".format(code)
-
-
-class StationType(models.Model):
-    type = models.CharField(max_length=255)
-
-    def __str__(self):
-        return "{}".format(self.type)
-
-class EventActionDescription(models.Model):
-    code = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    description = models.TextField(null=True, blank=True)
-
-    def __str__(self):
-        return "{}".format(self.name)
-
-
 class TimeSource(models.Model):
     name = models.CharField(max_length=255)
 
@@ -267,6 +225,13 @@ class PositionSource(models.Model):
         return "{}".format(self.name)
 
 
+class StationType(models.Model):
+    type = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{}".format(self.type)
+
+
 class Station(models.Model):
     name = models.CharField(max_length=255)
     type = models.ForeignKey(StationType)
@@ -282,12 +247,47 @@ class Station(models.Model):
     water_depth = models.FloatField(null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        return "{}".format(self.name)
+
+
+class Event(models.Model):
+    number = models.IntegerField(default=next_event_number, unique=True)
+    device = models.ForeignKey(Device)
+    station = models.ForeignKey(Station)
+
+    def __str__(self):
+        return "{}".format(self.number)
+
+
+class Sample(models.Model):
+    code = models.CharField(max_length=255)
+    event = models.ForeignKey(Event)
+    storage = models.ForeignKey(Storage)
+    preservation = models.ForeignKey(Preservation)
+    owner = models.ForeignKey(Person)
+    contents = models.ForeignKey(SampleContent)
+    destination = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{}".format(code)
+
+
+class EventActionDescription(models.Model):
+    code = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.name)
+
 
 class StorageCrate(models.Model):
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
     description = models.CharField(max_length=255, null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
+
 
 class EventAction(models.Model):
     event = models.ForeignKey(Event)

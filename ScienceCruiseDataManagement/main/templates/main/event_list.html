@@ -1,7 +1,7 @@
 <h1>Events report</h1>
 <ul>
-{% for event in events_list %}
-    <li>{{ event.number }} - {{ device.name }}</li>
+{% for event in event_list %}
+    <li>{{ event.number }} - {{ event.device.name }}</li>
 {% empty %}
     <li>No events yet.</li>
 {% endfor %}

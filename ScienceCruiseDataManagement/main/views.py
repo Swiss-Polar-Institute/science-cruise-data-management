@@ -113,11 +113,14 @@ class CountryListView(ListView):
         context['now'] = timezone.now()
         return context
 
+
 class EventListView(ListView):
     model = Event
 
     def get_context_data(self, **kwargs):
         context = super(EventListView, self).get_context_data(**kwargs)
+        context['event_list'] = Event.objects.all()
+        print(Event.objects.all()[0])
         return context
 
 
