@@ -1,3 +1,4 @@
+// THIS FILE IS CURRENTLY NOT USED
 var endpoint = "/api/positions";
 
 function post_marker(marker) {

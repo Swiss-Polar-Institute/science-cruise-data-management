@@ -39,7 +39,10 @@ class InteractiveMapView(TemplateView):
 
 class PositionsJson(View):
     def get(self, request_):
-        # print("-----------", request.GET['newer_than'])
+
+        # Possibles colors: black, blue, green, grey, orange, red, violet, yellow
+
+
         features = []
         for eventAction in EventAction.objects.all().filter(Q(type="TBEGNS") | Q(type="INSTANT")):
             point = geojson.Point((eventAction.longitude, eventAction.latitude))
