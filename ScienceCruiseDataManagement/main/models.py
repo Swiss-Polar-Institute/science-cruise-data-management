@@ -73,8 +73,6 @@ def next_position_number():
 #    def __str__(self):
 #        return "{}-{}-{}-({}, {})".format(self.id, self.number, self.text, self.latitude, self.longitude)
 
-
-############################################### SERIOUS STUFF
 class Country(models.Model):
     name = models.CharField(max_length=255)
 
@@ -288,7 +286,7 @@ class Data(models.Model):
 class Event(models.Model):
     number = models.IntegerField(default=next_event_number, unique=True)
     device = models.ForeignKey(Device)
-    station = models.ForeignKey(Station)
+    station = models.ForeignKey(Station, null=True)
     # data = models.ManyToManyField(Data, related_name="Data01", blank=True)
     # samples = models.ManyToManyField(Sample, related_name="Sample01", blank=True)
 
