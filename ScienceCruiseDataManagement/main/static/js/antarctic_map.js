@@ -35,6 +35,13 @@ function antarctic_map_main() {
 
     // Adds circle for up to 30 degrees.
     L.circle([-90, 0], 7150000).addTo(map);
+
+    map.on('contextmenu', function(e) {
+        var popup = L.popup()
+            .setLatLng(e.latlng)
+            .setContent('Latitude: ' + e.latlng.lat.toFixed(3) + ' Longitude: ' + e.latlng.lng.toFixed(3))
+            .openOn(map);
+    });
 }
 
 function offLineIcon(color = "blue") {

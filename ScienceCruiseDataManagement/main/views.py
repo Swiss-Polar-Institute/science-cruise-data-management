@@ -48,7 +48,7 @@ class PositionsJson(View):
             point = geojson.Point((eventAction.longitude, eventAction.latitude))
 
             features.append(
-                geojson.Feature(geometry=point, properties={'id': 'EventAction.{}'.format(eventAction.id),
+                geojson.Feature(geometry=point, properties={'id': 'Event.{}'.format(eventAction.event.id),
                                                             'text': eventAction.general_comments,
                                                             'marker_color': 'blue'}))
 
