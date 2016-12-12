@@ -30,7 +30,7 @@ function antarctic_map_main() {
                         fillOpacity: 1
                         };
 
-    // loadAndPlotGeojsonPolygon(STATIC_URL + "maps/Coastline_high_res_polygon.geojson", antarctic_style);
+    loadAndPlotGeojsonPolygon(STATIC_URL + "maps/Coastline_high_res_polygon.geojson", antarctic_style);
     loadAndPlotGeojsonPolygon(STATIC_URL + "maps/Sub-antarctic_coastline_high_res_polygon_to30S.geojson", continents_style);
 
     // Adds circle for up to 30 degrees.
@@ -81,7 +81,7 @@ function show_distance(line) {
 
     var total_nautical_miles = m_to_formatted_nautical_miles(total_distance);
 
-    $(message).html("<b>Line:</b> " + line_nautical_miles + " Nautical miles | <b>Total:</b> " + total_nautical_miles + " Nautical miles");
+    // $(message).html("<b>Line:</b> " + line_nautical_miles + " Nautical miles | <b>Total:</b> " + total_nautical_miles + " Nautical miles");
 }
 
 var lines = [];
@@ -91,7 +91,7 @@ function loadAndPlotGeojsonMarkers(url) {
     $.getJSON(url,
         function(geojson) {
             var pointToLayer = function(feature, latlng) {
-                var marker = L.marker(latlng, {icon: offLineIcon(), draggable: true});
+                var marker = L.marker(latlng, {icon: offLineIcon(feature.properties.marker_color), draggable: false});
                 return marker;
             };
 
@@ -106,7 +106,7 @@ function loadAndPlotGeojsonMarkers(url) {
         }
     );
 }
-
+/*
 function dragStartHandler (e) {
     var latlng = this.getLatLng();
 
@@ -135,6 +135,7 @@ function dragEndHandler (e) {
     delete this.movingLineIndex;
     delete this.movingLine;
 }
+*/
 
 function make_marker_clickable(marker) {
     marker.bindPopup(popupContent(marker.id, marker.text));
@@ -143,11 +144,12 @@ function make_marker_clickable(marker) {
         updating_marker = e.target;
     });
 
-    marker.on('dragstart', dragStartHandler);
-    marker.on('drag', dragHandler);
-    marker.on('dragend', dragEndHandler);
-    marker.on('dragend', put_marker);
+    //marker.on('dragstart', dragStartHandler);
+    //marker.on('drag', dragHandler);
+    //marker.on('dragend', dragEndHandler);
+    //marker.on('dragend', put_marker);
 
+/*
     if (last_added_marker != null) {
         var line = new L.Polyline([last_added_marker.getLatLng(), marker.getLatLng()]);
         line.on('mouseover', function(e) {
@@ -160,7 +162,7 @@ function make_marker_clickable(marker) {
         line.addTo(map);
         lines.push(line);
     }
-
+*/
     last_added_marker = marker;
 }
 
@@ -172,3 +174,40 @@ function loadAndPlotGeojsonPolygon(url, style) {
         }
     );
 }
+
+function adjustTextAreaUpdateChange(textArea) {
+    marker_text = $(textArea).val();
+}
+
+function popupContent(id, text) {
+    return 'Id: ' + id + '<br>' + text;
+    /* With a text box: return 'Internal id:' + id +
+        '<br><textarea class="custom_marker_text" ' +
+        'onchange="adjustTextAreaUpdateChange(this)" ' +
+        'name="'+id+'">' + text+
+        '</textarea>';
+    */
+}
+/*
+function put_marker(event) {
+    updating_marker = event.target;
+    $.ajax
+    ({
+        url: endpoint,
+        dataType: "json",
+        type: "PUT",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken")
+        },
+        data: JSON.stringify ({
+            latitude: updating_marker.getLatLng().lat,
+            longitude: updating_marker.getLatLng().lng,
+            id: updating_marker.id
+        }),
+        success: function(data) {
+            updating_marker.id = data.id;
+            updating_marker.bindPopup(popupContent(data.id, data.text));
+        }
+    });
+}
+*/

@@ -2,7 +2,7 @@ function main() {
     antarctic_map_main();
 
     // To add a marker (in Ushuaia)
-    L.marker([-54.8, -68.3], {icon: offLineIcon("yellow")}).addTo(map);
+    // L.marker([-54.8, -68.3], {icon: offLineIcon("yellow")}).addTo(map);
 
-    loadAndPlotGeojsonMarkers(STATIC_URL + "api/events.geojson");
+    loadAndPlotGeojsonMarkers("/api/positions.geojson");
 }

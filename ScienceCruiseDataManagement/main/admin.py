@@ -82,8 +82,8 @@ class EventActionAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
     #description_2.short_description = "Description"
 
-    list_display = ('event', 'type', 'description', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
-    ordering = ['event_id']
+    list_display = ('id', 'event', 'type', 'description', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
+    ordering = ['event_id', 'id']
 
     # resource_class = EventActionResource
 

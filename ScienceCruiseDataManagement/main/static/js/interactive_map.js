@@ -20,28 +20,6 @@ function post_marker(marker) {
     });
 }
 
-function put_marker(event) {
-    updating_marker = event.target;
-    $.ajax
-    ({
-        url: endpoint,
-        dataType: "json",
-        type: "PUT",
-        headers: {
-            "X-CSRFToken": getCookie("csrftoken")
-        },
-        data: JSON.stringify ({
-            latitude: updating_marker.getLatLng().lat,
-            longitude: updating_marker.getLatLng().lng,
-            id: updating_marker.id
-        }),
-        success: function(data) {
-            updating_marker.id = data.id;
-            updating_marker.bindPopup(popupContent(data.id, data.text));
-        }
-    });
-}
-
 function update_text(id, text) {
     $.ajax
     ({
@@ -69,17 +47,6 @@ function update_text(id, text) {
 var marker_text = '';
 var marker_id = 0;
 var updating_marker = null;
-
-function adjustTextAreaUpdateChange(textArea) {
-    marker_text = $(textArea).val();
-}
-function popupContent(id, text) {
-    return 'Internal id:' + id +
-        '<br><textarea class="custom_marker_text" ' +
-        'onchange="adjustTextAreaUpdateChange(this)" ' +
-        'name="'+id+'">' + text+
-        '</textarea>';
-}
 
 function main() {
     antarctic_map_main();

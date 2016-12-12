@@ -5,8 +5,9 @@ from debug_toolbar.panels import request
 from django.shortcuts import render
 from django.views.generic import TemplateView, View, ListView
 from django.http import JsonResponse
-from main.models import Event, Country, FilesStorage, FilesStorageGeneral
+from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port
 from django.utils import timezone
+from django.db.models import Q
 
 
 class MainMenuView(TemplateView):
@@ -36,16 +37,24 @@ class InteractiveMapView(TemplateView):
         return context
 
 
-class EventsJson(View):
-    def get(self, request):
+class PositionsJson(View):
+    def get(self, request_):
         # print("-----------", request.GET['newer_than'])
         features = []
-        for event in Event.objects.all():
-            point = geojson.Point((event.longitude, event.latitude))
+        for eventAction in EventAction.objects.all().filter(Q(type="TBEGNS") | Q(type="INSTANT")):
+            point = geojson.Point((eventAction.longitude, eventAction.latitude))
 
             features.append(
-                geojson.Feature(geometry=point, properties={'id': str(event.event_number), 'text': 'this element'}))
+                geojson.Feature(geometry=point, properties={'id': 'EventAction.{}'.format(eventAction.id),
+                                                            'text': eventAction.general_comments,
+                                                            'marker_color': 'blue'}))
 
+        for port in Port.objects.all():
+            point = geojson.Point((port.longitude, port.latitude))
+            features.append(
+                geojson.Feature(geometry=point, properties={'id': 'Port.{}'.format(port.id),
+                                                            'text': port.name,
+                                                            'marker_color': 'yellow'}))
         return JsonResponse(geojson.FeatureCollection(features))
 
 # class PositionsJson(View):

@@ -327,6 +327,7 @@ class StorageCrate(models.Model):
     description = models.CharField(max_length=255, null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
 
+
 class EventAction(models.Model):
     event = models.ForeignKey(Event)
 
