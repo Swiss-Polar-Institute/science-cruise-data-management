@@ -6,7 +6,7 @@ import os
 import shutil
 
 class Command(BaseCommand):
-    help = 'Test adding a country'
+    help = 'Updates the FilesStorage and FilesStorageGeneral tables for stats about storage'
 
     @staticmethod
     def du(path):

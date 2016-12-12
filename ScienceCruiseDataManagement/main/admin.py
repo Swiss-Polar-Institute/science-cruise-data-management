@@ -180,6 +180,7 @@ class FileStorageGeneralAdmin(import_export.admin.ExportMixin, admin.ModelAdmin)
     def percentage(self, obj):
         return "{0:.2f}%".format((obj.used / (obj.used+obj.free)) * 100)
 
+
 class PortAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('code', 'name', 'latitude', 'longitude')
     ordering = ['code']

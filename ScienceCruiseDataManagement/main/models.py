@@ -29,6 +29,7 @@ class FilesStorage(models.Model):
     def __str__(self):
         return "{}-{}".format(self.relative_path, self.kilobytes)
 
+
 class FilesStorageGeneral(models.Model):
     used = models.BigIntegerField()
     free = models.BigIntegerField()
