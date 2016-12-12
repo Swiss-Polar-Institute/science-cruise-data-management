@@ -21,21 +21,6 @@ def next_event_number():
         ##def __str__(self):
     #return "{}".format(self.id)
 
-class Country(models.Model):
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return "{}".format(self.name)
-
-    class Meta:
-        verbose_name_plural="Countries"
-
-class Project(models.Model):
-    name=models.CharField(max_length=255)
-    country=models.ForeignKey(Country, null=True)
-
-    def __str__(self):
-        return "{}".format(self.name)
 
 class Storage(models.Model):
     #instrument=models.ForeignKey(Instrument, null=True)
@@ -48,7 +33,7 @@ class Storage(models.Model):
 class General_Storage(models.Model):
     used = models.BigIntegerField()
     free = models.BigIntegerField()
-    date = models.DateTimeField(default=timezone.now)
+    time = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return "{}-{}".format(self.used, self.free)
@@ -90,20 +75,22 @@ class Position(models.Model):
 
 
 ############################################### SERIOUS STUFF
+class Country(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+    class Meta:
+        verbose_name_plural="Countries"
+
+
 class Device(models.Model):
     code = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
 
     def __str__(self):
         return "{}".format(self.name)
-
-
-class EventActionType(models.Model):
-    code = models.CharField(max_length=255)
-    description = models.TextField(null=True, blank=True)
-
-    def __str__(self):
-        return "{}".format(self.code)
 
 
 class PositionUncertainty(models.Model):
@@ -135,25 +122,23 @@ class TimeUncertainty(models.Model):
 class Port(models.Model):
     code = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
+    latitude = models.FloatField()
+    longitude = models.FloatField()
 
     def __str__(self):
         return "{}".format(self.name)
 
 
 class Leg(models.Model):
-    name = models.CharField(max_length=255)
-    start_latitude = models.FloatField()
-    start_longitude = models.FloatField()
+    number = models.IntegerField(unique=True)
     start_time = models.DateTimeField()
     start_port = models.ForeignKey(Port, related_name='start_port')
 
-    end_latitude = models.FloatField()
-    end_longitude = models.FloatField()
-    end_time = models.DateTimeField()
+    end_time = models.DateTimeField(blank=True, null=True)
     end_port = models.ForeignKey(Port, related_name='end_port')
 
     def __str__(self):
-        return "{}".format(self.name)
+        return "{}".format(self.number)
 
 
 class Storage(models.Model):
@@ -175,7 +160,7 @@ class SpeciesClassification(models.Model):
     species = models.CharField(max_length=255)
 
     class Meta:
-        verbose_name_plural="Species"
+        verbose_name_plural="Species classification"
 
 
 class SampleContent(models.Model):
@@ -186,16 +171,38 @@ class SampleContent(models.Model):
     def __str__(self):
         return "{}".format(type)
 
+class Organisation(models.Model):
+    name = models.CharField(max_length=255)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    country = models.ForeignKey(Country)
 
 class Person(models.Model):
-    first_name = models.CharField(max_length=255)
-    surname = models.CharField(max_length=255)
+    title_choices = (("Mr", "Mr."),
+                     ("Ms", "Ms."))
+
+    name_title = models.CharField(choices=title_choices, max_length=255)
+    name_first = models.CharField(max_length=255)
+    name_middle = models.CharField(max_length=255, blank=True, null=True)
+    name_last = models.CharField(max_length=255)
+    project = models.ManyToManyField('Project', blank=True, null=True)
+    organisation = models.ManyToManyField(Organisation)
 
     def __str__(self):
-        return "{} {}".format(self.first_name, self.surname)
+        return "{} {}".format(self.name_first, self.name_last)
 
     class Meta:
         verbose_name_plural="People"
+
+
+class Project(models.Model):
+    number = models.IntegerField(unique=True)
+    title = models.CharField(max_length=255)
+    alternative_title = models.CharField(null=True, blank=True, max_length=255)
+    principal_investigator = models.ForeignKey(Person, related_name="Principal_investigator")
+    abstract = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.title)
 
 
 class TimeSource(models.Model):
@@ -250,19 +257,9 @@ class Station(models.Model):
     def __str__(self):
         return "{}".format(self.name)
 
-
-class Event(models.Model):
-    number = models.IntegerField(default=next_event_number, unique=True)
-    device = models.ForeignKey(Device)
-    station = models.ForeignKey(Station)
-
-    def __str__(self):
-        return "{}".format(self.number)
-
-
 class Sample(models.Model):
     code = models.CharField(max_length=255)
-    event = models.ForeignKey(Event)
+    event = models.ForeignKey('Event')
     storage = models.ForeignKey(Storage)
     preservation = models.ForeignKey(Preservation)
     owner = models.ForeignKey(Person)
@@ -271,6 +268,42 @@ class Sample(models.Model):
 
     def __str__(self):
         return "{}".format(code)
+
+
+class Data(models.Model):
+    event = models.ForeignKey('Event', related_name="Event01")
+    project = models.ForeignKey(Project)
+    storage_location = models.CharField(max_length=255)
+    checked = models.BooleanField()
+
+
+class Event(models.Model):
+    number = models.IntegerField(default=next_event_number, unique=True)
+    device = models.ForeignKey(Device)
+    station = models.ForeignKey(Station)
+    # data = models.ManyToManyField(Data, related_name="Data01", blank=True)
+    # samples = models.ManyToManyField(Sample, related_name="Sample01", blank=True)
+
+    # def save(self, *args, **kwargs):
+    #    ok = False
+    #    try:
+    #        a=self.data
+    #        b=self.samples
+    #        ok = True
+    #    except ValueError:
+    #        ok = False
+
+    #    if ok:
+    #        super(Event, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return "{}".format(self.number)
+
+
+class EventReport(Event):
+    class Meta:
+        proxy = True
+        verbose_name_plural="Event report"
 
 
 class EventActionDescription(models.Model):
@@ -288,13 +321,17 @@ class StorageCrate(models.Model):
     description = models.CharField(max_length=255, null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
 
-
 class EventAction(models.Model):
     event = models.ForeignKey(Event)
-    event_action_type = models.ForeignKey(EventActionType)
-    event_action_description = models.ForeignKey(EventActionDescription)
 
-    date_time = models.DateTimeField()
+    type_choices = (("TBEGNS", "Begins"),
+                     ("TENDS", "Ends"),
+                     ("INSTANT", "Instant"))
+
+    type = models.CharField(choices=type_choices, max_length=255)
+    type_description = models.ForeignKey(EventActionDescription)
+
+    time = models.DateTimeField()
     time_source = models.ForeignKey(TimeSource)
     time_uncertainty = models.ForeignKey(TimeUncertainty)
 
