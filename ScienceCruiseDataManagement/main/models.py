@@ -29,7 +29,7 @@ class FilesStorage(models.Model):
     def __str__(self):
         return "{}-{}".format(self.relative_path, self.kilobytes)
 
-class FilesStorage_General(models.Model):
+class FilesStorageGeneral(models.Model):
     used = models.BigIntegerField()
     free = models.BigIntegerField()
     time = models.DateTimeField(default=timezone.now)
@@ -104,6 +104,9 @@ class PositionUncertainty(models.Model):
     def __str__(self):
         return "{}-{}".format(self.code, self.name)
 
+    class Meta:
+        verbose_name_plural = "Position uncertainties"
+
 
 class TimeUncertainty(models.Model):
     code = models.CharField(max_length=255)
@@ -116,6 +119,10 @@ class TimeUncertainty(models.Model):
 
     def __str__(self):
         return "{}".format(self.name)
+
+
+    class Meta:
+        verbose_name_plural = "Time uncertainties"
 
 
 class Port(models.Model):

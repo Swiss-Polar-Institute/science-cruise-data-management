@@ -173,10 +173,12 @@ class StorageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['name']
 
 
-class General_StorageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('used', 'free', 'time')
-    ordering = ['id']
+class FileStorageGeneralAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('time', 'used', 'free', 'percentage')
+    ordering = ['time']
 
+    def percentage(self, obj):
+        return "{0:.2f}%".format((obj.used / (obj.used+obj.free)) * 100)
 
 class PortAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('code', 'name', 'latitude', 'longitude')
@@ -255,7 +257,7 @@ admin.site.register(main.models.Leg, LegAdmin)
 admin.site.register(main.models.EventReport, EventReportAdmin)
 admin.site.register(main.models.Country, CountryAdmin)
 admin.site.register(main.models.Storage, StorageAdmin)
-admin.site.register(main.models.FilesStorage_General, General_StorageAdmin)
+admin.site.register(main.models.FilesStorageGeneral, FileStorageGeneralAdmin)
 admin.site.register(main.models.Port, PortAdmin)
 admin.site.register(main.models.PositionUncertainty, PositionUncertaintyAdmin)
 admin.site.register(main.models.PositionSource, PositionSourceAdmin)

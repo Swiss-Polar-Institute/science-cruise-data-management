@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import FilesStorage, FilesStorage_General
+from main.models import FilesStorage, FilesStorageGeneral
 from django.conf import settings
 import subprocess
 import os
@@ -31,7 +31,7 @@ class Command(BaseCommand):
 
     def du_general_storage(self):
         space = self.space()
-        general_storage = FilesStorage_General()
+        general_storage = FilesStorageGeneral()
         general_storage.free = space['free']
         general_storage.used = space['used']
 
