@@ -5,7 +5,7 @@ from debug_toolbar.panels import request
 from django.shortcuts import render
 from django.views.generic import TemplateView, View, ListView
 from django.http import JsonResponse
-from main.models import Event, Country, FilesStorage, General_Storage
+from main.models import Event, Country, FilesStorage, FilesStorage_General
 from django.utils import timezone
 
 
@@ -138,7 +138,7 @@ class FileStorageView(TemplateView):
             detailed_storage.append({'relative_path': str(storage.relative_path), context['units']: storage.kilobytes})
 
         context['detailed_storage_json'] = json.dumps(detailed_storage)
-        last_general_storage = General_Storage.objects.latest('time')
+        last_general_storage = FilesStorage_General.objects.latest('time')
 
         context['general_storage_free'] = last_general_storage.free
         context['general_storage_used'] = last_general_storage.used
