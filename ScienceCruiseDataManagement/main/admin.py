@@ -5,14 +5,7 @@ import import_export
 from django.db.models import Q
 
 # Register your models here.
-admin.site.register(main.models.TimeSource)
-admin.site.register(main.models.Preservation)
-admin.site.register(main.models.SpeciesClassification)
-admin.site.register(main.models.SampleContent)
-admin.site.register(main.models.Sample)
-admin.site.register(main.models.Person)
-admin.site.register(main.models.Organisation)
-admin.site.register(main.models.Data)
+# e.g. : admin.site.register(main.models.Data)
 
 
 class ProjectsStartsWithLetter(admin.SimpleListFilter):
@@ -204,6 +197,52 @@ class TimeUncertaintyAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('code', 'name', 'list', 'description')
     ordering = ['code']
 
+class TimeSourceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('code', 'name', 'list', 'description')
+    ordering = ['code']
+
+class PreservationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('name', 'description')
+    ordering = ['name']
+
+class SpeciesClassificationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('phylum', 'class2', 'order', 'family', 'genus', 'species')
+    ordering = ['phylum']
+
+class SampleContentAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('type', 'species_classification', 'description')
+    ordering = ['type']
+
+class SampleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('code', 'event', 'storage', 'preservation', 'owner', 'contents', 'destination')
+    ordering = ['code']
+
+class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'project_list', 'organisation_list')
+    ordering = ['name_last']
+
+    def project_list(self, obj):
+        projects = obj.project.all()
+
+        return ",".join([project.title for project in projects])
+
+    def organisation_list(self, obj):
+        organisations = obj.organisation.all()
+
+        return ",".join([organisation.name for organisation in organisations])
+
+class OrganisationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('name', 'address', 'country')
+    ordering = ['name']
+
+class DataAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('event', 'project', 'storage_location', 'checked')
+    ordering = ['event']
+
+class FilesStorageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('relative_path', 'kilobytes')
+
+    ordering = ['relative_path']
 
 admin.site.register(main.models.Device, DeviceAdmin)
 admin.site.register(main.models.StationType, StationTypeAdmin)
@@ -221,7 +260,15 @@ admin.site.register(main.models.Port, PortAdmin)
 admin.site.register(main.models.PositionUncertainty, PositionUncertaintyAdmin)
 admin.site.register(main.models.PositionSource, PositionSourceAdmin)
 admin.site.register(main.models.TimeUncertainty, TimeUncertaintyAdmin)
-
+admin.site.register(main.models.TimeSource, TimeSourceAdmin)
+admin.site.register(main.models.Preservation, PreservationAdmin)
+admin.site.register(main.models.SpeciesClassification, SpeciesClassificationAdmin)
+admin.site.register(main.models.SampleContent, SampleContentAdmin)
+admin.site.register(main.models.Sample, SampleAdmin)
+admin.site.register(main.models.Person, PersonAdmin)
+admin.site.register(main.models.Organisation, OrganisationAdmin)
+admin.site.register(main.models.Data, DataAdmin)
+admin.site.register(main.models.FilesStorage, FilesStorageAdmin)
 
 
 admin.site.site_header = 'ACE Data'

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Storage{% endblock %}
+{% block title %}File Storage{% endblock %}
 {% load static %}
 {% block extra_head %}
 <script type="text/javascript" src="{% static '/js/external/Chart.js' %}"></script>
@@ -78,7 +78,7 @@ var chart = new Chart(canvas, {
     var data_numbers = [];
     for (var i = 0; i < detailed_storage.length; i++) {
         data_numbers.push(detailed_storage[i].{{units}});
-        data['labels'].push(detailed_storage[i].instrument);
+        data['labels'].push(detailed_storage[i].relative_path);
     }
 
     data['datasets'] = [{
@@ -93,10 +93,10 @@ var chart = new Chart(canvas, {
 
     <table class="table table-striped">
         <thead>
-            <th>Instrument</th><th>Data size ({{units}})</th>
+            <th>Path</th><th>Data size ({{units}})</th>
         </thead>
-{% for storage in storages %}
-    <tr><td>{{storage.instrument}}</td><td>{{storage.kilobytes}}</td>
+{% for storage in file_storages %}
+    <tr><td>{{storage.relative_path}}</td><td>{{storage.kilobytes}}</td>
 {% endfor %}
 </table>
 {% endblock %}

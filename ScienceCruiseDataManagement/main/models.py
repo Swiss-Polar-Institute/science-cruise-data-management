@@ -22,13 +22,12 @@ def next_event_number():
     #return "{}".format(self.id)
 
 
-class Storage(models.Model):
-    #instrument=models.ForeignKey(Instrument, null=True)
+class FilesStorage(models.Model):
     relative_path=models.CharField(max_length=255)
     kilobytes = models.BigIntegerField(null=True, blank=True)
 
     def __str__(self):
-        return "{}-{}".format(self.instrument.name, self.kilobytes)
+        return "{}-{}".format(self.relative_path, self.kilobytes)
 
 class General_Storage(models.Model):
     used = models.BigIntegerField()
@@ -184,7 +183,7 @@ class Person(models.Model):
     name_first = models.CharField(max_length=255)
     name_middle = models.CharField(max_length=255, blank=True, null=True)
     name_last = models.CharField(max_length=255)
-    project = models.ManyToManyField('Project', blank=True, null=True)
+    project = models.ManyToManyField('Project')
     organisation = models.ManyToManyField(Organisation)
 
     def __str__(self):

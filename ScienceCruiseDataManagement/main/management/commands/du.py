@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Storage, General_Storage
+from main.models import FilesStorage, General_Storage
 from django.conf import settings
 import subprocess
 import os
@@ -23,7 +23,7 @@ class Command(BaseCommand):
         parser.add_argument('update', type=str)
 
     def df_instrumentation(self):
-        for storage in Storage.objects.all():
+        for storage in FilesStorage.objects.all():
             print(storage.relative_path)
             print(self.du(storage.relative_path))
             storage.kilobytes=self.du(storage.relative_path)
