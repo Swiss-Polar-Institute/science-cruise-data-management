@@ -46,32 +46,32 @@ def next_position_number():
     else:
         return latest["number__max"] + 1
 
-class PositionType(models.Model):
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return "{}".format(self.name)
-
-
-class Position(models.Model):
-    number = models.IntegerField("Event number", help_text="User controlled ID", default=next_position_number, unique=True)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
-    text = models.CharField(max_length=255, blank=True, null=True)
-    position_type = models.ForeignKey(PositionType)
+#class PositionType(models.Model):
+#   name = models.CharField(max_length=255)
+#
+#   def __str__(self):
+#       return "{}".format(self.name)
 
 
-    def save(self, *args, **kwargs):
-        if self.number is None:
-            self.number = next_position_number()
-
-        if self.text is None:
-            self.text = ""
-
-        super(Position, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return "{}-{}-{}-({}, {})".format(self.id, self.number, self.text, self.latitude, self.longitude)
+#class Position(models.Model):
+#    number = models.IntegerField("Event number", help_text="User controlled ID", default=next_position_number, unique=True)
+#    latitude = models.FloatField()
+#    longitude = models.FloatField()
+#    text = models.CharField(max_length=255, blank=True, null=True)
+#    position_type = models.ForeignKey(PositionType)
+#
+#
+#    def save(self, *args, **kwargs):
+#        if self.number is None:
+#            self.number = next_position_number()
+#
+#        if self.text is None:
+#            self.text = ""
+#
+#        super(Position, self).save(*args, **kwargs)
+#
+#    def __str__(self):
+#        return "{}-{}-{}-({}, {})".format(self.id, self.number, self.text, self.latitude, self.longitude)
 
 
 ############################################### SERIOUS STUFF
@@ -220,12 +220,12 @@ class TimeSource(models.Model):
 
 
 class PositionSource(models.Model):
+    code = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
 
     # TODO: change list to something else
     list = models.CharField(max_length=255)
 
-    code = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
@@ -234,6 +234,7 @@ class PositionSource(models.Model):
 
 class StationType(models.Model):
     type = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return "{}".format(self.type)
@@ -329,7 +330,7 @@ class EventAction(models.Model):
                      ("INSTANT", "Instant"))
 
     type = models.CharField(choices=type_choices, max_length=255)
-    type_description = models.ForeignKey(EventActionDescription)
+    description = models.ForeignKey(EventActionDescription)
 
     time = models.DateTimeField()
     time_source = models.ForeignKey(TimeSource)

@@ -5,14 +5,6 @@ import import_export
 from django.db.models import Q
 
 # Register your models here.
-admin.site.register(main.models.Country)
-admin.site.register(main.models.Storage)
-admin.site.register(main.models.General_Storage)
-admin.site.register(main.models.PositionType)
-admin.site.register(main.models.Port)
-admin.site.register(main.models.PositionUncertainty)
-admin.site.register(main.models.PositionSource)
-admin.site.register(main.models.TimeUncertainty)
 admin.site.register(main.models.TimeSource)
 admin.site.register(main.models.Preservation)
 admin.site.register(main.models.SpeciesClassification)
@@ -39,78 +31,56 @@ class ProjectsStartsWithLetter(admin.SimpleListFilter):
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    # list_filter = ('name')
     list_display = ('number', 'title', 'alternative_title', 'principal_investigator', 'abstract')
     list_filter = (ProjectsStartsWithLetter,)
+    ordering = ['number']
 
 
-class EventResource(import_export.resources.ModelResource):
-    number = import_export.fields.Field(column_name = 'number', attribute='number')
-
-    station = import_export.fields.Field(
-        column_name = 'station',
-        attribute = 'station',
-        widget = import_export.widgets.ForeignKeyWidget(main.models.Station, 'name')
-    )
+# Example for import-export
+#class EventResource(import_export.resources.ModelResource):
+#    number = import_export.fields.Field(column_name = 'number', attribute='number')
+#
+#    station = import_export.fields.Field(
+#        column_name = 'station',
+#        attribute = 'station',
+#        widget = import_export.widgets.ForeignKeyWidget(main.models.Station, 'name')
+#    )
 
     class Meta:
         fields = ('number', 'station', 'device', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude')
 
 
 class EventAdmin(import_export.admin.ImportExportModelAdmin):
-    list_display = ('number', 'station', 'device', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude')
+    list_display = ('number', 'device', 'station')
     ordering = ['-number']
-    resource_class = EventResource
+    # add for import-export: resource_class = EventResource
 
-    def start_time(self, obj):
-        event_id = obj.id
-        begins = main.models.EventActionType.objects.filter(code="TBEGINS")
-        print(begins())
-        start_time = main.models.EventAction.objects.filter(Q(id=event_id) | Q(type=begins))
 
-        if len(start_time) > 0:
-            return start_time.time
-
-        return obj.station.arrival_time
-
-    def start_latitude(self, obj):
-        return obj.station.latitude
-
-    def start_longitude(self, obj):
-        return obj.station.longitude
-
-    def end_time(self, obj):
-        return obj.station.departure_time
-
-    def end_latitude(self, obj):
-        return obj.station.latitude
-
-    def end_longitude(self, obj):
-        return 'TODO'
-
+    # This is to have a default value on the foreign key
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "leg":
             kwargs["queryset"] = main.models.Leg.objects.filter(name="Leg 1")
         return super(EventAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
-class PositionResource(import_export.resources.ModelResource):
-    class Meta:
-        model = main.models.Position
+#
+#class PositionResource(import_export.resources.ModelResource):
+#    class Meta:
+#        model = main.models.Position
 
 
-class PositionAdmin(import_export.admin.ImportExportModelAdmin):
-    list_display=('number', 'text', 'latitude', 'longitude')
-    ordering = ('number',)
-    resource_class = PositionResource
-    search_fields = ['text']
+#class PositionAdmin(import_export.admin.ImportExportModelAdmin):
+#    list_display=('number', 'text', 'latitude', 'longitude')
+#    ordering = ('number',)
+#    resource_class = PositionResource
+#    search_fields = ['text']
     # exclude = ('text',)
 
 
-class EventActionResource(import_export.resources.ModelResource):
-    class Meta:
-        model = main.models.EventAction
-        fields = ('date_time', 'latitude', 'longitude','date_time', 'type_description__name')
+#class EventActionResource(import_export.resources.ModelResource):
+#    class Meta:
+#        model = main.models.EventAction
+#        fields = ('date_time', 'latitude', 'longitude','date_time', 'type_description__name')
 
 
 class EventActionAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
@@ -119,10 +89,10 @@ class EventActionAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
     #description_2.short_description = "Description"
 
-    list_display = ('time', 'latitude', 'longitude', 'position_uncertainty') #, 'description_2')
+    list_display = ('event', 'type', 'description', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
     ordering = ['event_id']
 
-    resource_class = EventActionResource
+    # resource_class = EventActionResource
 
 
 class EventActionDescriptionAdmin(admin.ModelAdmin):
@@ -131,19 +101,13 @@ class EventActionDescriptionAdmin(admin.ModelAdmin):
 
 
 class LegAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('number', 'start_port', 'start_time', 'end_port', 'end_time')
+    list_display = ('number', 'start_time', 'start_port', 'end_time', 'end_port')
     ordering = ['number']
 
 
 class StationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name', 'leg_number', 'latitude', 'longitude', 'arrival_time', 'departure_time', 'list_deployed_devices')
+    list_display = ('name', 'type', 'latitude', 'longitude', 'leg', 'arrival_time', 'departure_time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'comment')
     ordering = ['name']
-
-    def leg_number(self, obj):
-        return obj.leg.number
-
-    def list_deployed_devices(self, obj):
-        return "TODO"
 
 
 class EventReportAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
@@ -198,24 +162,67 @@ class EventReportAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class StationTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('type', )
+    list_display = ('type', 'description')
+    ordering = ['type']
 
 
 class DeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('code', 'name')
+    ordering = ['code']
 
+class CountryAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('name', )
+    ordering = ['name']
+
+
+class StorageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('name', 'description')
+    ordering = ['name']
+
+
+class General_StorageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('used', 'free', 'time')
+    ordering = ['id']
+
+
+class PortAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('code', 'name', 'latitude', 'longitude')
+    ordering = ['code']
+
+
+class PositionUncertaintyAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('code', 'name')
+    ordering = ['code']
+
+
+class PositionSourceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('code', 'name', 'list', 'description')
+    ordering = ['code']
+
+
+class TimeUncertaintyAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('code', 'name', 'list', 'description')
+    ordering = ['code']
 
 
 admin.site.register(main.models.Device, DeviceAdmin)
 admin.site.register(main.models.StationType, StationTypeAdmin)
 admin.site.register(main.models.Project, ProjectAdmin)
-admin.site.register(main.models.Position, PositionAdmin)
 admin.site.register(main.models.Event, EventAdmin)
 admin.site.register(main.models.EventActionDescription, EventActionDescriptionAdmin)
 admin.site.register(main.models.EventAction, EventActionAdmin)
 admin.site.register(main.models.Station, StationAdmin)
 admin.site.register(main.models.Leg, LegAdmin)
 admin.site.register(main.models.EventReport, EventReportAdmin)
+admin.site.register(main.models.Country, CountryAdmin)
+admin.site.register(main.models.Storage, StorageAdmin)
+admin.site.register(main.models.General_Storage, General_StorageAdmin)
+admin.site.register(main.models.Port, PortAdmin)
+admin.site.register(main.models.PositionUncertainty, PositionUncertaintyAdmin)
+admin.site.register(main.models.PositionSource, PositionSourceAdmin)
+admin.site.register(main.models.TimeUncertainty, TimeUncertaintyAdmin)
+
+
 
 admin.site.site_header = 'ACE Data'
 admin.site.site_title = 'ACE Data Admin'
