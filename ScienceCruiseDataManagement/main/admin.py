@@ -77,13 +77,73 @@ class EventAdmin(import_export.admin.ImportExportModelAdmin):
 #        fields = ('date_time', 'latitude', 'longitude','date_time', 'type_description__name')
 
 class EventActionForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(EventActionForm, self).__init__(*args, **kwargs)
+        # filter out closed events
+
+        self.fields['event'].queryset = main.models.Event.objects.all().filter(self._filter_open_events())
+
+    def _filter_open_events(self):
+        filter_query = Q(id=0) # Impossible with OR will be the rest
+
+        for open_event_id in self._open_event_ids():
+                filter_query = filter_query | Q(id=open_event_id)
+
+        return filter_query
+
+    def _action_finished(self, event_action_id, event_id):
+        event_actions_instant = main.models.EventAction.objects.all().filter(
+                                Q(id=event_action_id) & Q(type="TINSTANT"))
+
+        if len(event_actions_instant) > 0:
+            print("tinstant: event_action_id:", event_action_id, "event_id:", event_id)
+            return True
+
+        event_actions = main.models.EventAction.objects.all().filter(Q(event_id=event_id) & Q(type="TENDS"))
+
+        if len(event_actions) > 0:
+            print("tends: event_action_id:", event_action_id, "event_id:", event_id)
+            # There is an TENDS event so it's finished
+            return True
+
+        return False
+
+    def _event_not_opened(self, event_id):
+        print(event_id)
+        other_events = main.models.EventAction.objects.all().filter(Q(event_id=event_id))
+
+        if len(other_events) == 0:
+            return True
+        else:
+            return False
+
+    def _open_event_ids(self):
+        """ Returns the event IDs that have been started and not finished. """
+        started_not_finished = []
+        event_actions = main.models.EventAction.objects.all()
+        events = main.models.Event.objects.all()
+        open_event_ids = []
+
+        # Adds events with TBEGNS and not finished
+        for event_action in event_actions:
+            if event_action.type == "TBEGNS":
+                if not self._action_finished(event_action.id, event_action.event.id):
+                    open_event_ids.append(event_action.event.id)
+
+        for event in events:
+            if self._event_not_opened(event.id):
+                open_event_ids.append(event.id)
+
+        return open_event_ids
+
     class Meta:
         model = main.models.EventAction
         fields = '__all__'
 
     def clean(self):
         data = self.cleaned_data
-        event_id = data['event'].id
+        event_id = self.data['event']   # cleaned_data['event'] doesn't have this one
+                                        # probably because the form filters it?
         type = data['type']
 
         if len(main.models.EventAction.objects.all().filter
