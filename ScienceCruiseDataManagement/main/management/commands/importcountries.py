@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Organisation, Country
+from main.models import Country
 import csv
 
 class Command(BaseCommand):
@@ -16,14 +16,7 @@ class Command(BaseCommand):
         with open(filename) as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                print(row)
-                organisation = Organisation()
-                organisation.name = row['name']
-                organisation.address = row['address']
-
-                if row['country'] != '':
-                    country = Country.objects.all().filter(name=row['country'])[0]
-                    organisation.country = country
-
-                organisation.save()
+                country = Country()
+                country.name = row['name']
+                country.save()
 
