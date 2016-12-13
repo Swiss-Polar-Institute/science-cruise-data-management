@@ -183,9 +183,13 @@ class Organisation(models.Model):
 
 class Person(models.Model):
     title_choices = (("Mr", "Mr."),
-                     ("Ms", "Ms."))
+                     ("Ms", "Ms."),
+                     ("Miss", "Miss"),
+                     ("Mrs", "Mrs."),
+                     ("Dr", "Dr."),
+                     ("Prof", "Prof."))
 
-    name_title = models.CharField(choices=title_choices, max_length=255)
+    name_title = models.CharField(choices=title_choices, max_length=255, null=True, blank=True)
     name_first = models.CharField(max_length=255)
     name_middle = models.CharField(max_length=255, blank=True, null=True)
     name_last = models.CharField(max_length=255)
