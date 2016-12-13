@@ -87,8 +87,14 @@ class Country(models.Model):
 
 
 class Device(models.Model):
+    url = models.CharField(max_length=255, null=True)
     code = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255, unique=True)
+    definition = models.TextField()
+    version = models.CharField(max_length=255, null=True)
+    deprecated = models.CharField(max_length=255, null=True)
+    date = models.DateTimeField(null=True)
+    source = models.CharField(max_length=255)
 
     def __str__(self):
         return "{}".format(self.name)

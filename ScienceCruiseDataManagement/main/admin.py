@@ -268,8 +268,8 @@ class StationTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class DeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('code', 'name')
-    ordering = ['code']
+    list_display = ('code', 'name', 'definition', 'source')
+    ordering = ['name']
 
 
 class CountryAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
