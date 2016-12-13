@@ -249,6 +249,7 @@ class DeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('code', 'name')
     ordering = ['code']
 
+
 class CountryAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', )
     ordering = ['name']
@@ -286,25 +287,31 @@ class TimeUncertaintyAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('code', 'name', 'list', 'description')
     ordering = ['code']
 
+
 class TimeSourceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('code', 'name', 'list', 'description')
     ordering = ['code']
+
 
 class PreservationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'description')
     ordering = ['name']
 
+
 class SpeciesClassificationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('phylum', 'class2', 'order', 'family', 'genus', 'species')
     ordering = ['phylum']
+
 
 class SampleContentAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('type', 'species_classification', 'description')
     ordering = ['type']
 
+
 class SampleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('code', 'event', 'storage', 'preservation', 'owner', 'contents', 'destination')
     ordering = ['code']
+
 
 class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'project_list', 'organisation_list')
@@ -320,18 +327,28 @@ class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
         return ",".join([organisation.name for organisation in organisations])
 
+
 class OrganisationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'address', 'country')
     ordering = ['name']
+
 
 class DataAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('event', 'project', 'storage_location', 'checked')
     ordering = ['event']
 
+
 class FilesStorageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('relative_path', 'kilobytes')
 
     ordering = ['relative_path']
+
+
+class StorageCrateAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('name', 'location', 'description', 'comment')
+
+    ordering = ['name']
+
 
 admin.site.register(main.models.Device, DeviceAdmin)
 admin.site.register(main.models.StationType, StationTypeAdmin)
@@ -358,6 +375,7 @@ admin.site.register(main.models.Person, PersonAdmin)
 admin.site.register(main.models.Organisation, OrganisationAdmin)
 admin.site.register(main.models.Data, DataAdmin)
 admin.site.register(main.models.FilesStorage, FilesStorageAdmin)
+admin.site.register(main.models.StorageCrate, StorageCrateAdmin)
 
 
 admin.site.site_header = 'ACE Data'
