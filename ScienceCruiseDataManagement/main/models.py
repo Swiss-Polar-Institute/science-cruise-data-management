@@ -150,10 +150,15 @@ class Storage(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
 
+    def __str__(self):
+        return "{}".format(self.name)
 
 class Preservation(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
+
+    def __str__(self):
+        return "{}".format(self.name)
 
 
 class SpeciesClassification(models.Model):
@@ -163,6 +168,10 @@ class SpeciesClassification(models.Model):
     family = models.CharField(max_length=255)
     genus = models.CharField(max_length=255)
     species = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{}-{}-{}-{}-{}-{}".format(
+            self.species, self.genus, self.family, self.order, self.class2, self.phylum)
 
     class Meta:
         verbose_name_plural="Species classification"
@@ -175,12 +184,15 @@ class SampleContent(models.Model):
     description = models.TextField()
 
     def __str__(self):
-        return "{}".format(type)
+        return "{}".format(self.type)
 
 class Organisation(models.Model):
     name = models.CharField(max_length=255, unique=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     country = models.ForeignKey(Country)
+
+    def __str__(self):
+        return "{}".format(self.name)
 
 class Person(models.Model):
     title_choices = (("Mr", "Mr."),
