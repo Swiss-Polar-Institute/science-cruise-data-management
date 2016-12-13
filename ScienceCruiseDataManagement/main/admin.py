@@ -1,5 +1,6 @@
+from django.core.exceptions import ValidationError
 from django.contrib import admin
-
+from django.forms import ModelForm
 import main.models
 import import_export
 from django.db.models import Q
@@ -75,6 +76,30 @@ class EventAdmin(import_export.admin.ImportExportModelAdmin):
 #        model = main.models.EventAction
 #        fields = ('date_time', 'latitude', 'longitude','date_time', 'type_description__name')
 
+class EventActionForm(ModelForm):
+    class Meta:
+        model = main.models.EventAction
+        fields = '__all__'
+
+    def clean(self):
+        data = self.cleaned_data
+        event_id = data['event'].id
+        type = data['type']
+
+        if len(main.models.EventAction.objects.all().filter
+                       (Q(event_id=event_id) & (Q(type="TENDS") | (Q(type="TINSTANT")))))>0:
+            raise ValidationError("Can't add any EventAction because the Event has a TENDS or TINSTANT")
+
+        if type == "TENDS":
+            if len(main.models.EventAction.objects.all().filter
+                       (Q(event_id=event_id) & (Q(type="TENDS") | (Q(type="TINSTANT")))))>0:
+                raise ValidationError("Can't add TENDS because this Event already had TENDS or TINSTANT")
+            if len(main.models.EventAction.objects.all().filter
+                       (Q(event_id=event_id) & (Q(type="TBEGNS")))) == 0:
+                raise ValidationError("Can't add TENDS because TBEGNS doesn't exist")
+
+        return super(EventActionForm, self).clean()
+
 
 class EventActionAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     #def description_2(self, obj):
@@ -83,7 +108,8 @@ class EventActionAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     #description_2.short_description = "Description"
 
     list_display = ('id', 'event', 'type', 'description', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
-    ordering = ['event_id', 'id']
+    ordering = ['-event_id', '-id']
+    form = EventActionForm
 
     # resource_class = EventActionResource
 
@@ -123,7 +149,7 @@ class EventReportAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
         else:
             assert False
 
-        result = main.models.EventAction.objects.all().filter((Q(type=start_or_end) | Q(type="TINSTNAT")) & Q(event_id=event_id))
+        result = main.models.EventAction.objects.all().filter((Q(type=start_or_end) | Q(type="TINSTANT")) & Q(event_id=event_id))
         if len(result) > 0:
             return getattr(result[0], field)
         else:

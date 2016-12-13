@@ -333,7 +333,7 @@ class EventAction(models.Model):
 
     type_choices = (("TBEGNS", "Begins"),
                      ("TENDS", "Ends"),
-                     ("INSTANT", "Instant"))
+                     ("TINSTANT", "Instant"))
 
     type = models.CharField(choices=type_choices, max_length=255)
     description = models.ForeignKey(EventActionDescription)
