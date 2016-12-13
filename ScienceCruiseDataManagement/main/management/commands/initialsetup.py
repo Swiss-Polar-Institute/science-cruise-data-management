@@ -20,7 +20,7 @@ class Command(BaseCommand):
 
         group = Group.objects.create(name="Add events")
 
-        permissions = ["Can add event", "Can add event action"]
+        permissions = ["Can add event", "Can add event action", "Can add event report"]
         for permission in permissions:
             object_permission = Permission.objects.get(name=permission)
             group.permissions.add(object_permission)
