@@ -175,8 +175,8 @@ class EventActionAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class EventActionDescriptionAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name', 'description')
-    ordering = ['code']
+    list_display = ('name', 'description', 'source')
+    ordering = ['name']
 
 
 class LegAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):

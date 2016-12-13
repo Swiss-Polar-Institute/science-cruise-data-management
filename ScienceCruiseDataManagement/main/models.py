@@ -330,9 +330,9 @@ class EventReport(Event):
 
 
 class EventActionDescription(models.Model):
-    code = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True, blank=True)
+    source = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return "{}".format(self.name)
