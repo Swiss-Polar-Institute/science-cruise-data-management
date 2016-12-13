@@ -74,7 +74,7 @@ def next_position_number():
 #        return "{}-{}-{}-({}, {})".format(self.id, self.number, self.text, self.latitude, self.longitude)
 
 class Country(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return "{}".format(self.name)
@@ -84,16 +84,16 @@ class Country(models.Model):
 
 
 class Device(models.Model):
-    code = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return "{}".format(self.name)
 
 
 class PositionUncertainty(models.Model):
-    code = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True)
 
     # TODO: change it
     list = models.CharField(max_length=255)
@@ -108,8 +108,8 @@ class PositionUncertainty(models.Model):
 
 
 class TimeUncertainty(models.Model):
-    code = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True)
 
     # TODO: change it
     list = models.CharField(max_length=255)
@@ -125,8 +125,8 @@ class TimeUncertainty(models.Model):
 
 
 class Port(models.Model):
-    code = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
 
@@ -147,13 +147,18 @@ class Leg(models.Model):
 
 
 class Storage(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
 
+    def __str__(self):
+        return "{}".format(self.name)
 
 class Preservation(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
+
+    def __str__(self):
+        return "{}".format(self.name)
 
 
 class SpeciesClassification(models.Model):
@@ -164,22 +169,30 @@ class SpeciesClassification(models.Model):
     genus = models.CharField(max_length=255)
     species = models.CharField(max_length=255)
 
+    def __str__(self):
+        return "{}-{}-{}-{}-{}-{}".format(
+            self.species, self.genus, self.family, self.order, self.class2, self.phylum)
+
     class Meta:
         verbose_name_plural="Species classification"
+        unique_together= (('phylum', 'class2', 'order', 'family', 'genus', 'species'),)
 
 
 class SampleContent(models.Model):
-    type = models.CharField(max_length=255)
+    type = models.CharField(max_length=255, unique=True)
     species_classification = models.ForeignKey(SpeciesClassification)
     description = models.TextField()
 
     def __str__(self):
-        return "{}".format(type)
+        return "{}".format(self.type)
 
 class Organisation(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     country = models.ForeignKey(Country)
+
+    def __str__(self):
+        return "{}".format(self.name)
 
 class Person(models.Model):
     title_choices = (("Mr", "Mr."),
@@ -201,11 +214,12 @@ class Person(models.Model):
 
     class Meta:
         verbose_name_plural="People"
+        unique_together = (('name_first', 'name_last'),)
 
 
 class Project(models.Model):
     number = models.IntegerField(unique=True)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, unique=True)
     alternative_title = models.CharField(null=True, blank=True, max_length=255)
     principal_investigator = models.ForeignKey(Person, related_name="Principal_investigator")
     abstract = models.TextField(null=True, blank=True)
@@ -215,12 +229,11 @@ class Project(models.Model):
 
 
 class TimeSource(models.Model):
-    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True)
 
     # TODO: change list to something else
     list = models.CharField(max_length=255)
-
-    code = models.CharField(max_length=255)
 
     description = models.TextField(null=True, blank=True)
 
@@ -229,8 +242,8 @@ class TimeSource(models.Model):
 
 
 class PositionSource(models.Model):
-    code = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True)
 
     # TODO: change list to something else
     list = models.CharField(max_length=255)
@@ -242,7 +255,7 @@ class PositionSource(models.Model):
 
 
 class StationType(models.Model):
-    type = models.CharField(max_length=255)
+    type = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
@@ -250,7 +263,7 @@ class StationType(models.Model):
 
 
 class Station(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     type = models.ForeignKey(StationType)
     latitude = models.FloatField()
     longitude = models.FloatField()
@@ -268,7 +281,7 @@ class Station(models.Model):
         return "{}".format(self.name)
 
 class Sample(models.Model):
-    code = models.CharField(max_length=255)
+    code = models.CharField(max_length=255, unique=True)
     event = models.ForeignKey('Event')
     storage = models.ForeignKey(Storage)
     preservation = models.ForeignKey(Preservation)
@@ -277,7 +290,7 @@ class Sample(models.Model):
     destination = models.CharField(max_length=255)
 
     def __str__(self):
-        return "{}".format(code)
+        return "{}".format(self.code)
 
 
 class Data(models.Model):
@@ -317,8 +330,8 @@ class EventReport(Event):
 
 
 class EventActionDescription(models.Model):
-    code = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
+    code = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
@@ -326,7 +339,7 @@ class EventActionDescription(models.Model):
 
 
 class StorageCrate(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     location = models.CharField(max_length=255)
     description = models.CharField(max_length=255, null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
