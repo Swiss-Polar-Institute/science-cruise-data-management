@@ -8,7 +8,7 @@ from django.http import JsonResponse
 from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port
 from django.utils import timezone
 from django.db.models import Q
-
+import main.models
 
 class MainMenuView(TemplateView):
     template_name = "main_menu.html"
