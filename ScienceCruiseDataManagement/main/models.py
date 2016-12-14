@@ -355,9 +355,25 @@ class StorageCrate(models.Model):
 class EventAction(models.Model):
     event = models.ForeignKey(Event)
 
+    # If changing the order modify tbegin, tends and tinstant
+    # Perhaps this could be done creating the tuple out of a dictionary
+    # Also, do think what happens in the database with the existing records
+    # (probably should be migrated, and it's not happening automatically)
     type_choices = (("TBEGNS", "Begins"),
                      ("TENDS", "Ends"),
                      ("TINSTANT", "Instant"))
+
+    @staticmethod
+    def tbegin():
+        return EventAction.type_choices[0][0]
+
+    @staticmethod
+    def tends():
+        return EventAction.type_choices[1][0]
+
+    @staticmethod
+    def tinstant():
+        return EventAction.type_choices[2][0]
 
     type = models.CharField(choices=type_choices, max_length=255)
     description = models.ForeignKey(EventActionDescription)

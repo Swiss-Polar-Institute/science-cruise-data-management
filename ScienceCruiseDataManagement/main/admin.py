@@ -136,7 +136,7 @@ class EventActionForm(ModelForm):
 
         # Adds events with TBEGNS and not finished
         for event_action in event_actions:
-            if event_action.type == "TBEGNS":
+            if event_action.type == main.models.EventAction.tbegin():
                 if not self._action_finished(event_action.id, event_action.event.id):
                     open_event_ids.append(event_action.event.id)
 
@@ -160,17 +160,23 @@ class EventActionForm(ModelForm):
                                         # probably because the form filters it?
         type = data['type']
 
-        if len(main.models.EventAction.objects.all().filter
-                       (Q(event_id=event_id) & (Q(type="TENDS") | (Q(type="TINSTANT")))))>0:
-            raise ValidationError("Can't add any EventAction because the Event has a TENDS or TINSTANT")
+        tbegin = main.models.EventAction.tbegin()
+        tends = main.models.EventAction.tends()
+        tinstant = main.models.EventAction.tinstant()
 
-        if type == "TENDS":
+        if len(main.models.EventAction.objects.all().filter
+                       (Q(event_id=event_id) & (Q(type=tends) |
+                                                    (Q(type=tinstant)))))>0:
+            raise ValidationError("Can't add any EventAction because the Event has a {} or {}".format(tends,
+                                                                                                      tinstant))
+
+        if type == tends:
             if len(main.models.EventAction.objects.all().filter
-                       (Q(event_id=event_id) & (Q(type="TENDS") | (Q(type="TINSTANT")))))>0:
-                raise ValidationError("Can't add TENDS because this Event already had TENDS or TINSTANT")
+                       (Q(event_id=event_id) & (Q(type=tends) | (Q(type=tinstant)))))>0:
+                raise ValidationError("Can't add {} because this Event already had {} or {}".format(tends, tends, tinstant))
             if len(main.models.EventAction.objects.all().filter
-                       (Q(event_id=event_id) & (Q(type="TBEGNS")))) == 0:
-                raise ValidationError("Can't add TENDS because TBEGNS doesn't exist")
+                       (Q(event_id=event_id) & (Q(type=tbegin)))) == 0:
+                raise ValidationError("Can't add {} because {} doesn't exist".format(tends, tbegin))
 
         return super(EventActionForm, self).clean()
 
@@ -214,9 +220,9 @@ class EventReportAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.Mo
             the same as event_id
         """
         if start_or_end == "start":
-            start_or_end = "TBEGNS"
+            start_or_end = main.models.EventAction.tbegin()
         elif start_or_end == "end":
-            start_or_end = "TENDS"
+            start_or_end = main.models.EventAction.tends()
         else:
             assert False
 

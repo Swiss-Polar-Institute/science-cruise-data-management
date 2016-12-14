@@ -42,9 +42,11 @@ class PositionsJson(View):
 
         # Possibles colors: black, blue, green, grey, orange, red, violet, yellow
 
+        tbegins = main.models.EventAction.tbegin()
+        tinstant = main.models.EventAction.tinstant()
 
         features = []
-        for eventAction in EventAction.objects.all().filter(Q(type="TBEGNS") | Q(type="INSTANT")):
+        for eventAction in EventAction.objects.all().filter(Q(type=tbegins) | Q(type=tinstant)):
             point = geojson.Point((eventAction.longitude, eventAction.latitude))
 
             features.append(
