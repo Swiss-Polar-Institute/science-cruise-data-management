@@ -218,6 +218,7 @@ class Station(models.Model):
     def __str__(self):
         return "{}".format(self.name)
 
+
 class Sample(models.Model):
     code = models.CharField(max_length=255, unique=True)
     event = models.ForeignKey('Event')
@@ -242,20 +243,6 @@ class Event(models.Model):
     number = models.IntegerField(default=next_event_number, unique=True)
     device = models.ForeignKey(Device)
     station = models.ForeignKey(Station, null=True)
-    # data = models.ManyToManyField(Data, related_name="Data01", blank=True)
-    # samples = models.ManyToManyField(Sample, related_name="Sample01", blank=True)
-
-    # def save(self, *args, **kwargs):
-    #    ok = False
-    #    try:
-    #        a=self.data
-    #        b=self.samples
-    #        ok = True
-    #    except ValueError:
-    #        ok = False
-
-    #    if ok:
-    #        super(Event, self).save(*args, **kwargs)
 
     def __str__(self):
         return "{}".format(self.number)

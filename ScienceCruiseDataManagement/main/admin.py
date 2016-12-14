@@ -4,10 +4,7 @@ import main.models
 import import_export
 from django.db.models import Q
 import main.utils
-
-# Register your models here.
-# e.g. : admin.site.register(main.models.Data)
-
+from itertools import chain
 
 class ProjectsStartsWithLetter(admin.SimpleListFilter):
     title = "Projects starts with A"
@@ -33,7 +30,23 @@ class ProjectAdmin(admin.ModelAdmin):
 class ReadOnlyFields:
     def get_readonly_fields(self, request, obj=None):
         if not main.utils.can_user_change_events(request.path, request.user):
-            return [f.name for f in self.model._meta.get_fields()]
+            fields_from_model = []
+
+            for field in self.model._meta.get_fields(include_parents=False):
+                if hasattr(self.model, field.name):
+                    fields_from_model.append(field.name)
+
+            # This is very hacky, just doing it for now.
+            # The Event01 is a related field defined in data
+            # that should not be returned "here" (when the model is
+            # the Event)
+            # TODO: fix it!
+            # To test: see the events with a user that has only
+            # permission to see the events (not to change them!)
+            if "Event01" in fields_from_model:
+                fields_from_model.remove("Event01")
+
+            return fields_from_model
 
         return []
 
