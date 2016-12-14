@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Max
 from django.utils import timezone
+from django.conf import settings
 
 cannot_change_events = (("can_change_events_special", "Can change events (special perm for events)"),)
 
@@ -87,14 +88,14 @@ class Country(models.Model):
 
 
 class Device(models.Model):
-    url = models.CharField(max_length=255, null=True)
-    code = models.CharField(max_length=255, unique=True)
-    name = models.CharField(max_length=255)
-    definition = models.TextField()
-    version = models.CharField(max_length=255, null=True)
-    deprecated = models.CharField(max_length=255, null=True)
-    date = models.DateTimeField(null=True)
-    source = models.CharField(max_length=255)
+    url = models.CharField(max_length=255, null=True, blank=True, help_text = "If adding a new device leave this field blank.")
+    code = models.CharField(max_length=255, unique=True, null=True, blank=True, help_text = "If adding a new device leave this field blank.")
+    name = models.CharField(max_length=255, help_text = "Use a descriptive but short name for the device.")
+    definition = models.TextField(help_text = "Give a full description of the device, including it's make, model, how it is used and a URL describing the device where possible.")
+    version = models.CharField(max_length=255, null=True, blank=True, help_text = "If adding a new device leave this field blank.")
+    deprecated = models.CharField(max_length=255, null=True, blank=True, help_text = "If adding a new device leave this field blank.")
+    date = models.DateTimeField(null=True, blank=True, help_text = "If adding a new device leave this field blank.")
+    source = models.CharField(choices = settings.DEVICE_SOURCES, default = settings.DEVICE_SOURCE_DEFAULT, max_length=255, help_text = "Use the default or speak to the data management team if generated for ACE does not apply.")
 
     def __str__(self):
         return "{}".format(self.name)
@@ -419,5 +420,5 @@ class EventAction(models.Model):
 class NetworkHost(models.Model):
     ip = models.GenericIPAddressField()
     hostname = models.CharField(max_length=255)
-    location = models.CharField(max_length=255, help_text="Which floor, laboratory, container is this device", blank=True, null=True)
+    location = models.CharField(max_length=255, help_text="In which floor, laboratory, container is this device", blank=True, null=True)
     comment = models.TextField(blank=True, null=True)

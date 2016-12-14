@@ -153,7 +153,8 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 # Device sources
-device_sources = (("seadatanet", "Sea Data Net"),
+DEVICE_SOURCES = (("seadatanet", "Sea Data Net"),
                   ("seavox", "SeaVoX"),
                   ("globalchangemasterdirectory", "Global Change Master Directory"),
                   ("generatedforace", "Generated for ACE"))
+DEVICE_SOURCE_DEFAULT= "generatedforace"
