@@ -151,9 +151,3 @@ BASE_STORAGE_DIRECTORY = os.environ["HOME"]
 # Added for the importer-exporter module
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
-
-# ADD_EVENTS_GROUP: the Permissions group that can add events, list events but NOT modify
-# events. This is enforced only on the Events forms and not in the model (yet).
-# This is to avoid mistakes more than anything else
-# initialsetup.py creates this group.
-ADD_EVENTS_GROUP = "Add events"

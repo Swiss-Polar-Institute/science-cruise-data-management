@@ -14,7 +14,7 @@ class Command(BaseCommand):
                             help="Creates the Django users from the Person table")
 
     def get_or_create_event_group(self):
-        # Deletes it to have a clean start
+        # Deletes it to havfrom main.models import modelse a clean start
         Group.objects.all().filter(name=settings.ADD_EVENTS_GROUP).delete()
 
         group = Group.objects.create(name=settings.ADD_EVENTS_GROUP)
