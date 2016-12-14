@@ -1,4 +1,3 @@
-from django.core.exceptions import ValidationError
 from django.contrib import admin
 from django.forms import ModelForm
 import main.models
@@ -149,41 +148,6 @@ class EventActionForm(ModelForm):
     class Meta:
         model = main.models.EventAction
         fields = '__all__'
-
-    def clean(self):
-        data = self.cleaned_data
-        if len(data) == 0:
-            # This can happen when all the fields are readonly
-            return super(EventActionForm, self).clean()
-
-        event_id = self.data['event']   # cleaned_data['event'] doesn't have this one
-                                        # probably because the form filters it?
-        type = data['type']
-
-        tbegin = main.models.EventAction.tbegin()
-        tends = main.models.EventAction.tends()
-        tinstant = main.models.EventAction.tinstant()
-
-        tbegin_text = main.models.EventAction.tbegin_text()
-        tends_text = main.models.EventAction.tends_text()
-        tinstant_text = main.models.EventAction.tinstant_text()
-
-
-        if len(main.models.EventAction.objects.all().filter
-                       (Q(event_id=event_id) & (Q(type=tends) |
-                                                    (Q(type=tinstant)))))>0:
-            raise ValidationError("Cannot add any EventAction because the Event has a '{}' or '{}'".format(tends_text,
-                                                                                                      tinstant_text))
-
-        if type == tends:
-            if len(main.models.EventAction.objects.all().filter
-                       (Q(event_id=event_id) & (Q(type=tends) | (Q(type=tinstant)))))>0:
-                raise ValidationError("Cannot add {} because this Event already had '{}' or '{}'".format(tends, tends_text, tinstant_text))
-            if len(main.models.EventAction.objects.all().filter
-                       (Q(event_id=event_id) & (Q(type=tbegin)))) == 0:
-                raise ValidationError("Cannot add '{}' because '{}' doesn't exist".format(tends_text, tbegin_text))
-
-        return super(EventActionForm, self).clean()
 
 
 class EventActionAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.ModelAdmin):

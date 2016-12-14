@@ -1,10 +1,11 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.db.models import Max
 from django.utils import timezone
 from django.conf import settings
+from django.db.models import Q
 
 cannot_change_events = (("can_change_events_special", "Can change events (special perm for events)"),)
-
 
 def next_event_number():
     latest = Event.objects.all().aggregate(Max('number'))
@@ -404,6 +405,35 @@ class EventAction(models.Model):
     water_depth = models.FloatField(null=True, blank=True)
     general_comments = models.TextField(null=True, blank=True)
     data_source_comments = models.TextField(null=True, blank=True)
+
+    def clean(self):
+        event_id = self.event_id        # cleaned_data['event'] doesn't have this one
+                                        # probably because the form filters it?
+        event_action_type = self.type
+
+        tbegin = EventAction.tbegin()
+        tends = EventAction.tends()
+        tinstant = EventAction.tinstant()
+
+        tbegin_text = EventAction.tbegin_text()
+        tends_text = EventAction.tends_text()
+        tinstant_text = EventAction.tinstant_text()
+
+
+        if len(EventAction.objects.all().filter
+                       (Q(event_id=event_id) & (Q(type=tends) |
+                                                    (Q(type=tinstant)))))>0:
+            raise ValidationError("Cannot add any EventAction because the Event has a '{}' or '{}'".format(tends_text,
+                                                                                                      tinstant_text))
+
+        if event_action_type == tends:
+            if len(EventAction.objects.all().filter
+                       (Q(event_id=event_id) & (Q(type=tends) | (Q(type=tinstant)))))>0:
+                raise ValidationError("Cannot add {} because this Event already had '{}' or '{}'".format(tends, tends_text, tinstant_text))
+            if len(EventAction.objects.all().filter
+                       (Q(event_id=event_id) & (Q(type=tbegin)))) == 0:
+                raise ValidationError("Cannot add '{}' because '{}' doesn't exist".format(tends_text, tbegin_text))
+
 
     def __str__(self):
         return "{}".format(self.event.number)
