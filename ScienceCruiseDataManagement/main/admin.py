@@ -371,6 +371,10 @@ class StorageCrateAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
     ordering = ['name']
 
+class NetworkHostAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('ip', 'hostname', 'location', 'comment')
+
+    ordering = ['ip']
 
 admin.site.register(main.models.Device, DeviceAdmin)
 admin.site.register(main.models.StationType, StationTypeAdmin)
@@ -398,7 +402,7 @@ admin.site.register(main.models.Organisation, OrganisationAdmin)
 admin.site.register(main.models.Data, DataAdmin)
 admin.site.register(main.models.FilesStorage, FilesStorageAdmin)
 admin.site.register(main.models.StorageCrate, StorageCrateAdmin)
-
+admin.site.register(main.models.NetworkHost, NetworkHostAdmin)
 
 admin.site.site_header = 'ACE Data'
 admin.site.site_title = 'ACE Data Admin'

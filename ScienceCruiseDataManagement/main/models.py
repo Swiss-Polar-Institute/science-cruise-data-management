@@ -409,3 +409,9 @@ class EventAction(models.Model):
 
     class Meta:
         permissions = cannot_change_events
+
+class NetworkHost(models.Model):
+    ip = models.GenericIPAddressField()
+    hostname = models.CharField(max_length=255)
+    location = models.CharField(max_length=255, help_text="Which floor, laboratory, container is this device", blank=True, null=True)
+    comment = models.TextField(blank=True, null=True)
