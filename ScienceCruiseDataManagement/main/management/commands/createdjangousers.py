@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from main.models import Person
+import main.models
 from django.contrib.auth.models import User, Group, Permission
 from django.conf import settings
 
@@ -14,12 +15,19 @@ class Command(BaseCommand):
                             help="Creates the Django users from the Person table")
 
     def get_or_create_event_group(self):
-        # Deletes it to havfrom main.models import modelse a clean start
-        Group.objects.all().filter(name=settings.ADD_EVENTS_GROUP).delete()
+        # Deletes it to from main.models import modelse a clean start
+        if Group.objects.all().filter(name=settings.ADD_EVENTS_GROUP).exists():
+            Group.objects.all().filter(name=settings.ADD_EVENTS_GROUP).delete()
 
         group = Group.objects.create(name=settings.ADD_EVENTS_GROUP)
 
-        permissions = ["Can add event", "Can add event action", "Can add event report"]
+        permissions = ["Can add event", "Can add event action", "Can add event report",
+                       "Can change event", "Can change event report", "Can change event action"]
+
+        for permission in main.models.cannot_change_events_all:
+            permissions.append(permission[0][1])
+
+        print("Permissions:" , permissions)
         for permission in permissions:
             object_permission = Permission.objects.get(name=permission)
             group.permissions.add(object_permission)

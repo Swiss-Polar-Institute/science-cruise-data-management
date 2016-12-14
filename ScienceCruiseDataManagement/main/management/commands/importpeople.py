@@ -21,7 +21,11 @@ class Command(BaseCommand):
                 person.name_first = row['name_first']
                 person.name_middle = row['name_middle']
                 person.name_last = row['name_last']
-                person.initials = self.initials_from_person(person)
+
+
+                person.initials = self.create_initials(person)
+
+
 
                 if row['organisation'] != '':
                     list_of_organisations = row['organisation'].split(";")
@@ -36,5 +40,16 @@ class Command(BaseCommand):
                 person.save()
 
     @staticmethod
-    def initials_from_person(person):
-        return "{}{}".format(person.name_first[0], person.name_last[0])
+    def initials_from_person(person, surname_letters):
+        return "{}{}".format(person.name_first[0], person.name_last[0:surname_letters])
+
+    @staticmethod
+    def create_initials(person):
+        letters = 1
+        initials = Command.initials_from_person(person, letters)
+        while Person.objects.all().filter(initials=initials).exists():
+            letters += 1
+            initials = Command.initials_from_person(person, letters)
+
+        return initials
+

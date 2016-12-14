@@ -152,6 +152,9 @@ BASE_STORAGE_DIRECTORY = os.environ["HOME"]
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
+# Users that can add events should be in this Group (it's created by the command createdjangousers
+ADD_EVENTS_GROUP = "Add events"
+
 # Controlled vocabulary sources
 VOCAB_SOURCES = (("seadatanet", "Sea Data Net"),
                   ("seavox", "SeaVoX"),

@@ -6,6 +6,9 @@ from django.conf import settings
 from django.db.models import Q
 
 cannot_change_events = (("can_change_events_special", "Can change events (special perm for events)"),)
+cannot_change_events_action = (("can_change_events_action_special", "Can change events action (special perm for events)"),)
+
+cannot_change_events_all = [cannot_change_events, cannot_change_events_action]
 
 def next_event_number():
     latest = Event.objects.all().aggregate(Max('number'))
@@ -257,12 +260,13 @@ class Event(models.Model):
     def __str__(self):
         return "{}".format(self.number)
 
+    class Meta:
+        permissions = cannot_change_events
 
 class EventReport(Event):
     class Meta:
         proxy = True
         verbose_name_plural="Event report"
-        permissions = cannot_change_events
 
 
 class EventActionDescription(models.Model):
@@ -272,10 +276,6 @@ class EventActionDescription(models.Model):
 
     def __str__(self):
         return "{}".format(self.name)
-
-    class Meta:
-        permissions = cannot_change_events
-
 
 class StorageCrate(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -369,7 +369,7 @@ class EventAction(models.Model):
         return "{}".format(self.event.number)
 
     class Meta:
-        permissions = cannot_change_events
+        permissions = cannot_change_events_action
 
 class NetworkHost(models.Model):
     ip = models.GenericIPAddressField()
