@@ -296,8 +296,8 @@ class PortAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class PositionUncertaintyAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('code', 'name')
-    ordering = ['code']
+    list_display = ('code', 'name', 'table_code', 'source')
+    ordering = ['name']
 
 
 class PositionSourceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
@@ -306,8 +306,8 @@ class PositionSourceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class TimeUncertaintyAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('code', 'name', 'list', 'description')
-    ordering = ['code']
+    list_display = ('code', 'name', 'source')
+    ordering = ['name']
 
 
 class TimeSourceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):

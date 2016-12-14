@@ -95,7 +95,7 @@ class Device(models.Model):
     version = models.CharField(max_length=255, null=True, blank=True, help_text = "If adding a new device leave this field blank.")
     deprecated = models.CharField(max_length=255, null=True, blank=True, help_text = "If adding a new device leave this field blank.")
     date = models.DateTimeField(null=True, blank=True, help_text = "If adding a new device leave this field blank.")
-    source = models.CharField(choices = settings.DEVICE_SOURCES, default = settings.DEVICE_SOURCE_DEFAULT, max_length=255, help_text = "Use the default or speak to the data management team if generated for ACE does not apply.")
+    source = models.CharField(choices = settings.VOCAB_SOURCES, default = settings.DEVICE_SOURCE_DEFAULT, max_length=255, help_text = "Use the default or speak to the data management team if generated for ACE does not apply.")
 
     def __str__(self):
         return "{}".format(self.name)
@@ -103,12 +103,9 @@ class Device(models.Model):
 
 class PositionUncertainty(models.Model):
     code = models.CharField(max_length=255, unique=True)
+    table_code = models.CharField(max_length=255)
     name = models.CharField(max_length=255, unique=True)
-
-    # TODO: change it
-    list = models.CharField(max_length=255)
-
-    description = models.TextField(null=True, blank=True)
+    source = models.CharField(max_length=255)
 
     def __str__(self):
         return "{}-{}".format(self.code, self.name)
@@ -118,13 +115,10 @@ class PositionUncertainty(models.Model):
 
 
 class TimeUncertainty(models.Model):
+    table_code = models.CharField(max_length=255)
     code = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255, unique=True)
-
-    # TODO: change it
-    list = models.CharField(max_length=255)
-
-    description = models.TextField(null=True, blank=True)
+    source = models.CharField(choices=settings.VOCAB_SOURCES, default=settings.UNCERTAINTY_DEFAULT, max_length=255)
 
     def __str__(self):
         return "{}".format(self.name)

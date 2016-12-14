@@ -152,9 +152,11 @@ BASE_STORAGE_DIRECTORY = os.environ["HOME"]
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
-# Device sources
-DEVICE_SOURCES = (("seadatanet", "Sea Data Net"),
+# Controlled vocabulary sources
+VOCAB_SOURCES = (("seadatanet", "Sea Data Net"),
                   ("seavox", "SeaVoX"),
                   ("globalchangemasterdirectory", "Global Change Master Directory"),
-                  ("generatedforace", "Generated for ACE"))
+                  ("generatedforace", "Generated for ACE"),
+                 ("britishoceanographicdatacentre", "British Oceanographic Data Centre (BODC)"))
 DEVICE_SOURCE_DEFAULT= "generatedforace"
+UNCERTAINTY_DEFAULT = "britishoceanoraphicdatacentre"
