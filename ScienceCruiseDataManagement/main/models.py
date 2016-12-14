@@ -5,8 +5,8 @@ from django.utils import timezone
 from django.conf import settings
 from django.db.models import Q
 
-cannot_change_events = (("can_change_events_special", "Can change events (special perm for events)"),)
-cannot_change_events_action = (("can_change_events_action_special", "Can change events action (special perm for events)"),)
+cannot_change_events = (("cannot_change_events_special", "Cannot change events (special)"),)
+cannot_change_events_action = (("cannot_change_events_action_special", "Cannot change events action (special)"),)
 
 cannot_change_events_all = [cannot_change_events, cannot_change_events_action]
 
