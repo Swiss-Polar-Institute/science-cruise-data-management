@@ -32,19 +32,13 @@ class ReadOnlyFields:
         if not main.utils.can_user_change_events(request.path, request.user):
             fields_from_model = []
 
+            # Here we want the fields of the model but without the 'related_field'.
+            # E.g. if another model had a foreign key to this object with a 'related_name'
+            # this appeared here but because it's not in this form the template
+            # raised an exception (as it was included)
             for field in self.model._meta.get_fields(include_parents=False):
-                if hasattr(self.model, field.name):
+                if hasattr(self.model, field.name) and not hasattr(field, 'related_name'):
                     fields_from_model.append(field.name)
-
-            # This is very hacky, just doing it for now.
-            # The Event01 is a related field defined in data
-            # that should not be returned "here" (when the model is
-            # the Event)
-            # TODO: fix it!
-            # To test: see the events with a user that has only
-            # permission to see the events (not to change them!)
-            if "Event01" in fields_from_model:
-                fields_from_model.remove("Event01")
 
             return fields_from_model
 
