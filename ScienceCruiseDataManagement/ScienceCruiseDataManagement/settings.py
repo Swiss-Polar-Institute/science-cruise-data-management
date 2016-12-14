@@ -151,3 +151,9 @@ BASE_STORAGE_DIRECTORY = os.environ["HOME"]
 # Added for the importer-exporter module
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+
+# Device sources
+device_sources = (("seadatanet", "Sea Data Net"),
+                  ("seavox", "SeaVoX"),
+                  ("globalchangemasterdirectory", "Global Change Master Directory"),
+                  ("generatedforace", "Generated for ACE"))
