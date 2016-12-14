@@ -89,7 +89,7 @@ class Country(models.Model):
 class Device(models.Model):
     url = models.CharField(max_length=255, null=True)
     code = models.CharField(max_length=255, unique=True)
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
     definition = models.TextField()
     version = models.CharField(max_length=255, null=True)
     deprecated = models.CharField(max_length=255, null=True)
