@@ -166,6 +166,7 @@ class Person(models.Model):
     name_first = models.CharField(max_length=255)
     name_middle = models.CharField(max_length=255, blank=True, null=True)
     name_last = models.CharField(max_length=255)
+    initials = models.CharField(max_length=5, unique=True)
     project = models.ManyToManyField('Project')
     organisation = models.ManyToManyField(Organisation)
 

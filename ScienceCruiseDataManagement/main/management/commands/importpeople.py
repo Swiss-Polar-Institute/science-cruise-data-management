@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from main.models import Person, Organisation
 import csv
 
+
 class Command(BaseCommand):
     help = 'Adds data to the person table'
 
@@ -20,6 +21,7 @@ class Command(BaseCommand):
                 person.name_first = row['name_first']
                 person.name_middle = row['name_middle']
                 person.name_last = row['name_last']
+                person.initials = self.initials_from_person(person)
 
                 if row['organisation'] != '':
                     list_of_organisations = row['organisation'].split(";")
@@ -33,3 +35,6 @@ class Command(BaseCommand):
 
                 person.save()
 
+    @staticmethod
+    def initials_from_person(person):
+        return "{}{}".format(person.name_first[0], person.name_last[0])
