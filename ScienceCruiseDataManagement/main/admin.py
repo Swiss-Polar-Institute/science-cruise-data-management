@@ -264,19 +264,9 @@ class PositionUncertaintyAdmin(import_export.admin.ExportMixin, admin.ModelAdmin
     ordering = ['name']
 
 
-class PositionSourceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('code', 'name', 'list', 'description')
-    ordering = ['code']
-
-
 class TimeUncertaintyAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('code', 'name', 'source')
     ordering = ['name']
-
-
-class TimeSourceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('code', 'name', 'list', 'description')
-    ordering = ['code']
 
 
 class PreservationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
@@ -354,9 +344,7 @@ admin.site.register(main.models.Storage, StorageAdmin)
 admin.site.register(main.models.FilesStorageGeneral, FileStorageGeneralAdmin)
 admin.site.register(main.models.Port, PortAdmin)
 admin.site.register(main.models.PositionUncertainty, PositionUncertaintyAdmin)
-admin.site.register(main.models.PositionSource, PositionSourceAdmin)
 admin.site.register(main.models.TimeUncertainty, TimeUncertaintyAdmin)
-admin.site.register(main.models.TimeSource, TimeSourceAdmin)
 admin.site.register(main.models.Preservation, PreservationAdmin)
 admin.site.register(main.models.SpeciesClassification, SpeciesClassificationAdmin)
 admin.site.register(main.models.SampleContent, SampleContentAdmin)

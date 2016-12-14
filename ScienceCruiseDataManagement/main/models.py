@@ -188,32 +188,6 @@ class Project(models.Model):
         return "{}".format(self.title)
 
 
-class TimeSource(models.Model):
-    code = models.CharField(max_length=255, unique=True)
-    name = models.CharField(max_length=255, unique=True)
-
-    # TODO: change list to something else
-    list = models.CharField(max_length=255)
-
-    description = models.TextField(null=True, blank=True)
-
-    def __str__(self):
-        return "{}".format(self.name)
-
-
-class PositionSource(models.Model):
-    code = models.CharField(max_length=255, unique=True)
-    name = models.CharField(max_length=255, unique=True)
-
-    # TODO: change list to something else
-    list = models.CharField(max_length=255)
-
-    description = models.TextField(null=True, blank=True)
-
-    def __str__(self):
-        return "{}".format(self.name)
-
-
 class StationType(models.Model):
     type = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True, blank=True)
@@ -230,9 +204,9 @@ class Station(models.Model):
     leg = models.ForeignKey(Leg)
     arrival_time = models.DateTimeField(null=True, blank=True)
     departure_time = models.DateTimeField(null=True, blank=True)
-    time_source = models.ForeignKey(TimeSource, null=True, blank=True)
+    time_source = models.ForeignKey(Device, related_name='station_device_time_source', null=True, blank=True)
     time_uncertainty = models.ForeignKey(TimeUncertainty, null=True, blank=True)
-    position_source = models.ForeignKey(PositionSource, null=True, blank=True)
+    position_source = models.ForeignKey(Device, related_name='station_position_time_source', null=True, blank=True)
     position_uncertainty = models.ForeignKey(PositionUncertainty, null=True,blank=True)
     water_depth = models.FloatField(null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
@@ -349,12 +323,12 @@ class EventAction(models.Model):
     description = models.ForeignKey(EventActionDescription)
 
     time = models.DateTimeField()
-    time_source = models.ForeignKey(TimeSource)
+    time_source = models.ForeignKey(Device, related_name='eventaction_device_time_source')
     time_uncertainty = models.ForeignKey(TimeUncertainty)
 
     latitude = models.FloatField()
     longitude = models.FloatField()
-    position_source = models.ForeignKey(PositionSource)
+    position_source = models.ForeignKey(Device, related_name='eventaction_position_time_source')
     position_uncertainty = models.ForeignKey(PositionUncertainty)
 
     water_depth = models.FloatField(null=True, blank=True)
