@@ -375,6 +375,19 @@ class EventAction(models.Model):
     def tinstant():
         return EventAction.type_choices[2][0]
 
+    @staticmethod
+    def tbegin_text():
+        return EventAction.type_choices[0][1]
+
+    @staticmethod
+    def tends_text():
+        return EventAction.type_choices[1][1]
+
+    @staticmethod
+    def tinstant_text():
+        return EventAction.type_choices[1][1]
+
+
     type = models.CharField(choices=type_choices, max_length=255)
     description = models.ForeignKey(EventActionDescription)
 
