@@ -61,7 +61,7 @@ class PositionUncertainty(models.Model):
     code = models.CharField(max_length=255, unique=True)
     table_code = models.CharField(max_length=255)
     name = models.CharField(max_length=255, unique=True)
-    source = models.CharField(max_length=255)
+    source = models.CharField(max_length=255, choices=settings.VOCAB_SOURCES, default=settings.UNCERTAINTY_DEFAULT)
 
     def __str__(self):
         return "{}-{}".format(self.code, self.name)
