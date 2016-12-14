@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from main.models import Person
 from django.contrib.auth.models import User, Group, Permission
+from django.conf import settings
 
 class Command(BaseCommand):
     help = 'Creates admin users based on the Person table'
@@ -13,12 +14,10 @@ class Command(BaseCommand):
                             help="Creates the Django users from the Person table")
 
     def get_or_create_event_group(self):
-        groups = Group.objects.filter(name="Add events")
+        # Deletes it to have a clean start
+        Group.objects.all().filter(name=settings.ADD_EVENTS_GROUP).delete()
 
-        if len(groups) != 0:
-            groups[0].delete()
-
-        group = Group.objects.create(name="Add events")
+        group = Group.objects.create(name=settings.ADD_EVENTS_GROUP)
 
         permissions = ["Can add event", "Can add event action", "Can add event report"]
         for permission in permissions:
@@ -37,6 +36,10 @@ class Command(BaseCommand):
 
             if len(users) > 0:
                 users[0].delete()
+
+            # Logins should not have spaces. The admin pane doesn't allow them
+            # but using create_user it allowed it (!)
+            login = login.replace(" ", "")
 
             created_user = User.objects.create_user(username=login, password=login)
 

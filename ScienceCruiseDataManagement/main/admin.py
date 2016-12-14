@@ -4,6 +4,7 @@ from django.forms import ModelForm
 import main.models
 import import_export
 from django.db.models import Q
+import main.utils
 
 # Register your models here.
 # e.g. : admin.site.register(main.models.Data)
@@ -30,7 +31,14 @@ class ProjectAdmin(admin.ModelAdmin):
     ordering = ['number']
 
 
-# Example for import-export
+class ReadOnlyFields:
+    def get_readonly_fields(self, request, obj=None):
+        if not main.utils.can_user_change_events(request.path, request.user):
+            return [f.name for f in self.model._meta.get_fields()]
+
+        return []
+
+        # Example for import-export
 #class EventResource(import_export.resources.ModelResource):
 #    number = import_export.fields.Field(column_name = 'number', attribute='number')
 #
@@ -44,7 +52,7 @@ class ProjectAdmin(admin.ModelAdmin):
         fields = ('number', 'station', 'device', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude')
 
 
-class EventAdmin(import_export.admin.ImportExportModelAdmin):
+class EventAdmin(ReadOnlyFields, import_export.admin.ImportExportModelAdmin):
     list_display = ('number', 'device', 'station')
     ordering = ['-number']
     # add for import-export: resource_class = EventResource
@@ -81,7 +89,9 @@ class EventActionForm(ModelForm):
         super(EventActionForm, self).__init__(*args, **kwargs)
         # filter out closed events
 
-        self.fields['event'].queryset = main.models.Event.objects.all().filter(self._filter_open_events())
+        if 'event' in self.fields:
+            # event is not in the fields if it's readonly
+            self.fields['event'].queryset = main.models.Event.objects.all().filter(self._filter_open_events())
 
     def _filter_open_events(self):
         filter_query = Q(id=0) # Impossible with OR will be the rest
@@ -142,6 +152,10 @@ class EventActionForm(ModelForm):
 
     def clean(self):
         data = self.cleaned_data
+        if len(data) == 0:
+            # This can happen when all the fields are readonly
+            return super(EventActionForm, self).clean()
+
         event_id = self.data['event']   # cleaned_data['event'] doesn't have this one
                                         # probably because the form filters it?
         type = data['type']
@@ -161,7 +175,7 @@ class EventActionForm(ModelForm):
         return super(EventActionForm, self).clean()
 
 
-class EventActionAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+class EventActionAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.ModelAdmin):
     #def description_2(self, obj):
     #    return obj.event_action_type.description
 
@@ -170,9 +184,6 @@ class EventActionAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('id', 'event', 'type', 'description', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
     ordering = ['-event_id', '-id']
     form = EventActionForm
-
-    # resource_class = EventActionResource
-
 
 class EventActionDescriptionAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'source')
@@ -189,7 +200,7 @@ class StationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['name']
 
 
-class EventReportAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+class EventReportAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude')
 
     def station_name(self, obj):
