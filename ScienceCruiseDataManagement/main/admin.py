@@ -361,6 +361,11 @@ class PlatformAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['name']
 
 
+class ShipAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('name','imo', 'callsign')
+
+    ordering = ['name']
+
 admin.site.register(main.models.Device, DeviceAdmin)
 admin.site.register(main.models.StationType, StationTypeAdmin)
 admin.site.register(main.models.Project, ProjectAdmin)
