@@ -4,11 +4,13 @@ from django.db.models import Max
 from django.utils import timezone
 from django.conf import settings
 from django.db.models import Q
+from smart_selects.db_fields import ChainedManyToManyField
 
 cannot_change_events = (("cannot_change_events_special", "Cannot change events (special)"),)
 cannot_change_events_action = (("cannot_change_events_action_special", "Cannot change events action (special)"),)
 
 cannot_change_events_all = [cannot_change_events, cannot_change_events_action]
+
 
 def next_event_number():
     latest = Event.objects.all().aggregate(Max('number'))
@@ -60,21 +62,22 @@ class DeviceType(models.Model):
         return "{}".format(self.name)
 
 
+class ParentDevice(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    definition = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
 class ChildDevice(models.Model):
     type = models.ForeignKey(DeviceType)
-    serial_number = models.CharField(max_length=255)
+    serial_number = models.CharField(max_length=255, unique=True)
+    possible_parents = models.ManyToManyField(ParentDevice)
 
     def __str__(self):
         return "{}-{}".format(self.type.name, self.serial_number)
 
-
-class ParentDevice(models.Model):
-    name = models.CharField(max_length=255)
-    definition = models.CharField(max_length=255)
-    possible_devices = models.ManyToManyField(ChildDevice)
-
-    def __str__(self):
-        return "{}".format(self.name)
 
 class PositionUncertainty(models.Model):
     code = models.CharField(max_length=255, unique=True)
@@ -131,6 +134,7 @@ class Storage(models.Model):
 
     def __str__(self):
         return "{}".format(self.name)
+
 
 class Preservation(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -299,8 +303,13 @@ class Data(models.Model):
 
 class Event(models.Model):
     number = models.IntegerField(default=next_event_number, unique=True)
-    parent_device = models.ForeignKey(ParentDevice)
-    child_device = models.ManyToManyField(ChildDevice)
+    parent_device = models.ForeignKey(ParentDevice, related_name="parent_device_event")
+    child_devices = ChainedManyToManyField(
+        ChildDevice,
+        chained_field='parent_device',
+        chained_model_field='possible_parents',
+    )
+    #    models.ManyToManyField(ChildDevice)
     station = models.ForeignKey(Station, null=True)
 
     def __str__(self):
