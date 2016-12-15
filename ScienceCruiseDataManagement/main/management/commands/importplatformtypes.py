@@ -3,7 +3,7 @@ from main.models import PlatformType
 import csv
 
 class Command(BaseCommand):
-    help = 'Adds data to the person table'
+    help = 'Adds data to the platform types table'
 
     def add_arguments(self, parser):
         parser.add_argument('filename', type=str)
