@@ -42,9 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'import_export',
+    'import_export',    # to export as CSV
     'debug_toolbar',
     'django_extensions',
+    'selectable',   # auto-completion
     'main'  # ScienceCruiseManagement main app
 ]
 

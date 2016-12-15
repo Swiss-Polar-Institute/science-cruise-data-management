@@ -4,7 +4,8 @@ import main.models
 import import_export
 from django.db.models import Q
 import main.utils
-from itertools import chain
+from selectable.forms import AutoCompleteSelectField, AutoCompleteSelectMultipleWidget, AutoComboboxSelectWidget
+import main.lookups
 
 class ProjectsStartsWithLetter(admin.SimpleListFilter):
     title = "Projects starts with A"
@@ -58,11 +59,20 @@ class ReadOnlyFields:
         fields = ('number', 'station', 'device', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude')
 
 
+class EventForm(ModelForm):
+    device = AutoCompleteSelectField(lookup_class=main.lookups.DeviceLookup, allow_new=False)
+
+    class Meta:
+        model = main.models.EventAction
+        fields = '__all__'
+
+
 class EventAdmin(ReadOnlyFields, import_export.admin.ImportExportModelAdmin):
     list_display = ('number', 'device', 'station')
     ordering = ['-number']
-    # add for import-export: resource_class = EventResource
+    form = EventForm
 
+    # add for import-export: resource_class = EventResource
 
     # This is to have a default value on the foreign key
     def formfield_for_foreignkey(self, db_field, request, **kwargs):

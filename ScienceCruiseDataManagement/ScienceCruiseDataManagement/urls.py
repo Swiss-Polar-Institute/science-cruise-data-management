@@ -29,7 +29,8 @@ urlpatterns = [
     url(r'^country/list$', CountryListView.as_view(), name='article-list'),
     url(r'^storage/', FileStorageView.as_view()),
     url(r'^map/interactive/$', InteractiveMapView.as_view()),
-    url(r'^reports/events/$', EventListView.as_view())
+    url(r'^reports/events/$', EventListView.as_view()),
+    url(r'^selectable/', include('selectable.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
