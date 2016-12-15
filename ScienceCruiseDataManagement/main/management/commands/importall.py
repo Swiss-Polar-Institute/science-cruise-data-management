@@ -15,6 +15,7 @@ class Command(BaseCommand):
         call_command('importorganisations', os.path.join(directory, "organisations.csv"))
         call_command('importpeople', os.path.join(directory, "participants.csv"))
         call_command('importprojects', os.path.join(directory, "projects.csv"))
+        call_command('importplatformtypes', os.path.join(directory, "platform_types.csv"))
         call_command('importdevices', directory + "/")
         call_command('importtimeuncertainties', os.path.join(directory, "time_uncertainty.csv"))
         call_command('importpositionuncertainties', os.path.join(directory, "position_uncertainty.csv"))

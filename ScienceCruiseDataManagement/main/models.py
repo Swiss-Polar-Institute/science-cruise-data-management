@@ -157,6 +157,21 @@ class Organisation(models.Model):
     def __str__(self):
         return "{}".format(self.name)
 
+
+class PlatformType(models.Model):
+    url =models.CharField(max_length=255, null=True, blank=True)
+    code = models.CharField(max_length=255, null=True, blank=True)
+    name = models.CharField(max_length=255, unique=True)
+    definition = models.CharField(max_length=255)
+    version = models.CharField(max_length=255, null=True, blank=True)
+    deprecated = models.CharField(max_length=255, null=True, blank=True)
+    date = models.DateTimeField(max_length=255, null=True, blank=True)
+    source = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
 class Person(models.Model):
     title_choices = (("Mr", "Mr."),
                      ("Ms", "Ms."),
