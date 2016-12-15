@@ -71,12 +71,17 @@ class ParentDevice(models.Model):
 
 
 class ChildDevice(models.Model):
-    type = models.ForeignKey(DeviceType)
+    # The name is "type_of_device" because if it's type the Form doesn't work
+    # correctly (reserved word in Python)
+    type_of_device = models.ForeignKey(DeviceType, verbose_name="Type", help_text="Start writing to autocomplete")
     serial_number = models.CharField(max_length=255, unique=True)
     possible_parents = models.ManyToManyField(ParentDevice)
 
     def __str__(self):
-        return "{}-{}".format(self.type.name, self.serial_number)
+        return "{}-{}".format(self.type_of_device.name, self.serial_number)
+
+    class Meta:
+        unique_together = (('type_of_device', 'serial_number'))
 
 
 class PositionUncertainty(models.Model):

@@ -7,6 +7,7 @@ import main.utils
 from selectable.forms import AutoCompleteSelectField, AutoCompleteSelectMultipleWidget, AutoComboboxSelectWidget
 import main.lookups
 
+
 class ProjectsStartsWithLetter(admin.SimpleListFilter):
     title = "Projects starts with A"
     parameter_name = 'letter'
@@ -59,18 +60,17 @@ class ReadOnlyFields:
         fields = ('number', 'station', 'device', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude')
 
 
-class EventForm(ModelForm):
-    device = AutoCompleteSelectField(lookup_class=main.lookups.DeviceLookup, allow_new=False)
+class ChildDeviceForm(ModelForm):
+    type_of_device = AutoCompleteSelectField(lookup_class=main.lookups.DeviceTypeLookup, allow_new=False)
 
     class Meta:
-        model = main.models.EventAction
+        model = main.models.ChildDevice
         fields = '__all__'
 
 
 class EventAdmin(ReadOnlyFields, import_export.admin.ImportExportModelAdmin):
     list_display = ('number', 'parent_device', 'station')
     ordering = ['-number']
-    form = EventForm
 
     # add for import-export: resource_class = EventResource
 
@@ -250,12 +250,15 @@ class StationTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 class ChildDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('device_type_name', 'serial_number')
-    ordering = ['type__name']
 
     def device_type_name(self, obj):
-        return obj.type.name
+        return obj.type_of_device.name
 
-    device_type_name.admin_order_field = 'type__name'
+    # TODO: doesn't work here, check it again
+    # ordering = ['device_type_name__name']
+
+    device_type_name.admin_order_field = 'device_type_name__name'
+    form = ChildDeviceForm
 
 
 class CountryAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
