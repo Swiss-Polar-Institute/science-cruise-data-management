@@ -183,6 +183,22 @@ class Platform(models.Model):
         return "{}".format(self.name)
 
 
+class Ship(models.Model):
+    name = models.ForeignKey(Platform)
+    imo = models.CharField(max_length=255, null=True, blank=True)
+    callsign = models.CharField(max_length=255, null=True, blank=True)
+    length = models.CharField(max_length=255, null=True, blank=True)
+    breadth = models.CharField(max_length=255, null=True, blank=True)
+    power = models.CharField(max_length=255, null=True, blank=True)
+    gross_weight = models.CharField(max_length=255, null=True, blank=True)
+    noise_design = models.CharField(max_length=255, null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
+    source = models.CharField(max_length=255, choices=settings.VOCAB_SOURCE)
+
+    def __str__(self):
+        return "{}".format(self.name)
+
+
 class Person(models.Model):
     title_choices = (("Mr", "Mr."),
                      ("Ms", "Ms."),
