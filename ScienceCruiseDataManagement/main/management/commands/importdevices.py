@@ -25,21 +25,21 @@ class Command(BaseCommand):
             reader = csv.DictReader(csvfile)
             for row in reader:
                 print(row)
-                device = DeviceType()
-                device.url = row['Url']
-                device.code = row['Identifier']
-                device.name = row['PrefLabel']
-                device.description = row['Definition']
-                device.version = row['Version']
+                device_type = DeviceType()
+                device_type.url = row['Url']
+                device_type.code = row['Identifier']
+                device_type.name = row['PrefLabel']
+                device_type.description = row['Definition']
+                device_type.version = row['Version']
 
-                device.date = row['Date']
+                device_type.date = row['Date']
 
                 # Set the source for the record according to the filename.
                 basename = os.path.basename(filepath)
                 filename = os.path.splitext(basename)[0]
 
-                device.source = filename.split('_')[-1]
+                device_type.source = filename.split('_')[-1]
 
-                device.deprecated = row['Deprecated']
-                device.save()
+                device_type.deprecated = row['Deprecated']
+                device_type.save()
 
