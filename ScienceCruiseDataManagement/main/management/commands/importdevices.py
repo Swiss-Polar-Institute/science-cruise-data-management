@@ -1,12 +1,12 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Device
+from main.models import DeviceType
 import os
 import csv
 import codecs
 import glob
 
 class Command(BaseCommand):
-    help = 'Adds data to the device table'
+    help = 'Adds data to the ChildDevice table'
 
     def add_arguments(self, parser):
         parser.add_argument('directory_name', type=str)
@@ -25,7 +25,7 @@ class Command(BaseCommand):
             reader = csv.DictReader(csvfile)
             for row in reader:
                 print(row)
-                device = Device()
+                device = DeviceType()
                 device.url = row['Url']
                 device.code = row['Identifier']
                 device.name = row['PrefLabel']

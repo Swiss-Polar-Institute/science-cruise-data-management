@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django_extensions',
     'selectable',   # auto-completion
+    'smart_selects', # foreign keys depending on other foreign keys
     'main'  # ScienceCruiseManagement main app
 ]
 
@@ -164,3 +165,6 @@ VOCAB_SOURCES = (("seadatanet", "Sea Data Net"),
                  ("britishoceanographicdatacentre", "British Oceanographic Data Centre (BODC)"))
 DEVICE_SOURCE_DEFAULT= "generatedforace"
 UNCERTAINTY_DEFAULT = "britishoceanoraphicdatacentre"
+
+# JQUERY is loaded when necessary from the static files
+USE_DJANGO_JQUERY = False

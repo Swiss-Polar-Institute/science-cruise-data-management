@@ -46,7 +46,7 @@ class Country(models.Model):
         verbose_name_plural="Countries"
 
 
-class Device(models.Model):
+class DeviceType(models.Model):
     url = models.CharField(max_length=255, null=True, blank=True, help_text = "If adding a new device leave this field blank.")
     code = models.CharField(max_length=255, unique=True, null=True, blank=True, help_text = "If adding a new device leave this field blank.")
     name = models.CharField(max_length=255, help_text = "Use a descriptive but short name for the device.")
@@ -59,6 +59,22 @@ class Device(models.Model):
     def __str__(self):
         return "{}".format(self.name)
 
+
+class ChildDevice(models.Model):
+    type = models.ForeignKey(DeviceType)
+    serial_number = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{}-{}".format(self.type.name, self.serial_number)
+
+
+class ParentDevice(models.Model):
+    name = models.CharField(max_length=255)
+    definition = models.CharField(max_length=255)
+    possible_devices = models.ManyToManyField(ChildDevice)
+
+    def __str__(self):
+        return "{}".format(self.name)
 
 class PositionUncertainty(models.Model):
     code = models.CharField(max_length=255, unique=True)
@@ -250,9 +266,9 @@ class Station(models.Model):
     leg = models.ForeignKey(Leg)
     arrival_time = models.DateTimeField(null=True, blank=True)
     departure_time = models.DateTimeField(null=True, blank=True)
-    time_source = models.ForeignKey(Device, related_name='station_device_time_source', null=True, blank=True)
+    time_source = models.ForeignKey(ChildDevice, related_name='station_device_time_source', null=True, blank=True)
     time_uncertainty = models.ForeignKey(TimeUncertainty, null=True, blank=True)
-    position_source = models.ForeignKey(Device, related_name='station_position_time_source', null=True, blank=True)
+    position_source = models.ForeignKey(ChildDevice, related_name='station_position_time_source', null=True, blank=True)
     position_uncertainty = models.ForeignKey(PositionUncertainty, null=True,blank=True)
     water_depth = models.FloatField(null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
@@ -283,7 +299,8 @@ class Data(models.Model):
 
 class Event(models.Model):
     number = models.IntegerField(default=next_event_number, unique=True)
-    device = models.ForeignKey(Device)
+    parent_device = models.ForeignKey(ParentDevice)
+    child_device = models.ManyToManyField(ChildDevice)
     station = models.ForeignKey(Station, null=True)
 
     def __str__(self):
@@ -353,12 +370,12 @@ class EventAction(models.Model):
     description = models.ForeignKey(EventActionDescription)
 
     time = models.DateTimeField()
-    time_source = models.ForeignKey(Device, related_name='eventaction_device_time_source')
+    time_source = models.ForeignKey(ChildDevice, related_name='eventaction_device_time_source')
     time_uncertainty = models.ForeignKey(TimeUncertainty)
 
     latitude = models.FloatField()
     longitude = models.FloatField()
-    position_source = models.ForeignKey(Device, related_name='eventaction_position_time_source')
+    position_source = models.ForeignKey(ChildDevice, related_name='eventaction_position_time_source')
     position_uncertainty = models.ForeignKey(PositionUncertainty)
 
     water_depth = models.FloatField(null=True, blank=True)

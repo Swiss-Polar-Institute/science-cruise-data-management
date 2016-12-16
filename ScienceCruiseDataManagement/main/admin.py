@@ -68,7 +68,7 @@ class EventForm(ModelForm):
 
 
 class EventAdmin(ReadOnlyFields, import_export.admin.ImportExportModelAdmin):
-    list_display = ('number', 'device', 'station')
+    list_display = ('number', 'parent_device', 'station')
     ordering = ['-number']
     form = EventForm
 
@@ -248,9 +248,14 @@ class StationTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['type']
 
 
-class DeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('code', 'name', 'definition', 'source')
-    ordering = ['name']
+class ChildDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('device_type_name', 'serial_number')
+    ordering = ['type__name']
+
+    def device_type_name(self, obj):
+        return obj.type.name
+
+    device_type_name.admin_order_field = 'type__name'
 
 
 class CountryAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
@@ -339,35 +344,44 @@ class FilesStorageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 class StorageCrateAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'location', 'description', 'comment')
-
     ordering = ['name']
 
 
 class NetworkHostAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('ip', 'hostname', 'location', 'comment')
-
     ordering = ['ip']
 
 
 class PlatformTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'definition', 'source')
+    ordering = ['name']
 
+
+class DeviceTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('url', 'code', 'name', 'definition', 'version', 'deprecated', 'date', 'source')
     ordering = ['name']
 
 
 class PlatformAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'platformtype')
-
     ordering = ['name']
 
 
 class ShipAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name','imo', 'callsign')
-
+    list_display = ('name', 'imo', 'callsign')
     ordering = ['name']
 
-admin.site.register(main.models.Device, DeviceAdmin)
+
+class ParentDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('name', 'definition')
+    ordering = ['name']
+
+
+admin.site.register(main.models.Ship, ShipAdmin)
 admin.site.register(main.models.StationType, StationTypeAdmin)
+admin.site.register(main.models.ChildDevice, ChildDeviceAdmin)
+admin.site.register(main.models.DeviceType, DeviceTypeAdmin)
+admin.site.register(main.models.ParentDevice, ParentDeviceAdmin)
 admin.site.register(main.models.Project, ProjectAdmin)
 admin.site.register(main.models.Event, EventAdmin)
 admin.site.register(main.models.EventActionDescription, EventActionDescriptionAdmin)
