@@ -191,7 +191,7 @@ class PlatformType(models.Model):
     version = models.CharField(max_length=255, null=True, blank=True)
     deprecated = models.CharField(max_length=255, null=True, blank=True)
     date = models.DateTimeField(max_length=255, null=True, blank=True)
-    source = models.CharField(max_length=255, choices=settings.VOCAB_SOURCE)
+    source = models.CharField(max_length=255, choices=settings.VOCAB_SOURCES)
 
     def __str__(self):
         return "{}".format(self.name)
@@ -202,7 +202,7 @@ class Platform(models.Model):
     name = models.CharField(max_length=255, unique=True)
     country = models.ForeignKey(Country)
     platformtype = models.ForeignKey(PlatformType)
-    source = models.CharField(max_length=255, choices=settings.VOCAB_SOURCE)
+    source = models.CharField(max_length=255, choices=settings.VOCAB_SOURCES)
 
     def __str__(self):
         return "{}".format(self.name)
@@ -218,7 +218,7 @@ class Ship(models.Model):
     gross_weight = models.CharField(max_length=255, null=True, blank=True)
     noise_design = models.CharField(max_length=255, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
-    source = models.CharField(max_length=255, choices=settings.VOCAB_SOURCE)
+    source = models.CharField(max_length=255, choices=settings.VOCAB_SOURCES)
 
     def __str__(self):
         return "{}".format(self.name)
