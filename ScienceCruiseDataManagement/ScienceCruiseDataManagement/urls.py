@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-from main.views import MainMenuView, MainMapView, PositionsJson, CountryListView, FileStorageView, InteractiveMapView, EventListView
+from main.views import MainMenuView, MainMapView, PositionsJson, CountryListView, FileStorageView, InteractiveMapView, EventListView, ImportPortsFromGpx
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^map/interactive/$', InteractiveMapView.as_view()),
     url(r'^reports/events/$', EventListView.as_view()),
     url(r'^selectable/', include('selectable.urls')),
+    url(r'^import_ports_from_gpx/', ImportPortsFromGpx.as_view()),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:

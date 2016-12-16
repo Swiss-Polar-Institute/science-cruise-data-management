@@ -161,3 +161,18 @@ class FileStorageView(TemplateView):
 
         return context
 
+
+class ImportPortsFromGpx(View):
+
+    def get(self, request, *args, **kwargs):
+        template_name = "import_ports_from_gpx_form.html"
+        return render(request, template_name)
+
+    def post(self, request, *args, **kwargs):
+        template_name = "import_ports_from_gpx_exec.html"
+
+        file = request.FILES['gpxfile']
+        file_name = file.name
+        file_content = file.read()
+
+        return render(request, template_name, {'message': file_content})

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Upload GPX file{% endblock %}
+{% load static %}
+
+{% block content %}
+In OpenCPN export the track as GPX doing ...:
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="gpxfile">
+    <button type="submit">Upload</button>
+  </form>
+{% endblock %}
