@@ -129,6 +129,24 @@ class Leg(models.Model):
     end_time = models.DateTimeField(blank=True, null=True)
     end_port = models.ForeignKey(Port, related_name='end_port')
 
+    active_leg = models.BooleanField(default=False, help_text="Setting it to true will make this the default leg")
+
+    def save(self, *args, **kwargs):
+
+        # If the save is making the active_leg true: change all the other active_legs to
+        # false
+        if self.active_leg == True:
+            Leg.objects.all().update(active_leg=False)
+
+        super(Leg, self).save(*args, **kwargs)
+
+
+    @staticmethod
+    def current_active_leg():
+        query_set = Leg.objects.all().filter(active_leg=True)
+        leg = query_set[0]
+        return leg
+
     def __str__(self):
         return "{}".format(self.number)
 

@@ -3,10 +3,34 @@
 {% load static %}
 
 {% block content %}
-In OpenCPN export the track as GPX doing ...:
+Import the OpenCPN GPX file with one route:
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="file" name="gpxfile">
     <button type="submit">Upload</button>
   </form>
+
+
+<hr>
+<h2>Steps to export/import</h2>
+In OpenCPN export the route using GPX format and upload the file here.<p>
+To export:
+    <ul>
+    <li>Go to OpenCPN</li>
+    <li>Press the button <img src="/static/images/external/opencpn-route-button.png"></li>
+    <li>Select the route to export</li>
+    <li>Press "Export select" button and save it into a file</li>
+</ul>
+
+To import it here:
+<ul>
+    <li>Press the button on the top of the page and choose the file that has just been exported
+    <li>Press "Upload"
+</ul>
+What will happen?
+<ul>
+    <li>Will update existing Stations (based on their names) with the new locations
+    <li>Will create the new stations
+    <li>The Stations names are the names on the OpenCPN, the leg is the active leg (the last leg started based on the current date)
+</ul>
 {% endblock %}

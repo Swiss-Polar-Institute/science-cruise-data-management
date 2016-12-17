@@ -5,10 +5,13 @@ from debug_toolbar.panels import request
 from django.shortcuts import render
 from django.views.generic import TemplateView, View, ListView
 from django.http import JsonResponse
-from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port
+
+from main import import_gpx_to_stations
+from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station
 from django.utils import timezone
 from django.db.models import Q
 import main.models
+import main.import_gpx_to_stations
 
 class MainMenuView(TemplateView):
     template_name = "main_menu.html"
@@ -60,6 +63,15 @@ class PositionsJson(View):
                 geojson.Feature(geometry=point, properties={'id': 'Port.{}'.format(port.id),
                                                             'text': port.name,
                                                             'marker_color': 'yellow'}))
+
+        for station in Station.objects.all():
+            point = geojson.Point((station.longitude, station.latitude))
+            features.append(
+                geojson.Feature(geometry=point, properties={'id': 'station.{}'.format(station.id),
+                                                            'text': station.name,
+                                                            'marker_color': 'green'}))
+
+
         return JsonResponse(geojson.FeatureCollection(features))
 
 # class PositionsJson(View):
@@ -165,14 +177,21 @@ class FileStorageView(TemplateView):
 class ImportPortsFromGpx(View):
 
     def get(self, request, *args, **kwargs):
-        template_name = "import_ports_from_gpx_form.html"
-        return render(request, template_name)
+        return render(request, "import_ports_from_gpx_form.html")
 
     def post(self, request, *args, **kwargs):
-        template_name = "import_ports_from_gpx_exec.html"
-
         file = request.FILES['gpxfile']
         file_name = file.name
-        file_content = file.read()
+        file_content = file.read().decode('utf-8')
 
-        return render(request, template_name, {'message': file_content})
+        (created, modified, skipped, reports) = import_gpx_to_stations.import_gpx_to_stations(file_content)
+
+        template_information = {
+            'created': created,
+            'modified': modified,
+            'skipped': skipped,
+            'reports': reports,
+            'file_name': file_name
+        }
+
+        return render(request, "import_ports_from_gpx_exec.html", template_information)

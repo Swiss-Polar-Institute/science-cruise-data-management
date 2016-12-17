@@ -183,7 +183,7 @@ class EventActionDescriptionAdmin(admin.ModelAdmin):
 
 
 class LegAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('number', 'start_time', 'start_port', 'end_time', 'end_port')
+    list_display = ('number', 'start_time', 'start_port', 'end_time', 'end_port', 'active_leg')
     ordering = ['number']
 
 

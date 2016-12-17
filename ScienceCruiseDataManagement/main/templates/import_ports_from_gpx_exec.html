@@ -4,4 +4,14 @@
 
 {% block content %}
 {{ message }}
+<b>Created:</b> {{created}} waypoints<br>
+<b>Modified:</b> {{modified}} waypoints<br>
+<b>Skipped:</b> {{skipped}} waypoints<p>
+
+<b>File name:</b> {{file_name}}<p>
+<b>Details:</b><br>
+{% for report in reports %}
+ {{ report }}<br>
+{% endfor %}
+
 {% endblock %}

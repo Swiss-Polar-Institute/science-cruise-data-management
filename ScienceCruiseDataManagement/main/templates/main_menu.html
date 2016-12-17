@@ -12,5 +12,8 @@
         <li><a href="/map">Map</a></li>
         <li><a href="/storage">Storage</a></li>
         <li><a href="/admin">Admin</a> (e.g. to enter events)</li>
+        {% if perms.main.can_add_station %}
+        <li><a href="/import_ports_from_gpx/">Import ports from OpenCPN (or any GPX file)</a></li>
+        {% endif %}
     </ul>
 {% endblock %}
