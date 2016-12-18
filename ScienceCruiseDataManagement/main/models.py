@@ -129,10 +129,7 @@ class Leg(models.Model):
     end_time = models.DateTimeField(blank=True, null=True)
     end_port = models.ForeignKey(Port, related_name='end_port')
 
-    active_leg = models.BooleanField(default=False, help_text="Setting it to true will make this the default leg")
-
     def save(self, *args, **kwargs):
-
         # If the save is making the active_leg true: change all the other active_legs to
         # false
         if self.active_leg == True:
@@ -143,8 +140,13 @@ class Leg(models.Model):
 
     @staticmethod
     def current_active_leg():
-        query_set = Leg.objects.all().filter(active_leg=True)
-        leg = query_set[0]
+        legs = Leg.objects.all().order_by('start_time')
+
+        for leg in legs:
+            if leg.start_time > timezone.now() and (leg.end_time > timezone.now() or leg.end_time == None):
+                return leg
+
+        # Returns the last leg
         return leg
 
     def __str__(self):

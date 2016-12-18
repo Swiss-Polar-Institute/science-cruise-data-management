@@ -186,6 +186,9 @@ class LegAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('number', 'start_time', 'start_port', 'end_time', 'end_port', 'active_leg')
     ordering = ['number']
 
+    def active_leg(self, obj):
+        return obj == main.models.Leg.current_active_leg()
+
 
 class StationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'type', 'latitude', 'longitude', 'leg', 'arrival_time', 'departure_time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'comment')
