@@ -62,7 +62,8 @@ class ReadOnlyFields:
 
 
 class ChildDeviceForm(ModelForm):
-    type_of_device = AutoCompleteSelectField(lookup_class=main.lookups.DeviceTypeLookup, allow_new=False)
+    # The AutoCompleteSelectField is disabled because this widget didn't work correctly
+    # type_of_device = AutoCompleteSelectField(lookup_class=main.lookups.DeviceTypeLookup, allow_new=False)
 
     class Meta:
         model = main.models.ChildDevice
