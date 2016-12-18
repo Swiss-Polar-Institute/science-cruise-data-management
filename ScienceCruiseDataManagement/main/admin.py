@@ -6,6 +6,7 @@ from django.db.models import Q
 import main.utils
 from selectable.forms import AutoCompleteSelectField, AutoCompleteSelectMultipleWidget, AutoComboboxSelectWidget
 import main.lookups
+from django.conf import settings
 
 
 class ProjectsStartsWithLetter(admin.SimpleListFilter):
@@ -414,6 +415,8 @@ admin.site.register(main.models.NetworkHost, NetworkHostAdmin)
 admin.site.register(main.models.Platform, PlatformAdmin)
 admin.site.register(main.models.PlatformType, PlatformTypeAdmin)
 
-admin.site.site_header = 'ACE Data'
-admin.site.site_title = 'ACE Data Admin'
-admin.site.site_header = 'ACE Data Administration'
+ADMIN_SITE_TITLE = 'Ace Data Admin'
+ADMIN_SITE_HEADER = 'ACE Data Administration'
+
+admin.site.site_title = settings.ADMIN_SITE_TITLE
+admin.site.site_header = settings.ADMIN_SITE_HEADER

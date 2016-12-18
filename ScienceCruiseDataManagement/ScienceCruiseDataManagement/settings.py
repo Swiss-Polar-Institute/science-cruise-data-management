@@ -168,3 +168,6 @@ UNCERTAINTY_DEFAULT = "britishoceanoraphicdatacentre"
 
 # JQUERY is loaded when necessary from the static files
 USE_DJANGO_JQUERY = False
+
+ADMIN_SITE_TITLE = 'ACE Data Admin'
+ADMIN_SITE_HEADER = 'ACE Data Administration'
