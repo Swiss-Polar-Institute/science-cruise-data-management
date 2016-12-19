@@ -464,6 +464,7 @@ class Messages(models.Model):
     message = models.TextField()
 
     def __str__(self):
+        return "{}".format(self.name)
 
 class NetworkHost(models.Model):
     ip = models.GenericIPAddressField()
