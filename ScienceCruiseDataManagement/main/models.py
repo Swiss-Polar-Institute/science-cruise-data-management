@@ -459,6 +459,7 @@ class EventAction(models.Model):
         permissions = cannot_change_events_action
 
 class Messages(models.Model):
+    date_time = models.DateTimeField()
     subject = models.CharField(max_length=255)
     message = models.TextField()
 
