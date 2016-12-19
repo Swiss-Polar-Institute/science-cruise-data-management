@@ -204,7 +204,7 @@ class EventReportAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.Mo
         return obj.station.name
 
     def device_name(self, obj):
-        return obj.device.name
+        return obj.parent_device.name
 
     def _get_event_action(self, start_or_end, event_id, field):
         """ Returns the Event Action start (where type="TBEGNS" or "TINSTANT" and the EventId is
@@ -285,8 +285,8 @@ class FileStorageGeneralAdmin(import_export.admin.ExportMixin, admin.ModelAdmin)
 
 
 class PortAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('code', 'name', 'latitude', 'longitude')
-    ordering = ['code']
+    list_display = ('code', 'name', 'country', 'latitude', 'longitude', 'source')
+    ordering = ['name']
 
 
 class PositionUncertaintyAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):

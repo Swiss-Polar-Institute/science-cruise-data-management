@@ -19,7 +19,7 @@ class Command(BaseCommand):
                 platform = Platform()
                 platform.url = row['Url']
                 platform.code = row['Identifier']
-                platform.name = row['name']
+                platform.name = row['PrefLabel']
 
                 if row['country'] != '':
                     country = Country.objects.all().filter(name=row['country'])[0]

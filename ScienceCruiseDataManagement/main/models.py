@@ -112,10 +112,16 @@ class TimeUncertainty(models.Model):
 
 
 class Port(models.Model):
+    url = models.CharField(max_length=255, null=True, blank=True)
     code = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255, unique=True)
+    country = models.ForeignKey(Country)
     latitude = models.FloatField()
     longitude = models.FloatField()
+    version = models.CharField(max_length=255, null=True, blank=True)
+    deprecated = models.CharField(max_length=255, null=True, blank=True)
+    date = models.CharField(max_length=255, null=True, blank=True)
+    source = models.CharField(max_length=255, choices = settings.VOCAB_SOURCES)
 
     def __str__(self):
         return "{}".format(self.name)
@@ -237,6 +243,7 @@ class Ship(models.Model):
     power = models.CharField(max_length=255, null=True, blank=True)
     gross_weight = models.CharField(max_length=255, null=True, blank=True)
     noise_design = models.CharField(max_length=255, null=True, blank=True)
+    noise = models.CharField(max_length=255, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
     source = models.CharField(max_length=255, choices=settings.VOCAB_SOURCES)
 
@@ -450,6 +457,12 @@ class EventAction(models.Model):
 
     class Meta:
         permissions = cannot_change_events_action
+
+class Messages(models.Model):
+    subject = models.CharField(max_length=255)
+    message = models.TextField()
+
+    def __str__(self):
 
 class NetworkHost(models.Model):
     ip = models.GenericIPAddressField()

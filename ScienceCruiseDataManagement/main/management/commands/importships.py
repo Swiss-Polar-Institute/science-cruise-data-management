@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Ship
+from main.models import Ship, Platform
 import csv
 
 class Command(BaseCommand):
@@ -20,7 +20,9 @@ class Command(BaseCommand):
 
                 if row['name'] != '':
                     platform = Platform.objects.all().filter(name=row['name'])[0]
-                    ship.platform = platform
+                    ship.name = platform
+                else:
+                    print(row)
 
                 ship.imo = row['imo']
                 ship.callsign = row['callsign']
@@ -29,7 +31,9 @@ class Command(BaseCommand):
                 ship.power = row['power']
                 ship.gross_weight = row['gross_weight']
                 ship.noise_design = row['noise_design']
-                ship.notes = row['noise']
+                ship.noise = row['noise']
+                ship.notes = row['notes']
+                print(row['source'])
                 ship.source = row['source']
 
                 ship.save()
