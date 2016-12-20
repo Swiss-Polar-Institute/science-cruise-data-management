@@ -148,7 +148,7 @@ DATETIME_FORMAT = "Y-m-d H:i:s"
 STATIC_URL = '/static/'
 
 # Should be moved out from here, just for development at the moment
-BASE_STORAGE_DIRECTORY = os.environ["HOME"]
+BASE_STORAGE_DIRECTORY = '/mnt/ace_data'
 
 # Added for the importer-exporter module
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
