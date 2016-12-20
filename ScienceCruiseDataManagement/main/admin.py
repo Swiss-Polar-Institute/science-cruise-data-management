@@ -71,8 +71,8 @@ class ChildDeviceForm(ModelForm):
 
 
 class EventAdmin(ReadOnlyFields, import_export.admin.ImportExportModelAdmin):
-    list_display = ('number', 'parent_device', 'station')
-    ordering = ['-number']
+    list_display = ('id', 'parent_device', 'station')
+    ordering = ['-id']
 
     # add for import-export: resource_class = EventResource
 
@@ -198,7 +198,7 @@ class StationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class EventReportAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude')
+    list_display = ('id', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude')
 
     def station_name(self, obj):
         return obj.station.name

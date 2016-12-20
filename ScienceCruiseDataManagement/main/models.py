@@ -135,15 +135,6 @@ class Leg(models.Model):
     end_time = models.DateTimeField(blank=True, null=True)
     end_port = models.ForeignKey(Port, related_name='end_port')
 
-    def save(self, *args, **kwargs):
-        # If the save is making the active_leg true: change all the other active_legs to
-        # false
-        if self.active_leg == True:
-            Leg.objects.all().update(active_leg=False)
-
-        super(Leg, self).save(*args, **kwargs)
-
-
     @staticmethod
     def current_active_leg():
         legs = Leg.objects.all().order_by('start_time')
@@ -334,7 +325,6 @@ class Data(models.Model):
 
 
 class Event(models.Model):
-    number = models.IntegerField(default=next_event_number, unique=True)
     parent_device = models.ForeignKey(ParentDevice, related_name="parent_device_event")
     child_devices = ChainedManyToManyField(
         ChildDevice,
@@ -345,7 +335,7 @@ class Event(models.Model):
     station = models.ForeignKey(Station, null=True)
 
     def __str__(self):
-        return "{}".format(self.number)
+        return "{}".format(self.id)
 
     class Meta:
         permissions = cannot_change_events
@@ -453,7 +443,7 @@ class EventAction(models.Model):
 
 
     def __str__(self):
-        return "{}".format(self.event.number)
+        return "{}".format(self.event.id)
 
     class Meta:
         permissions = cannot_change_events_action
