@@ -73,7 +73,7 @@ class ParentDevice(models.Model):
 class ChildDevice(models.Model):
     # The name is "type_of_device" because if it's type the Form doesn't work
     # correctly (reserved word in Python)
-    type_of_device = models.ForeignKey(DeviceType, verbose_name="Type", help_text="Start writing to autocomplete")
+    type_of_device = models.ForeignKey(DeviceType, verbose_name="Type")
     serial_number = models.CharField(max_length=255, unique=True)
     possible_parents = models.ManyToManyField(ParentDevice)
 
