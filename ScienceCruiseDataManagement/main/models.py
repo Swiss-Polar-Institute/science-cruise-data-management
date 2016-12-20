@@ -325,6 +325,7 @@ class Data(models.Model):
 
 
 class Event(models.Model):
+    number = models.AutoField(primary_key=True)
     parent_device = models.ForeignKey(ParentDevice, related_name="parent_device_event")
     child_devices = ChainedManyToManyField(
         ChildDevice,
@@ -335,7 +336,7 @@ class Event(models.Model):
     station = models.ForeignKey(Station, null=True)
 
     def __str__(self):
-        return "{}".format(self.id)
+        return "{}".format(self.number)
 
     class Meta:
         permissions = cannot_change_events
@@ -443,7 +444,7 @@ class EventAction(models.Model):
 
 
     def __str__(self):
-        return "{}".format(self.event.id)
+        return "{}".format(self.event.number)
 
     class Meta:
         permissions = cannot_change_events_action

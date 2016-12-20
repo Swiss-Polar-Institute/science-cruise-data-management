@@ -71,8 +71,8 @@ class ChildDeviceForm(ModelForm):
 
 
 class EventAdmin(ReadOnlyFields, import_export.admin.ImportExportModelAdmin):
-    list_display = ('id', 'parent_device', 'station')
-    ordering = ['-id']
+    list_display = ('number', 'parent_device', 'station')
+    ordering = ['-number']
 
     # add for import-export: resource_class = EventResource
 
@@ -109,28 +109,29 @@ class EventActionForm(ModelForm):
 
         if 'event' in self.fields:
             # event is not in the fields if it's readonly
-            self.fields['event'].queryset = main.models.Event.objects.all().filter(self._filter_open_events())
+            filter_by = self._filter_open_events()
+            self.fields['event'].queryset = main.models.Event.objects.all().filter(filter_by)
 
     def _filter_open_events(self):
-        filter_query = Q(id=0) # Impossible with OR will be the rest
+        filter_query = Q(number=0) # Impossible with OR will be the rest
 
-        for open_event_id in self._open_event_ids():
-                filter_query = filter_query | Q(id=open_event_id)
+        for open_event_id in self._open_event_numbers():
+                filter_query = filter_query | Q(number=open_event_id)
 
         return filter_query
 
-    def _action_finished(self, event_action_id, event_id):
+    def _action_finished(self, event_action_id, event_number):
         event_actions_instant = main.models.EventAction.objects.all().filter(
                                 Q(id=event_action_id) & Q(type="TINSTANT"))
 
         if len(event_actions_instant) > 0:
-            print("tinstant: event_action_id:", event_action_id, "event_id:", event_id)
+            print("tinstant: event_action_id:", event_action_id, "event_number:", event_number)
             return True
 
-        event_actions = main.models.EventAction.objects.all().filter(Q(event_id=event_id) & Q(type="TENDS"))
+        event_actions = main.models.EventAction.objects.all().filter(Q(event=event_number) & Q(type="TENDS"))
 
         if len(event_actions) > 0:
-            print("tends: event_action_id:", event_action_id, "event_id:", event_id)
+            print("tends: event_action_id:", event_action_id, "event_number:", event_number)
             # There is an TENDS event so it's finished
             return True
 
@@ -145,24 +146,24 @@ class EventActionForm(ModelForm):
         else:
             return False
 
-    def _open_event_ids(self):
+    def _open_event_numbers(self):
         """ Returns the event IDs that have been started and not finished. """
         started_not_finished = []
         event_actions = main.models.EventAction.objects.all()
         events = main.models.Event.objects.all()
-        open_event_ids = []
+        open_event_numbers = []
 
         # Adds events with TBEGNS and not finished
         for event_action in event_actions:
             if event_action.type == main.models.EventAction.tbegin():
-                if not self._action_finished(event_action.id, event_action.event.id):
-                    open_event_ids.append(event_action.event.id)
+                if not self._action_finished(event_action.id, event_action.event.number):
+                    open_event_numbers.append(event_action.event.number)
 
         for event in events:
-            if self._event_not_opened(event.id):
-                open_event_ids.append(event.id)
+            if self._event_not_opened(event.number):
+                open_event_numbers.append(event.number)
 
-        return open_event_ids
+        return open_event_numbers
 
     class Meta:
         model = main.models.EventAction
@@ -198,7 +199,7 @@ class StationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class EventReportAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('id', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude')
+    list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude')
 
     def station_name(self, obj):
         return obj.station.name
