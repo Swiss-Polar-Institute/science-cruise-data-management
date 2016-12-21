@@ -331,9 +331,10 @@ class Event(models.Model):
         ChildDevice,
         chained_field='parent_device',
         chained_model_field='possible_parents',
+        blank=True
     )
     #    models.ManyToManyField(ChildDevice)
-    station = models.ForeignKey(Station, null=True)
+    station = models.ForeignKey(Station, null=True, blank=True)
 
     def __str__(self):
         return "{}".format(self.number)
@@ -363,7 +364,7 @@ class StorageCrate(models.Model):
 
 
 class EventAction(models.Model):
-    event = models.ForeignKey(Event)
+    event = models.ForeignKey(Event, help_text="Select the event for which you want to enter an action.")
 
     # If changing the order modify tbegin, tends and tinstant
     # Perhaps this could be done creating the tuple out of a dictionary
