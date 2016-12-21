@@ -3,11 +3,19 @@
 
 {% block content %}
     <div class="page-header">
-        <h1>Welcome to the ACE Intranet home</h1>
+        <h1>Welcome to the ACE Intranet</h1>
     </div>
 
-    Have a good trip and research!<p>
-    Links:
+    <div class="header">
+        <h2>Announcements</h2>
+    </div>
+
+    <pre><h4>Subject: {{subject}}
+From: {{person}}</b></h4>
+{{message}} </h4></pre>
+
+    <p>
+    <b>Links:</b>
     <ul>
         <li><a href="/map">Map</a></li>
         <li><a href="/storage">Storage</a></li>
@@ -16,4 +24,5 @@
         <li><a href="/import_ports_from_gpx/">Import ports from OpenCPN (or any GPX file)</a></li>
         {% endif %}
     </ul>
+    <br>Have a good trip and research!</br>
 {% endblock %}

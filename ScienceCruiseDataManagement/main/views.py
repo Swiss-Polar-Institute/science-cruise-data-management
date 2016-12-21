@@ -7,7 +7,7 @@ from django.views.generic import TemplateView, View, ListView
 from django.http import JsonResponse
 
 from main import import_gpx_to_stations
-from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station
+from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station, Message
 from django.utils import timezone
 from django.db.models import Q
 import main.models
@@ -18,6 +18,18 @@ class MainMenuView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(MainMenuView, self).get_context_data(**kwargs)
+
+        last_message = Message.objects.order_by('date_time')
+
+        if len(last_message) == 0:
+            print('There are no messages')
+        else:
+            last_message = Message.objects.order_by('-date_time').first()
+
+        context['message'] = last_message.message
+        context['time'] = last_message.date_time
+        context['person'] = last_message.person
+        context['subject'] = last_message.subject
 
         return context
 

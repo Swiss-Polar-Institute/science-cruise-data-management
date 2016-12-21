@@ -386,7 +386,7 @@ class ParentDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['name']
 
 class MessageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('date_time', 'subject', 'message')
+    list_display = ('date_time', 'subject', 'message', 'person')
     ordering = ['-date_time']
 
 admin.site.register(main.models.Ship, ShipAdmin)

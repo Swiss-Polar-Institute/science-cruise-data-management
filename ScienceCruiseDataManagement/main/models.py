@@ -453,6 +453,7 @@ class Message(models.Model):
     date_time = models.DateTimeField()
     subject = models.CharField(max_length=255)
     message = models.TextField()
+    person = models.CharField(max_length=255)
 
     def __str__(self):
         return "{}".format(self.subject)
