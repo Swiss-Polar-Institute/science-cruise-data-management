@@ -18,9 +18,9 @@ class Command(BaseCommand):
             for row in reader:
                 print(row)
                 port = Port()
-                port.name = row['Url']
+                port.url = row['Url']
                 port.code = row['Identifier']
-                port.code = row['PrefLabel']
+                port.name = row['PrefLabel']
 
                 if row['country'] != '':
                     country = Country.objects.all().filter(name=row['country'])[0]
