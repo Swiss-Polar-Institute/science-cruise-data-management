@@ -340,15 +340,17 @@ class Data(models.Model):
 
 class Event(models.Model):
     number = models.AutoField(primary_key=True)
-    parent_device = models.ForeignKey(ParentDevice, related_name="parent_device_event")
+    parent_device = models.ForeignKey(ParentDevice, related_name="parent_device_event", verbose_name="Sampling method", help_text="Choose the instrument or method used for sampling")
     child_devices = ChainedManyToManyField(
         ChildDevice,
         chained_field='parent_device',
         chained_model_field='possible_parents',
-        blank=True
+        blank=True,
+        verbose_name="Attached devices",
+        help_text="Choose any devices that are attached to your instrument"
     )
     #    models.ManyToManyField(ChildDevice)
-    station = models.ForeignKey(Station, null=True, blank=True)
+    station = models.ForeignKey(Station, null=True, blank=True, help_text="Only choose a station name where the ship has stopped")
 
     def __str__(self):
         return "{}".format(self.number)
