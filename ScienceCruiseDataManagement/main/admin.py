@@ -304,7 +304,7 @@ class TimeUncertaintyAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 class TimeSourceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'definition')
-    ordering = ['name]
+    ordering = ['name']
 
 class PositionSourceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display= ('name', 'definition')
