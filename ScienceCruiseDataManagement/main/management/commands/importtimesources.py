@@ -1,9 +1,9 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import PositionSource
+from main.models import TimeSource
 import csv
 
 class Command(BaseCommand):
-    help = 'Adds data to the position source table'
+    help = 'Adds data to the person table'
 
     def add_arguments(self, parser):
         parser.add_argument('filename', type=str)
@@ -17,10 +17,10 @@ class Command(BaseCommand):
             reader = csv.DictReader(csvfile)
             for row in reader:
                 print(row)
-                positionsource= PositionSource()
+                timesource = TimeSource()
 
-                positionsource.name = row['name']
-                positionsource.definition = row['definition']
+                timesource.name = row['name']
+                timesource.definition = row['definition']
 
-                positionsource.save()
+                timesource.save()
 

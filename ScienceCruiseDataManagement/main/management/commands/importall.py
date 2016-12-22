@@ -22,6 +22,8 @@ class Command(BaseCommand):
         call_command('importparentdevices', os.path.join(directory, "parent_devices.csv"))
         call_command('importtimeuncertainties', os.path.join(directory, "time_uncertainty.csv"))
         call_command('importpositionuncertainties', os.path.join(directory, "position_uncertainty.csv"))
+        call_command('importtimesources', os.path.join(directory, "time_sources.csv"))
+        call_command('importpositionsources', os.path.join(directory, "position_source.csv"))
         call_command('importeventactiondescriptions', os.path.join(directory, "event_action_description.csv"))
         call_command('importports', os.path.join(directory,"ports.csv"))
         call_command('createdjangousers', "--createusers")
