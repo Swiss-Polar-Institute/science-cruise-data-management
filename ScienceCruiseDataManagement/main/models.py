@@ -380,7 +380,7 @@ class StorageCrate(models.Model):
 
 
 class EventAction(models.Model):
-    event = models.ForeignKey(Event, help_text="Select the event for which you want to enter an action.")
+    event = models.ForeignKey(Event, help_text="Select the event from the list for which you want to enter an action.")
 
     # If changing the order modify tbegin, tends and tinstant
     # Perhaps this could be done creating the tuple out of a dictionary
@@ -415,8 +415,8 @@ class EventAction(models.Model):
         return EventAction.type_choices[1][1]
 
 
-    type = models.CharField(choices=type_choices, max_length=255)
-    description = models.ForeignKey(EventActionDescription)
+    type = models.CharField(choices=type_choices, max_length=255, help_text="Select the description of the time that you are entering", verbose_name= "Time description")
+    description = models.ForeignKey(EventActionDescription, verbose_name="Description of event action", help_text="Select the description that describes the event action")
 
     time = models.DateTimeField()
     time_source = models.ForeignKey(TimeSource)

@@ -176,7 +176,7 @@ class EventActionAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.Mo
 
     #description_2.short_description = "Description"
 
-    list_display = ('id', 'event', 'type', 'description', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
+    list_display = ('id', 'event', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
     ordering = ['-event_id', '-id']
     form = EventActionForm
 
@@ -202,7 +202,10 @@ class EventReportAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.Mo
     list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude')
 
     def station_name(self, obj):
-        return obj.station.name
+        if obj.station is None:
+            return "-"
+        else:
+            return obj.station.name
 
     def device_name(self, obj):
         return obj.parent_device.name
@@ -231,22 +234,22 @@ class EventReportAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.Mo
         return self._get_event_action('end', event_id, field)
 
     def start_time(self, obj):
-        return self._get_event_action_start(obj.id, 'time')
+        return self._get_event_action_start(obj.number, 'time')
 
     def start_latitude(self, obj):
-        return self._get_event_action_start(obj.id, 'latitude')
+        return self._get_event_action_start(obj.number, 'latitude')
 
     def start_longitude(self, obj):
-        return self._get_event_action_start(obj.id, 'longitude')
+        return self._get_event_action_start(obj.number, 'longitude')
 
     def end_time(self, obj):
-        return self._get_event_action_end(obj.id, 'time')
+        return self._get_event_action_end(obj.number, 'time')
 
     def end_latitude(self, obj):
-        return self._get_event_action_end(obj.id, 'latitude')
+        return self._get_event_action_end(obj.number, 'latitude')
 
     def end_longitude(self, obj):
-        return self._get_event_action_end(obj.id, 'longitude')
+        return self._get_event_action_end(obj.number, 'longitude')
 
 
 class StationTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
