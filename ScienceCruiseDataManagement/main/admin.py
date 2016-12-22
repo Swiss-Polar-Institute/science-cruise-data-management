@@ -70,6 +70,12 @@ class ChildDeviceForm(ModelForm):
         fields = '__all__'
 
 
+class EventForm(ModelForm):
+    class Meta:
+        model = main.models.Event
+        exclude = ('child_devices', )
+        # 'child_device' is not here on purpose, for now
+
 class EventAdmin(ReadOnlyFields, import_export.admin.ImportExportModelAdmin):
     list_display = ('number', 'parent_device', 'station')
     ordering = ['-number']
@@ -82,6 +88,7 @@ class EventAdmin(ReadOnlyFields, import_export.admin.ImportExportModelAdmin):
             kwargs["queryset"] = main.models.Leg.objects.filter(name="Leg 1")
         return super(EventAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+    form = EventForm
 
 #
 #class PositionResource(import_export.resources.ModelResource):
