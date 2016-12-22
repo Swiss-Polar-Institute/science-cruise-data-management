@@ -22,14 +22,21 @@ class MainMenuView(TemplateView):
         last_message = Message.objects.order_by('date_time')
 
         if len(last_message) == 0:
-            print('There are no messages')
+            message = "No message has been introduced yet, come back later"
+            time = "N/A"
+            person = "Data management team"
+            subject = "No message"
         else:
             last_message = Message.objects.order_by('-date_time').first()
+            message = last_message.message
+            time = last_message.date_time
+            person = last_message.person
+            subject = last_message.subject
 
-        context['message'] = last_message.message
-        context['time'] = last_message.date_time
-        context['person'] = last_message.person
-        context['subject'] = last_message.subject
+        context['message'] = message
+        context['time'] = time
+        context['person'] = person
+        context['subject'] = subject
 
         return context
 
