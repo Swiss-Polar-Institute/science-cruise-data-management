@@ -107,10 +107,18 @@ class EventActionForm(ModelForm):
         super(EventActionForm, self).__init__(*args, **kwargs)
         # filter out closed events
 
-        if 'event' in self.fields:
+        if 'event' in self.fields and self._adding_new_event_action():
             # event is not in the fields if it's readonly
+            # if we are adding a new event action we don't filter it
             filter_by = self._filter_open_events()
             self.fields['event'].queryset = main.models.Event.objects.all().filter(filter_by)
+
+    def _adding_new_event_action(self):
+        # Returns True if the user is adding an event (instead of modifying it)
+        # The reason is that we want to show all the events (and not only the open ones) if
+        # the user is trying to modify an eventAction. When adding we only show the
+        # ones that the user should select.
+        return len(self.fields) == 0
 
     def _filter_open_events(self):
         filter_query = Q(number=0) # Impossible with OR will be the rest
