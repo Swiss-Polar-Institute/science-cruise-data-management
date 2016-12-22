@@ -143,10 +143,10 @@ class Port(models.Model):
 
 class Leg(models.Model):
     number = models.IntegerField(unique=True)
-    start_time = models.DateTimeField()
+    start_time = models.DateTimeField(help_text="TIME IN UTC", verbose_name="Start time (UTC)")
     start_port = models.ForeignKey(Port, related_name='start_port')
 
-    end_time = models.DateTimeField(blank=True, null=True)
+    end_time = models.DateTimeField(blank=True, null=True, help_text="TIME IN UTC", verbose_name="End time (UTC)")
     end_port = models.ForeignKey(Port, related_name='end_port')
 
     @staticmethod
@@ -305,8 +305,8 @@ class Station(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     leg = models.ForeignKey(Leg)
-    arrival_time = models.DateTimeField(null=True, blank=True)
-    departure_time = models.DateTimeField(null=True, blank=True)
+    arrival_time = models.DateTimeField(null=True, blank=True, help_text="TIME IN UTC", verbose_name="Arrival time (UTC)")
+    departure_time = models.DateTimeField(null=True, blank=True, help_text="TIME IN UTC",verbose_name="Departure time (UTC)")
     time_source = models.ForeignKey(ChildDevice, related_name='station_device_time_source', null=True, blank=True)
     time_uncertainty = models.ForeignKey(TimeUncertainty, null=True, blank=True)
     position_source = models.ForeignKey(ChildDevice, related_name='station_position_time_source', null=True, blank=True)
@@ -414,11 +414,10 @@ class EventAction(models.Model):
     def tinstant_text():
         return EventAction.type_choices[1][1]
 
-
     type = models.CharField(choices=type_choices, max_length=255, help_text="Select the description of the time that you are entering", verbose_name= "Time description")
     description = models.ForeignKey(EventActionDescription, verbose_name="Description of event action", help_text="Select the description that describes the event action")
 
-    time = models.DateTimeField()
+    time = models.DateTimeField(help_text="TIME IN UTC", verbose_name="Time of event action (UTC)")
     time_source = models.ForeignKey(TimeSource)
     time_uncertainty = models.ForeignKey(TimeUncertainty)
 
