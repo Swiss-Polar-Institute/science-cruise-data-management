@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-from main.views import MainMenuView, MainMapView, PositionsJson, CountryListView, FileStorageView, InteractiveMapView, EventListView, ImportPortsFromGpx
+from main.views import MainMenuView, MainMapView, PositionsJson, CountryListView, FileStorageView, InteractiveMapView, EventListView, ImportPortsFromGpx, DocumentsView
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -33,7 +33,11 @@ urlpatterns = [
     url(r'^reports/events/$', EventListView.as_view()),
     url(r'^selectable/', include('selectable.urls')),
     url(r'^import_ports_from_gpx/', ImportPortsFromGpx.as_view()),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    url(r'^documents/', DocumentsView.as_view())
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
+  + static("/document_storage/", document_root=settings.DOCUMENTS_DIRECTORY)
+
+print("TEST:", static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))
 
 if settings.DEBUG:
     import debug_toolbar

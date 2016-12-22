@@ -10,8 +10,11 @@
         <h2>Announcements</h2>
     </div>
 
-    <pre><h4>Subject: {{subject}}
-From: {{person}}</b></h4>
+    <pre>From: {{person}}</h4>
+To: The ACE expedition
+Subject: {{subject}}
+Date: {{date_time}}
+
 {{message}} </h4></pre>
 
     <p>
@@ -22,6 +25,7 @@ From: {{person}}</b></h4>
         <li><a href="/admin">Admin</a> (e.g. to enter events)</li>
         {% if perms.main.can_add_station %}
         <li><a href="/import_ports_from_gpx/">Import ports from OpenCPN (or any GPX file)</a></li>
+        <li><a href="/documents">Documents on different topics</a></li>
         {% endif %}
     </ul>
     <br>Have a good trip and research!</br>

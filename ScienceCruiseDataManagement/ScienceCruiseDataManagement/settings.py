@@ -174,3 +174,6 @@ JQUERY_URL = '/static/js/external/jquery-1.12.0.min.js'
 
 ADMIN_SITE_TITLE = 'ACE Data Admin'
 ADMIN_SITE_HEADER = 'ACE Data Administration'
+
+# This can be a symbolik link
+DOCUMENTS_DIRECTORY = os.path.join(os.getenv("HOME"), "documents_for_ace")

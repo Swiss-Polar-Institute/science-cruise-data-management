@@ -12,6 +12,9 @@ from django.utils import timezone
 from django.db.models import Q
 import main.models
 import main.import_gpx_to_stations
+from django.conf import settings
+import os
+import glob
 
 class MainMenuView(TemplateView):
     template_name = "main_menu.html"
@@ -23,18 +26,18 @@ class MainMenuView(TemplateView):
 
         if len(last_message) == 0:
             message = "No message has been introduced yet, come back later"
-            time = "N/A"
+            date_time = "N/A"
             person = "Data management team"
             subject = "No message"
         else:
             last_message = Message.objects.order_by('-date_time').first()
             message = last_message.message
-            time = last_message.date_time
+            date_time = last_message.date_time
             person = last_message.person
             subject = last_message.subject
 
         context['message'] = message
-        context['time'] = time
+        context['date_time'] = date_time
         context['person'] = person
         context['subject'] = subject
 
@@ -193,8 +196,36 @@ class FileStorageView(TemplateView):
         return context
 
 
-class ImportPortsFromGpx(View):
+class DocumentsView(TemplateView):
+    template_name = "documents.html"
 
+    def get_context_data(self, **kwargs):
+        context = super(DocumentsView, self).get_context_data(**kwargs)
+        documents = {}   # key: directory, values: files
+                         # the key is a topic
+
+        # Prepares a dictionary with the directory names as keys
+        for file in glob.glob(os.path.join(settings.DOCUMENTS_DIRECTORY, "*")):
+            if os.path.isdir(file):
+                documents[os.path.basename(file)] = []
+
+        # Adds a list of dictionary into each dictionary key with the title of the document and the link
+        for topic in documents.keys():
+            for file in glob.glob(os.path.join(settings.DOCUMENTS_DIRECTORY, os.path.join(settings.DOCUMENTS_DIRECTORY), topic, "*")):
+                if os.path.isfile(file):
+                    file_name = os.path.basename(file)
+                    documents[topic].append(
+                        {'title': file_name.split(".")[0],
+                         'link': os.path.join('static', 'documents', 'topic', file_name)
+                         }
+                    )
+
+        context['documents'] = documents
+
+        return context
+
+
+class ImportPortsFromGpx(View):
     def get(self, request, *args, **kwargs):
         return render(request, "import_ports_from_gpx_form.html")
 

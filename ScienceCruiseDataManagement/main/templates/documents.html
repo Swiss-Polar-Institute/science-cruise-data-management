@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Documents{% endblock %}
+
+{% block content %}
+{% for topic, files in documents.items %}
+<h2>{{ topic }}</h2>
+    <ul>
+    {% for file in files %}
+        <li><a href="{{file.link}}">{{ file.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+{% endblock %}
