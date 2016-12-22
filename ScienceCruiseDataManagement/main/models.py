@@ -91,7 +91,7 @@ class PositionUncertainty(models.Model):
     source = models.CharField(max_length=255, choices=settings.VOCAB_SOURCES, default=settings.UNCERTAINTY_DEFAULT)
 
     def __str__(self):
-        return "{}-{}".format(self.code, self.name)
+        return "{}".format(self.name)
 
     class Meta:
         verbose_name_plural = "Position uncertainties"
@@ -115,14 +115,14 @@ class TimeSource(models.Model):
     definition = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return "{}".format(self.name)
+        return "{}-{}".format(self.name, self.definition)
 
 class PositionSource(models.Model):
     name = models.CharField(max_length=255, unique=True)
     definition = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return "{}".format(self.name)
+        return "{}-{}".format(self.name, self.definition)
 
 
 class Port(models.Model):
@@ -417,12 +417,12 @@ class EventAction(models.Model):
     description = models.ForeignKey(EventActionDescription)
 
     time = models.DateTimeField()
-    time_source = models.ForeignKey(ChildDevice, related_name='eventaction_device_time_source')
+    time_source = models.ForeignKey(TimeSource)
     time_uncertainty = models.ForeignKey(TimeUncertainty)
 
     latitude = models.FloatField()
     longitude = models.FloatField()
-    position_source = models.ForeignKey(ChildDevice, related_name='eventaction_position_time_source')
+    position_source = models.ForeignKey(PositionSource)
     position_uncertainty = models.ForeignKey(PositionUncertainty)
 
     water_depth = models.FloatField(null=True, blank=True)
