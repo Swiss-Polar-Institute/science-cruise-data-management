@@ -20,11 +20,11 @@ def nmea_lat_long_to_normal(nmea_lat_long):
     if north_south == "S":
         latitude_degrees *= -1
 
-    if east_west == "E":
+    if east_west == "W":
         longitude_degrees *= -1
 
     return (latitude_degrees, longitude_degrees)
 
 if __name__ == "__main__":
     assert nmea_lat_long_to_normal("3550.28461074,S,01801.84299457,E") \
-           == (-35.83807684566667, -18.030716576166668)
+           == (-35.83807684566667, 18.030716576166668)
