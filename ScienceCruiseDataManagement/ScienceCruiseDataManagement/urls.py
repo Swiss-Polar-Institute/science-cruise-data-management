@@ -37,8 +37,6 @@ urlpatterns = [
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
   + static("/document_storage/", document_root=settings.DOCUMENTS_DIRECTORY)
 
-print("TEST:", static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))
-
 if settings.DEBUG:
     import debug_toolbar
     urlpatterns += [

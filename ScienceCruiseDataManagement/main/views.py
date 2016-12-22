@@ -174,24 +174,33 @@ class EventListView(ListView):
 
 class FileStorageView(TemplateView):
     template_name = "file_storage.html"
+    units = "GB"
+
+    def format_space_number(self, number):
+        if self.units == "GB":
+            conversion_from_kb = 1 / (1024 * 1024)  # How many context['units'] in one KB
+            number *= conversion_from_kb
+            return "{0:.2f}".format(number)
+        else:
+            raise
 
     def get_context_data(self, **kwargs):
         context = super(FileStorageView, self).get_context_data(**kwargs)
         context['file_storages'] = FilesStorage.objects.all()
 
-        context['units'] = "KB"
+        context['units'] = "GB"
 
         detailed_storage = []
         for storage in context['file_storages']:
-            detailed_storage.append({'relative_path': str(storage.relative_path), context['units']: storage.kilobytes})
+            detailed_storage.append({'relative_path': str(storage.relative_path), context['units']: self.format_space_number(storage.kilobytes)})
 
         context['detailed_storage_json'] = json.dumps(detailed_storage)
         last_general_storage = FilesStorageGeneral.objects.latest('time')
 
-        context['general_storage_free'] = last_general_storage.free
-        context['general_storage_used'] = last_general_storage.used
-        context['general_storage_size'] = context['general_storage_free'] + context['general_storage_used']
-        context['general_storage_json'] = json.dumps({'used': last_general_storage.used, 'free': last_general_storage.free})
+        context['general_storage_free'] = self.format_space_number(last_general_storage.free)
+        context['general_storage_used'] = self.format_space_number(last_general_storage.used)
+        context['general_storage_size'] = self.format_space_number(last_general_storage.free + last_general_storage.used)
+        context['general_storage_json'] = json.dumps({'used': self.format_space_number(last_general_storage.used), 'free': self.format_space_number(last_general_storage.free)})
 
         return context
 
