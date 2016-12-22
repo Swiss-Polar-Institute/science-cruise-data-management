@@ -351,6 +351,9 @@ class Event(models.Model):
     )
     #    models.ManyToManyField(ChildDevice)
     station = models.ForeignKey(Station, null=True, blank=True, help_text="Only choose a station name where the ship has stopped")
+    data = models.BooleanField(help_text="Tick this box if raw data will be produced DURING this event (not after post-cruise processing).")
+    samples = models.BooleanField(help_text="Tick this box if samples will be collected during this event.")
+    fail = models.BooleanField(help_text="Tick this box if the deployment or sampling (event) failed.")
 
     def __str__(self):
         return "{}".format(self.number)
@@ -423,8 +426,8 @@ class EventAction(models.Model):
 
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    position_source = models.ForeignKey(PositionSource)
-    position_uncertainty = models.ForeignKey(PositionUncertainty)
+    position_source = models.ForeignKey(PositionSource, null=True, blank=True)
+    position_uncertainty = models.ForeignKey(PositionUncertainty, null=True, blank=True)
 
     water_depth = models.FloatField(null=True, blank=True)
     general_comments = models.TextField(null=True, blank=True)
