@@ -47,7 +47,9 @@ INSTALLED_APPS = [
     'django_extensions',
     'selectable',   # auto-completion
     'smart_selects', # foreign keys depending on other foreign keys
-    'main'  # ScienceCruiseManagement main app
+    'ship_data',
+    'main',  # ScienceCruiseManagement main app
+
 ]
 
 MIDDLEWARE = [
