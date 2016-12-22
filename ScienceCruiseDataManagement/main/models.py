@@ -422,8 +422,8 @@ class EventAction(models.Model):
     time_source = models.ForeignKey(TimeSource)
     time_uncertainty = models.ForeignKey(TimeUncertainty)
 
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     position_source = models.ForeignKey(PositionSource)
     position_uncertainty = models.ForeignKey(PositionUncertainty)
 
