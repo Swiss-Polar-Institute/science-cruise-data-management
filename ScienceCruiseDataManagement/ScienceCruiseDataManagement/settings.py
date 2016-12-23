@@ -176,5 +176,5 @@ ADMIN_SITE_TITLE = 'ACE Data Admin'
 ADMIN_SITE_HEADER = 'ACE Data Administration'
 
 # This can be a symbolik link
-DOCUMENTS_DIRECTORY = os.path.join(os.getenv("HOME"), "documents_for_ace")
+DOCUMENTS_DIRECTORY = os.path.join(os.getenv("HOME"), "intranet_documents")
 FORECAST_DIRECTORY = os.path.join(os.getenv("HOME"), "ethz_forecast_data")
