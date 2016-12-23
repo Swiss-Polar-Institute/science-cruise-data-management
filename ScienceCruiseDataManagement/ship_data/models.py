@@ -4,10 +4,7 @@ from django.db import models
 
 # GPS data from log files
 class GpzdaDateTime(models.Model):
-    time = models.CharField(max_length=9, unique=True)
-    day = models.IntegerField()
-    month = models.IntegerField()
-    year = models.IntegerField()
+    date_time = models.DateTimeField(unique=True)
     local_zone_hours = models.IntegerField()
     local_zone_minutes = models.IntegerField()
 
@@ -15,11 +12,11 @@ class GpzdaDateTime(models.Model):
         return "{}".format(self.time)
 
 class GpggaGpsFix(models.Model):
-    time = models.CharField(max_length=9, unique=True)
+    date_time = models.DateTimeField(unique=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
-    fix_quality = models.IntegerField()
-    number_satellites = models.IntegerField()
+    fix_quality = models.PositiveSmallIntegerField()
+    number_satellites = models.PositiveSmallIntegerField()
     horiz_dilution_of_position = models.FloatField()
     altitude= models.FloatField()
     altitude_units = models.CharField(max_length=1)
@@ -30,7 +27,7 @@ class GpggaGpsFix(models.Model):
         return "{}".format(self.time)
 
 class GpvtgVelocity(models.Model):
-    time = models.CharField(max_length=9, unique=True)      # not in the gpvtg string, importer will use the time from the prior string
+    date_time = models.DateTimeField(unique=True)      # not in the gpvtg string, importer will use the time from the prior string
     true_track_deg = models.FloatField()
     magnetic_track_deg = models.FloatField()
     ground_speed_kts = models.FloatField()
