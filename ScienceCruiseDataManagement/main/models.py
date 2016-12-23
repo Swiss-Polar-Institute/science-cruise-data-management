@@ -302,8 +302,8 @@ class StationType(models.Model):
 class Station(models.Model):
     name = models.CharField(max_length=255, unique=True)
     type = models.ForeignKey(StationType)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     leg = models.ForeignKey(Leg)
     arrival_time = models.DateTimeField(null=True, blank=True, help_text="TIME IN UTC", verbose_name="Arrival time (UTC)")
     departure_time = models.DateTimeField(null=True, blank=True, help_text="TIME IN UTC",verbose_name="Departure time (UTC)")
