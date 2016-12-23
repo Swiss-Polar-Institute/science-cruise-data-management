@@ -40,7 +40,7 @@ class ProcessNMEAFile:
         elif line.startswith("$GPVTG,"):
             self.import_gpvtg(line)
         else:
-            print("Ignoring line", line)
+            pass
 
     def import_gpzda(self, line):
         (nmea_reference, date_time, day, month, year, local_zone_hours, min_checksum) = line.split(",")
@@ -48,15 +48,16 @@ class ProcessNMEAFile:
 
         self.last_datetime = date_time
 
-        gpzda = {}
-        gpzda['time'] = date_time
-        gpzda['day'] = int(day)
-        gpzda['month'] = int(month)
-        gpzda['year'] = int(year)
-        gpzda['local_zone_hours'] = int(local_zone_hours)
-        gpzda['local_zone_minutes'] = int(local_zone_minutes)
+        gpzda = GpzdaDateTime()
+        gpzda.time = date_time
+        gpzda.day = int(day)
+        gpzda.month = int(month)
+        gpzda.year = int(year)
+        gpzda.local_zone_hours = int(local_zone_hours)
+        gpzda.local_zone_minutes = int(local_zone_minutes)
 
-        GpzdaDateTime.objects.update_or_create(time=date_time, defaults=gpzda)
+        if not GpzdaDateTime.objects.filter(time=date_time).exists():
+            gpzda.save()
 
     def import_gpgga(self, line):
         (nmea_reference, date_time, nmea_latitude, nmea_latitude_ns, nmea_longitude, nmea_longitude_ew,
@@ -68,19 +69,21 @@ class ProcessNMEAFile:
 
         (latitude, longitude) = utilities.nmea_lat_long_to_normal(nmea_latitude, nmea_latitude_ns, nmea_longitude, nmea_longitude_ew)
 
-        gps_fix = {}
-        gps_fix["time"] = date_time
-        gps_fix["latitude"] = latitude
-        gps_fix["longitude"] = longitude
-        gps_fix["fix_quality"] = fix_quality
-        gps_fix["number_satellites"] = number_satellites
-        gps_fix["horiz_dilution_of_position"] = horizontal_diluation_of_position
-        gps_fix["altitude"] = altitude
-        gps_fix["altitude_units"] = altitude_units
-        gps_fix["geoid_height"] = geoid_height
-        gps_fix["geoid_height_units"] = geoid_height_units
+        gps_fix = GpggaGpsFix()
 
-        GpggaGpsFix.objects.update_or_create(time=date_time, defaults=gps_fix)
+        gps_fix.time = date_time
+        gps_fix.latitude = latitude
+        gps_fix.longitude = longitude
+        gps_fix.fix_quality = fix_quality
+        gps_fix.number_satellites = number_satellites
+        gps_fix.horiz_dilution_of_position = horizontal_diluation_of_position
+        gps_fix.altitude = altitude
+        gps_fix.altitude_units = altitude_units
+        gps_fix.geoid_height = geoid_height
+        gps_fix.geoid_height_units = geoid_height_units
+
+        if not GpggaGpsFix.objects.filter(time=date_time).exists():
+            gps_fix.save()
 
     def import_gpvtg(self, line):
         if self.last_datetime is None:
@@ -102,13 +105,17 @@ class ProcessNMEAFile:
         if k != "K":
             print("k field is not K?", line)
 
-        velocity = {}
-        velocity["time"] = self.last_datetime
-        velocity["true_track_deg"] = true_track_deg
-        velocity["magnetic_track_deg"] = magnetic_track_deg
-        velocity["ground_speed_kts"] = ground_speed_knots
+        velocity = GpvtgVelocity()
 
-        GpvtgVelocity.objects.update_or_create(time=time, defaults=velocity)
+        datetime = self.last_datetime
+
+        velocity.time = datetime
+        velocity.true_track_deg = true_track_deg
+        velocity.magnetic_track_deg = magnetic_track_deg
+        velocity.ground_speed_kts = ground_speed_knots
+
+        if not GpzdaDateTime.objects.filter(time=self.last_datetime):
+            velocity.save()
 
 
 class TailDirectory:
