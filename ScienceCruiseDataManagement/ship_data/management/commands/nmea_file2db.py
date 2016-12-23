@@ -131,14 +131,14 @@ class TailFile:
             if line:
                 yield line
             else:
-                self._tail(file)
+                yield self._tail(file)
 
     def _tail(self, file):
         while True:
             where = file.tell()
             line = file.readline()
             if not line:
-                    time.sleep(self.SLEEP_INTERVAL)
-                    file.seek(where)
+                time.sleep(self.SLEEP_INTERVAL)
+                file.seek(where)
             else:
-                    yield line
+                return line
