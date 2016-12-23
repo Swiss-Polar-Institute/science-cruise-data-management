@@ -1,30 +1,36 @@
 from django.core.management.base import BaseCommand, CommandError
-from gpxpy.gpxfield import gpx_check_slots_and_default_values
 
 from ship_data.models import GpzdaDateTime, GpggaGpsFix, GpvtgVelocity
 import time
 from ship_data import utilities
+import os
 
 
 class Command(BaseCommand):
-    help = 'Reads the NMEA data and writes it into the database'
+    help = 'Reads the NMEA data and writes it into the database. Keeps checking for new files.'
 
     def add_arguments(self, parser):
-        parser.add_argument('path', type=str)
+        parser.add_argument('directory_path', type=str)
+        parser.add_argument('--start-file', type=str,
+                            action='store',
+                            dest='start_file',
+                            default=None,
+                            help='Which file should start with in an ordered way')
 
     def handle(self, *args, **options):
-        process = ProcessNMEAFile(options['path'])
+        process = ProcessNMEAFile(options['directory_path'], options['start_file'])
         process.process()
 
 
 class ProcessNMEAFile:
-    def __init__(self, file_path):
-        self.file_path = file_path
+    def __init__(self, directory, start_file):
+        self.directory = directory
+        self.start_file = start_file
         self.last_datetime = None
 
     def process(self):
-        tail_file = TailFile(self.file_path, self._process_line)
-        tail_file.readlines_then_tail()
+        tail_directory = TailDirectory(self.directory, self.start_file, self._process_line)
+        tail_directory.read_all_directory()
 
     def _process_line(self, line):
         if line.startswith("$GPZDA,"):
@@ -105,40 +111,83 @@ class ProcessNMEAFile:
         GpvtgVelocity.objects.update_or_create(time=time, defaults=velocity)
 
 
-class TailFile:
-    def __init__(self, file_path, callback):
-        self.file_path = file_path
-        self.SLEEP_INTERVAL = 0.5
+class TailDirectory:
+    def __init__(self, directory, start_file, callback):
+        self.directory = directory
+        self.current_file = start_file
+        self.SLEEP_INTERVAL = 0.5   # for when new lines keep appearing
         self.callback = callback
 
-    def readlines_then_tail(self):
-        """ Yields all the lines of the file and then starts tailing. """
+    def read_all_directory(self):
+        if self.current_file is None:
+            self.current_file = self._find_first_file()
 
-        file = open(self.file_path, "r")
+        while True:                 # it can always be more data
+            file = open(self.current_file, "r")
 
-        for line in self._yield_lines(file):
-            line = line.rstrip()
-            print(line)
-            self.callback(line)
+            self._process_existing_lines(file)
+            self._process_new_lines(file)         # will change the self.current_file when needed
 
-    def _yield_lines(self, file):
+
+    def _process_existing_lines(self, file):
         while True:
             try:
                 line = file.readline()
             except UnicodeDecodeError:
-                yield ""
+                continue
 
-            if line:
-                yield line
-            else:
-                yield self._tail(file)
+            if line == "":
+                return
 
-    def _tail(self, file):
+            line = line.rstrip()
+            self.callback(line)
+
+    def _process_new_lines(self, file):
         while True:
             where = file.tell()
-            line = file.readline()
+
+            try:
+                line = file.readline()
+            except UnicodeDecodeError:
+                continue
+
             if not line:
-                time.sleep(self.SLEEP_INTERVAL)
                 file.seek(where)
+                time.sleep(self.SLEEP_INTERVAL)
+                next_file = self._find_next_file()
+
+                if next_file is not None and next_file != self.current_file:
+                    # We move to a new file
+                    self.current_file = next_file
+                    return
             else:
-                return line
+                line = line.rstrip()
+                self.callback(line)
+
+
+    def _find_first_file(self):
+        files = os.listdir(self.directory)
+
+        if len(files) == 0:
+            print("There are no files in the",self.directory,"directory. Aborting")
+            exit(1)
+
+        files.sort()
+        return os.path.join(self.directory,files[0])
+
+    def _find_next_file(self):
+        """ Returns the next file that needs to be read or None if it's the current file. """
+
+        files_in_directory = os.listdir(self.directory)
+        files_in_directory.sort()
+
+        if self.current_file is None:
+            return files_in_directory[0]
+
+        for file in files_in_directory:
+            file = os.path.join(self.directory, file)
+
+            if file > self.current_file:
+                return file
+
+        return None
