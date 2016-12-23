@@ -15,6 +15,7 @@ import main.import_gpx_to_stations
 from django.conf import settings
 import os
 import glob
+import datetime
 
 class MainMenuView(TemplateView):
     template_name = "main_menu.html"
@@ -36,10 +37,14 @@ class MainMenuView(TemplateView):
             person = last_message.person
             subject = last_message.subject
 
+        now = datetime.datetime.now()
+
         context['message'] = message
         context['date_time'] = date_time
         context['person'] = person
         context['subject'] = subject
+        context['date'] = now.strftime("%a %d %B %Y")
+        context['julian_day'] = now.strftime("%j")
 
         return context
 
