@@ -89,6 +89,9 @@ class PositionsJson(View):
                                                             'marker_color': 'blue'}))
 
         for port in Port.objects.all():
+            if port.longitude is None or port.latitude is None:
+                continue
+
             point = geojson.Point((port.longitude, port.latitude))
             features.append(
                 geojson.Feature(geometry=point, properties={'id': 'Port.{}'.format(port.id),
@@ -96,6 +99,9 @@ class PositionsJson(View):
                                                             'marker_color': 'yellow'}))
 
         for station in Station.objects.all():
+            if station.longitude is None or station.latitude is None:
+                continue
+                
             point = geojson.Point((station.longitude, station.latitude))
             features.append(
                 geojson.Feature(geometry=point, properties={'id': 'station.{}'.format(station.id),
