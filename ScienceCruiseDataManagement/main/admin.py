@@ -205,9 +205,12 @@ class EventActionAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.Mo
 
     #description_2.short_description = "Description"
 
-    list_display = ('id', 'event', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
+    list_display = ('id', 'event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
     ordering = ['-event_id', '-id']
     form = EventActionForm
+
+    def sampling_method(self, object):
+        return object.event.parent_device
 
 class EventActionDescriptionAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'source')
