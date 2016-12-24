@@ -123,6 +123,20 @@ class PositionsJson(View):
 
         return JsonResponse(geojson.FeatureCollection(features))
 
+
+class LastShipPosition(View):
+    # simple view with only latitude, longitude and last ship position
+    def get(self, request_):
+        latest_ship_position = GpggaGpsFix.objects.latest("date_time")
+
+        information = {}
+        information['latitude'] = latest_ship_position.latitude
+        information['longitude'] = latest_ship_position.longitude
+        information['date_time'] = latest_ship_position.date_time
+
+        return JsonResponse(information)
+
+
 # class PositionsJson(View):
 #     def get(self, request):
 #         # print("-----------", request.GET['newer_than'])
