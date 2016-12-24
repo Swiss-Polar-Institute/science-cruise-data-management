@@ -118,8 +118,8 @@ class PositionsJson(View):
 
         features.append(
             geojson.Feature(geometry=point, properties={'id': 'ship',
-                                                        'text': '',
-                                                        'marker_color': 'brown'}))
+                                                        'text': 'You are here',
+                                                        'marker_color': 'orange'}))
 
         return JsonResponse(geojson.FeatureCollection(features))
 
