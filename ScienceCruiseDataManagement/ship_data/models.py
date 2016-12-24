@@ -34,3 +34,6 @@ class GpvtgVelocity(models.Model):
 
     def __str__(self):
         return "{}".format(self.time)
+
+    class Meta:
+        verbose_name_plural = "Gpvtg Velocities"

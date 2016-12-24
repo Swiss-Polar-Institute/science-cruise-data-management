@@ -77,7 +77,7 @@ class EventForm(ModelForm):
         # 'child_device' is not here on purpose, for now
 
 class EventAdmin(ReadOnlyFields, import_export.admin.ImportExportModelAdmin):
-    list_display = ('number', 'parent_device', 'station')
+    list_display = ('number', 'parent_device', 'station', 'data', 'samples', 'fail')
     ordering = ['-number']
 
     # add for import-export: resource_class = EventResource
@@ -87,6 +87,20 @@ class EventAdmin(ReadOnlyFields, import_export.admin.ImportExportModelAdmin):
         if db_field.name == "leg":
             kwargs["queryset"] = main.models.Leg.objects.filter(name="Leg 1")
         return super(EventAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+    def get_fields(self, request, obj=None):
+        fields = list(self.list_display)
+
+        # never shown, it's the Primary Key
+        fields.remove('number')
+
+        if request.user.is_superuser:
+            return tuple(fields)
+        else:
+            # non super users can't mark an event as failed
+            fields.remove('fail')
+            return tuple(fields)
 
     form = EventForm
 
