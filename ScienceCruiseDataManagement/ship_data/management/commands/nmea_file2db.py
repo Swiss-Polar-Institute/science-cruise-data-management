@@ -4,7 +4,7 @@ from ship_data.models import GpzdaDateTime, GpggaGpsFix, GpvtgVelocity
 import time
 from ship_data import utilities
 import os
-
+import datetime
 
 class Command(BaseCommand):
     help = 'Reads the NMEA data and writes it into the database. Keeps checking for new files.'
@@ -27,6 +27,7 @@ class ProcessNMEAFile:
         self.directory = directory
         self.start_file = start_file
         self.last_datetime = None
+        self.utc = datetime.timezone(datetime.timedelta(0))
 
     def process(self):
         tail_directory = TailDirectory(self.directory, self.start_file, self._process_line)
@@ -42,36 +43,74 @@ class ProcessNMEAFile:
         else:
             pass
 
+    def _string_time_to_tuple(time_string):
+        hour = int(time_string[0:2])
+        minute = int(time_string[2:4])
+        seconds = int(time_string[4:6])
+        millions_of_sec = int(time_string.split(".")[1])
+
+        return (hour, minute, seconds, millions_of_sec)
+
+
     def import_gpzda(self, line):
-        (nmea_reference, date_time, day, month, year, local_zone_hours, min_checksum) = line.split(",")
+        (nmea_reference, time_with_hundreds_sec, day, month, year, local_zone_hours, min_checksum) = line.split(",")
         (local_zone_minutes, checksum) = min_checksum.split("*")
+
+        year = int(year)
+        month = int(month)
+        day = int(day)
+
+        (hour, minute, second, millions_of_sec) = ProcessNMEAFile._string_time_to_tuple(time_with_hundreds_sec)
+        date_time = datetime.datetime(year, month, day, hour, minute, second, millions_of_sec, self.utc)
 
         self.last_datetime = date_time
 
         gpzda = GpzdaDateTime()
-        gpzda.time = date_time
-        gpzda.day = int(day)
-        gpzda.month = int(month)
-        gpzda.year = int(year)
+        gpzda.date_time = date_time
+        gpzda.day = day
+        gpzda.month = month
+        gpzda.year = year
         gpzda.local_zone_hours = int(local_zone_hours)
         gpzda.local_zone_minutes = int(local_zone_minutes)
 
-        if not GpzdaDateTime.objects.filter(time=date_time).exists():
+        if not GpzdaDateTime.objects.filter(date_time=date_time).exists():
             gpzda.save()
 
+    def current_date_time_smaller_than_before(self, time_string):
+        return self.current_date_time(time_string) < self.last_datetime
+
+    def current_date_time(self, time_string):
+        (hour, minute, second, millions_of_sec) = ProcessNMEAFile._string_time_to_tuple(time_string)
+        current_date_time = datetime.datetime(self.last_datetime.year, self.last_datetime.month,
+                                              self.last_datetime.day, hour, minute, second, millions_of_sec, self.utc)
+
+        return current_date_time
+
     def import_gpgga(self, line):
-        (nmea_reference, date_time, nmea_latitude, nmea_latitude_ns, nmea_longitude, nmea_longitude_ew,
+        if self.last_datetime is None:
+            # If this is the first line of the file last_datetime would be None and we skip it
+            # it doesn't have it
+            return
+
+        (nmea_reference, time_string, nmea_latitude, nmea_latitude_ns, nmea_longitude, nmea_longitude_ew,
          fix_quality, number_satellites, horizontal_diluation_of_position,
          altitude, altitude_units, geoid_height, geoid_height_units,
          something, checksum) = line.split(",")
-
-        self.last_datetime = date_time
 
         (latitude, longitude) = utilities.nmea_lat_long_to_normal(nmea_latitude, nmea_latitude_ns, nmea_longitude, nmea_longitude_ew)
 
         gps_fix = GpggaGpsFix()
 
-        gps_fix.time = date_time
+        # Here it will check if the "guessed" date_time for the current line is earlier than
+        # the last one. If this is the case it doesn't do anything: probably we've missed
+        # (corrupted data?) a line with the complete date. Note that this line doesn't have the
+        # date, only the hour
+        if self.current_date_time_smaller_than_before(time_string):
+            return
+
+        current_date_time = self.current_date_time(time_string)
+
+        gps_fix.date_time = current_date_time
         gps_fix.latitude = latitude
         gps_fix.longitude = longitude
         gps_fix.fix_quality = fix_quality
@@ -82,7 +121,7 @@ class ProcessNMEAFile:
         gps_fix.geoid_height = geoid_height
         gps_fix.geoid_height_units = geoid_height_units
 
-        if not GpggaGpsFix.objects.filter(time=date_time).exists():
+        if not GpggaGpsFix.objects.filter(date_time=current_date_time).exists():
             gps_fix.save()
 
     def import_gpvtg(self, line):
@@ -107,14 +146,14 @@ class ProcessNMEAFile:
 
         velocity = GpvtgVelocity()
 
-        datetime = self.last_datetime
+        date_time = self.last_datetime
 
-        velocity.time = datetime
+        velocity.date_time = date_time
         velocity.true_track_deg = true_track_deg
         velocity.magnetic_track_deg = magnetic_track_deg
         velocity.ground_speed_kts = ground_speed_knots
 
-        if not GpzdaDateTime.objects.filter(time=self.last_datetime):
+        if not GpvtgVelocity.objects.filter(date_time=date_time):
             velocity.save()
 
 
