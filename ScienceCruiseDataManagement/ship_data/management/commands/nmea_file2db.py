@@ -47,7 +47,7 @@ class ProcessNMEAFile:
         hour = int(time_string[0:2])
         minute = int(time_string[2:4])
         seconds = int(time_string[4:6])
-        millions_of_sec = int(time_string.split(".")[1])
+        millions_of_sec = int(time_string.split(".")[1])*10000
 
         return (hour, minute, seconds, millions_of_sec)
 
