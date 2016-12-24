@@ -114,6 +114,8 @@ class PositionsJson(View):
         latest_ship_latitude = latest_ship_position.latitude
         latest_ship_longitude = latest_ship_position.longitude
 
+        point = geojson.Point((latest_ship_longitude, latest_ship_latitude))
+
         features.append(
             geojson.Feature(geometry=point, properties={'id': 'ship',
                                                         'text': '',
