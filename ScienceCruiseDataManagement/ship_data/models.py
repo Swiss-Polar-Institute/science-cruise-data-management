@@ -9,7 +9,7 @@ class GpzdaDateTime(models.Model):
     local_zone_minutes = models.IntegerField()
 
     def __str__(self):
-        return "{}".format(self.time)
+        return "{}".format(self.date_time)
 
 class GpggaGpsFix(models.Model):
     date_time = models.DateTimeField(unique=True)
@@ -24,7 +24,7 @@ class GpggaGpsFix(models.Model):
     geoid_height_units = models.CharField(max_length=1)
 
     def __str__(self):
-        return "{}".format(self.time)
+        return "{}".format(self.date_time)
 
 class GpvtgVelocity(models.Model):
     date_time = models.DateTimeField(unique=True)      # not in the gpvtg string, importer will use the time from the prior string
@@ -33,7 +33,7 @@ class GpvtgVelocity(models.Model):
     ground_speed_kts = models.FloatField()
 
     def __str__(self):
-        return "{}".format(self.time)
+        return "{}".format(self.date_time)
 
     class Meta:
         verbose_name_plural = "Gpvtg Velocities"

@@ -8,6 +8,7 @@ from django.http import JsonResponse
 
 from main import import_gpx_to_stations
 from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station, Message
+from ship_data.models import GpggaGpsFix
 from django.utils import timezone
 from django.db.models import Q
 import main.models
@@ -101,13 +102,22 @@ class PositionsJson(View):
         for station in Station.objects.all():
             if station.longitude is None or station.latitude is None:
                 continue
-                
+
             point = geojson.Point((station.longitude, station.latitude))
             features.append(
                 geojson.Feature(geometry=point, properties={'id': 'station.{}'.format(station.id),
                                                             'text': station.name,
                                                             'marker_color': 'green'}))
 
+        # Last ship position
+        latest_ship_position = GpggaGpsFix.objects.latest("date_time")
+        latest_ship_latitude = latest_ship_position.latitude
+        latest_ship_longitude = latest_ship_position.longitude
+
+        features.append(
+            geojson.Feature(geometry=point, properties={'id': 'ship',
+                                                        'text': '',
+                                                        'marker_color': 'brown'}))
 
         return JsonResponse(geojson.FeatureCollection(features))
 
