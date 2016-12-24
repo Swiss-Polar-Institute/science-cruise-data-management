@@ -214,6 +214,7 @@ class EventActionAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.Mo
 
     sampling_method.admin_order_field = "event__parent_device"
 
+
 class EventActionDescriptionAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'source')
     ordering = ['name']

@@ -78,10 +78,13 @@ class PositionsJson(View):
 
         features = []
         for eventAction in EventAction.objects.all().filter(Q(type=tbegins) | Q(type=tinstant)):
+            if eventAction.longitude is None or eventAction.latitude is None:
+                continue
+
             point = geojson.Point((eventAction.longitude, eventAction.latitude))
 
             features.append(
-                geojson.Feature(geometry=point, properties={'id': 'Event.{}'.format(eventAction.event.id),
+                geojson.Feature(geometry=point, properties={'id': 'Event.{}'.format(eventAction.event.number),
                                                             'text': eventAction.general_comments,
                                                             'marker_color': 'blue'}))
 
