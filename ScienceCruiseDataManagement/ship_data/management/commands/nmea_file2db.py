@@ -160,7 +160,7 @@ class ProcessNMEAFile:
 class TailDirectory:
     def __init__(self, directory, start_file, callback):
         self.directory = directory
-        self.current_file = start_file
+        self.current_file = os.path.join(self.directory, start_file)
         self.SLEEP_INTERVAL = 0.5   # for when new lines keep appearing
         self.callback = callback
 
@@ -228,7 +228,7 @@ class TailDirectory:
         files_in_directory.sort()
 
         if self.current_file is None:
-            return files_in_directory[0]
+            return os.path.join(self.directory, files_in_directory[0])
 
         for file in files_in_directory:
             file = os.path.join(self.directory, file)
