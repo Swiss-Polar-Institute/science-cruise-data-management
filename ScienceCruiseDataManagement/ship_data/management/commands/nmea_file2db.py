@@ -5,6 +5,7 @@ import time
 from ship_data import utilities
 import os
 import datetime
+import traceback
 
 class Command(BaseCommand):
     help = 'Reads the NMEA data and writes it into the database. Keeps checking for new files.'
@@ -35,11 +36,11 @@ class ProcessNMEAFile:
 
     def _process_line(self, line):
         if line.startswith("$GPZDA,"):
-            self.import_gpzda(line)
+            self._import_gpzda(line)
         elif line.startswith("$GPGGA,"):
-            self.import_gpgga(line)
+            self._import_gpgga(line)
         elif line.startswith("$GPVTG,"):
-            self.import_gpvtg(line)
+            self._import_gpvtg(line)
         else:
             pass
 
@@ -52,9 +53,15 @@ class ProcessNMEAFile:
         return (hour, minute, seconds, millions_of_sec)
 
 
-    def import_gpzda(self, line):
-        (nmea_reference, time_with_hundreds_sec, day, month, year, local_zone_hours, min_checksum) = line.split(",")
-        (local_zone_minutes, checksum) = min_checksum.split("*")
+    def _import_gpzda(self, line):
+        try:
+            (nmea_reference, time_with_hundreds_sec, day, month, year, local_zone_hours, min_checksum) = line.split(",")
+            (local_zone_minutes, checksum) = min_checksum.split("*")
+        except ValueError as e:
+            print("Exception: {}".format(e))
+            print("Error unpacking: {}".format(line))
+            traceback.print_exc()
+            return
 
         year = int(year)
         month = int(month)
@@ -76,26 +83,32 @@ class ProcessNMEAFile:
         if not GpzdaDateTime.objects.filter(date_time=date_time).exists():
             gpzda.save()
 
-    def current_date_time_smaller_than_before(self, time_string):
-        return self.current_date_time(time_string) < self.last_datetime
+    def _current_date_time_smaller_than_before(self, time_string):
+        return self._current_date_time(time_string) < self.last_datetime
 
-    def current_date_time(self, time_string):
+    def _current_date_time(self, time_string):
         (hour, minute, second, millions_of_sec) = ProcessNMEAFile._string_time_to_tuple(time_string)
         current_date_time = datetime.datetime(self.last_datetime.year, self.last_datetime.month,
                                               self.last_datetime.day, hour, minute, second, millions_of_sec, self.utc)
 
         return current_date_time
 
-    def import_gpgga(self, line):
+    def _import_gpgga(self, line):
         if self.last_datetime is None:
             # If this is the first line of the file last_datetime would be None and we skip it
             # it doesn't have it
             return
 
-        (nmea_reference, time_string, nmea_latitude, nmea_latitude_ns, nmea_longitude, nmea_longitude_ew,
-         fix_quality, number_satellites, horizontal_diluation_of_position,
-         altitude, altitude_units, geoid_height, geoid_height_units,
-         something, checksum) = line.split(",")
+        try:
+            (nmea_reference, time_string, nmea_latitude, nmea_latitude_ns, nmea_longitude, nmea_longitude_ew,
+             fix_quality, number_satellites, horizontal_diluation_of_position,
+             altitude, altitude_units, geoid_height, geoid_height_units,
+             something, checksum) = line.split(",")
+        except ValueError as e:
+            print("Exception: {}".format(e))
+            print("Error unpacking: {}".format(line))
+            traceback.print_exc()
+            return
 
         (latitude, longitude) = utilities.nmea_lat_long_to_normal(nmea_latitude, nmea_latitude_ns, nmea_longitude, nmea_longitude_ew)
 
@@ -105,10 +118,11 @@ class ProcessNMEAFile:
         # the last one. If this is the case it doesn't do anything: probably we've missed
         # (corrupted data?) a line with the complete date. Note that this line doesn't have the
         # date, only the hour
-        if self.current_date_time_smaller_than_before(time_string):
+        if self._current_date_time_smaller_than_before(time_string):
+            print("Oops, time went backwards for import_gpgga, not inserting line: {}".format(line))
             return
 
-        current_date_time = self.current_date_time(time_string)
+        current_date_time = self._current_date_time(time_string)
 
         gps_fix.date_time = current_date_time
         gps_fix.latitude = latitude
@@ -124,13 +138,19 @@ class ProcessNMEAFile:
         if not GpggaGpsFix.objects.filter(date_time=current_date_time).exists():
             gps_fix.save()
 
-    def import_gpvtg(self, line):
+    def _import_gpvtg(self, line):
         if self.last_datetime is None:
             # If this is the first line of the file last_datetime would be None and we skip it
             # it doesn't have it
             return
 
-        (nmea_reference, true_track_deg, t, magnetic_track_deg, m, ground_speed_nautical, n, ground_speed_knots, k, something) = line.split(",")
+        try:
+            (nmea_reference, true_track_deg, t, magnetic_track_deg, m, ground_speed_nautical, n, ground_speed_knots, k, something) = line.split(",")
+        except ValueError as e:
+            print("Exception: {}".format(e))
+            print("Error unpacking: {}".format(line))
+            traceback.print_exc()
+            return
 
         if t != "T":
             print("t field is not T?", line)
@@ -173,7 +193,6 @@ class TailDirectory:
 
             self._process_existing_lines(file)
             self._process_new_lines(file)         # will change the self.current_file when needed
-
 
     def _process_existing_lines(self, file):
         print("Will process existing lines for:", self.current_file)
