@@ -47,18 +47,28 @@ class ReadOnlyFields:
 
         return []
 
-        # Example for import-export
-#class EventResource(import_export.resources.ModelResource):
-#    number = import_export.fields.Field(column_name = 'number', attribute='number')
-#
-#    station = import_export.fields.Field(
-#        column_name = 'station',
-#        attribute = 'station',
-#        widget = import_export.widgets.ForeignKeyWidget(main.models.Station, 'name')
-#    )
+# This is for the import_export
+class EventResource(import_export.resources.ModelResource):
+    number = import_export.fields.Field(column_name = 'number', attribute='number')
+
+    parent_device = import_export.fields.Field(
+        column_name='parent_device',
+        attribute='sample method',
+        widget=import_export.widgets.ForeignKeyWidget(main.models.ParentDevice.name))
+
+    station = import_export.fields.Field(
+        column_name='station',
+        attribute='station',
+        widget=import_export.widgets.ForeignKeyWidget(main.models.Station, 'name')
+    )
+
+    data = import_export.fields.Field(column_name = 'data', attribute='data')
+    samples = import_export.fields.Field(column_name = 'samples', attribute='data')
+    fail = import_export.fields.Field(column_name = 'fail', attribute='fail')
 
     class Meta:
-        fields = ('number', 'station', 'device', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude')
+        fields = ('number', 'parent_device', 'station', 'data', 'samples', 'fail')
+        export_order = ('number', 'parent_device', 'station', 'data', 'samples', 'fail')
 
 
 class ChildDeviceForm(ModelForm):
@@ -80,7 +90,8 @@ class EventAdmin(ReadOnlyFields, import_export.admin.ImportExportModelAdmin):
     list_display = ('number', 'parent_device', 'station', 'data', 'samples', 'fail')
     ordering = ['-number']
 
-    # add for import-export: resource_class = EventResource
+    # used for the import_export
+    resource_class = EventResource
 
     # This is to have a default value on the foreign key
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -104,24 +115,6 @@ class EventAdmin(ReadOnlyFields, import_export.admin.ImportExportModelAdmin):
 
     form = EventForm
 
-#
-#class PositionResource(import_export.resources.ModelResource):
-#    class Meta:
-#        model = main.models.Position
-
-
-#class PositionAdmin(import_export.admin.ImportExportModelAdmin):
-#    list_display=('number', 'text', 'latitude', 'longitude')
-#    ordering = ('number',)
-#    resource_class = PositionResource
-#    search_fields = ['text']
-    # exclude = ('text',)
-
-
-#class EventActionResource(import_export.resources.ModelResource):
-#    class Meta:
-#        model = main.models.EventAction
-#        fields = ('date_time', 'latitude', 'longitude','date_time', 'type_description__name')
 
 class EventActionForm(ModelForm):
     def __init__(self, *args, **kwargs):
