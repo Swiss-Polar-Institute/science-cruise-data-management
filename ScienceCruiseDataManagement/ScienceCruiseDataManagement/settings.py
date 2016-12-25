@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'selectable',   # auto-completion
     'smart_selects', # foreign keys depending on other foreign keys
     'ship_data',
+    'data_storage_management',
     'main',  # ScienceCruiseManagement main app
 
 ]
