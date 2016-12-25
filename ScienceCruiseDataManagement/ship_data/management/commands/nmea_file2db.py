@@ -176,11 +176,21 @@ class TailDirectory:
 
 
     def _process_existing_lines(self, file):
+        print("Will process existing lines for:", self.current_file)
         while True:
+            where = file.tell()
+
             try:
                 line = file.readline()
             except UnicodeDecodeError:
                 continue
+
+            if not line.endswith("\n"):
+                # We've read a partial line, so we are at the end of the file
+                # We rewind to the beginning of the line and then will pass to the
+                # process_new_lines
+                file.seek(where)
+                return
 
             if line == "":
                 return
@@ -189,12 +199,21 @@ class TailDirectory:
             self.callback(line)
 
     def _process_new_lines(self, file):
+        print("Will process new lines for:", self.current_file)
         while True:
             where = file.tell()
 
             try:
                 line = file.readline()
             except UnicodeDecodeError:
+                print("Unicode error, will skip")
+                continue
+
+            if not line.endswith("\n"):
+                # To make sure that we haven't read a partial line at the end of the file
+                print("Partial line read, will retry: {}".format(line))
+                file.seek(where)
+                time.sleep(self.SLEEP_INTERVAL)
                 continue
 
             if not line:
@@ -204,6 +223,7 @@ class TailDirectory:
 
                 if next_file is not None and next_file != self.current_file:
                     # We move to a new file
+                    print("Will move from {} to {}".format(self.current_file, next_file))
                     self.current_file = next_file
                     return
             else:
