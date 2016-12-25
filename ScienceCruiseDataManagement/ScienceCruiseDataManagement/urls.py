@@ -36,7 +36,7 @@ urlpatterns = [
     url(r'^import_ports_from_gpx/', ImportPortsFromGpx.as_view()),
     url(r'^documents/', DocumentsView.as_view())
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
-  + static("/document_storage/", document_root=settings.DOCUMENTS_DIRECTORY) \
+  + static("/documents_storage/", document_root=settings.DOCUMENTS_DIRECTORY) \
   + static("/ethz_forecast_data/", document_root=settings.FORECAST_DIRECTORY)
 
 if settings.DEBUG:

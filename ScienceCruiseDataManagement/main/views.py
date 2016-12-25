@@ -266,7 +266,7 @@ class DocumentsView(TemplateView):
                     file_name = os.path.basename(file)
                     documents[topic].append(
                         {'title': file_name.split(".")[0],
-                         'link': os.path.join('static', 'documents', 'topic', file_name)
+                         'link': os.path.join('/documents_storage/{}/{}'.format(topic, file_name))
                          }
                     )
 
