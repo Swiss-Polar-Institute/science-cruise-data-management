@@ -14,11 +14,12 @@ class Command(BaseCommand):
         parser.add_argument('directory', type=str)
 
     def handle(self, *args, **options):
-        copy_connected_hard_disk = CopyConnectedHardDisk()
-        directory = options['directory']
+        pass
+        #copy_connected_hard_disk = CopyConnectedHardDisk()
+        #directory = options['directory']
 
-        call_command('importcountries', os.path.join(directory, "countries.csv"))
-        call_command('importorganisations', os.path.join(directory, "organisations.csv"))
+        #call_command('importcountries', os.path.join(directory, "countries.csv"))
+        #call_command('importorganisations', os.path.join(directory, "organisations.csv"))
 
 
 def read_config():

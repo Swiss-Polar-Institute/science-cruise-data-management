@@ -205,7 +205,7 @@ class EventActionAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.Mo
 
     #description_2.short_description = "Description"
 
-    list_display = ('id', 'event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
+    list_display = ('id', 'event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
     ordering = ['-event_id', '-id']
     form = EventActionForm
 
@@ -230,7 +230,7 @@ class LegAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 class StationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'type', 'latitude', 'longitude', 'leg', 'arrival_time', 'departure_time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'comment')
-    ordering = ['name']
+    ordering = ['-name']
 
 
 class EventReportAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.ModelAdmin):
