@@ -1,70 +1,117 @@
 #!/usr/bin/python3
 
-# to be changed so it's not a command
-from django.core.management.base import BaseCommand, CommandError
 import time
 import os
 import configparser
+import argparse
+import glob
+import requests
+import pprint
+import datetime
+import subprocess
+
+HARD_DISK_MOUNT_POINT="/mnt/data_science"
+DESTINATION_BASE_DIRECTORY="/tmp/ace_data"
 
 
-class Command(BaseCommand):
-    help = 'Copies the hard disk into the storage area. Registers the hard disk if needed'
+def collect_uuids():
+    uuids = []
 
-    def add_arguments(self, parser):
-        parser.add_argument('directory', type=str)
+    for link_source in glob.glob("/dev/disk/by-uuid/*"):
+        link_destination = os.readlink(link_source)
 
-    def handle(self, *args, **options):
-        pass
-        #copy_connected_hard_disk = CopyConnectedHardDisk()
-        #directory = options['directory']
+        uuids.append((os.path.basename(link_source), os.path.basename(link_destination)))
 
-        #call_command('importcountries', os.path.join(directory, "countries.csv"))
-        #call_command('importorganisations', os.path.join(directory, "organisations.csv"))
+    return uuids
 
 
-def read_config():
-    config = configparser.ConfigParser()
-    file_to_read = os.path.join(os.getenv("HOME"), ".config", "science_cruise_data_copy.conf")
-    config.read(file_to_read)
-    return config
+def longest_device_name(devices):
+    longest = devices[0]
+
+    for device in devices:
+        if len(device[1]) > len(longest[1]):
+            longest=device
+
+    return longest
+
 
 def detect_hard_disk():
-    config = read_config()
-    base_directory = config['General']['from']
-    for section in config.sections():
-        if section == "General":
-            continue
+    print("Please unplug the hard disk and press ENTER")
+    input()
 
-        from_directory = os.path.join(base_directory, config['section']['from'])
+    uuids_before = collect_uuids()
+    print("Please plug the hard disk and wait")
 
-        if os.path.isdir(from_directory):
-            return from_directory
+    step=0
+    while True:
+        uuids_after = collect_uuids()
+        new_uuids = list(set(uuids_after) - set(uuids_before))
 
-    print("Hard disk not found")
-    exit(1)
+        if step==0 and len(new_uuids) != 0:
+            step=1
+            starts_at=datetime.datetime.now()
 
-def detect_to():
-    config = read_config()
+        elif step==1 and (datetime.datetime.now()-starts_at).seconds >= 5:
+            break
 
-    destination_directory = config['General']['to']
+    uuids_after = collect_uuids()
+    new_uuids=list(set(uuids_after)-set(uuids_before))
 
-    destination_directory_test = os.path.join(destination_directory, "ACSM")
+    device = longest_device_name(new_uuids)
 
-    if os.path.exists(destination_directory_test):
-        return destination_directory
+    return device
 
-    print("Destination not found")
-    exit(1)
 
-def copy(from_directory, to_directory):
-    print("Should copy from {} to {}".format(from_directory, to_directory))
-    return
+def execute(cmd, abort_if_fails=False):
+    print("Will execute: {}".format(cmd))
 
-def main():
-    from_directory = detect_hard_disk()
-    to_directory = detect_to()
+    p=subprocess.Popen(cmd)
+    p.communicate()[0]
+    retcode=p.returncode
 
-    copy(from_directory, to_directory)
+    if retcode != 0 and abort_if_fails:
+        print("Command: _{}_ failed, aborting...".format(cmd))
+        exit(1)
+
+
+def process_hard_disk(uuid):
+    to_exec = ["sudo","umount","/mnt/data_science"]
+    execute(to_exec)
+
+    to_exec = ["sudo","mount","/dev/disk/by-uuid/{}".format(uuid),HARD_DISK_MOUNT_POINT]
+    execute(to_exec, True)
+
+    hard_disk_information = requests.get("http://localhost:8000/api/data_storage/hard_disk.json", {'hard_disk_uuid':uuid}).json()
+    pprint.pprint(hard_disk_information)
+    print("Proceed? (Ctrl+C for NO)")
+    input()
+
+    for directory in hard_disk_information['directories']:
+        source=directory['source']
+        destination=directory['destination']
+
+        to_exec=["rsync","-arv",
+            os.path.join(HARD_DISK_MOUNT_POINT,source) + "/",
+            os.path.join(DESTINATION_BASE_DIRECTORY,destination)]
+
+        print("To exec:",to_exec)
+        input()
+        execute(to_exec)
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Handles how to copy things to the backups")
+    parser.add_argument("--detect-new-hard-disk", help="Provides the UUID of the new hard disk", action='store_true')
+    parser.add_argument("--process-hard-disk", help="Requests the directories to be processed from a registered hard disk", action='store_true')
+    parser.add_arguments("--add-hard-disk", action="store_str")
+    parser.add_arguments("--base-directory", action="store_str")
+
+    args = parser.parse_args()
+
+    if args.detect_new_hard_disk:
+        uuid=detect_hard_disk()
+        print(uuid)
+    elif args.process_hard_disk:
+        hard_disk=detect_hard_disk()
+        process_hard_disk(hard_disk[0])
+    elif args.add_hard_disk and args.base_directory:
+        print("Should create hard disk")

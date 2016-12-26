@@ -17,6 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 from main.views import MainMenuView, MainMapView, PositionsJson, LastShipPosition, CountryListView, FileStorageView, InteractiveMapView, EventListView, ImportPortsFromGpx, DocumentsView
+from data_storage_management.views import HardDiskJson
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -25,6 +26,7 @@ urlpatterns = [
     url(r'^map/$', MainMapView.as_view()),
     url(r'^api/positions.geojson', PositionsJson.as_view()),
     url(r'api/last_ship_position.json', LastShipPosition.as_view()),
+    url(r'api/data_storage/hard_disk.json', HardDiskJson.as_view()),
     # url(r'^api/positions$', PositionsJson.as_view()),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^chaining/', include('smart_selects.urls')),
