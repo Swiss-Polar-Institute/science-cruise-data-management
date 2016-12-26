@@ -228,9 +228,9 @@ class TailDirectory:
                 print("Unicode error, will skip")
                 continue
 
-            if not line.endswith("\n"):
+            if (len(line) > 0) and (line.endswith("\n") == False):
                 # To make sure that we haven't read a partial line at the end of the file
-                print("Partial line read, will retry: {}".format(line))
+                print("Partial line read, will retry: _{}_".format(line))
                 file.seek(where)
                 time.sleep(self.SLEEP_INTERVAL)
                 continue
