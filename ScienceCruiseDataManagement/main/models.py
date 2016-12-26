@@ -55,6 +55,13 @@ class Island(models.Model):
     def __str__(self):
         return "{}".format(self.name)
 
+class IslandLandings(models.Model):
+    island = models.ForeignKey(Island)
+    person = models.ForeignKey('Person')
+    date = models.DateField()
+
+    def __str__(self):
+        return "{}-{}".format(self.island, self.person)
 
 class DeviceType(models.Model):
     url = models.CharField(max_length=255, null=True, blank=True, help_text = "If adding a new device leave this field blank.")

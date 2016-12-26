@@ -299,13 +299,16 @@ class ChildDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class CountryAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name', )
+    list_display = ('name',) # leave comma here for tuple
     ordering = ['name']
 
 class IslandAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'mid_lat', 'mid_lon')
     ordering = ['name']
 
+class IslandLandingsAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('island', 'person', 'date')
+    ordering = ['island']
 
 class StorageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'description')
@@ -445,6 +448,7 @@ admin.site.register(main.models.Leg, LegAdmin)
 admin.site.register(main.models.EventReport, EventReportAdmin)
 admin.site.register(main.models.Country, CountryAdmin)
 admin.site.register(main.models.Island, IslandAdmin)
+admin.site.register(main.models.IslandLandings, IslandLandingsAdmin)
 admin.site.register(main.models.Storage, StorageAdmin)
 admin.site.register(main.models.FilesStorageGeneral, FileStorageGeneralAdmin)
 admin.site.register(main.models.Port, PortAdmin)
