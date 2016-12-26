@@ -4,7 +4,7 @@ import data_storage_management.models
 
 
 class HardDiskAdmin(admin.ModelAdmin):
-    list_display = ('uuid', 'label', 'person', 'comment')
+    list_display = ('uuid', 'label', 'person', 'comment', 'created_date_time')
 
     def directories_list(self, obj):
         result = []
@@ -15,8 +15,13 @@ class HardDiskAdmin(admin.ModelAdmin):
 
 
 class DirectoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'source_path', 'destination_path', )
+    list_display = ('hard_disk', 'source_path', 'destination_path', 'created_date_time')
+
+
+class DirectoryUpdatesAdmin(admin.ModelAdmin):
+    list_display = ('directory', 'updated_time')
 
 # Register your models here.
 admin.site.register(data_storage_management.models.HardDisk, HardDiskAdmin)
 admin.site.register(data_storage_management.models.Directory, DirectoryAdmin)
+admin.site.register(data_storage_management.models.DirectoryUpdates, DirectoryUpdatesAdmin)

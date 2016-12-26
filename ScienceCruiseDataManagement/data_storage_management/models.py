@@ -1,7 +1,6 @@
 from django.db import models
-from main.models import Person
+from main.models import Person, DeviceType
 import django.utils.timezone
-
 
 class HardDisk(models.Model):
     uuid = models.CharField(max_length=255, unique=True)
@@ -26,3 +25,10 @@ class Directory(models.Model):
 
     class Meta:
         verbose_name_plural="Directories"
+
+class DirectoryUpdates(models.Model):
+    directory = models.ForeignKey(Directory)
+    updated_time = models.DateTimeField(default=django.utils.timezone.now)
+
+    class Meta:
+        verbose_name_plural="Directory Updates"
