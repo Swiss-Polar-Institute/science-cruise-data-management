@@ -302,6 +302,10 @@ class CountryAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', )
     ordering = ['name']
 
+class IslandAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('name', 'mid_lat', 'mid_lon')
+    ordering = ['name']
+
 
 class StorageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'description')
@@ -440,6 +444,7 @@ admin.site.register(main.models.Station, StationAdmin)
 admin.site.register(main.models.Leg, LegAdmin)
 admin.site.register(main.models.EventReport, EventReportAdmin)
 admin.site.register(main.models.Country, CountryAdmin)
+admin.site.register(main.models.Island, IslandAdmin)
 admin.site.register(main.models.Storage, StorageAdmin)
 admin.site.register(main.models.FilesStorageGeneral, FileStorageGeneralAdmin)
 admin.site.register(main.models.Port, PortAdmin)

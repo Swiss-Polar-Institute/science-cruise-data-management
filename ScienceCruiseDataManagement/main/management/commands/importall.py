@@ -12,6 +12,7 @@ class Command(BaseCommand):
         directory = options['directory']
 
         call_command('importcountries', os.path.join(directory, "countries.csv"))
+        call_command('importislands', os.path.join(directory, "islands.csv"))
         call_command('importorganisations', os.path.join(directory, "organisations.csv"))
         call_command('importpeople', os.path.join(directory, "participants.csv"))
         call_command('importprojects', os.path.join(directory, "projects.csv"))
