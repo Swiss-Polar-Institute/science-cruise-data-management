@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Accessing Data{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Accessing ACE data</h1>
+    </div>
+
+    <div class="header">
+        <h2>Introduction</h2>
+        <p>All of the data produced during the cruise (by scientists and by the ship) are being stored on central servers, so that they are safely backed up and can be stored at the Swiss Polar Institute on a long-term basis after the cruise.</p>
+        In addition to this, some supporting data such as weather forecasts and bathymetry data are also available FOR USE DURING THE CRUISE. Note that a lot of these additional datasets have strict licenses that must be adhered to.
+
+        <p>You are able to access all of these data by following some simple steps in the section, Data Access below.</p>
+    </div>
+
+    <div class="header">
+        <h2>Data areas</h2>
+        <p>Below are descriptions of the different data areas:</p>
+
+        <p><b>ace_data</b>  - <i>read only</i> - all data collected on board the cruise are stored and backed up here. Organised by instrument.</p>
+        <p><b>external_data</b> - <i>read only</i> - data from external sources that is of interest to parties on board. Includes terrain maps, satellite images and bathymetry of the islands we will visit.</p>
+        <p><b>intranet_documents</b> - <i>read only</i> - a collection of useful and interesting documents. If you would like anything adding here, please speak to the Data Management team.</p>
+        <p><b>ship_data</b> - <i>read only</i> - data streams that come from ship-based instruments: navigation (GPS), weather, multibeam, ADCP. Some of these are still to be added (26/12/2016).</p>
+        <p><b>work_leg1</b> - <i>read and write</i> - please use this area to save things on which you are working that are related to the cruise, and that you would like backed up. THIS FOLDER WILL BE STORED PERMANENTLY FOLLOWING THE CRUISE SO PLEASE CONSIDER CAREFULLY WHAT YOU STORE HERE. This area is also accessible by everyone so do not store any personal information here. Finally, for the moment, please do not use this area for sharing photos (and other media). Data storage is limited on board so we will re-assess the situation as we go and see if this would be viable.</p>
+
+    </div>
+
+    <div class=header">
+        <h2>Data access</h2>
+        <p>Connect to the ship's network using an ethernet cable. All cabins are connected to the network, as are some labs. If for some reason you find an ethernet port does not work, please report it to the Data Management team with the room and port number, i.e. Room 336, port XS30/BT.
+
+        <p>You should now have access to the ACE intranet as well as the data storage area.</p>
+
+
+        </p>
+        <h3>Ubuntu</h3>
+        NAS host name: storage.lan
+
+        <p>Come and see the Data Management team if you have problems - each computer will be different.</p>
+
+        <h3>Windows</h3>
+        Click on start and run, then type: \\storage.lan
+
+        <h3>Mac</h3>
+        Go to finder, then go.
+        <p>Select server,then type smb//storage.lan. The data areas should appear, then you can bookmark each area as required so you don't have to do the same procedure each time.</p>
+
+        <p>**If you need any help please pop along to the Expedition Office at any time. We sometimes have chocolates....**</p>
+
+    </div>
+
+    <div class="header">
+        <h2>External data - a little more informtion</h2>
+    </div>
+    <div class="header">
+        <h3>Satellite data</h3>
+        <p>Sea surface temperature (SST), chlorophyll (chl) and sea-ice data are provided on a daily basis.
+
+        Data sources: Oceancolor (NASA)
+        </p>
+    </div>
+
+
+
+
+{% endblock %}
