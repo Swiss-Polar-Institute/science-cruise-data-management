@@ -459,7 +459,7 @@ class EventAction(models.Model):
     type = models.CharField(choices=type_choices, max_length=255, help_text="Select the description of the time that you are entering", verbose_name= "Time description")
     description = models.ForeignKey(EventActionDescription, verbose_name="Description of event action", help_text="Select the description that describes the event action")
 
-    time = models.DateTimeField(help_text="TIME IN UTC", verbose_name="Time of event action (UTC)")
+    time = models.DateTimeField(default=timezone.now, help_text="TIME IN UTC", verbose_name="Time of event action (UTC)")
     time_source = models.ForeignKey(TimeSource)
     time_uncertainty = models.ForeignKey(TimeUncertainty)
 
