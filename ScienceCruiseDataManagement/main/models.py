@@ -371,6 +371,9 @@ class Data(models.Model):
 
 
 class Event(models.Model):
+
+    type_choices = (("Not yet happened", "Not yet happened"), ("Success", "Success"), ("Failure", "Failure"), ("Invalid", "Invalid"))
+
     number = models.AutoField(primary_key=True)
     parent_device = models.ForeignKey(ParentDevice, related_name="parent_device_event", verbose_name="Sampling method", help_text="Choose the instrument or method used for sampling")
     child_devices = ChainedManyToManyField(
@@ -385,7 +388,7 @@ class Event(models.Model):
     station = models.ForeignKey(Station, null=True, blank=True, help_text="Only choose a station name where the ship has stopped")
     data = models.BooleanField(help_text="Tick this box if raw data will be produced DURING this event (not after post-cruise processing).")
     samples = models.BooleanField(help_text="Tick this box if samples will be collected during this event.")
-    
+    outcome = models.CharField(max_length=20, choices=type_choices, null=True,blank=True, help_text="Select the option that best describes the outcome of the event. If the event did not happen because of weather or a decision to not do it, it should be marked as invalid.", default="Success")
 
     def __str__(self):
         return "{}".format(self.number)

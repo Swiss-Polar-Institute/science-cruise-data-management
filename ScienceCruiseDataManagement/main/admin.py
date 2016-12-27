@@ -67,11 +67,11 @@ class EventResource(import_export.resources.ModelResource):
 
     data = import_export.fields.Field(column_name = 'data', attribute='data')
     samples = import_export.fields.Field(column_name = 'samples', attribute='data')
-    fail = import_export.fields.Field(column_name = 'fail', attribute='fail')
+    #fail = import_export.fields.Field(column_name = 'fail', attribute='fail')
 
     class Meta:
-        fields = ('number', 'parent_device', 'station', 'data', 'samples', 'fail')
-        export_order = ('number', 'parent_device', 'station', 'data', 'samples', 'fail')
+        fields = ('number', 'parent_device', 'station', 'data', 'samples')
+        export_order = ('number', 'parent_device', 'station', 'data', 'samples')
 
 
 class ChildDeviceForm(ModelForm):
@@ -90,7 +90,7 @@ class EventForm(ModelForm):
         # 'child_device' is not here on purpose, for now
 
 class EventAdmin(ReadOnlyFields, import_export.admin.ImportExportModelAdmin):
-    list_display = ('number', 'parent_device', 'station', 'data', 'samples', 'fail')
+    list_display = ('number', 'parent_device', 'station', 'data', 'samples', 'outcome')
     ordering = ['-number']
 
     # used for the import_export
@@ -109,12 +109,14 @@ class EventAdmin(ReadOnlyFields, import_export.admin.ImportExportModelAdmin):
         # never shown, it's the Primary Key
         fields.remove('number')
 
-        if request.user.is_superuser:
-            return tuple(fields)
-        else:
+
+        return tuple(fields)
+        #if request.user.is_superuser:
+        #    return tuple(fields)
+        #else:
             # non super users can't mark an event as failed
-            fields.remove('fail')
-            return tuple(fields)
+        #    fields.remove('fail')
+        #    return tuple(fields)
 
     form = EventForm
 
