@@ -371,7 +371,7 @@ class SampleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'project_list', 'organisation_list')
+    list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'project_list', 'organisation_list', 'principal_investigator','leg_list')
     ordering = ['name_last']
 
     def project_list(self, obj):
@@ -383,6 +383,11 @@ class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
         organisations = obj.organisation.all()
 
         return ",".join([organisation.name for organisation in organisations])
+
+    def leg_list(self, obj):
+        legs = obj.leg.all()
+
+        return ",".join([leg.number for leg in legs])
 
 
 class OrganisationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):

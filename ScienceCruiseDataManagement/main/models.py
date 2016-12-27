@@ -286,6 +286,8 @@ class Person(models.Model):
     initials = models.CharField(max_length=5, unique=True)
     project = models.ManyToManyField('Project')
     organisation = models.ManyToManyField(Organisation)
+    principal_investigator = models.BooleanField()
+    leg = models.ManyToManyField(Leg)
 
     def __str__(self):
         return "{} {}".format(self.name_first, self.name_last)
@@ -311,7 +313,7 @@ class Project(models.Model):
     abstract = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return "{}".format(self.title)
+        return "{} - {}".format(self.number, self.title)
 
 
 class StationType(models.Model):
