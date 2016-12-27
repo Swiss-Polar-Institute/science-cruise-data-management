@@ -23,6 +23,9 @@ class ProjectsStartsWithLetter(admin.SimpleListFilter):
         else:
             return queryset
 
+class MissionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'acronym', 'institution', 'description')
+    ordering = ['name']
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('number', 'title', 'alternative_title', 'principal_investigator', 'abstract')
@@ -361,8 +364,8 @@ class SampleContentAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class SampleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('code', 'event', 'storage', 'preservation', 'owner', 'contents', 'destination')
-    ordering = ['code']
+    list_display = ('ace_sample_number', 'project_sample_number', 'contents', 'crate_number', 'storage_type', 'storage_location', 'offloading_port', 'destination', 'ship', 'mission', 'leg', 'project', 'julian_day', 'event', 'pi_initials', 'preservation')
+    ordering = ['ace_sample_number']
 
 
 class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
@@ -434,6 +437,7 @@ class MessageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('date_time', 'subject', 'message', 'person')
     ordering = ['-date_time']
 
+admin.site.register(main.models.Mission, MissionAdmin)
 admin.site.register(main.models.Ship, ShipAdmin)
 admin.site.register(main.models.StationType, StationTypeAdmin)
 admin.site.register(main.models.ChildDevice, ChildDeviceAdmin)

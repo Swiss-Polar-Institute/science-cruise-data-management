@@ -294,6 +294,14 @@ class Person(models.Model):
         verbose_name_plural="People"
         unique_together = (('name_first', 'name_last'),)
 
+class Mission(models.Model):
+    name= models.CharField(max_length=255)
+    acronym= models.CharField(max_length=255)
+    institution= models.CharField(max_length=255)
+    description = models.TextField()
+
+    def __str__(self):
+        return "{}".format(self.acronym)
 
 class Project(models.Model):
     number = models.IntegerField(unique=True)
@@ -322,9 +330,9 @@ class Station(models.Model):
     leg = models.ForeignKey(Leg)
     arrival_time = models.DateTimeField(null=True, blank=True, help_text="TIME IN UTC", verbose_name="Arrival time (UTC)")
     departure_time = models.DateTimeField(null=True, blank=True, help_text="TIME IN UTC",verbose_name="Departure time (UTC)")
-    time_source = models.ForeignKey(ChildDevice, related_name='station_device_time_source', null=True, blank=True)
+    time_source = models.ForeignKey(TimeSource, related_name='station_device_time_source', null=True, blank=True)
     time_uncertainty = models.ForeignKey(TimeUncertainty, null=True, blank=True)
-    position_source = models.ForeignKey(ChildDevice, related_name='station_position_time_source', null=True, blank=True)
+    position_source = models.ForeignKey(PositionSource, related_name='station_position_time_source', null=True, blank=True)
     position_uncertainty = models.ForeignKey(PositionUncertainty, null=True,blank=True)
     water_depth = models.FloatField(null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
@@ -334,13 +342,22 @@ class Station(models.Model):
 
 
 class Sample(models.Model):
-    code = models.CharField(max_length=255, unique=True)
-    event = models.ForeignKey('Event')
-    storage = models.ForeignKey(Storage)
-    preservation = models.ForeignKey(Preservation)
-    owner = models.ForeignKey(Person)
+    ace_sample_number = models.CharField(max_length=255, unique=True)
+    project_sample_number = models.CharField(max_length=255, null=True, blank=True)
     contents = models.ForeignKey(SampleContent)
-    destination = models.CharField(max_length=255)
+    crate_number = models.CharField(max_length=255, null=True, blank=True)
+    storage_type = models.CharField(max_length=255, null=True, blank=True)
+    storage_location = models.CharField(max_length=255, null=True, blank=True)
+    offloading_port = models.CharField(max_length=255)
+    destination = models.CharField(max_length=255, null=True, blank=True)
+    ship = models.ForeignKey('Ship')
+    mission = models.ForeignKey('Mission')
+    leg = models.ForeignKey('Leg')
+    project = models.ForeignKey('Project')
+    julian_day = models.IntegerField()
+    event = models.ForeignKey('Event')
+    pi_initials = models.ForeignKey('Person')
+    preservation = models.ForeignKey(Preservation)
 
     def __str__(self):
         return "{}".format(self.code)
