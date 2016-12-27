@@ -289,7 +289,7 @@ class Person(models.Model):
     project = models.ManyToManyField('Project')
     organisation = models.ManyToManyField(Organisation)
     principal_investigator = models.BooleanField()
-    leg = models.ManyToManyField(Leg)
+    leg = models.ManyToManyField(Leg, blank=True)
 
     def __str__(self):
         return "{} {}".format(self.name_first, self.name_last)
