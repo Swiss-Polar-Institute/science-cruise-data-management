@@ -387,7 +387,7 @@ class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     def leg_list(self, obj):
         legs = obj.leg.all()
 
-        return ",".join([leg.number for leg in legs])
+        return ",".join([str(leg.number) for leg in legs])
 
 
 class OrganisationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
