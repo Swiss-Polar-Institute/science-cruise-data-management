@@ -169,7 +169,9 @@ class Leg(models.Model):
         legs = Leg.objects.all().order_by('start_time')
 
         for leg in legs:
-            if leg.start_time > timezone.now() and (leg.end_time > timezone.now() or leg.end_time == None):
+            if leg.end_time == None and leg.start_time< timezone.now():
+                return leg
+            elif (leg.start_time < timezone.now() and (leg.end_time > timezone.now())):
                 return leg
 
         # Returns the last leg
