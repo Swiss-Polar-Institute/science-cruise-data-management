@@ -232,7 +232,7 @@ class StationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class EventReportAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude')
+    list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome')
 
     def station_name(self, obj):
         if obj.station is None:

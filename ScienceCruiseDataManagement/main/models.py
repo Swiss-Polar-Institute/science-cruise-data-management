@@ -82,7 +82,7 @@ class ParentDevice(models.Model):
     definition = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return "{}".format(self.name)
+        return "{} - {}".format(self.name, self.definition)
 
 
 class ChildDevice(models.Model):
