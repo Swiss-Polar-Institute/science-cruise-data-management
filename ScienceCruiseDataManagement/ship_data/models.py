@@ -5,7 +5,7 @@ from main.models import ParentDevice
 # GPS data from log files
 class GpzdaDateTime(models.Model):
     device = models.ForeignKey(ParentDevice)
-    date_time = models.DateTimeField()
+    date_time = models.DateTimeField(db_index=True)
     local_zone_hours = models.IntegerField()
     local_zone_minutes = models.IntegerField()
 
@@ -14,7 +14,7 @@ class GpzdaDateTime(models.Model):
 
 class GpggaGpsFix(models.Model):
     device = models.ForeignKey(ParentDevice)
-    date_time = models.DateTimeField()
+    date_time = models.DateTimeField(db_index=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
     fix_quality = models.PositiveSmallIntegerField()
@@ -30,7 +30,7 @@ class GpggaGpsFix(models.Model):
 
 class GpvtgVelocity(models.Model):
     device = models.ForeignKey(ParentDevice)
-    date_time = models.DateTimeField()      # not in the gpvtg string, importer will use the time from the prior string
+    date_time = models.DateTimeField(db_index=True)      # not in the gpvtg string, importer will use the time from the prior string
     true_track_deg = models.FloatField()
     magnetic_track_deg = models.FloatField(null=True, blank=True)
     ground_speed_kts = models.FloatField()
