@@ -48,7 +48,7 @@ def detect_hard_disk():
     input()
 
     uuids_before = collect_uuids()
-    print("Please plug the hard disk and wait")
+    print("Please plug the hard disk and wait -no need to press enter")
 
     step=0
     while True:
@@ -60,7 +60,10 @@ def detect_hard_disk():
             starts_at=datetime.datetime.now()
 
         elif step==1 and (datetime.datetime.now()-starts_at).seconds >= 5:
+            print("Waiting for partitions...")
             break
+
+        time.sleep(1)
 
     uuids_after = collect_uuids()
     new_uuids=list(set(uuids_after)-set(uuids_before))
@@ -108,7 +111,9 @@ def process_hard_disk(uuid):
         destination=directory['destination']
         directory_id=directory['id']
 
-        to_exec=["rsync","-arv",
+        wall_clock = datetime.datetime.now().timestamp()
+
+        to_exec=["rsync","-rtv",
             os.path.join(read_config("hard_disk_mount_point"),source) + "/",
             os.path.join(read_config("destination_base_directory"),destination)]
 
@@ -116,11 +121,11 @@ def process_hard_disk(uuid):
         input()
         execute(to_exec)
 
+        print("It took: {} seconds".format(int(datetime.datetime.now().timestamp() - wall_clock)))
         add_directory_update(directory_id)
 
 
 def add_directory(hard_disk_uuid, relative_path):
-    # TODO requests.put
     data={}
     data['hard_disk_uuid']=hard_disk_uuid
     data['relative_path']=relative_path

@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from ship_data.models import GpzdaDateTime, GpggaGpsFix, GpvtgVelocity
+from main.models import ParentDevice
 import time
 from ship_data import utilities
 import os
@@ -11,7 +12,12 @@ class Command(BaseCommand):
     help = 'Reads the NMEA data and writes it into the database. Keeps checking for new files.'
 
     def add_arguments(self, parser):
-        parser.add_argument('directory_path', type=str)
+        parser.add_argument('device', type=str,
+                            action='store',
+                            help='A ParentDevice table name that is the source of this file')
+        parser.add_argument('directory_path', type=str,
+                            action='store',
+                            help='Directory where to fetch the files from')
         parser.add_argument('--start-file', type=str,
                             action='store',
                             dest='start_file',
@@ -19,18 +25,26 @@ class Command(BaseCommand):
                             help='Which file should start with in an ordered way')
 
     def handle(self, *args, **options):
-        process = ProcessNMEAFile(options['directory_path'], options['start_file'])
+        process = ProcessNMEAFile(options['device'], options['directory_path'], options['start_file'])
         process.process()
 
 
 class ProcessNMEAFile:
-    def __init__(self, directory, start_file):
+    def __init__(self, device_string, directory, start_file):
+        self.device_string = device_string
+        self.device = None
         self.directory = directory
         self.start_file = start_file
         self.last_datetime = None
         self.utc = datetime.timezone(datetime.timedelta(0))
 
     def process(self):
+        if not ParentDevice.objects.all().filter(name=self.device_string).exists():
+            print("Error: parent device type {} doesn't exist in the ParentDevice table".format(self.device_string))
+            exit(1)
+
+        self.device = ParentDevice.objects.get(name=self.device_string)
+
         tail_directory = TailDirectory(self.directory, self.start_file, self._process_line)
         tail_directory.read_all_directory()
 
@@ -48,7 +62,13 @@ class ProcessNMEAFile:
         hour = int(time_string[0:2])
         minute = int(time_string[2:4])
         seconds = int(time_string[4:6])
-        millions_of_sec = int(time_string.split(".")[1])*10000
+
+        # Some GPS sources have the time with hundreds of seconds like.
+        # HHMMSS.tt . Some doesn't have the ".tt"
+        if "." in time_string:
+            millions_of_sec = int(time_string.split(".")[1])*10000
+        else:
+            millions_of_sec = 0
 
         return (hour, minute, seconds, millions_of_sec)
 
@@ -73,6 +93,10 @@ class ProcessNMEAFile:
         self.last_datetime = date_time
 
         gpzda = GpzdaDateTime()
+
+        gpzda.device = self.device
+
+        gpzda.device = self.device
         gpzda.date_time = date_time
         gpzda.day = day
         gpzda.month = month
@@ -124,6 +148,7 @@ class ProcessNMEAFile:
 
         current_date_time = self._current_date_time(time_string)
 
+        gps_fix.device = self.device
         gps_fix.date_time = current_date_time
         gps_fix.latitude = latitude
         gps_fix.longitude = longitude
@@ -132,8 +157,10 @@ class ProcessNMEAFile:
         gps_fix.horiz_dilution_of_position = horizontal_diluation_of_position
         gps_fix.altitude = altitude
         gps_fix.altitude_units = altitude_units
-        gps_fix.geoid_height = geoid_height
-        gps_fix.geoid_height_units = geoid_height_units
+
+        if geoid_height!= '' and geoid_height_units != '':
+            gps_fix.geoid_height = geoid_height
+            gps_fix.geoid_height_units = geoid_height_units
 
         if not GpggaGpsFix.objects.filter(date_time=current_date_time).exists():
             gps_fix.save()
@@ -166,11 +193,14 @@ class ProcessNMEAFile:
 
         velocity = GpvtgVelocity()
 
+        velocity.device = self.device
         date_time = self.last_datetime
-
         velocity.date_time = date_time
         velocity.true_track_deg = true_track_deg
-        velocity.magnetic_track_deg = magnetic_track_deg
+
+        if magnetic_track_deg != '':
+            velocity.magnetic_track_deg = magnetic_track_deg
+
         velocity.ground_speed_kts = ground_speed_knots
 
         if not GpvtgVelocity.objects.filter(date_time=date_time):
@@ -180,7 +210,11 @@ class ProcessNMEAFile:
 class TailDirectory:
     def __init__(self, directory, start_file, callback):
         self.directory = directory
-        self.current_file = os.path.join(self.directory, start_file)
+        if start_file is not None:
+            self.current_file = os.path.join(self.directory, start_file)
+        else:
+            self.current_file = None
+
         self.SLEEP_INTERVAL = 0.5   # for when new lines keep appearing
         self.callback = callback
 
