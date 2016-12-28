@@ -104,7 +104,7 @@ class ProcessNMEAFile:
         gpzda.local_zone_hours = int(local_zone_hours)
         gpzda.local_zone_minutes = int(local_zone_minutes)
 
-        if not GpzdaDateTime.objects.filter(date_time=date_time, device=self.device_id).exists():
+        if not GpzdaDateTime.objects.filter(date_time=date_time, device=self.device).exists():
             gpzda.save()
 
     def _current_date_time_smaller_than_before(self, time_string):
@@ -162,7 +162,7 @@ class ProcessNMEAFile:
             gps_fix.geoid_height = geoid_height
             gps_fix.geoid_height_units = geoid_height_units
 
-        if not GpggaGpsFix.objects.filter(date_time=current_date_time, device=self.device_id).exists():
+        if not GpggaGpsFix.objects.filter(date_time=current_date_time, device=self.device).exists():
             gps_fix.save()
 
     def _import_gpvtg(self, line):
@@ -203,7 +203,7 @@ class ProcessNMEAFile:
 
         velocity.ground_speed_kts = ground_speed_knots
 
-        if not GpvtgVelocity.objects.filter(date_time=date_time, device=self.device_id):
+        if not GpvtgVelocity.objects.filter(date_time=date_time, device=self.device):
             velocity.save()
 
 
