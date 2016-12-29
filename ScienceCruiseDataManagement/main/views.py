@@ -8,7 +8,7 @@ from django.http import JsonResponse
 
 from main import import_gpx_to_stations
 from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station, Message, ParentDevice
-from ship_data.models import GpggaGpsFix
+from ship_data.models import GpggaGpsFix, GpvtgVelocity
 from django.utils import timezone
 from django.db.models import Q
 import main.models
@@ -57,6 +57,13 @@ class MainMenuView(TemplateView):
             context['position_latitude'] = "Unknown"
             context['position_longitude'] = "Unknown"
             context['position_date_time'] = "Unknown"
+
+        speed = latest_ship_speed()
+
+        if speed is not None:
+            context['speed_kts'] = speed
+        else:
+            context['speed_kts'] = "Unknown"
 
         return context
 
@@ -320,3 +327,13 @@ def latest_ship_position():
         return (position.latitude, position.longitude, position.date_time)
     else:
         return (None, None, None)
+
+def latest_ship_speed():
+    gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
+    velocities = GpvtgVelocity.objects.all().filter(device=gps).order_by('-date_time')
+
+    if velocities.exists():
+        speed = velocities[0]
+        return (speed.ground_speed_kts)
+    else:
+        return (None)
