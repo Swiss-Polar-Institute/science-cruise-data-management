@@ -310,8 +310,8 @@ def latest_ship_position():
     gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
     positions = GpggaGpsFix.objects.all().filter(device=gps).order_by('-date_time')
 
-    if len(positions) == 0:
-        return ('unknown', 'unknown', 'unknown')
-    else:
+    if positions.exists():
         position = positions[0]
         return (position.latitude, position.longitude, position.date_time)
+    else:
+        return ('unknown', 'unknown', 'unknown')
