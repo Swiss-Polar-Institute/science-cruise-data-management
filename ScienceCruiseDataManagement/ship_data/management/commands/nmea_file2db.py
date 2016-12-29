@@ -172,7 +172,7 @@ class ProcessNMEAFile:
             return
 
         try:
-            (nmea_reference, true_track_deg, t, magnetic_track_deg, m, ground_speed_nautical, n, ground_speed_knots, k, something) = line.split(",")
+            (nmea_reference, true_track_deg, t, magnetic_track_deg, m, ground_speed_kts, n, ground_speed_kmh, k, something) = line.split(",")
         except ValueError as e:
             print("Exception: {}".format(e))
             print("Error unpacking: {}".format(line))
@@ -201,7 +201,7 @@ class ProcessNMEAFile:
         if magnetic_track_deg != '':
             velocity.magnetic_track_deg = magnetic_track_deg
 
-        velocity.ground_speed_kts = ground_speed_knots
+        velocity.ground_speed_kts = ground_speed_kts
 
         if not GpvtgVelocity.objects.filter(date_time=date_time, device=self.device):
             velocity.save()
