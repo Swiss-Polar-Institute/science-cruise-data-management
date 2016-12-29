@@ -56,7 +56,7 @@ def detect_hard_disk():
     print_colored('blue', "Please plug the hard disk and wait -no need to press enter")
 
     step = 0
-    second_counter = 5
+    second_counter = 4
     while True:
         uuids_after = collect_uuids()
         new_uuids = list(set(uuids_after) - set(uuids_before))
@@ -64,12 +64,13 @@ def detect_hard_disk():
         if step==0 and len(new_uuids) != 0:
             step=1
             starts_at=datetime.datetime.now()
-            print_colored('brown', "Waiting for partitions...")
+            print_colored('white', "Waiting for partitions...")
 
-        elif step==1 and (datetime.datetime.now()-starts_at).seconds >= 5:
-            print_colored('brown', "Waiting... {} seconds".format(second_counter))
-            second_counter -= 1
+        elif step==1 and second_counter < 0:
             break
+        elif step == 1:
+            print_colored('white', "Waiting... {} seconds".format(second_counter))
+            second_counter -= 1
 
         time.sleep(1)
 
@@ -82,7 +83,7 @@ def detect_hard_disk():
 
 
 def execute(cmd, abort_if_fails=False):
-    print_colored('brown', "Will execute: {}".format(cmd))
+    print_colored('white', "Will execute: {}".format(cmd))
 
     p=subprocess.Popen(cmd)
     p.communicate()[0]
@@ -113,7 +114,11 @@ def process_hard_disk(uuid):
     execute(to_exec, True)
 
     hard_disk_information = requests.get(read_config("base_url") + "/api/data_storage/hard_disk.json", {'hard_disk_uuid':uuid}).json()
+
+    print_colored('blue', "Will process these directories:")
+    print_colored('blue', "====================")
     pprint.pprint(hard_disk_information)
+    print_colored('blue', "====================")
 
     print_colored('green', "Proceed? (Y/n)")
     answer = input()
@@ -133,11 +138,11 @@ def process_hard_disk(uuid):
             os.path.join(read_config("hard_disk_mount_point"),source) + "/",
             os.path.join(read_config("destination_base_directory"),destination)]
 
-        print('blue', "Will execute: {}".format(to_exec))
+        print_colored('blue', "Will execute: {}".format(to_exec))
         execute(to_exec)
-
-        print('blue', "It took: {} seconds".format(int(datetime.datetime.now().timestamp() - wall_clock)))
+        print()
         add_directory_update(directory_id)
+        print_colored('blue', "It took: {} seconds".format(int(datetime.datetime.now().timestamp() - wall_clock)))
 
 
 def add_directory(hard_disk_uuid, relative_path):
@@ -145,7 +150,7 @@ def add_directory(hard_disk_uuid, relative_path):
     data['hard_disk_uuid'] = hard_disk_uuid
     data['relative_path'] = relative_path
 
-    print_colored('blue', "Do you want to add the directory {} (Y/n)".format(relative_path))
+    print_colored('blue', "Do you want to add for the hard disk '{}' the directory '{}'? (Y/n)".format(hard_disk_uuid, relative_path))
     answer = input()
 
     if answer == '' or answer == 'y' or answer == 'Y':
@@ -154,7 +159,7 @@ def add_directory(hard_disk_uuid, relative_path):
         if r.json()['status'] != 'ok':
             print_colored('red', "Failed uploading {} {} ".format(hard_disk_uuid, relative_path))
 
-            print_colored('brown', "\nReceived from server\n: ".r.json())
+            print_colored('white', "\nReceived from server\n: ".r.json())
 
             print_colored('red', "Now exiting...")
 
@@ -162,6 +167,9 @@ def add_directory(hard_disk_uuid, relative_path):
 
 
 def create_hard_disk(hard_disk_uuid, hard_disk_mount_point, base_directory):
+    if base_directory == "/":
+        base_directory = ""
+
     for directory in glob.glob(os.path.join(hard_disk_mount_point, base_directory, "*")):
         if os.path.isdir(directory):
             relative_path = directory[len(hard_disk_mount_point)+1:]
@@ -186,5 +194,5 @@ if __name__ == "__main__":
         process_hard_disk(hard_disk[0])
     elif args.add_hard_disk and args.hard_disk_mount_point and args.base_directory:
         create_hard_disk(args.add_hard_disk,
-                         os.path.abspath(args.hard_disk_mount_point),
+                         os.path.abspath(args.hard_disk_mount_point), # Import for some os.path.join()
                          os.path.abspath(args.base_directory))

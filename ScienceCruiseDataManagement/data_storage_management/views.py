@@ -73,7 +73,10 @@ class HardDiskJson(View):
 
         information['uuid']=hard_disk.uuid
         information['label']=hard_disk.label
-        information['person']="{} {}".format(hard_disk.person.name_first, hard_disk.person.name_last)
+        if hard_disk.person:
+            information['person']="{} {}".format(hard_disk.person.name_first, hard_disk.person.name_last)
+        else:
+            information['person'] = "NOT ASSIGNED, assign person to this hard disk on the admin please."
         information['comment']=hard_disk.comment
         information['directories'] = directories
 
