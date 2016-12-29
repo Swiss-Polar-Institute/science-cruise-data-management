@@ -45,7 +45,7 @@ class MainMenuView(TemplateView):
         context['person'] = person
         context['subject'] = subject
         context['date'] = now.strftime("%a %d %B %Y")
-        context['time'] = now.strftime("%H:%M")
+        context['time'] = now.strftime("%H:%M:%S")
         context['julian_day'] = now.strftime("%j")
 
         return context
