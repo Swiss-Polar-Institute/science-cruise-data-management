@@ -49,9 +49,14 @@ class MainMenuView(TemplateView):
         context['date'] = now.strftime("%a %d %B %Y")
         context['time'] = now.strftime("%H:%M:%S")
         context['julian_day'] = now.strftime("%j")
-        context['position_latitude'] = position_latitude
-        context['position_longitude'] = position_longitude
-        context['position_date_time'] = position_date_time
+        if position_latitude is not None:
+            context['position_latitude'] = "{0:.4f}".format(position_latitude)
+            context['position_longitude'] = "{0:.4f}".format(position_longitude)
+            context['position_date_time'] = position_date_time
+        else:
+            context['position_latitude'] = "Unknown"
+            context['position_longitude'] = "Unknown"
+            context['position_date_time'] = "Unknown"
 
         return context
 
@@ -314,4 +319,4 @@ def latest_ship_position():
         position = positions[0]
         return (position.latitude, position.longitude, position.date_time)
     else:
-        return ('unknown', 'unknown', 'unknown')
+        return (None, None, None)
