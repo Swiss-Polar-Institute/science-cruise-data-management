@@ -226,7 +226,7 @@ class LegAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
         return obj == main.models.Leg.current_active_leg()
 
 
-class StationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+class StationAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'type', 'latitude', 'longitude', 'leg', 'arrival_time', 'departure_time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'comment')
     ordering = ['-name']
 
