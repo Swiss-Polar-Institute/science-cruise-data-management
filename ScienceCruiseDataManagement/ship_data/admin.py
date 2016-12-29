@@ -5,17 +5,17 @@ import import_export
 
 
 class GpzdaDateTimeAdminAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('date_time', 'local_zone_hours', 'local_zone_minutes')
+    list_display = ('date_time', 'local_zone_hours', 'local_zone_minutes', 'device')
     ordering = ['-date_time']
 
 
 class GpvtgVelocityAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('date_time', 'true_track_deg', 'magnetic_track_deg', 'ground_speed_kts')
+    list_display = ('date_time', 'true_track_deg', 'magnetic_track_deg', 'ground_speed_kts', 'device')
     ordering = ['-date_time']
 
 
 class GpggaGpsFixAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('date_time', 'latitude', 'longitude', 'fix_quality', 'number_satellites', 'horiz_dilution_of_position', 'altitude', 'altitude_units', 'geoid_height', 'geoid_height_units')
+    list_display = ('date_time', 'latitude', 'longitude', 'fix_quality', 'number_satellites', 'horiz_dilution_of_position', 'altitude', 'altitude_units', 'geoid_height', 'geoid_height_units', 'device')
     ordering = ['-date_time']
 
 # Register your models here.

@@ -10,7 +10,7 @@ class GpzdaDateTime(models.Model):
     local_zone_minutes = models.IntegerField()
 
     def __str__(self):
-        return "{}".format(self.date_time)
+        return "main/{}".format(self.date_time)
 
 class GpggaGpsFix(models.Model):
     device = models.ForeignKey(ParentDevice)

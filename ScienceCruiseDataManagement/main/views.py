@@ -7,7 +7,7 @@ from django.views.generic import TemplateView, View, ListView
 from django.http import JsonResponse
 
 from main import import_gpx_to_stations
-from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station, Message
+from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station, Message, ParentDevice
 from ship_data.models import GpggaGpsFix
 from django.utils import timezone
 from django.db.models import Q
@@ -40,6 +40,8 @@ class MainMenuView(TemplateView):
 
         now = datetime.datetime.now()
 
+        (position_latitude, position_longitude, position_date_time) = latest_ship_position()
+
         context['message'] = message
         context['date_time'] = date_time
         context['person'] = person
@@ -47,6 +49,9 @@ class MainMenuView(TemplateView):
         context['date'] = now.strftime("%a %d %B %Y")
         context['time'] = now.strftime("%H:%M:%S")
         context['julian_day'] = now.strftime("%j")
+        context['position_latitude'] = position_latitude
+        context['position_longitude'] = position_longitude
+        context['position_date_time'] = position_date_time
 
         return context
 
@@ -117,10 +122,7 @@ class PositionsJson(View):
                                                             'text': station.name,
                                                             'marker_color': 'green'}))
 
-        # Last ship position
-        latest_ship_position = GpggaGpsFix.objects.latest("date_time")
-        latest_ship_latitude = latest_ship_position.latitude
-        latest_ship_longitude = latest_ship_position.longitude
+        (latest_ship_longitude, latest_ship_latitude, date_time_position) = latest_ship_position()
 
         point = geojson.Point((latest_ship_longitude, latest_ship_latitude))
 
@@ -303,3 +305,13 @@ class ImportPortsFromGpx(View):
         }
 
         return render(request, "import_ports_from_gpx_exec.html", template_information)
+
+def latest_ship_position():
+    gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
+    positions = GpggaGpsFix.objects.all().filter(device=gps).order_by('date_time')
+
+    if len(positions) == 0:
+        return ('unknown', 'unknown', 'unknown')
+    else:
+        position = positions[0]
+        return (position.latitude, position.longitude, position.date_time)
