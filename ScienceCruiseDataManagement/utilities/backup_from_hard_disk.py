@@ -12,6 +12,7 @@ import datetime
 import subprocess
 import glob
 import configparser
+from termcolor import colored
 
 def read_config(key):
     cp = configparser.ConfigParser()
@@ -43,14 +44,19 @@ def longest_device_name(devices):
     return longest
 
 
+def print_colored(color, message):
+    print(colored(message, color, attrs=['bold']))
+
+
 def detect_hard_disk():
-    print("Please unplug the hard disk and press ENTER")
+    print_colored('blue', "Please unplug the hard disk and press ENTER")
     input()
 
     uuids_before = collect_uuids()
-    print("Please plug the hard disk and wait -no need to press enter")
+    print_colored('blue', "Please plug the hard disk and wait -no need to press enter")
 
-    step=0
+    step = 0
+    second_counter = 5
     while True:
         uuids_after = collect_uuids()
         new_uuids = list(set(uuids_after) - set(uuids_before))
@@ -58,9 +64,11 @@ def detect_hard_disk():
         if step==0 and len(new_uuids) != 0:
             step=1
             starts_at=datetime.datetime.now()
+            print_colored('brown', "Waiting for partitions...")
 
         elif step==1 and (datetime.datetime.now()-starts_at).seconds >= 5:
-            print("Waiting for partitions...")
+            print_colored('brown', "Waiting... {} seconds".format(second_counter))
+            second_counter -= 1
             break
 
         time.sleep(1)
@@ -74,18 +82,19 @@ def detect_hard_disk():
 
 
 def execute(cmd, abort_if_fails=False):
-    print("Will execute: {}".format(cmd))
+    print_colored('brown', "Will execute: {}".format(cmd))
 
     p=subprocess.Popen(cmd)
     p.communicate()[0]
     retcode=p.returncode
 
     if retcode != 0 and abort_if_fails:
-        print("Command: _{}_ failed, aborting...".format(cmd))
+        print_colored('red', "Command: _{}_ failed, aborting...".format(cmd))
         exit(1)
 
+
 def add_directory_update(directory_id):
-    data={}
+    data = {}
     data['id'] = directory_id
 
     r=requests.post(read_config("base_url") + "/api/data_storage/add_directory_update.json", json.dumps(data))
@@ -94,48 +103,62 @@ def add_directory_update(directory_id):
 
     assert json_data['status'] == 'ok'
 
+
 def process_hard_disk(uuid):
-    to_exec = ["sudo","umount","/mnt/data_science"]
+    hard_disk_mount_point = read_config("hard_disk_mount_point")
+    to_exec = ["sudo", "umount", hard_disk_mount_point]
     execute(to_exec)
 
-    to_exec = ["sudo","mount","-o", "ro", "/dev/disk/by-uuid/{}".format(uuid),read_config("hard_disk_mount_point")]
+    to_exec = ["sudo", "mount", "-o", "ro", "/dev/disk/by-uuid/{}".format(uuid),hard_disk_mount_point]
     execute(to_exec, True)
 
     hard_disk_information = requests.get(read_config("base_url") + "/api/data_storage/hard_disk.json", {'hard_disk_uuid':uuid}).json()
     pprint.pprint(hard_disk_information)
-    print("Proceed? (Ctrl+C for NO)")
-    input()
+
+    print_colored('green', "Proceed? (Y/n)")
+    answer = input()
+
+    if not (answer == '' or answer == 'Y' or answer == 'y'):
+        print_colored('red', "Exiting...")
+        exit(1)
 
     for directory in hard_disk_information['directories']:
-        source=directory['source']
-        destination=directory['destination']
-        directory_id=directory['id']
+        source = directory['source']
+        destination = directory['destination']
+        directory_id = directory['id']
 
         wall_clock = datetime.datetime.now().timestamp()
 
-        to_exec=["rsync","-rtv",
+        to_exec = ["rsync", "-rt",
             os.path.join(read_config("hard_disk_mount_point"),source) + "/",
             os.path.join(read_config("destination_base_directory"),destination)]
 
-        print("To exec:",to_exec)
-        input()
+        print('blue', "Will execute: {}".format(to_exec))
         execute(to_exec)
 
-        print("It took: {} seconds".format(int(datetime.datetime.now().timestamp() - wall_clock)))
+        print('blue', "It took: {} seconds".format(int(datetime.datetime.now().timestamp() - wall_clock)))
         add_directory_update(directory_id)
 
 
 def add_directory(hard_disk_uuid, relative_path):
-    data={}
-    data['hard_disk_uuid']=hard_disk_uuid
-    data['relative_path']=relative_path
+    data = {}
+    data['hard_disk_uuid'] = hard_disk_uuid
+    data['relative_path'] = relative_path
 
-    print("Should send: {} {}".format(hard_disk_uuid, relative_path))
-    r = requests.put(read_config("base_url") + "/api/data_storage/hard_disk.json", data=json.dumps(data))
+    print_colored('blue', "Do you want to add the directory {} (Y/n)".format(relative_path))
+    answer = input()
 
-    if r.json()['status'] != 'ok':
-        print("Failed uploading {} {} ".format(hard_disk_uuid, relative_path))
-        exit(1)
+    if answer == '' or answer == 'y' or answer == 'Y':
+        r = requests.put(read_config("base_url") + "/api/data_storage/hard_disk.json", data=json.dumps(data))
+
+        if r.json()['status'] != 'ok':
+            print_colored('red', "Failed uploading {} {} ".format(hard_disk_uuid, relative_path))
+
+            print_colored('brown', "\nReceived from server\n: ".r.json())
+
+            print_colored('red', "Now exiting...")
+
+            exit(1)
 
 
 def create_hard_disk(hard_disk_uuid, hard_disk_mount_point, base_directory):
@@ -157,7 +180,7 @@ if __name__ == "__main__":
 
     if args.detect_new_hard_disk:
         uuid=detect_hard_disk()
-        print(uuid)
+        print_colored('green', "Found device: {}".format(uuid))
     elif args.process_hard_disk:
         hard_disk=detect_hard_disk()
         process_hard_disk(hard_disk[0])
