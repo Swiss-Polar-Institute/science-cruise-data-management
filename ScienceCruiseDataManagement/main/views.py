@@ -308,7 +308,7 @@ class ImportPortsFromGpx(View):
 
 def latest_ship_position():
     gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
-    positions = GpggaGpsFix.objects.all().filter(device=gps).order_by('date_time')
+    positions = GpggaGpsFix.objects.all().filter(device=gps).order_by('-date_time')
 
     if len(positions) == 0:
         return ('unknown', 'unknown', 'unknown')
