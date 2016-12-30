@@ -53,7 +53,7 @@ def detect_hard_disk():
     input()
 
     uuids_before = collect_uuids()
-    print_colored('blue', "Please plug the hard disk and wait -no need to press enter")
+    print_colored('blue', "Please plug in the hard disk and wait -no need to press enter")
 
     step = 0
     second_counter = 4
@@ -188,7 +188,7 @@ if __name__ == "__main__":
 
     if args.detect_new_hard_disk:
         uuid=detect_hard_disk()
-        print_colored('green', "Found device: {}".format(uuid))
+        print_colored('green', "Found device: {}".format(uuid[0]))
     elif args.process_hard_disk:
         hard_disk=detect_hard_disk()
         process_hard_disk(hard_disk[0])
