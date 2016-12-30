@@ -105,7 +105,13 @@ def add_directory_update(directory_id):
     assert json_data['status'] == 'ok'
 
 
-def process_hard_disk(uuid):
+def process_hard_disk(hard_disk):
+    uuid = hard_disk[0]
+    partition = hard_disk[1]
+
+    to_exec = ["sudo", "umount", partition]
+    execute(to_exec)
+
     hard_disk_mount_point = read_config("hard_disk_mount_point")
     to_exec = ["sudo", "umount", hard_disk_mount_point]
     execute(to_exec)
@@ -114,6 +120,12 @@ def process_hard_disk(uuid):
     execute(to_exec, True)
 
     hard_disk_information = requests.get(read_config("base_url") + "/api/data_storage/hard_disk.json", {'hard_disk_uuid':uuid}).json()
+
+    if 'error' in hard_disk_information:
+        print_colored('red', "Error: hard disk not found")
+        pprint.pprint(hard_disk_information)
+        print_colored('red', "Aborting...")
+        exit(1)
 
     print_colored('blue', "Will process these directories:")
     print_colored('blue', "====================")
@@ -191,7 +203,7 @@ if __name__ == "__main__":
         print_colored('green', "Found device: {}".format(uuid[0]))
     elif args.process_hard_disk:
         hard_disk=detect_hard_disk()
-        process_hard_disk(hard_disk[0])
+        process_hard_disk(hard_disk)
     elif args.add_hard_disk and args.hard_disk_mount_point and args.base_directory:
         create_hard_disk(args.add_hard_disk,
                          os.path.abspath(args.hard_disk_mount_point), # Import for some os.path.join()
