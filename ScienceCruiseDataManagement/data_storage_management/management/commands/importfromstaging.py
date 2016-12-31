@@ -21,8 +21,8 @@ class Command(BaseCommand):
                                                nas_directory.nas_resource.shared_resource,
                                                "guest",
                                                None,
-                                               nas_directory.source_path,
-                                               nas_directory.destination_path)
+                                               nas_directory.source_directory,
+                                               nas_directory.destination_directory)
 
             importer.run()
 
@@ -42,7 +42,7 @@ class Command(BaseCommand):
 
 
 def report_if_directory_no_exist(directory, shared_resource):
-    query_set = Directory.objects.all().filter(nas_resource__isnull=False, source_path=directory)
+    query_set = Directory.objects.all().filter(nas_resource__isnull=False, source_directory=directory)
     exists_in_db = query_set.exists()
 
     if not exists_in_db:

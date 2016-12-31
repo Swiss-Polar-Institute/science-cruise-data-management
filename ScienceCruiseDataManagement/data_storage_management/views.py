@@ -43,8 +43,8 @@ class HardDiskJson(View):
             hard_disk = HardDisk.objects.all().filter(uuid=hard_disk_uuid)[0]
 
         directory.hard_disk = hard_disk
-        directory.source_path = relative_path
-        directory.destination_path = relative_path
+        directory.source_directory = relative_path
+        directory.destination_directory = relative_path
         directory.hard_disk = hard_disk
 
         if not Directory.objects.all().filter(destination_path=relative_path).exists():
@@ -57,15 +57,15 @@ class HardDiskJson(View):
 
         try:
             hard_disk = HardDisk.objects.all().get(uuid=hard_disk_uuid)
-        except: # TODO add exception time
+        except: # TODO add exception type
             return JsonResponse({'error': 'hard disk not found', 'uuid': hard_disk_uuid})
 
         directories = []
 
         for directory in Directory.objects.all().filter(hard_disk=hard_disk):
             dir = {}
-            dir['source'] = directory.source_path
-            dir['destination'] = directory.destination_path
+            dir['source'] = directory.source_directory
+            dir['destination'] = directory.destination_directory
             dir['id'] = directory.pk
             directories.append(dir)
 

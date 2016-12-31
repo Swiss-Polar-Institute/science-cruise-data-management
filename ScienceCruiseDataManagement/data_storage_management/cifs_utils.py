@@ -17,6 +17,10 @@ class Importer:
     def run(self):
         mounted = Importer.mount(self.ip, self.shared_volume, self.username, self.password)
 
+        if mounted is None:
+            print("******** Can't mount //{}/{} Username: {} Password: {}".format(self.ip, self.shared_volume, self.username, self.password))
+            return
+
         source_directory_path = os.path.join(mounted, self.source_directory)
 
         if not source_directory_path.endswith("/"):
@@ -26,7 +30,10 @@ class Importer:
                                                   self.destination_directory)
 
         print("From: {} To: {}".format(source_directory_path, destination_directory_path))
-        utils.rsync_copy(source_directory_path, destination_directory_path)
+        retval = utils.rsync_copy(source_directory_path, destination_directory_path)
+
+        if retval != 0:
+            print("******** ATTENTION! //{}/{} Username: {} Password: {} From: {} To: {} could not be copied!".format(self.ip, self.shared_volume, self.username, self.password, source_directory_path, destination_directory_path))
         Importer.umount(mounted)
 
     @staticmethod
@@ -36,19 +43,24 @@ class Importer:
         if not os.path.isdir(mount_point):
             os.mkdir(mount_point)
 
-        if password is None:
+        if password is None or password == '':
             password_options = "guest"
         else:
             password_options = "password={}".format(password)
 
-        utils.execute(["sudo",
+        to_execute = ["sudo",
                  "mount",
                  "-t", "cifs",
                  "-o", "ro,username={},{}".format(username, password_options),
                  "//{}/{}".format(ip, shared_resource),
-                 mount_point])
+                 mount_point]
 
-        return mount_point
+        retval = utils.execute(to_execute)
+
+        if retval == 0:
+            return mount_point
+        else:
+            return None
 
     @staticmethod
     def umount(mount_point):

@@ -15,7 +15,7 @@ class HardDiskAdmin(admin.ModelAdmin):
 
 
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('source_path', 'destination_path', 'added_date_time', 'hard_disk', 'shared_resource', 'nas_resource')
+    list_display = ('source_directory', 'destination_directory', 'added_date_time', 'hard_disk', 'shared_resource', 'nas_resource')
 
 
 class DirectoryUpdatesAdmin(admin.ModelAdmin):

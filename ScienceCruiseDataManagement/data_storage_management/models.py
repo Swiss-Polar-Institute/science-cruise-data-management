@@ -43,8 +43,8 @@ class NASResource(models.Model):
 
 
 class Item(models.Model):
-    source_path = models.CharField(max_length=255)
-    destination_path = models.CharField(max_length=255, unique=True)
+    source_directory = models.CharField(max_length=255)
+    destination_directory = models.CharField(max_length=255, unique=True)
 
     # A directory should come from only one of these sources
     hard_disk = models.ForeignKey(HardDisk, null=True, blank=True)
@@ -57,7 +57,7 @@ class Item(models.Model):
     added_date_time = models.DateTimeField(default=django.utils.timezone.now)
 
     def __str__(self):
-        return "{}-{}".format(self.source_path, self.destination_path)
+        return "{}-{}".format(self.source_directory, self.destination_directory)
 
 
 class Directory(Item):
