@@ -57,7 +57,14 @@ class Item(models.Model):
     added_date_time = models.DateTimeField(default=django.utils.timezone.now)
 
     def __str__(self):
-        return "{}-{}".format(self.source_directory, self.destination_directory)
+        if self.hard_disk is not None:
+            return "HDD {} From: {} To: {}".format(self.hard_disk.uuid, self.source_directory, self.destination_directory)
+        elif self.shared_resource is not None:
+            return "\\{}\\{} From: {} To: {}".format(self.shared_resource.ip, self.shared_resource.shared_resource, self.source_directory, self.destination_directory)
+        elif self.nas_resource is not None:
+            return "NAS {} From: {} To: {}".format(self.nas_resource.shared_resource, self.source_directory, self.destination_directory)
+        else:
+            assert False
 
 
 class Directory(Item):
@@ -73,6 +80,3 @@ class DirectoryImportLog(models.Model):
     directory = models.ForeignKey(Directory)
     updated_time = models.DateTimeField(default=django.utils.timezone.now)
     success = models.BooleanField()
-
-    class Meta:
-        verbose_name_plural="Directory Updates"
