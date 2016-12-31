@@ -19,16 +19,19 @@ class SharedResource(models.Model):
     shared_resource = models.CharField(max_length=255)
     added_date_time = models.DateTimeField(default=django.utils.timezone.now)
     person = models.ForeignKey(Person, null=True, blank=True)
-    comment = models.TextField(null=True, blank=True)
-    username = models.CharField(max_length=255, null=True, blank=True)
+    username = models.CharField(max_length=255)
     password = models.CharField(max_length=255, null=True, blank=True)
+    comment = models.TextField(null=True, blank=True)
+
+    class Meta:
+        unique_together = (('ip', 'shared_resource'),)
 
     def __str__(self):
         return "//{}/{}".format(self.ip, self.shared_resource)
 
 
-class NASDirectory(models.Model):
-    shared_resource = models.CharField(max_length=255)
+class NASResource(models.Model):
+    shared_resource = models.CharField(max_length=255, unique=True)
     added_date_time = models.DateTimeField(default=django.utils.timezone.now)
     comment = models.TextField(null=True, blank=True)
 
@@ -44,9 +47,9 @@ class Item(models.Model):
     destination_path = models.CharField(max_length=255, unique=True)
 
     # A directory should come from only one of these sources
-    hard_disk = models.ForeignKey(HardDisk, null=True)
-    shared_resource = models.ForeignKey(SharedResource, null=True)
-    staging_directory = models.ForeignKey(NASDirectory, null=True)
+    hard_disk = models.ForeignKey(HardDisk, null=True, blank=True)
+    shared_resource = models.ForeignKey(SharedResource, null=True, blank=True)
+    nas_resource = models.ForeignKey(NASResource, null=True, blank=True)
 
     # TODO: validate that the destination path doesn't end in "/"
     created_date_time = models.DateTimeField(default=django.utils.timezone.now)

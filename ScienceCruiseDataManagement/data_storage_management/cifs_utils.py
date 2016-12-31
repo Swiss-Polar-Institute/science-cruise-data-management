@@ -15,18 +15,22 @@ class Importer:
         self.destination_directory = destination_directory
 
     def run(self):
-        mounted = Importer._mount(self.ip, self.shared_volume, self.username, self.password)
+        mounted = Importer.mount(self.ip, self.shared_volume, self.username, self.password)
 
         source_directory_path = os.path.join(mounted, self.source_directory)
+
+        if not source_directory_path.endswith("/"):
+            source_directory_path += "/"
+
         destination_directory_path = os.path.join(settings.BASE_STORAGE_DIRECTORY,
                                                   self.destination_directory)
 
         print("From: {} To: {}".format(source_directory_path, destination_directory_path))
         utils.rsync_copy(source_directory_path, destination_directory_path)
-        Importer._umount(mounted)
+        Importer.umount(mounted)
 
     @staticmethod
-    def _mount(ip, shared_resource, username='guest', password=None):
+    def mount(ip, shared_resource, username='guest', password=None):
         mount_point = "/mnt/importfromstaging/{}".format(shared_resource)
 
         if not os.path.isdir(mount_point):
@@ -37,7 +41,7 @@ class Importer:
         else:
             password_options = "password={}".format(password)
 
-        utils.exe(["sudo",
+        utils.execute(["sudo",
                  "mount",
                  "-t", "cifs",
                  "-o", "ro,username={},{}".format(username, password_options),
@@ -47,5 +51,5 @@ class Importer:
         return mount_point
 
     @staticmethod
-    def _umount(mount_point):
+    def umount(mount_point):
         utils.execute(["sudo", "umount", mount_point])

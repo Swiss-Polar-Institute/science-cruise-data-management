@@ -15,14 +15,14 @@ class HardDiskAdmin(admin.ModelAdmin):
 
 
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('source_path', 'destination_path', 'added_date_time', 'hard_disk', 'shared_resource', 'staging_directory')
+    list_display = ('source_path', 'destination_path', 'added_date_time', 'hard_disk', 'shared_resource', 'nas_resource')
 
 
 class DirectoryUpdatesAdmin(admin.ModelAdmin):
     list_display = ('directory', 'updated_time')
 
 
-class NASDirectoryAdmin(admin.ModelAdmin):
+class NASResourceAdmin(admin.ModelAdmin):
     list_display = ('shared_resource', 'added_date_time', 'comment')
 
 
@@ -35,5 +35,5 @@ admin.site.register(data_storage_management.models.HardDisk, HardDiskAdmin)
 admin.site.register(data_storage_management.models.Directory, ItemAdmin)
 admin.site.register(data_storage_management.models.File, ItemAdmin)
 admin.site.register(data_storage_management.models.DirectoryUpdates, DirectoryUpdatesAdmin)
-admin.site.register(data_storage_management.models.NASDirectory, NASDirectoryAdmin)
+admin.site.register(data_storage_management.models.NASResource, NASResourceAdmin)
 admin.site.register(data_storage_management.models.SharedResource, SharedResourceAdmin)

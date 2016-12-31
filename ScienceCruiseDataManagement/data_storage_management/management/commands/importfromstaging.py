@@ -1,28 +1,52 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from data_storage_management import cifs_utils
-from data_storage_management.models import Directory
+from data_storage_management.models import Directory, NASResource
 from django.conf import settings
-
+import os
 
 class Command(BaseCommand):
     help = 'Copies data from staging areas into the ace_data'
 
     def add_arguments(self, parser):
-        parser.add_argument('import', type=str)
+        parser.add_argument('action', type=str)
 
     def handle(self, *args, **options):
-        db_staging_directories = Directory.objects.all().filter(staging_directory__isnull=False)
+        if options['action'] == 'import':
+            db_nas_directories = Directory.objects.all().filter(nas_resource__isnull=False)
 
-        for staging_directory in db_staging_directories:
-            importer = cifs_utils.Importer(settings.NAS_IP,
-                                         settings.NAS_STAGING_VOLUME,
-                                         "guest",
-                                         None,
-                                         staging_directory.source_directory,
-                                         staging_directory.destination_directory)
+            print("Will import the NAS directories. To be processed: {}".format(len(db_nas_directories)))
+            for nas_directory in db_nas_directories:
+                importer = cifs_utils.Importer(settings.NAS_IP,
+                                               nas_directory.nas_resource.shared_resource,
+                                               "guest",
+                                               None,
+                                               nas_directory.source_path,
+                                               nas_directory.destination_path)
 
             importer.run()
+
+        elif options['action'] == 'check':
+            nas_shares = NASResource.objects.all()
+
+            directories_in_nas = []
+            for nas_share in nas_shares:
+                mounted = cifs_utils.Importer.mount(settings.NAS_IP, nas_share.shared_resource)
+                files_and_dirs = os.listdir(mounted)
+
+                for file_or_dir in files_and_dirs:
+                    if os.path.isdir(os.path.join(mounted, file_or_dir)):
+                        report_if_directory_no_exist(file_or_dir, nas_share.shared_resource)
+
+                cifs_utils.Importer.umount(mounted)
+
+
+def report_if_directory_no_exist(directory, shared_resource):
+    query_set = Directory.objects.all().filter(nas_resource__isnull=False, source_path=directory)
+    exists_in_db = query_set.exists()
+
+    if not exists_in_db:
+        print("Directory {} from shared resource {} is not in the database".format(directory, shared_resource))
 
 # class Importer:
 #     def __init__(self):

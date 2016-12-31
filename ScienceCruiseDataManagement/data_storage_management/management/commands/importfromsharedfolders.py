@@ -18,6 +18,6 @@ class Command(BaseCommand):
                                            shared_resource_directory.shared_resource.username,
                                            shared_resource_directory.shared_resource.password,
                                            shared_resource_directory.source_path,
-                                           shared_resource_directory.desitnation_path)
+                                           shared_resource_directory.destination_path)
 
             importer.run()
