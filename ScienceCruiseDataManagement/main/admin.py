@@ -33,7 +33,7 @@ class ProjectAdmin(admin.ModelAdmin):
     ordering = ['number']
 
 
-class ReadOnlyFields:
+class ReadOnlyIfUserCantChangeEvents:
     def get_readonly_fields(self, request, obj=None):
         if not main.utils.can_user_change_events(request.path, request.user):
             fields_from_model = []
@@ -43,9 +43,12 @@ class ReadOnlyFields:
             # this appeared here but because it's not in this form the template
             # raised an exception (as it was included)
             for field in self.model._meta.get_fields(include_parents=False):
-                if hasattr(self.model, field.name) and not hasattr(field, 'related_name'):
+                if hasattr(self.model, field.name) \
+                        and not hasattr(field, 'related_name'):
                     fields_from_model.append(field.name)
 
+            # Outcome can always be changed (even by users who can't change the events)
+            fields_from_model.remove("outcome")
             return fields_from_model
 
         return []
@@ -89,7 +92,7 @@ class EventForm(ModelForm):
         exclude = ('child_devices', )
         # 'child_device' is not here on purpose, for now
 
-class EventAdmin(ReadOnlyFields, import_export.admin.ImportExportModelAdmin):
+class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ImportExportModelAdmin):
     list_display = ('number', 'parent_device', 'station', 'data', 'samples', 'outcome')
     ordering = ['-number']
 
@@ -197,7 +200,7 @@ class EventActionForm(ModelForm):
         fields = '__all__'
 
 
-class EventActionAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.ModelAdmin):
+class EventActionAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
     #def description_2(self, obj):
     #    return obj.event_action_type.description
 
@@ -226,12 +229,12 @@ class LegAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
         return obj == main.models.Leg.current_active_leg()
 
 
-class StationAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.ModelAdmin):
+class StationAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'type', 'latitude', 'longitude', 'leg', 'arrival_time', 'departure_time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'comment')
     ordering = ['-name']
 
 
-class EventReportAdmin(ReadOnlyFields, import_export.admin.ExportMixin, admin.ModelAdmin):
+class EventReportAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome')
 
     def station_name(self, obj):
