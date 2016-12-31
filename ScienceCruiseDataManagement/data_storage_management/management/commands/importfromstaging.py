@@ -24,7 +24,7 @@ class Command(BaseCommand):
                                                nas_directory.source_directory,
                                                nas_directory.destination_directory)
 
-            importer.run()
+                importer.run()
 
         elif options['action'] == 'check':
             nas_shares = NASResource.objects.all()
