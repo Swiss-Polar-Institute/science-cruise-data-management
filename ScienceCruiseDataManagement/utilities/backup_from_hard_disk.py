@@ -93,6 +93,7 @@ def execute(cmd, abort_if_fails=False):
         print_colored('red', "Command: _{}_ failed, aborting...".format(cmd))
         exit(1)
 
+    return retcode
 
 def add_directory_update(directory_id):
     data = {}
@@ -151,11 +152,16 @@ def process_hard_disk(hard_disk):
             os.path.join(read_config("destination_base_directory"),destination)]
 
         print_colored('blue', "Will execute: {}".format(to_exec))
-        execute(to_exec)
-        print()
-        add_directory_update(directory_id)
-        print_colored('blue', "It took: {} seconds".format(int(datetime.datetime.now().timestamp() - wall_clock)))
+        retval = execute(to_exec)
 
+        if retval == 0:
+            print()
+            add_directory_update(directory_id)
+            print_colored('blue', "It took: {} seconds".format(int(datetime.datetime.now().timestamp() - wall_clock)))
+        else:
+            print()
+            print_colored('red', "Error: failed uploading directory")
+            exit(1)
 
 def add_directory(hard_disk_uuid, relative_path):
     data = {}

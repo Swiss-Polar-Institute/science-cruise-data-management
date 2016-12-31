@@ -8,7 +8,7 @@ import json
 class DirectoryUpdateJson(View):
     @csrf_exempt
     def post(self, request, *args, **kwargs):
-        directory_update = DirectoryUpdates()
+        directory_update = DirectoryImportLog()
 
         decoded_data = request.body.decode('utf-8')
         json_data = json.loads(decoded_data)
@@ -17,6 +17,7 @@ class DirectoryUpdateJson(View):
         directory = Directory.objects.all().get(id=directory_id)
 
         directory_update.directory = directory
+        directory_update.success = True
 
         directory.save()
 
