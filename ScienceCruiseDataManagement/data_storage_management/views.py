@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import View
 from django.http import JsonResponse
-from data_storage_management.models import HardDisk, Directory, DirectoryUpdates
+from data_storage_management.models import HardDisk, Directory, DirectoryImportLog
 from django.views.decorators.csrf import csrf_exempt
 import json
 

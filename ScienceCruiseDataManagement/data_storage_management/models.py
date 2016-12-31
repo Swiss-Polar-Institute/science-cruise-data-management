@@ -69,9 +69,10 @@ class File(Item):
     pass
 
 
-class DirectoryUpdates(models.Model):
+class DirectoryImportLog(models.Model):
     directory = models.ForeignKey(Directory)
     updated_time = models.DateTimeField(default=django.utils.timezone.now)
+    success = models.BooleanField()
 
     class Meta:
         verbose_name_plural="Directory Updates"

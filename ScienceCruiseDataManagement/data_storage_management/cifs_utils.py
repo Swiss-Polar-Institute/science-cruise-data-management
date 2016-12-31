@@ -1,6 +1,7 @@
 import os
 from django.conf import settings
 from data_storage_management import utils
+from data_storage_management.models import DirectoryImportLog
 
 
 class Importer:
@@ -14,7 +15,10 @@ class Importer:
         self.source_directory = source_directory
         self.destination_directory = destination_directory
 
+        self.succeeded = False
+
     def run(self):
+        self.succeeded = False
         mounted = Importer.mount(self.ip, self.shared_volume, self.username, self.password)
 
         if mounted is None:
@@ -35,7 +39,16 @@ class Importer:
 
         if retval != 0:
             print("******** ATTENTION! //{}/{} Username: {} Password: {} From: {} To: {} could not be copied!".format(self.ip, self.shared_volume, self.username, self.password, source_directory_path, destination_directory_path))
+        else:
+            self.succeeded = True
         Importer.umount(mounted)
+
+    def register_import(self, directory):
+        directory_import = DirectoryImportLog()
+        directory_import.directory = directory
+        directory_import.success = self.succeeded
+
+        directory_import.save()
 
     @staticmethod
     def mount(ip, shared_resource, username='guest', password=None):

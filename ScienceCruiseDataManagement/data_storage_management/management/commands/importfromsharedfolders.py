@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from data_storage_management.models import Directory
+from data_storage_management.models import Directory, DirectoryImportLog
 from data_storage_management import cifs_utils
 
 
@@ -21,3 +21,4 @@ class Command(BaseCommand):
                                            shared_resource_directory.destination_directory)
 
             importer.run()
+            importer.register_import(shared_resource_directory)
