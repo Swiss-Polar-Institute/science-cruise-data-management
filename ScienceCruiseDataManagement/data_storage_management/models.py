@@ -23,11 +23,20 @@ class SharedResource(models.Model):
     username = models.CharField(max_length=255, null=True, blank=True)
     password = models.CharField(max_length=255, null=True, blank=True)
 
+    def __str__(self):
+        return "//{}/{}".format(self.ip, self.shared_resource)
+
 
 class NASDirectory(models.Model):
     shared_resource = models.CharField(max_length=255)
     added_date_time = models.DateTimeField(default=django.utils.timezone.now)
     comment = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.shared_resource)
+
+    class Meta:
+        verbose_name_plural = "NAS Directories"
 
 
 class Item(models.Model):
@@ -47,12 +56,10 @@ class Item(models.Model):
     def __str__(self):
         return "{}-{}".format(self.source_path, self.destination_path)
 
-    class Meta:
-        verbose_name_plural="Directories"
-
 
 class Directory(Item):
-    pass
+    class Meta:
+        verbose_name_plural = "Directories"
 
 
 class File(Item):

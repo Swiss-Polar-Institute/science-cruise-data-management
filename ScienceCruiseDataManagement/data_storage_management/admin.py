@@ -14,12 +14,8 @@ class HardDiskAdmin(admin.ModelAdmin):
         return ",".join(result)
 
 
-class DirectoryAdmin(admin.ModelAdmin):
-    list_display = ('hard_disk', 'source_path', 'destination_path', 'added_date_time')
-
-
-class DirectoryFile(admin.ModelAdmin):
-    list_display = ('hard_disk', 'source_path', 'destination_path', 'added_date_time')
+class ItemAdmin(admin.ModelAdmin):
+    list_display = ('source_path', 'destination_path', 'added_date_time', 'hard_disk', 'shared_resource', 'staging_directory')
 
 
 class DirectoryUpdatesAdmin(admin.ModelAdmin):
@@ -36,8 +32,8 @@ class SharedResourceAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(data_storage_management.models.HardDisk, HardDiskAdmin)
-admin.site.register(data_storage_management.models.Directory, DirectoryAdmin)
-admin.site.register(data_storage_management.models.File, DirectoryFile)
+admin.site.register(data_storage_management.models.Directory, ItemAdmin)
+admin.site.register(data_storage_management.models.File, ItemAdmin)
 admin.site.register(data_storage_management.models.DirectoryUpdates, DirectoryUpdatesAdmin)
 admin.site.register(data_storage_management.models.NASDirectory, NASDirectoryAdmin)
 admin.site.register(data_storage_management.models.SharedResource, SharedResourceAdmin)

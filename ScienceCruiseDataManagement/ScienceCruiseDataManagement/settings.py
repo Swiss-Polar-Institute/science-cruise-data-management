@@ -183,3 +183,5 @@ FORECAST_DIRECTORY = os.path.join(os.getenv("HOME"), "ethz_forecast_data")
 DATA_STORAGE_BACKUP_DESTINATION = "/home/carles/data_storage_test"
 
 MAIN_GPS = "GPS Bridge1"
+
+NAS_STAGING_MOUNT_POINT = "/media/carles/CARLES8/"

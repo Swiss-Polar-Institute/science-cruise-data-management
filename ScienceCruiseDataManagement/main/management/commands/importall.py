@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 import os.path
 
+
 class Command(BaseCommand):
     help = 'Import all the CSVs (see other commands)'
 

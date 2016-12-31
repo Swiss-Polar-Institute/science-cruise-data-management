@@ -4,6 +4,7 @@ import main.models
 from django.contrib.auth.models import User, Group, Permission
 from django.conf import settings
 
+
 class Command(BaseCommand):
     help = 'Creates admin users based on the Person table'
 

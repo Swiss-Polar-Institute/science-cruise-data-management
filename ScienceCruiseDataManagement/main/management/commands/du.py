@@ -5,8 +5,16 @@ import subprocess
 import os
 import shutil
 
+
 class Command(BaseCommand):
     help = 'Updates the FilesStorage and FilesStorageGeneral tables for stats about storage'
+
+    def add_arguments(self, parser):
+        parser.add_argument('update', type=str)
+
+    def handle(self, *args, **options):
+        self.df_instrumentation()
+        self.du_general_storage()
 
     @staticmethod
     def du(path):
@@ -18,9 +26,6 @@ class Command(BaseCommand):
     def space():
         space = shutil.disk_usage(settings.BASE_STORAGE_DIRECTORY)
         return {'used': space.used/1024, 'free': space.free/1024}
-
-    def add_arguments(self, parser):
-        parser.add_argument('update', type=str)
 
     def df_instrumentation(self):
         for storage in FilesStorage.objects.all():
@@ -36,8 +41,3 @@ class Command(BaseCommand):
         general_storage.used = space['used']
 
         general_storage.save()
-
-
-    def handle(self, *args, **options):
-        self.df_instrumentation()
-        self.du_general_storage()
