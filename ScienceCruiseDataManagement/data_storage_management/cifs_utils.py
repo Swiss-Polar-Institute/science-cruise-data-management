@@ -21,7 +21,8 @@ class Importer:
             print("******** Can't mount //{}/{} Username: {} Password: {}".format(self.ip, self.shared_volume, self.username, self.password))
             return
 
-        source_directory_path = os.path.join(mounted, self.source_directory)
+        # In the next line: do not use os.path.join() (if self.source_directory is / it wouldn't work)
+        source_directory_path = mounted + self.source_directory
 
         if not source_directory_path.endswith("/"):
             source_directory_path += "/"
