@@ -180,8 +180,8 @@ ADMIN_SITE_HEADER = 'ACE Data Administration'
 DOCUMENTS_DIRECTORY = os.path.join(os.getenv("HOME"), "intranet_documents")
 FORECAST_DIRECTORY = os.path.join(os.getenv("HOME"), "ethz_forecast_data")
 
-DATA_STORAGE_BACKUP_DESTINATION = "/home/carles/data_storage_test"
-
 MAIN_GPS = "GPS Bridge1"
 
-NAS_STAGING_MOUNT_POINT = "/media/carles/CARLES8/"
+NAS_STAGING_MOUNT_POINT = "/mnt/ace_data"
+
+NAS_IP = "192.168.20.2"
