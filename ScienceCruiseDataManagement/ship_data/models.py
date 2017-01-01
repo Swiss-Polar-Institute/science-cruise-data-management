@@ -28,6 +28,9 @@ class GpggaGpsFix(models.Model):
     def __str__(self):
         return "{}".format(self.date_time)
 
+    class Meta:
+        get_latest_by = "date_time"
+
 class GpvtgVelocity(models.Model):
     device = models.ForeignKey(ParentDevice)
     date_time = models.DateTimeField(db_index=True)      # not in the gpvtg string, importer will use the time from the prior string

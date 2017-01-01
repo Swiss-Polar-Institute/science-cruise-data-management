@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from data_storage_management.views import HardDiskJson
-from main.views import MainMenuView, MainMapView, PositionsJson, LastShipPosition, CountryListView, FileStorageView, InteractiveMapView, EventListView, ImportPortsFromGpx, DocumentsView, AccessingDataView, PositionFromDateTime
+from main.views import MainMenuView, MainMapView, PositionsJson, LastShipPosition, CountryListView, FileStorageView, InteractiveMapView, EventListView, ImportPortsFromGpx, DocumentsView, AccessingDataView, PositionFromDateTime, TrackJson
 from data_storage_management.views import HardDiskJson, DirectoryUpdateJson
 from django.conf import settings
 from django.conf.urls.static import static
@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^$', MainMenuView.as_view()),
     url(r'^map/$', MainMapView.as_view()),
     url(r'^api/positions.geojson', PositionsJson.as_view()),
+    url(r'^api/track.geojson', TrackJson.as_view()),
     url(r'api/last_ship_position.json', LastShipPosition.as_view()),
     url(r'api/data_storage/hard_disk.json', HardDiskJson.as_view()),
     url(r'api/data_storage/add_directory_update.json', DirectoryUpdateJson.as_view()),

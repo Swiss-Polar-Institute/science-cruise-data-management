@@ -89,6 +89,18 @@ function loadAndPlotGeojsonMarkers(url) {
     );
 }
 
+function loadAndPlotGeojsonLineString(url) {
+    $.getJSON(url, function(track) {
+        L.geoJson(track, {
+             style: {
+               color: '#ff0000',
+               weight: 1,
+               opacity: 1
+             }
+        }).addTo(map);
+    });
+}
+
 function make_marker_clickable(marker) {
     marker.bindPopup(popupContent(marker.id, marker.text));
 

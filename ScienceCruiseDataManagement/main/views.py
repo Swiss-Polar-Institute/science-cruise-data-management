@@ -69,6 +69,7 @@ class MainMenuView(TemplateView):
 
         return context
 
+
 class AccessingDataView(TemplateView):
     template_name = "accessing_data.html"
 
@@ -96,11 +97,16 @@ class InteractiveMapView(TemplateView):
         return context
 
 
+class TrackJson(View):
+    def get(self, request_):
+        track = open(settings.TRACK_MAP_FILEPATH, "r")
+        return JsonResponse(json.load(track))
+
+
 class PositionsJson(View):
     def get(self, request_):
 
         # Possibles colors: black, blue, green, grey, orange, red, violet, yellow
-
         tbegins = main.models.EventAction.tbegin()
         tinstant = main.models.EventAction.tinstant()
 
@@ -136,7 +142,7 @@ class PositionsJson(View):
                                                             'text': station.name,
                                                             'marker_color': 'green'}))
 
-        (latest_ship_longitude, latest_ship_latitude, date_time_position) = utils.latest_ship_position()
+        (latest_ship_latitude, latest_ship_longitude, date_time_position) = utils.latest_ship_position()
 
         point = geojson.Point((latest_ship_longitude, latest_ship_latitude))
 
