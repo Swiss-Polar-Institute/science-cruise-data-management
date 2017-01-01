@@ -329,12 +329,16 @@ class PositionFromDateTime(TemplateView):
         ship_date_time = request.POST['ship_date_time']
         form = InputShipDateTime(initial={'ship_date_time': ship_date_time})
 
-        ship_date_time = datetime.datetime.strptime(ship_date_time, "%Y-%m-%d %H:%M:%S")
-        utc = datetime.timezone(datetime.timedelta(0))
-        ship_date_time = ship_date_time.replace(tzinfo=utc)
+        ship_date_time = string_to_date_time(ship_date_time)
 
-        (latitude, longitude, position_date_time) = ship_position(ship_date_time)
-        message = ''
+        if ship_date_time is None:
+            position_date_time = "INVALID".format(ship_date_time)
+            latitude = None
+            longitude = None
+            message = "Invalid date time (format has to be YYYY-MM-DD HH:mm:SS) (or without the secs)"
+        else:
+            (latitude, longitude, position_date_time) = ship_position(ship_date_time)
+            message = ''
 
         if latitude is None or longitude is None or position_date_time is None:
             latitude = longitude = "Unknown"
@@ -404,3 +408,19 @@ def latest_ship_speed():
         return (speed.ground_speed_kts)
     else:
         return (None)
+
+
+def string_to_date_time(date_time_string):
+    try:
+        date_time = datetime.datetime.strptime(date_time_string, "%Y-%m-%d %H:%M:%S")
+    except ValueError:
+        try:
+            date_time = datetime.datetime.strptime(date_time_string, "%Y-%m-%d %H:%M")
+        except ValueError:
+            date_time = None
+
+    if date_time is not None:
+        utc = datetime.timezone(datetime.timedelta(0))
+        ship_date_time = date_time.replace(tzinfo=utc)
+
+    return date_time
