@@ -40,6 +40,8 @@ class MainMenuView(TemplateView):
             subject = last_message.subject
 
         now = datetime.datetime.now()
+        utc = datetime.timezone(datetime.timedelta(0))
+        now = now.replace(tzinfo=utc)
 
         (position_latitude, position_longitude, position_date_time) = latest_ship_position()
 
@@ -391,7 +393,6 @@ def ship_position(date_time):
         return (position.latitude, position.longitude, position.date_time)
 
 
-
 def latest_ship_position():
     gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
     positions = GpggaGpsFix.objects.all().filter(device=gps).order_by('-date_time')
@@ -401,6 +402,7 @@ def latest_ship_position():
         return (position.latitude, position.longitude, position.date_time)
     else:
         return (None, None, None)
+
 
 def latest_ship_speed():
     gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
