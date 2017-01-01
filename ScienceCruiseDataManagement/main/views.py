@@ -329,7 +329,7 @@ class PositionFromDateTime(TemplateView):
         ship_date_time = request.POST['ship_date_time']
         form = InputShipDateTime(initial={'ship_date_time': ship_date_time})
 
-        ship_date_time = datetime.datetime.strptime("2016-12-12 10:10:10", "%Y-%m-%d %H:%M:%S")
+        ship_date_time = datetime.datetime.strptime(ship_date_time, "%Y-%m-%d %H:%M:%S")
         utc = datetime.timezone(datetime.timedelta(0))
         ship_date_time = ship_date_time.replace(tzinfo=utc)
 
@@ -344,6 +344,7 @@ class PositionFromDateTime(TemplateView):
             'message': message
         }
         return render(request, "position_from_date_time_exec.html", template_information)
+
 
 def ship_position(date_time):
     gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
@@ -370,7 +371,6 @@ def ship_position(date_time):
         position = position_any_gps
     else:
         position = None
-
 
     if position is None:
         return (None, None, None)
