@@ -329,13 +329,19 @@ class PositionFromDateTime(TemplateView):
         ship_date_time = request.POST['ship_date_time']
         form = InputShipDateTime(initial={'ship_date_time': ship_date_time})
 
+        ship_date_time = datetime.datetime.strptime("2016-12-12 10:10:10", "%Y-%m-%d %H:%M:%S")
+        utc = datetime.timezone(datetime.timedelta(0))
+        ship_date_time = ship_date_time.replace(tzinfo=utc)
+
         (latitude, longitude, position_date_time) = ship_position(ship_date_time)
+        message = ''
 
         template_information = {
             'ship_date_time': position_date_time,
             'latitude_decimal': latitude,
             'longitude_decimal': longitude,
-            'form': form
+            'form': form,
+            'message': message
         }
         return render(request, "position_from_date_time_exec.html", template_information)
 
@@ -346,14 +352,14 @@ def ship_position(date_time):
 
     if position_main_gps_query.exists():
         position_main_gps = position_main_gps_query[0]
-        seconds_difference_main_gps = abs(date_time - position_main_gps.date_time)
+        seconds_difference_main_gps = abs(date_time - position_main_gps.date_time).total_seconds()
     else:
         position_main_gps = None
         seconds_difference_main_gps = 99999
 
     if position_any_gps_query.exists():
         position_any_gps = position_any_gps_query[0]
-        seconds_difference_any_gps = abs(date_time - position_any_gps)
+        seconds_difference_any_gps = abs(date_time - position_any_gps.date_time).total_seconds()
     else:
         position_any_gps = None
         seconds_difference_any_gps = 99999
