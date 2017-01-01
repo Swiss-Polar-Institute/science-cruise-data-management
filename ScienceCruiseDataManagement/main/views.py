@@ -336,6 +336,12 @@ class PositionFromDateTime(TemplateView):
         (latitude, longitude, position_date_time) = ship_position(ship_date_time)
         message = ''
 
+        if latitude is None or longitude is None or position_date_time is None:
+            latitude = longitude = "Unknown"
+        else:
+            latitude = "{0:.4f}".format(latitude)
+            longitude = "{0:.4f}".format(longitude)
+
         template_information = {
             'ship_date_time': position_date_time,
             'latitude_decimal': latitude,
@@ -373,7 +379,7 @@ def ship_position(date_time):
         position = None
 
     if position is None:
-        return (None, None, None)
+        return (None, None, date_time)
     else:
         return (position.latitude, position.longitude, position.date_time)
 

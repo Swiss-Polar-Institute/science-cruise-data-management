@@ -6,8 +6,8 @@
 At {{ship_date_time}} the ship was at:<p>
 Latitude: {{latitude_decimal}}<br>
 Longitude: {{longitude_decimal}}<br>
-
-    Enter another data:
+<hr>
+    Enter another date:<p>
 <form action="/position_from_date_time/" method="post">
     {% csrf_token %}
     {{ form }}
