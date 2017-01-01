@@ -8,6 +8,7 @@ from django.http import JsonResponse
 
 from main import import_gpx_to_stations
 from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station, Message, ParentDevice
+from main.forms import InputShipDateTime
 from ship_data.models import GpggaGpsFix, GpvtgVelocity
 from django.utils import timezone
 from django.db.models import Q
@@ -317,6 +318,60 @@ class ImportPortsFromGpx(View):
         }
 
         return render(request, "import_ports_from_gpx_exec.html", template_information)
+
+
+class PositionFromDateTime(TemplateView):
+    def get(self, request, *args, **kwargs):
+        form = InputShipDateTime(initial={'ship_date_time': timezone.now})
+        return render(request, "position_from_date_time.html", {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        ship_date_time = request.POST['ship_date_time']
+        form = InputShipDateTime(initial={'ship_date_time': ship_date_time})
+
+        (latitude, longitude, position_date_time) = ship_position(ship_date_time)
+
+        template_information = {
+            'ship_date_time': position_date_time,
+            'latitude_decimal': latitude,
+            'longitude_decimal': longitude,
+            'form': form
+        }
+        return render(request, "position_from_date_time_exec.html", template_information)
+
+def ship_position(date_time):
+    gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
+    position_main_gps_query = GpggaGpsFix.objects.all().filter(device=gps).filter(date_time__gt=date_time).order_by('date_time')
+    position_any_gps_query = GpggaGpsFix.objects.all().filter(date_time__gt=date_time).order_by('date_time')
+
+    if position_main_gps_query.exists():
+        position_main_gps = position_main_gps_query[0]
+        seconds_difference_main_gps = abs(date_time - position_main_gps.date_time)
+    else:
+        position_main_gps = None
+        seconds_difference_main_gps = 99999
+
+    if position_any_gps_query.exists():
+        position_any_gps = position_any_gps_query[0]
+        seconds_difference_any_gps = abs(date_time - position_any_gps)
+    else:
+        position_any_gps = None
+        seconds_difference_any_gps = 99999
+
+    if seconds_difference_main_gps < 60:
+        position = position_main_gps
+    elif seconds_difference_any_gps < 60:
+        position = position_any_gps
+    else:
+        position = None
+
+
+    if position is None:
+        return (None, None, None)
+    else:
+        return (position.latitude, position.longitude, position.date_time)
+
+
 
 def latest_ship_position():
     gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
