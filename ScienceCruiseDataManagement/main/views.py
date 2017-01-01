@@ -39,9 +39,7 @@ class MainMenuView(TemplateView):
             person = last_message.person
             subject = last_message.subject
 
-        now = datetime.datetime.now()
-        utc = datetime.timezone(datetime.timedelta(0))
-        now = now.replace(tzinfo=utc)
+        now = now_with_timezone()
 
         (position_latitude, position_longitude, position_date_time) = latest_ship_position()
 
@@ -337,7 +335,7 @@ class PositionFromDateTime(TemplateView):
             position_date_time = "INVALID".format(ship_date_time)
             latitude = longitude = None
             message = "Invalid date time (format has to be YYYY-MM-DD HH:mm:SS) (or without the secs)"
-        elif ship_date_time > datetime.datetime.now():
+        elif ship_date_time > now_with_timezone():
             position_date_time = "FUTURE"
             latitude = longitude = None
             message = "The date time seems to be in the future. We don't know where we are going to be!"
@@ -429,3 +427,10 @@ def string_to_date_time(date_time_string):
         date_time = date_time.replace(tzinfo=utc)
 
     return date_time
+
+def now_with_timezone():
+    now = datetime.datetime.now()
+    utc = datetime.timezone(datetime.timedelta(0))
+    now = now.replace(tzinfo=utc)
+
+    return now
