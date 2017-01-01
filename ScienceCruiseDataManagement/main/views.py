@@ -424,6 +424,6 @@ def string_to_date_time(date_time_string):
 
     if date_time is not None:
         utc = datetime.timezone(datetime.timedelta(0))
-        ship_date_time = date_time.replace(tzinfo=utc)
+        date_time = date_time.replace(tzinfo=utc)
 
     return date_time
