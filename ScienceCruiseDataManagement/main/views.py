@@ -333,9 +333,12 @@ class PositionFromDateTime(TemplateView):
 
         if ship_date_time is None:
             position_date_time = "INVALID".format(ship_date_time)
-            latitude = None
-            longitude = None
+            latitude = longitude = None
             message = "Invalid date time (format has to be YYYY-MM-DD HH:mm:SS) (or without the secs)"
+        elif ship_date_time > datetime.datetime.now():
+            position_date_time = "FUTURE"
+            latitude = longitude = None
+            message = "The date time seems to be in the future. We don't know where we are going to be!"
         else:
             (latitude, longitude, position_date_time) = ship_position(ship_date_time)
             message = ''
