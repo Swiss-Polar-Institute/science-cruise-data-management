@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block content %}
-Enter the UTC time that you would like to know where the ship was:
+Enter the UTC time for which you would like to know the ship's position:
 <form action="/position_from_date_time/" method="post">
     {% csrf_token %}
     {{ form }}
