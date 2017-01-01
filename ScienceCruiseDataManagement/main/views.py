@@ -360,38 +360,6 @@ class PositionFromDateTime(TemplateView):
         return render(request, "position_from_date_time_exec.html", template_information)
 
 
-def ship_position(date_time):
-    gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
-    position_main_gps_query = GpggaGpsFix.objects.all().filter(device=gps).filter(date_time__gt=date_time).order_by('date_time')
-    position_any_gps_query = GpggaGpsFix.objects.all().filter(date_time__gt=date_time).order_by('date_time')
-
-    if position_main_gps_query.exists():
-        position_main_gps = position_main_gps_query[0]
-        seconds_difference_main_gps = abs(date_time - position_main_gps.date_time).total_seconds()
-    else:
-        position_main_gps = None
-        seconds_difference_main_gps = 99999
-
-    if position_any_gps_query.exists():
-        position_any_gps = position_any_gps_query[0]
-        seconds_difference_any_gps = abs(date_time - position_any_gps.date_time).total_seconds()
-    else:
-        position_any_gps = None
-        seconds_difference_any_gps = 99999
-
-    if seconds_difference_main_gps < 60:
-        position = position_main_gps
-    elif seconds_difference_any_gps < 60:
-        position = position_any_gps
-    else:
-        position = None
-
-    if position is None:
-        return (None, None, date_time)
-    else:
-        return (position.latitude, position.longitude, position.date_time)
-
-
 def latest_ship_speed():
     try:
         gps = ParentDevice.objects.all().get(name="test")
