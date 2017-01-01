@@ -378,7 +378,6 @@ class Data(models.Model):
 
 
 class Event(models.Model):
-
     type_choices = (("Not yet happened", "Not yet happened"), ("Success", "Success"), ("Failure", "Failure"), ("Invalid", "Invalid"))
 
     number = models.AutoField(primary_key=True)

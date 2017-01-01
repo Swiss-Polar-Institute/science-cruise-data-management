@@ -1,23 +1,24 @@
-import geojson
+import glob
 import json
 
-from debug_toolbar.panels import request
-from django.shortcuts import render
-from django.views.generic import TemplateView, View, ListView
-from django.http import JsonResponse
-
-from main import import_gpx_to_stations
-from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station, Message, ParentDevice
-from main.forms import InputShipDateTime
-from ship_data.models import GpggaGpsFix, GpvtgVelocity
-from django.utils import timezone
-from django.db.models import Q
-import main.models
-import main.import_gpx_to_stations
-from django.conf import settings
+import geojson
 import os
-import glob
-import datetime
+from django.conf import settings
+from django.db.models import Q
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.utils import timezone
+from django.views.generic import TemplateView, View, ListView
+from django.core.exceptions import ObjectDoesNotExist
+
+import main.import_gpx_to_stations
+import main.models
+from main import import_gpx_to_stations
+from main.forms import InputShipDateTime
+from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station, Message, ParentDevice
+from main import utils
+from ship_data.models import GpggaGpsFix, GpvtgVelocity
+
 
 class MainMenuView(TemplateView):
     template_name = "main_menu.html"
@@ -39,9 +40,9 @@ class MainMenuView(TemplateView):
             person = last_message.person
             subject = last_message.subject
 
-        now = now_with_timezone()
+        now = utils.now_with_timezone()
 
-        (position_latitude, position_longitude, position_date_time) = latest_ship_position()
+        (position_latitude, position_longitude, position_date_time) = utils.latest_ship_position()
 
         context['message'] = message
         context['date_time'] = date_time
@@ -85,9 +86,9 @@ class MainMapView(TemplateView):
 
         return context
 
+
 class InteractiveMapView(TemplateView):
     template_name = "interactive_map.html"
-
 
     def get_context_data(self, **kwargs):
         context = super(InteractiveMapView, self).get_context_data(**kwargs)
@@ -135,7 +136,7 @@ class PositionsJson(View):
                                                             'text': station.name,
                                                             'marker_color': 'green'}))
 
-        (latest_ship_longitude, latest_ship_latitude, date_time_position) = latest_ship_position()
+        (latest_ship_longitude, latest_ship_latitude, date_time_position) = utils.latest_ship_position()
 
         point = geojson.Point((latest_ship_longitude, latest_ship_latitude))
 
@@ -329,13 +330,13 @@ class PositionFromDateTime(TemplateView):
         ship_date_time = request.POST['ship_date_time']
         form = InputShipDateTime(initial={'ship_date_time': ship_date_time})
 
-        ship_date_time = string_to_date_time(ship_date_time)
+        ship_date_time = utils.string_to_date_time(ship_date_time)
 
         if ship_date_time is None:
             position_date_time = "INVALID".format(ship_date_time)
             latitude = longitude = None
             message = "Invalid date time (format has to be YYYY-MM-DD HH:mm:SS) (or without the secs)"
-        elif ship_date_time > now_with_timezone():
+        elif ship_date_time > utils.now_with_timezone():
             position_date_time = "FUTURE"
             latitude = longitude = None
             message = "The date time seems to be in the future. We don't know where we are going to be!"
@@ -391,46 +392,16 @@ def ship_position(date_time):
         return (position.latitude, position.longitude, position.date_time)
 
 
-def latest_ship_position():
-    gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
-    positions = GpggaGpsFix.objects.all().filter(device=gps).order_by('-date_time')
-
-    if positions.exists():
-        position = positions[0]
-        return (position.latitude, position.longitude, position.date_time)
-    else:
-        return (None, None, None)
-
-
 def latest_ship_speed():
-    gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
+    try:
+        gps = ParentDevice.objects.all().get(name="test")
+    except ObjectDoesNotExist:
+        return None
+
     velocities = GpvtgVelocity.objects.all().filter(device=gps).order_by('-date_time')
 
     if velocities.exists():
         speed = velocities[0]
-        return (speed.ground_speed_kts)
+        return speed.ground_speed_kts
     else:
-        return (None)
-
-
-def string_to_date_time(date_time_string):
-    try:
-        date_time = datetime.datetime.strptime(date_time_string, "%Y-%m-%d %H:%M:%S")
-    except ValueError:
-        try:
-            date_time = datetime.datetime.strptime(date_time_string, "%Y-%m-%d %H:%M")
-        except ValueError:
-            date_time = None
-
-    if date_time is not None:
-        utc = datetime.timezone(datetime.timedelta(0))
-        date_time = date_time.replace(tzinfo=utc)
-
-    return date_time
-
-def now_with_timezone():
-    now = datetime.datetime.now()
-    utc = datetime.timezone(datetime.timedelta(0))
-    now = now.replace(tzinfo=utc)
-
-    return now
+        return None
