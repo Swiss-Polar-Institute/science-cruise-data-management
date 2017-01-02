@@ -330,7 +330,7 @@ class StationType(models.Model):
 
 
 class Station(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.IntegerField(unique=True)
     type = models.ForeignKey(StationType)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
