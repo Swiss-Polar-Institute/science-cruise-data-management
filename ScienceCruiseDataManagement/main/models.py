@@ -224,6 +224,7 @@ class SampleContent(models.Model):
     def __str__(self):
         return "{}".format(self.type)
 
+
 class Organisation(models.Model):
     name = models.CharField(max_length=255, unique=True)
     address = models.CharField(max_length=255, blank=True, null=True)
@@ -303,7 +304,7 @@ class Person(models.Model):
 
 
 class Mission(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     acronym = models.CharField(max_length=255)
     institution = models.CharField(max_length=255)
     description = models.TextField()
@@ -353,20 +354,20 @@ class Station(models.Model):
 class Sample(models.Model):
     ace_sample_number = models.CharField(max_length=255, unique=True)
     project_sample_number = models.CharField(max_length=255, null=True, blank=True)
-    contents = models.ForeignKey(SampleContent)
+    contents = models.CharField(max_length=255)
     crate_number = models.CharField(max_length=255, null=True, blank=True)
     storage_type = models.CharField(max_length=255, null=True, blank=True)
     storage_location = models.CharField(max_length=255, null=True, blank=True)
     offloading_port = models.CharField(max_length=255)
     destination = models.CharField(max_length=255, null=True, blank=True)
-    ship = models.ForeignKey('Ship')
+    ship = models.ForeignKey('Platform')
     mission = models.ForeignKey('Mission')
     leg = models.ForeignKey('Leg')
     project = models.ForeignKey('Project')
     julian_day = models.IntegerField()
     event = models.ForeignKey('Event')
     pi_initials = models.ForeignKey('Person')
-    preservation = models.ForeignKey(Preservation)
+    preservation = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return "{}".format(self.ace_sample_number)
