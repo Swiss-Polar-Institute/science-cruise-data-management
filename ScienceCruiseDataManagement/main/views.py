@@ -121,9 +121,11 @@ class PositionsJson(View):
             link = '<a href="/admin/main/eventaction/{}/change/">{}</a>'.format(eventAction.id, eventAction.event.number)
             id_text = "Event: {}".format(link)
 
+            date_time = eventAction.time.strftime("%Y-%m-%d %H:%M")
+
             features.append(
                 geojson.Feature(geometry=point, properties={'id': id_text,
-                                                            'text': "{}".format(eventAction.event.parent_device.name),
+                                                            'text': "{}<br>{}<br>({:.2f}, {:.2f})".format(eventAction.event.parent_device.name, date_time, eventAction.latitude, eventAction.longitude),
                                                             'marker_color': 'blue'}))
 
         for port in Port.objects.all():
@@ -140,10 +142,18 @@ class PositionsJson(View):
             if station.longitude is None or station.latitude is None:
                 continue
 
+            link = '<a href="/admin/main/station/{}/change/">{}</a>'.format(station.name, station.name)
+            id_text = "Station: {}".format(link)
+
+            if station.arrival_time is not None:
+                date_time = station.arrival_time.strftime("%Y-%m-%d %H:%M")
+            else:
+                date_time = "Unknown arrival datetime"
+
             point = geojson.Point((station.longitude, station.latitude))
             features.append(
-                geojson.Feature(geometry=point, properties={'id': 'station.{}'.format(station.id),
-                                                            'text': station.name,
+                geojson.Feature(geometry=point, properties={'id': '{}'.format(id_text),
+                                                            'text': "Type: {}<br>{}<br>({:.2f}, {:.2f})".format(station.type, date_time, station.latitude, station.longitude),
                                                             'marker_color': 'green'}))
 
         location = utils.latest_ship_position()

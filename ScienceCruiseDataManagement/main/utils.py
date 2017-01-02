@@ -13,6 +13,12 @@ class Location:
         self.date_time = None
         self.device = None
 
+    def formatted_latitude(self):
+        return "{:.4f}".format(self.latitude)
+
+    def formatted_longitude(self):
+        return "{:.4f}".format(self.longitude)
+
 def can_user_change_events(path, user):
     # To make sure that the user can edit events
     if path.endswith("/add/"):
