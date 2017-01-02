@@ -123,5 +123,5 @@ function adjustTextAreaUpdateChange(textArea) {
 }
 
 function popupContent(id, text) {
-    return 'Id: ' + id + '<br>' + text;
+    return id + '<br>' + text;
 }

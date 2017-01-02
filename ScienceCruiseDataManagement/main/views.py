@@ -42,7 +42,7 @@ class MainMenuView(TemplateView):
 
         now = utils.now_with_timezone()
 
-        (position_latitude, position_longitude, position_date_time) = utils.latest_ship_position()
+        location = utils.latest_ship_position()
 
         context['message'] = message
         context['date_time'] = date_time
@@ -51,10 +51,10 @@ class MainMenuView(TemplateView):
         context['date'] = now.strftime("%a %d %B %Y")
         context['time'] = now.strftime("%H:%M:%S")
         context['julian_day'] = now.strftime("%j")
-        if position_latitude is not None:
-            context['position_latitude'] = "{0:.4f}".format(position_latitude)
-            context['position_longitude'] = "{0:.4f}".format(position_longitude)
-            context['position_date_time'] = position_date_time
+        if location.latitude is not None:
+            context['position_latitude'] = "{0:.4f}".format(location.latitude)
+            context['position_longitude'] = "{0:.4f}".format(location.longitude)
+            context['position_date_time'] = location.date_time
         else:
             context['position_latitude'] = "Unknown"
             context['position_longitude'] = "Unknown"
@@ -117,9 +117,13 @@ class PositionsJson(View):
 
             point = geojson.Point((eventAction.longitude, eventAction.latitude))
 
+
+            link = '<a href="/admin/main/eventaction/{}/change/">{}</a>'.format(eventAction.id, eventAction.event.number)
+            id_text = "Event: {}".format(link)
+
             features.append(
-                geojson.Feature(geometry=point, properties={'id': 'Event.{}'.format(eventAction.event.number),
-                                                            'text': eventAction.general_comments,
+                geojson.Feature(geometry=point, properties={'id': id_text,
+                                                            'text': "{}".format(eventAction.event.parent_device.name),
                                                             'marker_color': 'blue'}))
 
         for port in Port.objects.all():
@@ -142,9 +146,9 @@ class PositionsJson(View):
                                                             'text': station.name,
                                                             'marker_color': 'green'}))
 
-        (latest_ship_latitude, latest_ship_longitude, date_time_position) = utils.latest_ship_position()
+        location = utils.latest_ship_position()
 
-        point = geojson.Point((latest_ship_longitude, latest_ship_latitude))
+        point = geojson.Point((location.longitude, location.latitude))
 
         features.append(
             geojson.Feature(geometry=point, properties={'id': 'ship',
@@ -154,15 +158,15 @@ class PositionsJson(View):
         return JsonResponse(geojson.FeatureCollection(features))
 
 
-class LastShipPosition(View):
+class LatestShipPosition(View):
     # simple view with only latitude, longitude and last ship position
     def get(self, request_):
-        latest_ship_position = GpggaGpsFix.objects.latest("date_time")
+        location = utils.latest_ship_position()
 
         information = {}
-        information['latitude'] = latest_ship_position.latitude
-        information['longitude'] = latest_ship_position.longitude
-        information['date_time'] = latest_ship_position.date_time
+        information['latitude'] = location.latitude
+        information['longitude'] = location.longitude
+        information['date_time'] = location.date_time
 
         return JsonResponse(information)
 

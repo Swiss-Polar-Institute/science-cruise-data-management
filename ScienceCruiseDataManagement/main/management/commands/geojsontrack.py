@@ -30,10 +30,10 @@ class GeoJsonTrack:
 
         locations = []
         while current_date < last_date:
-            (latitude, longitude, date_time) = utils.ship_position(current_date)
+            location = utils.ship_location(current_date)
 
-            if latitude is not None and longitude is not None:
-                locations.append((longitude, latitude))
+            if location.latitude is not None and location.longitude is not None:
+                locations.append((location.longitude, location.latitude))
 
             current_date = current_date + time_delta
 
