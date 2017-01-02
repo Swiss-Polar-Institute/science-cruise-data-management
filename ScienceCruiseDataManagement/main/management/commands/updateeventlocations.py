@@ -42,8 +42,8 @@ class Command(BaseCommand):
             if self._dry_run:
                 action_text = "Should update"
             else:
-                event_action.latitude = ship_location.latitude
-                event_action.longitude = ship_location.longitude
+                event_action.latitude = "{:.4f}".format(ship_location.latitude)
+                event_action.longitude = "{:.4f}".format(ship_location.longitude)
                 event_action.position_source = self._position_source()
                 event_action.position_uncertainty = self._position_uncertainty()
 
