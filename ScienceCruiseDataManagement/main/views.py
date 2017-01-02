@@ -368,7 +368,7 @@ class PositionFromDateTime(TemplateView):
 
 def latest_ship_speed():
     try:
-        gps = ParentDevice.objects.all().get(name="test")
+        gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
     except ObjectDoesNotExist:
         return None
 
