@@ -36,14 +36,14 @@ class Command(BaseCommand):
                     self._update(event_action)
 
     def _update(self, event_action):
-        location = utils.ship_location(event_action.time)
+        ship_location = utils.ship_location(event_action.time)
 
-        if location.latitude is not None and location.longitude is not None:
+        if ship_location.latitude is not None and ship_location.longitude is not None:
             if self._dry_run:
                 action_text = "Should update"
             else:
-                event_action.latitude = location.latitude
-                event_action.longitude = location.longitude
+                event_action.latitude = ship_location.latitude
+                event_action.longitude = ship_location.longitude
                 event_action.position_source = self._position_source()
                 event_action.position_uncertainty = self._position_uncertainty()
 
@@ -51,7 +51,7 @@ class Command(BaseCommand):
                 event_action.save()
 
             print("{} event_action: {}\t{} {:.4f} {:.4f}".format(action_text, event_action.id, event_action.time,
-                                                                 location.latitude, location.longitude))
+                                                                 ship_location.latitude, ship_location.longitude))
 
         else:
             print("Missing information for event action ID: {} Time: {}".format(event_action.id, event_action.time))

@@ -26,7 +26,7 @@ urlpatterns = [
     url(r'^map/$', MainMapView.as_view()),
     url(r'^api/positions.geojson', PositionsJson.as_view()),
     url(r'^api/track.geojson', TrackJson.as_view()),
-    url(r'api/last_ship_position.json', LatestShipPosition.as_view()),
+    url(r'api/latest_ship_position.json', LatestShipPosition.as_view()),
     url(r'api/data_storage/hard_disk.json', HardDiskJson.as_view()),
     url(r'api/data_storage/add_directory_update.json', DirectoryUpdateJson.as_view()),
     # url(r'^api/positions$', PositionsJson.as_view()),
