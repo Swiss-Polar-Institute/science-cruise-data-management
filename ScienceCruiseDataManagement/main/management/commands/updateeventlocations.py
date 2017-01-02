@@ -32,7 +32,7 @@ class Command(BaseCommand):
         for event_action in event_actions:
             if event_action.latitude is None and event_action.longitude is None:
                 if event_action.event.station is None or \
-                                event_action.event.station in settings.UPDATE_LOCATION_STATIONS_TYPES:
+                                event_action.event.station.type.type in settings.UPDATE_LOCATION_STATIONS_TYPES:
                     self._update(event_action)
 
     def _update(self, event_action):
