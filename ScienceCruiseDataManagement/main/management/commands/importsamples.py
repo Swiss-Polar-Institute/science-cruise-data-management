@@ -1,0 +1,184 @@
+from django.core.management.base import BaseCommand, CommandError
+from main.models import Sample, Platform, Mission, Leg, Project, Person, Event
+import csv
+import glob
+import codecs
+
+
+class Command(BaseCommand):
+    help = 'Adds data to the sample table'
+
+    def add_arguments(self, parser):
+        parser.add_argument('directory_name', type=str)
+
+    def handle(self, *args, **options):
+        #print(options['directory_name'])
+        self.import_data_from_directory(options['directory_name'])
+
+    def import_data_from_directory(self, directory_name):
+        for file in glob.glob(directory_name + "/*.csv"):
+            print("PROCESSING FILES: " + directory_name + "/*.csv")
+            self.import_data_from_csv(file)
+
+    def import_data_from_csv(self, filepath):
+        with codecs.open(filepath, encoding = 'utf-8', errors='ignore') as csvfile:
+            reader = csv.DictReader(csvfile)
+
+            rows=0
+            rows_inserted = 0
+
+            skipped = 0
+            inserted = 0
+            identical = 0
+            replaced = 0
+
+            for row in reader:
+                print("Processing file: ", filepath)
+                print(row)
+                sample = Sample()
+                sample.ace_sample_number = row['ace_sample_number']
+                sample.project_sample_number = row['project_sample_number']
+                sample.contents = row['contents']
+                sample.crate_number = row['crate_number']
+                sample.storage_type = row['storage_type']
+                sample.storage_location = row['storage_location']
+                sample.offloading_port = row['offloading_port']
+                sample.destination = row['destination']
+                #sample.preservation = row['preservation']
+
+                code_string = sample.ace_sample_number.split('/')[0]
+                mission_acronym_string = sample.ace_sample_number.split('/')[1]
+                leg_string = sample.ace_sample_number.split('/')[2]
+                project_number_string = sample.ace_sample_number.split('/')[3]
+                julian_day = int(sample.ace_sample_number.split('/')[4])
+                pi_initials_string = sample.ace_sample_number.split('/')[6]
+                event_number_string = int(sample.ace_sample_number.split('/')[5])
+
+                ship_queryset = Platform.objects.all().filter(code = code_string)
+                #print(ship_queryset)
+                mission_queryset = Mission.objects.all().filter(acronym = mission_acronym_string)
+                #print(mission_queryset)
+                leg_queryset = Leg.objects.all().filter(number = leg_string)
+                #print(leg_queryset)
+                project_queryset = Project.objects.all().filter(number = project_number_string)
+                #print(project_queryset)
+                #print(julian_day)
+                person_queryset = Person.objects.all().filter(initials=pi_initials_string)
+                #print(person_queryset)
+                event_queryset = Event.objects.all().filter(number = event_number_string)
+                #print(event_queryset)
+
+                how_many_errors_have_ocurred = 0
+
+                if len(event_queryset) != 1:
+                    self.report_error(row, event_queryset, 'event', event_number_string)
+                    how_many_errors_have_ocurred = how_many_errors_have_ocurred + 1
+
+                if len(ship_queryset) != 1:
+                    self.report_error(row, ship_queryset, 'ship', code_string)
+                    how_many_errors_have_ocurred = how_many_errors_have_ocurred + 1
+
+                if len(mission_queryset) != 1:
+                    self.report_error(row, mission_queryset, 'mission', mission_acronym_string)
+                    how_many_errors_have_ocurred = how_many_errors_have_ocurred + 1
+
+                if len(leg_queryset) !=1:
+                    self.report_error(row, leg_queryset, 'leg', leg_string)
+                    how_many_errors_have_ocurred = how_many_errors_have_ocurred + 1
+
+                if len(project_queryset) != 1:
+                    self.report_error(row, project_queryset, 'project', project_number_string)
+                    how_many_errors_have_ocurred = how_many_errors_have_ocurred + 1
+
+                if len(person_queryset) != 1:
+                    self.report_error(row, person_queryset, 'person', pi_initials_string)
+                    how_many_errors_have_ocurred = how_many_errors_have_ocurred + 1
+
+                rows = rows+1
+
+                if how_many_errors_have_ocurred == 0:
+                    event = event_queryset[0]
+                    ship = ship_queryset[0]
+                    mission = mission_queryset[0]
+                    leg = leg_queryset[0]
+                    project = project_queryset[0]
+                    pi_initials = person_queryset[0]
+
+                    sample.ship = ship
+                    sample.mission = mission
+                    sample.leg = leg
+                    sample.project = project
+                    sample.julian_day = julian_day
+                    sample.event = event
+                    sample.pi_initials = pi_initials
+                    rows_inserted = rows_inserted+1
+
+                    outcome = self.update_database(sample)
+                    if outcome== "skipped":
+                        skipped = skipped + 1
+                    elif outcome == "inserted":
+                        inserted = inserted + 1
+                    elif outcome == "replaced":
+                        replaced = replaced + 1
+                    elif outcome == "identical":
+                        identical = identical + 1
+
+
+                print("TOTAL ROWS PROCESSED= " + str(rows) + "; Inserted = " + str(inserted) + "; Identical = " + str(identical) + "; Skipped = " + str(skipped) + "; Replaced = " + str(replaced))
+
+
+    def report_error(self, row, query_set, object_type, lookup_value):
+        """ Shows an error printing the line and an error message. """
+        print("error in line:", row)
+        if len(query_set) == 0:
+            print("Cannot insert row: {} {} does not exist in the database".format(object_type, lookup_value))
+            #print(format(object_type), ": ", query_set)
+        elif len(query_set) > 1:
+            print("There are too many {} objects".format(object_type))
+            print(format(object_type), ": ", query_set)
+
+    def find_sample(self, key):
+        """Find a sample relating to a key"""
+        sample_queryset = Sample.objects.all().filter(ace_sample_number=key)
+        if sample_queryset.exists():
+            return sample_queryset[0]
+        else:
+            return None
+
+    def update_database(self, spreadsheet_sample):
+        existing_sample = self.find_sample(spreadsheet_sample.ace_sample_number)
+
+        if existing_sample is None:
+            spreadsheet_sample.save()
+            return "inserted"
+        else:
+            comparison = self.compare_samples(existing_sample, spreadsheet_sample)
+            if comparison == True:
+                print("Identical row already in database: ", spreadsheet_sample.ace_sample_number)
+                return "identical"
+            else:
+                print("Sample number already in database but data are different. \nDatabase row: ", existing_sample, "\nRow from spreadsheet: ", spreadsheet_sample.ace_sample_number)
+                print("Do you want to: \n1: Replace the row in the database with the new row? \n2: Skip this row?")
+                print("Type 1 or 2")
+                answer = input()
+
+                if answer == "1":
+                    spreadsheet_sample.pk = existing_sample.pk
+                    spreadsheet_sample.save()
+
+                    print("Row replaced")
+                    return "replaced"
+                else:
+                    return "skipped"
+
+
+
+    def compare_samples(self, sample1, sample2):
+        same_objects = True
+        for field in sample1.__dict__.keys():
+            if field != '_state' and field != 'id':
+                if sample1.__dict__[field] != sample2.__dict__[field]:
+                    print("Field: {} in database: {}; in spreadsheet: {}: ".format(field, sample1.__dict__[field], sample2.__dict__[field]))
+                    same_objects = False
+
+        return same_objects
