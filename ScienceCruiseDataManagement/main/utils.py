@@ -34,8 +34,8 @@ def can_user_change_events(path, user):
 
 
 def latest_ship_position():
-    gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
-    positions = GpggaGpsFix.objects.all().filter(device=gps).order_by('-date_time')
+    gps = ParentDevice.objects.get(name=settings.MAIN_GPS)
+    positions = GpggaGpsFix.objects.filter(device=gps).order_by('-date_time')
 
     if positions.exists():
         position = positions[0]
@@ -75,9 +75,9 @@ def now_with_timezone():
 
 
 def ship_location(date_time):
-    gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
-    position_main_gps_query = GpggaGpsFix.objects.all().filter(device=gps).filter(date_time__gt=date_time).order_by('date_time')
-    position_any_gps_query = GpggaGpsFix.objects.all().filter(date_time__gt=date_time).order_by('date_time')
+    gps = ParentDevice.objects.get(name=settings.MAIN_GPS)
+    position_main_gps_query = GpggaGpsFix.objects.filter(device=gps).filter(date_time__gt=date_time).order_by('date_time')
+    position_any_gps_query = GpggaGpsFix.objects.filter(date_time__gt=date_time).order_by('date_time')
 
     device = None
     if position_main_gps_query.exists():

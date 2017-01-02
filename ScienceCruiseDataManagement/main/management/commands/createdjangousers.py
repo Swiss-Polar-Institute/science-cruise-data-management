@@ -17,8 +17,8 @@ class Command(BaseCommand):
 
     def get_or_create_event_group(self):
         # Deletes it to from main.models import modelse a clean start
-        if Group.objects.all().filter(name=settings.ADD_EVENTS_GROUP).exists():
-            Group.objects.all().filter(name=settings.ADD_EVENTS_GROUP).delete()
+        if Group.objects.filter(name=settings.ADD_EVENTS_GROUP).exists():
+            Group.objects.filter(name=settings.ADD_EVENTS_GROUP).delete()
 
         group = Group.objects.create(name=settings.ADD_EVENTS_GROUP)
 

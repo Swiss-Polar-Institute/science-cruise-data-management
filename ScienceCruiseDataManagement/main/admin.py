@@ -133,7 +133,7 @@ class EventActionForm(ModelForm):
             # event is not in the fields if it's readonly
             # if we are adding a new event action we don't filter it
             filter_by = self._filter_open_events()
-            self.fields['event'].queryset = main.models.Event.objects.all().filter(filter_by)
+            self.fields['event'].queryset = main.models.Event.objects.filter(filter_by)
 
     def _adding_new_event_action(self):
         # Returns True if the user is adding an event (instead of modifying it)
@@ -151,14 +151,14 @@ class EventActionForm(ModelForm):
         return filter_query
 
     def _action_finished(self, event_action_id, event_number):
-        event_actions_instant = main.models.EventAction.objects.all().filter(
+        event_actions_instant = main.models.EventAction.objects.filter(
                                 Q(id=event_action_id) & Q(type="TINSTANT"))
 
         if len(event_actions_instant) > 0:
             print("tinstant: event_action_id:", event_action_id, "event_number:", event_number)
             return True
 
-        event_actions = main.models.EventAction.objects.all().filter(Q(event=event_number) & Q(type="TENDS"))
+        event_actions = main.models.EventAction.objects.filter(Q(event=event_number) & Q(type="TENDS"))
 
         if len(event_actions) > 0:
             print("tends: event_action_id:", event_action_id, "event_number:", event_number)
@@ -169,7 +169,7 @@ class EventActionForm(ModelForm):
 
     def _event_not_opened(self, event_id):
         print(event_id)
-        other_events = main.models.EventAction.objects.all().filter(Q(event_id=event_id))
+        other_events = main.models.EventAction.objects.filter(Q(event_id=event_id))
 
         if len(other_events) == 0:
             return True
@@ -257,7 +257,7 @@ class EventReportAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
         else:
             assert False
 
-        result = main.models.EventAction.objects.all().filter((Q(type=start_or_end) | Q(type="TINSTANT")) & Q(event_id=event_id))
+        result = main.models.EventAction.objects.filter((Q(type=start_or_end) | Q(type="TINSTANT")) & Q(event_id=event_id))
         if len(result) > 0:
             return getattr(result[0], field)
         else:

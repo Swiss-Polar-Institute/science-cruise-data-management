@@ -19,7 +19,7 @@ class Command(BaseCommand):
                 ship = Ship()
 
                 if row['name'] != '':
-                    platform = Platform.objects.all().filter(name=row['name'])[0]
+                    platform = Platform.objects.filter(name=row['name'])[0]
                     ship.name = platform
                 else:
                     print(row)

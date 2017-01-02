@@ -39,7 +39,7 @@ class ProcessNMEAFile:
         self.utc = datetime.timezone(datetime.timedelta(0))
 
     def process(self):
-        if not ParentDevice.objects.all().filter(name=self.device_string).exists():
+        if not ParentDevice.objects.filter(name=self.device_string).exists():
             print("Error: parent device type {} doesn't exist in the ParentDevice table".format(self.device_string))
             exit(1)
 

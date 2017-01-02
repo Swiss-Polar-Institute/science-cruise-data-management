@@ -33,7 +33,7 @@ class Command(BaseCommand):
                     for organisation_listed in list_of_organisations:
                         organisation_listed = organisation_listed.strip()
                         print(organisation_listed)
-                        organisation = Organisation.objects.all().filter(name=organisation_listed)[0]
+                        organisation = Organisation.objects.filter(name=organisation_listed)[0]
                         person.save()
                         person.organisation.add(organisation)
 
@@ -47,7 +47,7 @@ class Command(BaseCommand):
     def create_initials(person):
         letters = 1
         initials = Command.initials_from_person(person, letters)
-        while Person.objects.all().filter(initials=initials).exists():
+        while Person.objects.filter(initials=initials).exists():
             letters += 1
             initials = Command.initials_from_person(person, letters)
 

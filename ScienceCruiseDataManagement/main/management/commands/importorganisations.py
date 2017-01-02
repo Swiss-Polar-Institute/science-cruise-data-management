@@ -22,7 +22,7 @@ class Command(BaseCommand):
                 organisation.address = row['address']
 
                 if row['country'] != '':
-                    country = Country.objects.all().filter(name=row['country'])[0]
+                    country = Country.objects.filter(name=row['country'])[0]
                     organisation.country = country
 
                 organisation.save()

@@ -25,7 +25,7 @@ class Command(BaseCommand):
 
                 if row['name_first'] != '':
                     print("{}-{}".format(row['name_first'],row['name_last']))
-                    person = Person.objects.all().filter(name_first=row['name_first']).filter(name_last=row['name_last'])[0]
+                    person = Person.objects.filter(name_first=row['name_first']).filter(name_last=row['name_last'])[0]
                     project.principal_investigator =person
 
                 project.save()

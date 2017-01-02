@@ -22,11 +22,11 @@ class Command(BaseCommand):
                 platform.name = row['PrefLabel']
 
                 if row['country'] != '':
-                    country = Country.objects.all().filter(name=row['country'])[0]
+                    country = Country.objects.filter(name=row['country'])[0]
                     platform.country = country
 
                 if row['platformtype'] != '':
-                    platformtype = PlatformType.objects.all().filter(name=row['platformtype'])[0]
+                    platformtype = PlatformType.objects.filter(name=row['platformtype'])[0]
                     platform.platformtype = platformtype
 
                 platform.source = row['source']

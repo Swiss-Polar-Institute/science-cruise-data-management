@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options['action'] == 'import':
-            db_nas_directories = Directory.objects.all().filter(nas_resource__isnull=False)
+            db_nas_directories = Directory.objects.filter(nas_resource__isnull=False)
 
             print("Will import the NAS directories. To be processed: {}".format(len(db_nas_directories)))
             for nas_directory in db_nas_directories:
@@ -43,7 +43,7 @@ class Command(BaseCommand):
 
 
 def report_if_directory_no_exist(directory, shared_resource):
-    query_set = Directory.objects.all().filter(nas_resource__isnull=False, source_directory=directory)
+    query_set = Directory.objects.filter(nas_resource__isnull=False, source_directory=directory)
     exists_in_db = query_set.exists()
 
     if not exists_in_db:
@@ -58,7 +58,7 @@ def report_if_directory_no_exist(directory, shared_resource):
 #
 #         nas_directories = Importer._filter_only_dirs(nas_files_and_dirs)
 #
-#         all_db_staging_directories = Directory.objects.all().filter(staging_directory__isnull=False)
+#         all_db_staging_directories = Directory.objects.filter(staging_directory__isnull=False)
 #
 #         for staging_directory in all_db_staging_directories:
 #             mounted = cifs_utils.mount(staging_directory.staging_directory.shared_resource)

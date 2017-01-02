@@ -11,7 +11,7 @@ def import_gpx_to_stations(gpx_as_string):
     reports = []
 
     current_leg = Leg.current_active_leg()
-    station_type = StationType.objects.all().get(id=1)
+    station_type = StationType.objects.get(id=1)
 
     for route in gpx.routes:
         for point in route.points:
@@ -29,7 +29,7 @@ def import_gpx_to_stations(gpx_as_string):
                 'type': station_type
             }
 
-            station_query = Station.objects.all().filter(name=point.name)
+            station_query = Station.objects.filter(name=point.name)
 
             operation = None
             if len(station_query) == 0:

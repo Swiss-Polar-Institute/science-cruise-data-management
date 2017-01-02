@@ -111,7 +111,7 @@ class PositionsJson(View):
         tinstant = main.models.EventAction.tinstant()
 
         features = []
-        for eventAction in EventAction.objects.all().filter(Q(type=tbegins) | Q(type=tinstant)):
+        for eventAction in EventAction.objects.filter(Q(type=tbegins) | Q(type=tinstant)):
             if eventAction.longitude is None or eventAction.latitude is None:
                 continue
 
@@ -382,11 +382,11 @@ class PositionFromDateTime(TemplateView):
 
 def latest_ship_speed():
     try:
-        gps = ParentDevice.objects.all().get(name=settings.MAIN_GPS)
+        gps = ParentDevice.objects.get(name=settings.MAIN_GPS)
     except ObjectDoesNotExist:
         return None
 
-    velocities = GpvtgVelocity.objects.all().filter(device=gps).order_by('-date_time')
+    velocities = GpvtgVelocity.objects.filter(device=gps).order_by('-date_time')
 
     if velocities.exists():
         speed = velocities[0]

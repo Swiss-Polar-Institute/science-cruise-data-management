@@ -10,7 +10,7 @@ class Command(BaseCommand):
         parser.add_argument('import', type=str)
 
     def handle(self, *args, **options):
-        shared_resource_directories = Directory.objects.all().filter(shared_resource__isnull=False)
+        shared_resource_directories = Directory.objects.filter(shared_resource__isnull=False)
 
         for shared_resource_directory in shared_resource_directories:
             importer = cifs_utils.Importer(shared_resource_directory.shared_resource.ip,

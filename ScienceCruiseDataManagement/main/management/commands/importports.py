@@ -23,7 +23,7 @@ class Command(BaseCommand):
                 port.name = row['PrefLabel']
 
                 if row['country'] != '':
-                    country = Country.objects.all().filter(name=row['country'])[0]
+                    country = Country.objects.filter(name=row['country'])[0]
                     port.country = country
 
                 port.latitude = row['latitude']

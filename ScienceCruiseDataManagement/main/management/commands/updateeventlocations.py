@@ -27,7 +27,7 @@ class Command(BaseCommand):
         self._update_locations()
 
     def _update_locations(self):
-        event_actions = EventAction.objects.all().order_by('time')
+        event_actions = EventAction.objects.order_by('time')
 
         for event_action in event_actions:
             if event_action.latitude is None and event_action.longitude is None:

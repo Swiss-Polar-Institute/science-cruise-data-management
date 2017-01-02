@@ -14,7 +14,7 @@ class DirectoryUpdateJson(View):
         json_data = json.loads(decoded_data)
         directory_id = json_data['id']
 
-        directory = Directory.objects.all().get(id=directory_id)
+        directory = Directory.objects.get(id=directory_id)
 
         directory_update.directory = directory
         directory_update.success = True
@@ -38,17 +38,17 @@ class HardDiskJson(View):
 
         directory = Directory()
 
-        if not HardDisk.objects.all().filter(uuid=hard_disk_uuid).exists():
+        if not HardDisk.objects.filter(uuid=hard_disk_uuid).exists():
             hard_disk.save()
         else:
-            hard_disk = HardDisk.objects.all().filter(uuid=hard_disk_uuid)[0]
+            hard_disk = HardDisk.objects.filter(uuid=hard_disk_uuid)[0]
 
         directory.hard_disk = hard_disk
         directory.source_directory = relative_path
         directory.destination_directory = relative_path
         directory.hard_disk = hard_disk
 
-        if not Directory.objects.all().filter(destination_path=relative_path).exists():
+        if not Directory.objects.filter(destination_path=relative_path).exists():
             directory.save()
 
         return JsonResponse({'status': 'ok'})
@@ -57,13 +57,13 @@ class HardDiskJson(View):
         hard_disk_uuid=request_.GET['hard_disk_uuid']
 
         try:
-            hard_disk = HardDisk.objects.all().get(uuid=hard_disk_uuid)
+            hard_disk = HardDisk.objects.get(uuid=hard_disk_uuid)
         except: # TODO add exception type
             return JsonResponse({'error': 'hard disk not found', 'uuid': hard_disk_uuid})
 
         directories = []
 
-        for directory in Directory.objects.all().filter(hard_disk=hard_disk):
+        for directory in Directory.objects.filter(hard_disk=hard_disk):
             dir = {}
             dir['source'] = directory.source_directory
             dir['destination'] = directory.destination_directory

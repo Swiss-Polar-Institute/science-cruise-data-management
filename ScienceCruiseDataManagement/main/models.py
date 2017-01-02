@@ -488,17 +488,17 @@ class EventAction(models.Model):
         tinstant_text = EventAction.tinstant_text()
 
 
-        if len(EventAction.objects.all().filter
+        if len(EventAction.objects.filter
                        (Q(event_id=event_id) & (Q(type=tends) |
                                                     (Q(type=tinstant)))))>0:
             raise ValidationError("Cannot add any EventAction because the Event has a '{}' or '{}'".format(tends_text,
                                                                                                       tinstant_text))
 
         if event_action_type == tends:
-            if len(EventAction.objects.all().filter
+            if len(EventAction.objects.filter
                        (Q(event_id=event_id) & (Q(type=tends) | (Q(type=tinstant)))))>0:
                 raise ValidationError("Cannot add {} because this Event already had '{}' or '{}'".format(tends, tends_text, tinstant_text))
-            if len(EventAction.objects.all().filter
+            if len(EventAction.objects.filter
                        (Q(event_id=event_id) & (Q(type=tbegin)))) == 0:
                 raise ValidationError("Cannot add '{}' because '{}' doesn't exist".format(tends_text, tbegin_text))
 
