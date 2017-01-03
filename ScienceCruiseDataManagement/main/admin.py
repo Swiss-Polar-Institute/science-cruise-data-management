@@ -365,7 +365,7 @@ class SpeciesClassificationAdmin(import_export.admin.ExportMixin, admin.ModelAdm
 
 
 class SampleContentAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('type', 'species_classification', 'description')
+    list_display = ('type', 'description')
     ordering = ['type']
 
 
