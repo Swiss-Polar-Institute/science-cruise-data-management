@@ -219,7 +219,6 @@ class SpeciesClassification(models.Model):
 
 class SampleContent(models.Model):
     type = models.CharField(max_length=255, unique=True)
-    species_classification = models.ForeignKey(SpeciesClassification)
     description = models.TextField()
 
     def __str__(self):
