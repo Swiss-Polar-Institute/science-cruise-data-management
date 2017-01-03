@@ -10,7 +10,7 @@ def rsync_copy(origin, destination):
 
 def execute(cmd, abort_if_fails=False, print_command=False):
     if print_command:
-        print("Execute:".join(cmd))
+        print("** Execute: {}".format(" ".join(cmd)))
 
     p = subprocess.Popen(cmd)
     p.communicate()[0]
