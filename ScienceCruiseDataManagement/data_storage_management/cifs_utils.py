@@ -19,10 +19,14 @@ class Importer:
 
     def run(self):
         self.succeeded = False
+        print()
+        print("****** Copying from: {} To: {}".format(self.source_directory_path, self.destination_directory_path))
+        print()
+
         mounted = Importer.mount(self.ip, self.shared_volume, self.username, self.password)
 
         if mounted is None:
-            print("******** Can't mount //{}/{} Username: {} Password: {}".format(self.ip, self.shared_volume, self.username, self.password))
+            print("!!!!! Can't mount //{}/{} Username: {} Password: {}".format(self.ip, self.shared_volume, self.username, self.password))
             return
 
         # In the next line: do not use os.path.join() (if self.source_directory is / it wouldn't work)
