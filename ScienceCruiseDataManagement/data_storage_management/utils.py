@@ -5,14 +5,14 @@ def rsync_copy(origin, destination):
     return execute(["rsync",
              "-rvt",
              origin,
-             destination], print_command=True)
+             destination], print_command=True, shell_expansion=True)
 
 
-def execute(cmd, abort_if_fails=False, print_command=False):
+def execute(cmd, abort_if_fails=False, print_command=False, shell_expansion=False):
     if print_command:
         print("** Execute: {}".format(" ".join(cmd)))
 
-    p = subprocess.Popen(cmd)
+    p = subprocess.Popen(cmd, shell=shell_expansion)
     p.communicate()[0]
     retval = p.returncode
 
