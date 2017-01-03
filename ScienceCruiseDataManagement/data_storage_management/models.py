@@ -1,6 +1,7 @@
 from django.db import models
 from main.models import Person, DeviceType
 import django.utils.timezone
+from django.core.exceptions import ValidationError
 
 
 class HardDisk(models.Model):
@@ -44,17 +45,14 @@ class NASResource(models.Model):
 
 class Item(models.Model):
     source_directory = models.CharField(max_length=255)
-    destination_directory = models.CharField(max_length=255, unique=True)
+    destination_directory = models.CharField(max_length=255, unique=True, help_text="Can't start with /, it's a relative path")
 
     # A directory should come from only one of these sources
     hard_disk = models.ForeignKey(HardDisk, null=True, blank=True)
     shared_resource = models.ForeignKey(SharedResource, null=True, blank=True)
     nas_resource = models.ForeignKey(NASResource, null=True, blank=True)
 
-    # TODO: validate that the destination path doesn't end in "/"
-    created_date_time = models.DateTimeField(default=django.utils.timezone.now)
-
-    added_date_time = models.DateTimeField(default=django.utils.timezone.now)
+    added_date_time  = models.DateTimeField(default=django.utils.timezone.now)
 
     def __str__(self):
         if self.hard_disk is not None:
@@ -64,7 +62,20 @@ class Item(models.Model):
         elif self.nas_resource is not None:
             return "NAS {} From: {} To: {}".format(self.nas_resource.shared_resource, self.source_directory, self.destination_directory)
         else:
-            assert False
+            return ""
+
+    def clean(self):
+        if self.hard_disk is None and self.shared_resource is None and self.nas_resource is None:
+            raise ValidationError("Please select where to copy this directory/file form: hard disk, shared resource or NAS")
+
+        directories_errors = {}
+        if self.destination_directory.startswith("/"):
+            directories_errors['destination_directory'] = "Destination directory cannot start with /"
+        if not self.source_directory.startswith("/"):
+            directories_errors['source_directory'] = "Source directory has to start with /"
+
+        if len(directories_errors) > 0:
+            raise ValidationError(directories_errors)
 
 
 class Directory(Item):

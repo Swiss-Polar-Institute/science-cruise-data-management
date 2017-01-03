@@ -497,7 +497,7 @@ class EventAction(models.Model):
         if event_action_type == tends:
             if len(EventAction.objects.filter
                        (Q(event_id=event_id) & (Q(type=tends) | (Q(type=tinstant)))).exclude(id=self.id))>0:
-                raise ValidationError("Cannot add {} because this Event already had '{}' or '{}'".format(tends, tends_text, tinstant_text))
+                raise ValidationError("Cannot add '{}' because this Event already had '{}' or '{}'".format(tends, tends_text, tinstant_text))
             if len(EventAction.objects.filter
                        (Q(event_id=event_id) & (Q(type=tbegin))).exclude(id=self.id)) == 0:
                 raise ValidationError("Cannot add '{}' because '{}' doesn't exist".format(tends_text, tbegin_text))
