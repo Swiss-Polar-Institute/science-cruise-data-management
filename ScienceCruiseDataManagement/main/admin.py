@@ -49,7 +49,8 @@ class ReadOnlyIfUserCantChangeEvents:
                     fields_from_model.append(field.name)
 
             # Outcome can always be changed (even by users who can't change the events)
-            fields_from_model.remove("outcome")
+            if 'outcome' in fields_from_model:
+                fields_from_model.remove("outcome")
             return fields_from_model
 
         return []
