@@ -486,20 +486,30 @@ class EventAction(models.Model):
         tends_text = EventAction.tends_text()
         tinstant_text = EventAction.tinstant_text()
 
+        check_type = True
+        if self.id is not None:
+            # We are changing an existing event action...
+            old_event_action = EventAction.objects.get(id=self.id)
 
-        if len(EventAction.objects.filter
-                       (Q(event_id=event_id) & (Q(type=tends) |
-                                                    (Q(type=tinstant)))).exclude(id=self.id))>0:
-            raise ValidationError("Cannot add any EventAction because the Event has a '{}' or '{}'".format(tends_text,
-                                                                                                      tinstant_text))
+            # ...if the type hasn't changed we don't need to check it.
+            # This simplifies the logic of the checks to not need to check for ourselves.
+            if self.type == old_event_action.type:
+                check_type = False
 
-        if event_action_type == tends:
+        if check_type:
             if len(EventAction.objects.filter
-                       (Q(event_id=event_id) & (Q(type=tends) | (Q(type=tinstant)))).exclude(id=self.id))>0:
-                raise ValidationError("Cannot add '{}' because this Event already had '{}' or '{}'".format(tends, tends_text, tinstant_text))
-            if len(EventAction.objects.filter
-                       (Q(event_id=event_id) & (Q(type=tbegin))).exclude(id=self.id)) == 0:
-                raise ValidationError("Cannot add '{}' because '{}' doesn't exist".format(tends_text, tbegin_text))
+                           (Q(event_id=event_id) & (Q(type=tends) |
+                                                        (Q(type=tinstant)))))>0:
+                raise ValidationError("Cannot add any EventAction because the Event has a '{}' or '{}'".format(tends_text,
+                                                                                                          tinstant_text))
+
+            if event_action_type == tends:
+                if len(EventAction.objects.filter
+                           (Q(event_id=event_id) & (Q(type=tends) | (Q(type=tinstant)))))>0:
+                    raise ValidationError("Cannot add '{}' because this Event already had '{}' or '{}'".format(tends, tends_text, tinstant_text))
+                if len(EventAction.objects.filter
+                           (Q(event_id=event_id) & (Q(type=tbegin)))) == 0:
+                    raise ValidationError("Cannot add '{}' because '{}' doesn't exist".format(tends_text, tbegin_text))
 
     def __str__(self):
         return "{}".format(self.event.number)
