@@ -456,7 +456,7 @@ class EventAction(models.Model):
 
     @staticmethod
     def tinstant_text():
-        return EventAction.type_choices[1][1]
+        return EventAction.type_choices[2][1]
 
     type = models.CharField(choices=type_choices, max_length=255, help_text="Select the description of the time that you are entering", verbose_name= "Time description")
     description = models.ForeignKey(EventActionDescription, verbose_name="Description of event action", help_text="Select the description that describes the event action")
@@ -490,18 +490,17 @@ class EventAction(models.Model):
 
         if len(EventAction.objects.filter
                        (Q(event_id=event_id) & (Q(type=tends) |
-                                                    (Q(type=tinstant)))))>0:
+                                                    (Q(type=tinstant)))).exclude(id=self.id))>0:
             raise ValidationError("Cannot add any EventAction because the Event has a '{}' or '{}'".format(tends_text,
                                                                                                       tinstant_text))
 
         if event_action_type == tends:
             if len(EventAction.objects.filter
-                       (Q(event_id=event_id) & (Q(type=tends) | (Q(type=tinstant)))))>0:
+                       (Q(event_id=event_id) & (Q(type=tends) | (Q(type=tinstant)))).exclude(id=self.id))>0:
                 raise ValidationError("Cannot add {} because this Event already had '{}' or '{}'".format(tends, tends_text, tinstant_text))
             if len(EventAction.objects.filter
-                       (Q(event_id=event_id) & (Q(type=tbegin)))) == 0:
+                       (Q(event_id=event_id) & (Q(type=tbegin))).exclude(id=self.id)) == 0:
                 raise ValidationError("Cannot add '{}' because '{}' doesn't exist".format(tends_text, tbegin_text))
-
 
     def __str__(self):
         return "{}".format(self.event.number)
