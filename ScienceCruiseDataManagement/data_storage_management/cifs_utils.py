@@ -20,7 +20,7 @@ class Importer:
     def run(self):
         self.succeeded = False
         print()
-        print("****** Copying from: {} To: {}".format(self.source_directory_path, self.destination_directory_path))
+        print("****** Copying from: {} To: {}".format(self.source_directory, self.destination_directory))
         print()
 
         mounted = Importer.mount(self.ip, self.shared_volume, self.username, self.password)
