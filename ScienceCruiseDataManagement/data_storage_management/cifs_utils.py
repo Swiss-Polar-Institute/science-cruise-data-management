@@ -32,9 +32,6 @@ class Importer:
         # In the next line: do not use os.path.join() (if self.source_directory is / it wouldn't work)
         source_directory_path = mounted + self.source_directory
 
-        if not source_directory_path.endswith("/"):
-            source_directory_path += "/"
-
         destination_directory_path = os.path.join(settings.BASE_STORAGE_DIRECTORY,
                                                   self.destination_directory)
 
