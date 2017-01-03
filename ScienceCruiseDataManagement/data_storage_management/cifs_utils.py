@@ -34,7 +34,9 @@ class Importer:
         destination_directory_path = os.path.join(settings.BASE_STORAGE_DIRECTORY,
                                                   self.destination_directory)
 
-        print("From: {} To: {}".format(source_directory_path, destination_directory_path))
+        print()
+        print("** From: {} To: {}".format(source_directory_path, destination_directory_path))
+        print()
         retval = utils.rsync_copy(source_directory_path, destination_directory_path)
 
         if retval != 0:
@@ -69,7 +71,7 @@ class Importer:
                  "//{}/{}".format(ip, shared_resource),
                  mount_point]
 
-        retval = utils.execute(to_execute)
+        retval = utils.execute(to_execute, print_command=True)
 
         if retval == 0:
             return mount_point
@@ -78,4 +80,4 @@ class Importer:
 
     @staticmethod
     def umount(mount_point):
-        utils.execute(["sudo", "umount", mount_point])
+        utils.execute(["sudo", "umount", mount_point], print_command=True)
