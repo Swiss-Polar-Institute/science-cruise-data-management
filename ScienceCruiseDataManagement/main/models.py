@@ -396,7 +396,7 @@ class Event(models.Model):
     outcome = models.CharField(max_length=20, choices=type_choices, help_text="Select the option that best describes the outcome of the event. If the event did not happen because of weather or a decision to not do it, it should be marked as invalid.", default="Success")
 
     def __str__(self):
-        return "{}".format(self.number)
+        return "{}-{}".format(self.number, self.parent_device)
 
     class Meta:
         permissions = cannot_change_events
