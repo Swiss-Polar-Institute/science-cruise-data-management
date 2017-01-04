@@ -1,6 +1,7 @@
 import subprocess
 import glob
 
+
 def rsync_copy(origin, destination):
     origin = glob.glob(origin)
 
