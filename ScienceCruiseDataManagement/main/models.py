@@ -423,7 +423,9 @@ class StorageCrate(models.Model):
 
 
 class EventAction(models.Model):
-    event = models.ForeignKey(Event, help_text="Select the event from the list for which you want to enter an action.")
+    event = models.ForeignKey(Event, help_text="""Select the event from the list for which you want to enter an action.<br>
+                                               If your event is not in the list check the event's outcome: should be success or failure. And check that the event hasn't been completed either<br>
+                                               (e.g. it should not have an 'ends' or 'tinstant' event action")""")
 
     # If changing the order modify tbegin, tends and tinstant
     # Perhaps this could be done creating the tuple out of a dictionary

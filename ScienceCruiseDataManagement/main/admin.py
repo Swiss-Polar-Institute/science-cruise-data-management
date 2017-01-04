@@ -163,20 +163,17 @@ class EventActionForm(ModelForm):
                                 Q(id=event_action_id) & Q(type="TINSTANT"))
 
         if len(event_actions_instant) > 0:
-            print("tinstant: event_action_id:", event_action_id, "event_number:", event_number)
             return True
 
         event_actions = main.models.EventAction.objects.filter(Q(event=event_number) & Q(type="TENDS"))
 
         if len(event_actions) > 0:
-            print("tends: event_action_id:", event_action_id, "event_number:", event_number)
             # There is an TENDS event so it's finished
             return True
 
         return False
 
     def _event_not_opened(self, event_id):
-        print(event_id)
         other_events = main.models.EventAction.objects.filter(Q(event_id=event_id))
 
         if len(other_events) == 0:
