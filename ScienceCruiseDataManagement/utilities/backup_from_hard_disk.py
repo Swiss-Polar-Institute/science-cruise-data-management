@@ -142,6 +142,10 @@ def process_hard_disk(hard_disk):
 
     for directory in hard_disk_information['directories']:
         source = directory['source']
+
+        if source.startswith("/"):
+            source = source[1:]
+
         destination = directory['destination']
         directory_id = directory['id']
 
