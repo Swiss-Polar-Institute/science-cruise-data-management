@@ -208,7 +208,7 @@ class EventActionAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
 
     #description_2.short_description = "Description"
 
-    list_display = ('id', 'event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
+    list_display = ('event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
     ordering = ['-event_id', '-id']
     form = EventActionForm
 
