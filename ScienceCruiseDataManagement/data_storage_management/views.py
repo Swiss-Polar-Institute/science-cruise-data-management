@@ -48,7 +48,7 @@ class HardDiskJson(View):
         directory.destination_directory = relative_path
         directory.hard_disk = hard_disk
 
-        if not Directory.objects.filter(destination_path=relative_path).exists():
+        if not Directory.objects.filter(destination_directory=relative_path).exists():
             directory.save()
 
         return JsonResponse({'status': 'ok'})
