@@ -133,8 +133,9 @@ class EventActionForm(ModelForm):
 
         if self._adding_new_event_action():
             # This is to only show the open events when adding a new EventAction
-            filter_by = self._filter_open_events()
-            self.fields['event'].queryset = main.models.Event.objects.filter(filter_by).order_by('-number')
+            filter_open_events = self._filter_open_events()
+            filter_success_failure = self._filter_event_success_or_failure()
+            self.fields['event'].queryset = main.models.Event.objects.filter(filter_open_events).filter(filter_success_failure).order_by('-number')
 
     def _adding_new_event_action(self):
         # Returns True if the user is adding an event (instead of modifying it)
@@ -143,6 +144,11 @@ class EventActionForm(ModelForm):
         # ones that the user should select.
         #return len(self.fields) == 0
         return not self.instance.id
+
+    def _filter_event_success_or_failure(self):
+        filter_query = Q(outcome='Success') | Q(outcome='Failure')
+
+        return filter_query
 
     def _filter_open_events(self):
         filter_query = Q(number=0) # Impossible with OR will be the rest
