@@ -19,15 +19,17 @@ class Importer:
 
     def run(self):
         self.succeeded = False
-        print()
-        print("****** Copying from: {} To: {}".format(self.source_directory, self.destination_directory))
-        print()
-
         mounted = Importer.mount(self.ip, self.shared_volume, self.username, self.password)
 
         if mounted is None:
             print("!!!!! Can't mount //{}/{} Username: {} Password: {}".format(self.ip, self.shared_volume, self.username, self.password))
             return
+
+
+        print()
+        print("****** Copying from: {} To: {}".format(self.source_directory, self.destination_directory))
+        print()
+        utils.log("Importer: copying from {} to {}".format(self.source_directory, self.destination_directory))
 
         # In the next line: do not use os.path.join() (if self.source_directory is / it wouldn't work)
         source_directory_path = mounted + self.source_directory
@@ -45,6 +47,8 @@ class Importer:
         else:
             self.succeeded = True
         Importer.umount(mounted)
+
+        utils.log("Importer: finishing copying from {} to {}".format(self.source_directory, self.destination_directory))
 
     def register_import(self, directory):
         directory_import = DirectoryImportLog()

@@ -1,5 +1,15 @@
 import subprocess
 import glob
+import os
+import datetime
+
+
+def log(message):
+    f = open(os.path.join(os.environ["HOME"], "logs", "importer.log"), "a")
+    now = datetime.datetime.now()
+    now = now.strftime("%Y-%m-%d %H:%M:%S")
+    f.write("{} {}".format(now, message))
+    f.close()
 
 
 def rsync_copy(origin, destination):
