@@ -151,8 +151,8 @@ def process_hard_disk(hard_disk):
 
         wall_clock = datetime.datetime.now().timestamp()
 
-        to_exec = ["rsync", "-rt",
-            os.path.join(read_config("hard_disk_mount_point"),source) + "/",
+        to_exec = ["rsync", "-rtv",
+            os.path.join(read_config("hard_disk_mount_point"),source),
             os.path.join(read_config("destination_base_directory"),destination)]
 
         print_colored('blue', "Will execute: {}".format(to_exec))

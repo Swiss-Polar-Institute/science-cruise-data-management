@@ -55,29 +55,6 @@ class ReadOnlyIfUserCantChangeEvents:
 
         return []
 
-# This is for the import_export
-class EventResource(import_export.resources.ModelResource):
-    number = import_export.fields.Field(column_name = 'number', attribute='number')
-
-    parent_device = import_export.fields.Field(
-        column_name='parent_device',
-        attribute='sample method',
-        widget=import_export.widgets.ForeignKeyWidget(main.models.ParentDevice.name))
-
-    station = import_export.fields.Field(
-        column_name='station',
-        attribute='station',
-        widget=import_export.widgets.ForeignKeyWidget(main.models.Station, 'name')
-    )
-
-    data = import_export.fields.Field(column_name = 'data', attribute='data')
-    samples = import_export.fields.Field(column_name = 'samples', attribute='data')
-    #fail = import_export.fields.Field(column_name = 'fail', attribute='fail')
-
-    class Meta:
-        fields = ('number', 'parent_device', 'station', 'data', 'samples')
-        export_order = ('number', 'parent_device', 'station', 'data', 'samples')
-
 
 class ChildDeviceForm(ModelForm):
     # The AutoCompleteSelectField is disabled because this widget didn't work correctly
@@ -93,38 +70,6 @@ class EventForm(ModelForm):
         model = main.models.Event
         exclude = ('child_devices', )
         # 'child_device' is not here on purpose, for now
-
-class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ImportExportModelAdmin):
-    list_display = ('number', 'parent_device', 'station', 'data', 'samples', 'outcome')
-    ordering = ['-number']
-
-    # used for the import_export
-    resource_class = EventResource
-
-    # This is to have a default value on the foreign key
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "leg":
-            kwargs["queryset"] = main.models.Leg.objects.filter(name="Leg 1")
-        return super(EventAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
-
-
-    def get_fields(self, request, obj=None):
-        fields = list(self.list_display)
-
-        # never shown, it's the Primary Key
-        fields.remove('number')
-
-
-        return tuple(fields)
-        #if request.user.is_superuser:
-        #    return tuple(fields)
-        #else:
-            # non super users can't mark an event as failed
-        #    fields.remove('fail')
-        #    return tuple(fields)
-
-    form = EventForm
-
 
 class EventActionForm(ModelForm):
     def __init__(self, *args, **kwargs):
@@ -238,20 +183,102 @@ class StationAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMix
     list_display = ('name', 'type', 'latitude', 'longitude', 'leg', 'arrival_time', 'departure_time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'comment')
     ordering = ['-name']
 
+
+# This is for the import_export
+class EventResource(import_export.resources.ModelResource):
+    number = import_export.fields.Field(column_name = 'number', attribute='number')
+
+    parent_device = import_export.fields.Field(
+        column_name='parent_device',
+        attribute='parent_device',
+        widget=import_export.widgets.ForeignKeyWidget(main.models.ParentDevice, 'name'))
+
+    station = import_export.fields.Field(
+        column_name='station',
+        attribute='station',
+        widget=import_export.widgets.ForeignKeyWidget(main.models.Station, 'name')
+    )
+
+    data = import_export.fields.Field(column_name = 'data', attribute='data')
+    samples = import_export.fields.Field(column_name = 'samples', attribute='samples')
+    outcome = import_export.fields.Field(column_name = 'outcome', attribute='outcome')
+
+    class Meta:
+        fields = ('number', 'parent_device', 'station', 'data', 'samples', )
+        export_order = ('number', 'parent_device', 'station', 'data', 'samples', )
+
+
+class EventReportResource(import_export.resources.ModelResource):
+    number = import_export.fields.Field(column_name = 'number', attribute='number')
+
+    station = import_export.fields.Field(column_name='station',
+                                         attribute='station',
+                                         widget=import_export.widgets.ForeignKeyWidget(main.models.Station, 'name'))
+
+    parent_device = import_export.fields.Field(column_name = 'parent device',
+                                               attribute = 'parent_device',
+                                               widget=import_export.widgets.ForeignKeyWidget(main.models.ParentDevice, 'name'))
+
+    start_time = import_export.fields.Field(column_name = 'start_time',
+                                            attribute = 'start_time')
+
+    start_latitude = import_export.fields.Field(column_name = 'start_latitude',
+                                                attribute = 'start_latitude')
+
+    start_longitude = import_export.fields.Field(column_name = 'start_longitude',
+                                                 attribute = 'start_longitude')
+
+    end_time = import_export.fields.Field(column_name = 'end_time',
+                                          attribute = 'end_time')
+
+    end_latitude = import_export.fields.Field(column_name = 'end_latitude',
+                                              attribute = 'end_latitude')
+
+    end_longitude = import_export.fields.Field(column_name = 'end_longitude',
+                                               attribute = 'end_longitude')
+
+    outcome = import_export.fields.Field(column_name = 'outcome', attribute='outcome')
+
+    # dehydrate_ is an import_eport.resources.ModelResource special prefix
+    def dehydrate_start_time(self, event):
+        return EventReportAdmin.start_time(event)
+
+    def dehydrate_start_latitude(self, event):
+        return EventReportAdmin.start_latitude(event)
+
+    def dehydrate_start_longitude(self, event):
+        return EventReportAdmin.start_longitude(event)
+
+    def dehydrate_end_time(self, event):
+        return EventReportAdmin.end_time(event)
+
+    def dehydrate_end_latitude(self, event):
+        return EventReportAdmin.end_latitude(event)
+
+    class Meta:
+        fields = ('number', 'station', 'parent_device', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome')
+        export_order = ('number', 'station', 'parent_device', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome')
+
+
 class EventReportAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome')
     list_filter = (SamplingMethodFilter, OutcomeReportFilter, StationReportFilter)
 
-    def station_name(self, obj):
+    resource_class = EventReportResource
+
+    @classmethod
+    def station_name(cls, obj):
         if obj.station is None:
             return "-"
         else:
             return obj.station.name
 
-    def device_name(self, obj):
+    @classmethod
+    def device_name(cls, obj):
         return obj.parent_device.name
 
-    def _get_event_action(self, start_or_end, event_id, field):
+    @classmethod
+    def _get_event_action(cls, start_or_end, event_id, field):
         """ Returns the Event Action start (where type="TBEGNS" or "TINSTANT" and the EventId is
             the same as event_id
         """
@@ -268,29 +295,69 @@ class EventReportAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
         else:
             return None
 
-    def _get_event_action_start(self, event_id, field):
-        return self._get_event_action('start', event_id, field)
+    @classmethod
+    def _get_event_action_start(cls, event_id, field):
+        return EventReportAdmin._get_event_action('start', event_id, field)
 
-    def _get_event_action_end(self, event_id, field):
-        return self._get_event_action('end', event_id, field)
+    @classmethod
+    def _get_event_action_end(cls, event_id, field):
+        return EventReportAdmin._get_event_action('end', event_id, field)
 
-    def start_time(self, obj):
-        return self._get_event_action_start(obj.number, 'time')
+    @classmethod
+    def start_time(cls, obj):
+        return EventReportAdmin._get_event_action_start(obj.number, 'time')
 
-    def start_latitude(self, obj):
-        return self._get_event_action_start(obj.number, 'latitude')
+    @classmethod
+    def start_latitude(cls, obj):
+        return EventReportAdmin._get_event_action_start(obj.number, 'latitude')
 
-    def start_longitude(self, obj):
-        return self._get_event_action_start(obj.number, 'longitude')
+    @classmethod
+    def start_longitude(cls, obj):
+        return EventReportAdmin._get_event_action_start(obj.number, 'longitude')
 
+    @classmethod
     def end_time(self, obj):
-        return self._get_event_action_end(obj.number, 'time')
+        return EventReportAdmin._get_event_action_end(obj.number, 'time')
 
+    @classmethod
     def end_latitude(self, obj):
-        return self._get_event_action_end(obj.number, 'latitude')
+        return EventReportAdmin._get_event_action_end(obj.number, 'latitude')
 
+    @classmethod
     def end_longitude(self, obj):
-        return self._get_event_action_end(obj.number, 'longitude')
+        return EventReportAdmin._get_event_action_end(obj.number, 'longitude')
+
+
+class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ImportExportModelAdmin):
+    list_display = ('number', 'parent_device', 'station', 'data', 'samples', 'outcome')
+    ordering = ['-number']
+
+    # used for the import_export
+    resource_class = EventResource
+
+    # This is to have a default value on the foreign key
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "leg":
+            kwargs["queryset"] = main.models.Leg.objects.filter(name="Leg 1")
+        return super(EventAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+    def get_fields(self, request, obj=None):
+        fields = list(self.list_display)
+
+        # never shown, it's the Primary Key
+        fields.remove('number')
+
+
+        return tuple(fields)
+        #if request.user.is_superuser:
+        #    return tuple(fields)
+        #else:
+            # non super users can't mark an event as failed
+        #    fields.remove('fail')
+        #    return tuple(fields)
+
+    form = EventForm
 
 
 class StationTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
