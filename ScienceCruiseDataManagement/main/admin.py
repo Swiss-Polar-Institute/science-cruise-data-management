@@ -71,6 +71,69 @@ class EventForm(ModelForm):
         exclude = ('child_devices', )
         # 'child_device' is not here on purpose, for now
 
+
+class EventActionResource(import_export.resources.ModelResource):
+    event = import_export.fields.Field(column_name='event', attribute='event')
+
+    sampling_method = import_export.fields.Field(
+        column_name='parent_device',
+        attribute='parent_device',
+        widget=import_export.widgets.ForeignKeyWidget(main.models.ParentDevice, 'name')
+    )
+
+    type = import_export.fields.Field(column_name='type', attribute='type')
+
+    description = import_export.fields.Field(
+        column_name='description',
+        attribute='description',
+        widget=import_export.widgets.ForeignKeyWidget(main.models.EventActionDescription, 'name')
+    )
+
+    time = import_export.fields.Field(column_name='time', attribute='type')
+
+    time_source =  import_export.fields.Field(
+        column_name='time_source',
+        attribute='time_source',
+        widget=import_export.widgets.ForeignKeyWidget(main.models.TimeSource, 'name')
+    )
+
+    time_uncertainty = import_export.fields.Field(
+        column_name='time_uncertainty',
+        attribute='time_uncertainty',
+        widget=import_export.widgets.ForeignKeyWidget(main.models.TimeUncertainty, 'name')
+    )
+
+    position_source = import_export.fields.Field(
+        column_name='position_source',
+        attribute='position_source',
+        widget=import_export.widgets.ForeignKeyWidget(main.models.PositionSource, 'name')
+    )
+
+    position_uncertainty =import_export.fields.Field(
+        column_name='position_uncertainty',
+        attribute='position_uncertainty',
+        widget=import_export.widgets.ForeignKeyWidget(main.models.PositionUncertainty, 'name')
+    )
+
+    water_depth = import_export.fields.Field(
+        column_name='water_depth',
+        attribute='water_depth'
+    )
+
+    general_comments = import_export.fields.Field(
+        column_name='general_comments',
+        attribute='general_comments'
+    )
+
+    data_source_comments = import_export.fields.Field(
+        column_name='data_source',
+        attribute='data_source'
+    )
+
+    class Meta:
+        fields = ('event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments', )
+        export_order = fields
+
 class EventActionForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(EventActionForm, self).__init__(*args, **kwargs)
@@ -149,7 +212,6 @@ class EventActionForm(ModelForm):
         model = main.models.EventAction
         fields = '__all__'
 
-
 class EventActionAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
     #def description_2(self, obj):
     #    return obj.event_action_type.description
@@ -164,6 +226,7 @@ class EventActionAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
         return object.event.parent_device
 
     sampling_method.admin_order_field = "event__parent_device"
+    resource_class = EventActionResource
 
 
 class EventActionDescriptionAdmin(admin.ModelAdmin):
@@ -205,7 +268,7 @@ class EventResource(import_export.resources.ModelResource):
 
     class Meta:
         fields = ('number', 'parent_device', 'station', 'data', 'samples', )
-        export_order = ('number', 'parent_device', 'station', 'data', 'samples', )
+        export_order = fields
 
 
 class EventReportResource(import_export.resources.ModelResource):
@@ -257,7 +320,7 @@ class EventReportResource(import_export.resources.ModelResource):
 
     class Meta:
         fields = ('number', 'station', 'parent_device', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome')
-        export_order = ('number', 'station', 'parent_device', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome')
+        export_order = fields
 
 
 class EventReportAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
