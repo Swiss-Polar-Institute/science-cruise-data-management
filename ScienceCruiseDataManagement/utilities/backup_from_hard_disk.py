@@ -195,6 +195,12 @@ def create_hard_disk(hard_disk_uuid, hard_disk_mount_point, base_directory):
     for directory in glob.glob(os.path.join(hard_disk_mount_point, base_directory, "*")):
         if os.path.isdir(directory):
             relative_path = directory[len(hard_disk_mount_point)+1:]
+            if not relative_path.endswith("/"):
+                relative_path += "/"
+
+            if not relative_path.startswith("/"):
+                relative_path = "/" + relative_path
+
             add_directory(hard_disk_uuid, relative_path)
 
 

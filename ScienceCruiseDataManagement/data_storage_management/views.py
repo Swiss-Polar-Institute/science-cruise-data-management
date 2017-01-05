@@ -43,9 +43,16 @@ class HardDiskJson(View):
         else:
             hard_disk = HardDisk.objects.filter(uuid=hard_disk_uuid)[0]
 
+        destination_directory = relative_path
+        if not destination_directory.endswith("/"):
+            destination_directory += "/"
+        # This gets the last bit of the path (-2 because the path always ends with "/")
+        destination_directory = destination_directory.split("/")[-2]
+        destination_directory += "/" + destination_directory
+
         directory.hard_disk = hard_disk
         directory.source_directory = relative_path
-        directory.destination_directory = relative_path
+        directory.destination_directory = destination_directory
         directory.hard_disk = hard_disk
 
         if not Directory.objects.filter(destination_directory=relative_path).exists():
