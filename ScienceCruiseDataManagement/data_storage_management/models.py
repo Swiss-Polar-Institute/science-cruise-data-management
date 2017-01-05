@@ -45,7 +45,7 @@ class NASResource(models.Model):
 
 class Item(models.Model):
     source_directory = models.CharField(max_length=255, help_text="If it's a directory make sure that ends with / to avoid creating subdirectories. If it's a file(s) then make sure to not have it so it copies them")
-    destination_directory = models.CharField(max_length=255, unique=True, help_text="Can't start with /, it's a relative path")
+    destination_directory = models.CharField(max_length=255, help_text="Can't start with /, it's a relative path")
 
     # A directory should come from only one of these sources
     hard_disk = models.ForeignKey(HardDisk, null=True, blank=True)
