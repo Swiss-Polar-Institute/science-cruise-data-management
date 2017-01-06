@@ -513,6 +513,15 @@ class EventAction(models.Model):
                            (Q(event_id=event_id) & (Q(type=tbegin)))) == 0:
                     raise ValidationError("Cannot add '{}' because '{}' doesn't exist".format(tends_text, tbegin_text))
 
+        if event_action_type == tends:
+            # Here if the type is tends() it has a start for sure or the validation
+            # would have already failed
+            event_begin = EventAction.objects.get(Q(event_id=event_id) & Q(type=tbegin))
+            if self.time < event_begin.time:
+                raise ValidationError({
+                    'time':"Time in the ends EventAction (this one) can't be earlier than the already entered begin's EventAction"
+                })
+
     def __str__(self):
         return "{}".format(self.event.number)
 
