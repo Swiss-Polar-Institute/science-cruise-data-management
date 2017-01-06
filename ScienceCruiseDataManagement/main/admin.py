@@ -416,6 +416,7 @@ class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin
 
     form = EventForm
 
+
 class StationTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('type', 'description')
     ordering = ['type']
@@ -496,11 +497,18 @@ class SampleContentAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['type']
 
 
+class SampleForm(ModelForm):
+    class Meta:
+        model = main.models.Sample
+        fields = '__all__'
+
+
 class SampleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('ace_sample_number', 'project_sample_number', 'contents', 'crate_number', 'storage_type', 'storage_location', 'offloading_port', 'destination', 'ship', 'mission', 'leg', 'project', 'julian_day', 'event', 'pi_initials', 'preservation')
+    list_display = ('expedition_sample_code', 'project_sample_number', 'contents', 'crate_number', 'storage_type', 'storage_location', 'offloading_port', 'destination', 'ship', 'mission', 'leg', 'project', 'julian_day', 'event', 'pi_initials', 'preservation')
     fields = list_display
-    ordering = ['ace_sample_number']
-    readonly_fields = ('ace_sample_number', )
+    ordering = ['expedition_sample_code']
+    readonly_fields = ('expedition_sample_code', )
+    form = SampleForm
 
 
 class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
@@ -560,7 +568,7 @@ class DeviceTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class PlatformAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name', 'platformtype')
+    list_display = ('name', 'platform_type')
     ordering = ['name']
 
 

@@ -193,3 +193,29 @@ UPDATE_LOCATION_POSITION_SOURCE_NAME = "Ship's GPS"
 MAP_RESOLUTION_SECONDS = 1800
 
 TRACK_MAP_FILEPATH = "/tmp/track.geojson"
+
+# For default options
+DEFAULT_PLATFORM_NAME = "Akademik Treshnikov"
+DEFAULT_MISSION_NAME = "Antarctic Circumnavigation Expedition"
+
+def expedition_sample_code(sample):
+    # From a sample returns the sample_code - from different fields
+    # from the Sample.
+    information={}
+    information['ship'] = sample.ship.shortened_name
+    information['cruise'] = sample.mission.acronym
+    information['leg'] = sample.leg.number
+    information['project_number'] = sample.project.number
+    information['event_number'] = sample.event.number
+    information['owner'] = sample.pi_initials.initials
+    information['number_of_sample'] = sample.id
+
+    padded_julian_day = "{:03}".format(sample.julian_day)
+
+    information['julian_day'] = padded_julian_day
+
+    expedition_sample_code = "{ship}/{cruise}/{leg}/{project_number}/{julian_day}/{event_number}/{owner}/{number_of_sample}".format(**information)
+
+    return expedition_sample_code
+
+EXPEDITION_SAMPLE_CODE = expedition_sample_code

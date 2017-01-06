@@ -5,6 +5,9 @@ from django.utils import timezone
 from django.conf import settings
 from django.db.models import Q
 from smart_selects.db_fields import ChainedManyToManyField
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.conf import settings
 
 cannot_change_events = (("cannot_change_events_special", "Cannot change events (special)"),)
 cannot_change_events_action = (("cannot_change_events_action_special", "Cannot change events action (special)"),)
@@ -235,7 +238,7 @@ class Organisation(models.Model):
 
 
 class PlatformType(models.Model):
-    url =models.CharField(max_length=255, null=True, blank=True)
+    url = models.CharField(max_length=255, null=True, blank=True)
     code = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, unique=True)
     definition = models.CharField(max_length=255)
@@ -252,7 +255,7 @@ class Platform(models.Model):
     code = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, unique=True)
     country = models.ForeignKey(Country)
-    platformtype = models.ForeignKey(PlatformType)
+    platform_type = models.ForeignKey(PlatformType)
     source = models.CharField(max_length=255, choices=settings.VOCAB_SOURCES)
 
     def __str__(self):
@@ -350,9 +353,21 @@ class Station(models.Model):
     def __str__(self):
         return "{}".format(self.name)
 
+def default_ship_id():
+    platform = Platform.objects.get(name=settings.DEFAULT_PLATFORM_NAME)
+    return Ship.objects.get(name=platform).id
+
+def default_mission_id():
+    return Mission.objects.get(name=settings.DEFAULT_MISSION_NAME).id
+
+def current_active_leg_id():
+    return Leg.current_active_leg().id
 
 class Sample(models.Model):
-    ace_sample_number = models.CharField(max_length=255, unique=True)
+    # It's updated by the function update_expedition_sample_code. But it's null for a moment while we get the
+    # ID since the expedition_sample_code has the primary key of this table. So it needs to be stored
+    # and then updated.
+    expedition_sample_code = models.CharField(max_length=255, unique=True, null=True, blank=True)
     project_sample_number = models.CharField(max_length=255, null=True, blank=True)
     contents = models.CharField(max_length=255)
     crate_number = models.CharField(max_length=255, null=True, blank=True)
@@ -360,9 +375,9 @@ class Sample(models.Model):
     storage_location = models.CharField(max_length=255, null=True, blank=True)
     offloading_port = models.CharField(max_length=255)
     destination = models.CharField(max_length=255, null=True, blank=True)
-    ship = models.ForeignKey('Platform')
-    mission = models.ForeignKey('Mission')
-    leg = models.ForeignKey('Leg')
+    ship = models.ForeignKey(Ship, default=default_ship_id)
+    mission = models.ForeignKey('Mission', default=default_mission_id)
+    leg = models.ForeignKey('Leg', default=current_active_leg_id)
     project = models.ForeignKey('Project')
     julian_day = models.IntegerField()
     event = models.ForeignKey('Event')
@@ -370,11 +385,15 @@ class Sample(models.Model):
     preservation = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return "{}".format(self.ace_sample_number)
+        return "{}".format(self.expedition_sample_code)
 
-    def clean(self):
-        self.ace_sample_number = "Test, TODO"
-        # self.ace_sample_number = "{}{}{}{}{}{}".format(self.mission.acronym, self.ship.shortened_name, )
+
+@receiver(post_save, sender=Sample)
+def update_expedition_sample_code(sender, instance, **kwargs):
+    # It's done in the post_save because the sample_id can be part of the expedition_sample_code
+    if instance.expedition_sample_code is None:
+        instance.expedition_sample_code = settings.EXPEDITION_SAMPLE_CODE(instance)
+        instance.save()
 
 
 class Data(models.Model):
@@ -536,6 +555,7 @@ class EventAction(models.Model):
     class Meta:
         permissions = cannot_change_events_action
 
+
 class Message(models.Model):
     date_time = models.DateTimeField(default=timezone.now)
     subject = models.CharField(max_length=255)
@@ -544,6 +564,7 @@ class Message(models.Model):
 
     def __str__(self):
         return "{}".format(self.subject)
+
 
 class NetworkHost(models.Model):
     ip = models.GenericIPAddressField()

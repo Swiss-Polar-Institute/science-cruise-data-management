@@ -36,7 +36,7 @@ class Command(BaseCommand):
                 print("Processing file: ", filepath)
                 print(row)
                 sample = Sample()
-                sample.ace_sample_number = row['ace_sample_number']
+                sample.expedition_sample_code = row['ace_sample_number']
                 sample.project_sample_number = row['project_sample_number']
                 sample.contents = row['contents']
                 sample.crate_number = row['crate_number']
@@ -46,13 +46,13 @@ class Command(BaseCommand):
                 sample.destination = row['destination']
                 #sample.preservation = row['preservation']
 
-                code_string = sample.ace_sample_number.split('/')[0]
-                mission_acronym_string = sample.ace_sample_number.split('/')[1]
-                leg_string = sample.ace_sample_number.split('/')[2]
-                project_number_string = sample.ace_sample_number.split('/')[3]
-                julian_day = int(sample.ace_sample_number.split('/')[4])
-                pi_initials_string = sample.ace_sample_number.split('/')[6]
-                event_number_string = int(sample.ace_sample_number.split('/')[5])
+                code_string = sample.expedition_sample_code.split('/')[0]
+                mission_acronym_string = sample.expedition_sample_code.split('/')[1]
+                leg_string = sample.expedition_sample_code.split('/')[2]
+                project_number_string = sample.expedition_sample_code.split('/')[3]
+                julian_day = int(sample.expedition_sample_code.split('/')[4])
+                pi_initials_string = sample.expedition_sample_code.split('/')[6]
+                event_number_string = int(sample.expedition_sample_code.split('/')[5])
 
                 ship_queryset = Platform.objects.all().filter(code = code_string)
                 #print(ship_queryset)
@@ -139,14 +139,14 @@ class Command(BaseCommand):
 
     def find_sample(self, key):
         """Find a sample relating to a key"""
-        sample_queryset = Sample.objects.all().filter(ace_sample_number=key)
+        sample_queryset = Sample.objects.all().filter(expedition_sample_code=key)
         if sample_queryset.exists():
             return sample_queryset[0]
         else:
             return None
 
     def update_database(self, spreadsheet_sample):
-        existing_sample = self.find_sample(spreadsheet_sample.ace_sample_number)
+        existing_sample = self.find_sample(spreadsheet_sample.expedition_sample_code)
 
         if existing_sample is None:
             spreadsheet_sample.save()
@@ -154,10 +154,10 @@ class Command(BaseCommand):
         else:
             comparison = self.compare_samples(existing_sample, spreadsheet_sample)
             if comparison == True:
-                print("Identical row already in database: ", spreadsheet_sample.ace_sample_number)
+                print("Identical row already in database: ", spreadsheet_sample.expedition_sample_code)
                 return "identical"
             else:
-                print("Sample number already in database but data are different. \nDatabase row: ", existing_sample, "\nRow from spreadsheet: ", spreadsheet_sample.ace_sample_number)
+                print("Sample number already in database but data are different. \nDatabase row: ", existing_sample, "\nRow from spreadsheet: ", spreadsheet_sample.expedition_sample_code)
                 print("Do you want to: \n1: Replace the row in the database with the new row? \n2: Skip this row?")
                 print("Type 1 or 2")
                 answer = input()

@@ -27,7 +27,7 @@ class Command(BaseCommand):
 
                 if row['platformtype'] != '':
                     platformtype = PlatformType.objects.filter(name=row['platformtype'])[0]
-                    platform.platformtype = platformtype
+                    platform.platform_type = platformtype
 
                 platform.source = row['source']
 
