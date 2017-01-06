@@ -260,6 +260,7 @@ class Platform(models.Model):
 
 class Ship(models.Model):
     name = models.ForeignKey(Platform)
+    shortened_name = models.CharField(max_length=255, unique=True)
     imo = models.CharField(max_length=255, null=True, blank=True)
     callsign = models.CharField(max_length=255, null=True, blank=True)
     length = models.CharField(max_length=255, null=True, blank=True)
@@ -300,14 +301,16 @@ class Person(models.Model):
         verbose_name_plural="People"
         unique_together = (('name_first', 'name_last'),)
 
+
 class Mission(models.Model):
-    name= models.CharField(max_length=255)
-    acronym= models.CharField(max_length=255)
-    institution= models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+    acronym = models.CharField(max_length=255)
+    institution = models.CharField(max_length=255)
     description = models.TextField()
 
     def __str__(self):
         return "{}".format(self.acronym)
+
 
 class Project(models.Model):
     number = models.IntegerField(unique=True)
@@ -367,6 +370,10 @@ class Sample(models.Model):
 
     def __str__(self):
         return "{}".format(self.ace_sample_number)
+
+    def clean(self):
+        self.ace_sample_number = "Test, TODO"
+        # self.ace_sample_number = "{}{}{}{}{}{}".format(self.mission.acronym, self.ship.shortened_name, )
 
 
 class Data(models.Model):

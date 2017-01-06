@@ -408,6 +408,7 @@ class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin
     def get_fields(self, request, obj=None):
         fields = list(self.list_display)
 
+        # never shown, it's the primary key
         fields.remove('number')
 
 
@@ -497,7 +498,9 @@ class SampleContentAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 class SampleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('ace_sample_number', 'project_sample_number', 'contents', 'crate_number', 'storage_type', 'storage_location', 'offloading_port', 'destination', 'ship', 'mission', 'leg', 'project', 'julian_day', 'event', 'pi_initials', 'preservation')
+    fields = list_display
     ordering = ['ace_sample_number']
+    readonly_fields = ('ace_sample_number', )
 
 
 class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
