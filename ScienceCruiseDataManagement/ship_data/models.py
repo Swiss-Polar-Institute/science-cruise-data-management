@@ -45,7 +45,7 @@ class GpvtgVelocity(models.Model):
         verbose_name_plural = "Gpvtg Velocities"
 
 # Meteorological data
-class MetData(models.Model):
+class MetDataAll(models.Model):
     date_time = models.DateTimeField(unique=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
@@ -105,4 +105,29 @@ class MetData(models.Model):
         return "{}".format(self.date_time)
 
     class Meta:
-        verbose_name_plural = "Meterological data"
+        verbose_name_plural = "Meterological data - full set"
+
+class MetDataWind(models.Model):
+    TIME = models.DateTimeField(unique=True, verbose_name="Date time")
+    COG = models.FloatField(null=True, blank=True, verbose_name="Course over ground")
+    HEADING= models.FloatField(null=True, blank=True, verbose_name="Heading")
+    WDR1 = models.FloatField(null=True, blank=True, verbose_name="Relative wind direction 1")
+    WSR1 = models.FloatField(null=True, blank=True, verbose_name="Relative wind speed 1")
+    WD1 = models.FloatField(null=True, blank=True, verbose_name="Wind direction 1")
+    WS1 = models.FloatField(null=True, blank=True, verbose_name="Wind speed 1")
+    WDR2 = models.FloatField(null=True, blank=True, verbose_name="Relative wind direction 2")
+    WSR2 = models.FloatField(null=True, blank=True, verbose_name="Relative wind speed 2")
+    WD2 = models.FloatField(null=True, blank=True, verbose_name="Wind direction 2")
+    WS2 = models.FloatField(null=True, blank=True, verbose_name="Wind speed 2")
+    TIMEDIFF = models.FloatField(null=True, blank=True, verbose_name="Time difference")
+    Year = models.IntegerField(null=True, blank=True)
+    Month = models.IntegerField(null=True, blank=True)
+    DAY = models.IntegerField(null=True, blank=True)
+    CLOUDTEXT = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.TIME)
+
+    class Meta:
+        verbose_name_plural = "Meterological data - wind"
+
