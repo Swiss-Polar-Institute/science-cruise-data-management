@@ -391,7 +391,7 @@ class EventReportAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
         return EventReportAdmin._get_event_action_end(obj.number, 'longitude')
 
 
-class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ImportExportModelAdmin):
+class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('number', 'parent_device', 'station', 'data', 'samples', 'outcome')
     ordering = ['-number']
 
@@ -408,20 +408,12 @@ class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ImportExpor
     def get_fields(self, request, obj=None):
         fields = list(self.list_display)
 
-        # never shown, it's the Primary Key
         fields.remove('number')
 
 
         return tuple(fields)
-        #if request.user.is_superuser:
-        #    return tuple(fields)
-        #else:
-            # non super users can't mark an event as failed
-        #    fields.remove('fail')
-        #    return tuple(fields)
 
     form = EventForm
-
 
 class StationTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('type', 'description')
