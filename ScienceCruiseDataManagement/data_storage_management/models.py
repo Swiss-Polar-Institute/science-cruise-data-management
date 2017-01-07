@@ -2,7 +2,7 @@ from django.db import models
 from main.models import Person, DeviceType
 import django.utils.timezone
 from django.core.exceptions import ValidationError
-
+from django.db.models import Q
 
 class HardDisk(models.Model):
     uuid = models.CharField(max_length=255, unique=True)
@@ -76,6 +76,11 @@ class Item(models.Model):
 
         if len(directories_errors) > 0:
             raise ValidationError(directories_errors)
+
+        same_destinations = Item.objects.filter(Q(destination_directory=self.destination_directory) &
+                                                (~Q(hard_disk=self.hard_disk) | ~Q(shared_resource=self.shared_resource) | ~Q(nas_resource=self.nas_resource)))
+        if same_destinations.exists():
+            raise ValidationError("Can't add this directory because the same destination already exists from a different source")
 
 
 class Directory(Item):
