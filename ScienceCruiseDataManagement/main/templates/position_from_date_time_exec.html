@@ -5,13 +5,27 @@
 {% block content %}
 <b>{{message}}</b><p>
 At {{ship_date_time}} UTC the ship was at:<p>
-Latitude: {{latitude_decimal}}<br>
-Longitude: {{longitude_decimal}}<br>
+Latitude: {{latitude}}<br>
+Longitude: {{longitude}}<br>
 <hr>
+
+{% if list_of_locations %}
+<table border="1">
+    <thead> <th>Date time</th><th>Latitude</th><th>Longitude</th> </thead>
+    {% for location in list_of_locations %}
+    <tr>
+        <td>{{location.date_time}}</td> <td>{{ location.latitude }}</td> <td>{{ location.longitude }}</td>
+    <tr>
+    {% endfor %}
+</table>
+{% endif %}
+
     Enter another date:<p>
 <form action="/position_from_date_time/" method="post">
     {% csrf_token %}
+    <table>
     {{ form }}
+    </table>
     <input type="submit" value="Submit" />
 </form>
 

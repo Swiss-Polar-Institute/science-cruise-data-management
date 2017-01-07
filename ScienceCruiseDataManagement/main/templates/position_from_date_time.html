@@ -6,7 +6,9 @@
 Enter the UTC time for which you would like to know the ship's position:
 <form action="/position_from_date_time/" method="post">
     {% csrf_token %}
+    <table>
     {{ form }}
+    </table>
     <input type="submit" value="Submit" />
 </form>
 {% endblock %}

@@ -18,7 +18,7 @@ from main.forms import InputShipDateTime
 from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station, Message, ParentDevice
 from main import utils
 from ship_data.models import GpggaGpsFix, GpvtgVelocity
-
+import main.find_locations as find_locations
 
 class MainMenuView(TemplateView):
     template_name = "main_menu.html"
@@ -348,35 +348,14 @@ class PositionFromDateTime(TemplateView):
 
     def post(self, request, *args, **kwargs):
         ship_date_time = request.POST['ship_date_time']
-        form = InputShipDateTime(initial={'ship_date_time': ship_date_time})
+        ship_date_times = request.POST['ship_date_times']
 
-        ship_date_time = utils.string_to_date_time(ship_date_time)
+        form = InputShipDateTime(initial={'ship_date_time': ship_date_time,
+                                          'ship_date_times': ship_date_times})
 
-        if ship_date_time is None:
-            position_date_time = "INVALID".format(ship_date_time)
-            latitude = longitude = None
-            message = "Invalid date time (format has to be YYYY-MM-DD HH:mm:SS) (or without the secs)"
-        elif ship_date_time > utils.now_with_timezone():
-            position_date_time = "FUTURE"
-            latitude = longitude = None
-            message = "The date time seems to be in the future. We don't know where we are going to be!"
-        else:
-            location = utils.ship_location(ship_date_time)
-            message = ''
+        template_information = find_locations.find_locations(ship_date_time, ship_date_times)
+        template_information['form'] = form
 
-        if location.latitude is None or location.longitude is None or location.date_time is None:
-            latitude = longitude = "Unknown"
-        else:
-            latitude = "{0:.4f}".format(location.latitude)
-            longitude = "{0:.4f}".format(location.longitude)
-
-        template_information = {
-            'ship_date_time': location.date_time,
-            'latitude_decimal': latitude,
-            'longitude_decimal': longitude,
-            'form': form,
-            'message': message
-        }
         return render(request, "position_from_date_time_exec.html", template_information)
 
 
