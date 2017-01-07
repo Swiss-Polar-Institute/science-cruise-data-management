@@ -34,3 +34,11 @@ def nmea_lat_long_to_normal(latitude, north_south,
 if __name__ == "__main__":
     assert nmea_lat_long_to_normal("3550.28461074,S,01801.84299457,E") \
            == (-35.83807684566667, 18.030716576166668)
+
+
+def check_lat_lon_direction(self, north_south, east_west):
+    '''Check that the latitude and longitude direction eg. N, S, E, W is valid.'''
+    if (north_south == 'N' or north_south =='S') and (east_west =='E' or east_west == 'W'):
+        return True
+    else:
+        return False

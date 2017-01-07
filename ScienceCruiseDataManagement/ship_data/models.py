@@ -101,6 +101,9 @@ class MetDataAll(models.Model):
     CLOUDTEXT = models.FloatField()
     VISCODE = models.FloatField()
 
+
+
+
     def __str__(self):
         return "{}".format(self.date_time)
 
