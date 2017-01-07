@@ -26,8 +26,10 @@ def find_locations(ship_date_time, ship_date_times):
             if location['latitude'] is None or location['longitude'] is None:
                 location['latitude'] = ""
                 location['longitude'] = ""
-                location['date_time'] = "invalid"
+                location['date_time'] = "(It was empty)"
 
+            if ship_date_time != "":
+                location['date_time'] = ship_date_time
 
             information = {'date_time': location['date_time'],
                            'latitude': location['latitude'],
