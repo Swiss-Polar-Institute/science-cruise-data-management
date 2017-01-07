@@ -155,7 +155,6 @@ def process_hard_disk(hard_disk):
             os.path.join(read_config("hard_disk_mount_point"),source),
             os.path.join(read_config("destination_base_directory"),destination)]
 
-        print_colored('blue', "Will execute: {}".format(to_exec))
         retval = execute(to_exec)
 
         if retval == 0:
