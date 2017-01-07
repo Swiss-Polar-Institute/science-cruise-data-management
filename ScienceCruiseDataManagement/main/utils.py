@@ -75,20 +75,34 @@ def now_with_timezone():
 
 
 def ship_location(date_time):
-    gps = ParentDevice.objects.get(name=settings.MAIN_GPS)
-    position_main_gps_query = GpggaGpsFix.objects.filter(device=gps).filter(date_time__gt=date_time).order_by('date_time')
-    position_any_gps_query = GpggaGpsFix.objects.filter(date_time__gt=date_time).order_by('date_time')
+    main_gps = ParentDevice.objects.get(name=settings.MAIN_GPS)
+    main_gps_id = main_gps.id
+
+    # position_main_gps_query = GpggaGpsFix.objects.filter(device=gps).filter(date_time__gt=date_time).order_by('date_time')
+    # position_any_gps_query = GpggaGpsFix.objects.filter(date_time__gt=date_time).order_by('date_time')
+
+    position_main_gps_query = GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast("{}" as datetime) and ship_data_gpggagpsfix.device_id={} ORDER BY date_time LIMIT 1'.format(date_time, main_gps_id))
+    position_any_gps_query = GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast("{}" as datetime) ORDER BY date_time LIMIT 1'.format(date_time))
 
     device = None
-    if position_main_gps_query.exists():
+
+    try:
         position_main_gps = position_main_gps_query[0]
+    except IndexError:
+        position_main_gps = None
+
+    if position_main_gps:
         seconds_difference_main_gps = abs(date_time - position_main_gps.date_time).total_seconds()
     else:
         position_main_gps = None
         seconds_difference_main_gps = 99999
 
-    if position_any_gps_query.exists():
+    try:
         position_any_gps = position_any_gps_query[0]
+    except IndexError:
+        position_any_gps = None
+
+    if position_any_gps:
         seconds_difference_any_gps = abs(date_time - position_any_gps.date_time).total_seconds()
     else:
         position_any_gps = None
