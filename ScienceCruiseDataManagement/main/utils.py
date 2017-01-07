@@ -78,11 +78,10 @@ def ship_location(date_time):
     main_gps = ParentDevice.objects.get(name=settings.MAIN_GPS)
     main_gps_id = main_gps.id
 
-    # position_main_gps_query = GpggaGpsFix.objects.filter(device=gps).filter(date_time__gt=date_time).order_by('date_time')
-    # position_any_gps_query = GpggaGpsFix.objects.filter(date_time__gt=date_time).order_by('date_time')
-
-    position_main_gps_query = GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast("{}" as datetime) and ship_data_gpggagpsfix.device_id={} ORDER BY date_time LIMIT 1'.format(date_time, main_gps_id))
-    position_any_gps_query = GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast("{}" as datetime) ORDER BY date_time LIMIT 1'.format(date_time))
+    # It uses objects.raw so Mysql is using the right index (datetime). The CAST is what it
+    # makes it to use, USE INDEX() is not needed.
+    position_main_gps_query = GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast(%s as datetime) and ship_data_gpggagpsfix.device_id=%s ORDER BY date_time LIMIT 1', [date_time, main_gps_id])
+    position_any_gps_query =  GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast(%s as datetime) ORDER BY date_time LIMIT 1', [date_time])
 
     device = None
 

@@ -6,16 +6,29 @@ def find_locations(ship_date_time, ship_date_times):
 
     # The single location
     single_location = ship_location(ship_date_time)
+
     latitude = single_location['latitude']
     longitude = single_location['longitude']
-    message = single_location['message']
     date_time = single_location['date_time']
+
+    if latitude is None or longitude is None or date_time is None:
+        latitude = longitude = "Unknown"
+
+    message = single_location['message']
+
 
     # List of locations
     list_of_locations = []
     if len(ship_date_times) > 10:
         for ship_date_time in ship_date_times.split("\n"):
             location = ship_location(ship_date_time)
+
+            if location['latitude'] is None or location['longitude'] is None:
+                location['latitude'] = ""
+                location['longitude'] = ""
+                location['date_time'] = "invalid"
+
+
             information = {'date_time': location['date_time'],
                            'latitude': location['latitude'],
                            'longitude': location['longitude']
@@ -37,7 +50,7 @@ def ship_location(str_datetime):
     ship_date_time = utils.string_to_date_time(str_datetime)
 
     if ship_date_time is None:
-        date_time = "INVALID"
+        date_time = None
         latitude = longitude = None
         message = "Invalid date time (format has to be YYYY-MM-DD HH:mm:SS) (or without the secs)"
     elif ship_date_time > utils.now_with_timezone():
@@ -52,7 +65,7 @@ def ship_location(str_datetime):
         message = ''
 
     if latitude is None or longitude is None or date_time is None:
-        latitude = longitude = "Unknown"
+        latitude = longitude = None
     else:
         latitude = "{0:.4f}".format(latitude)
         longitude = "{0:.4f}".format(longitude)
