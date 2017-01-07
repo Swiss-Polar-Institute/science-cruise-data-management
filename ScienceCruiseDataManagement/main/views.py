@@ -303,8 +303,11 @@ class DocumentsView(TemplateView):
             if os.path.isdir(file):
                 documents[os.path.basename(file)] = []
 
+        directories = list(documents.keys())
+        directories.sort()
+
         # Adds a list of dictionary into each dictionary key with the title of the document and the link
-        for topic in documents.keys():
+        for topic in directories:
             for file in glob.glob(os.path.join(settings.DOCUMENTS_DIRECTORY, os.path.join(settings.DOCUMENTS_DIRECTORY), topic, "*")):
                 if os.path.isfile(file):
                     file_name = os.path.basename(file)
