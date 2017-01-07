@@ -23,8 +23,8 @@ class MetDataAllAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['date_time']
 
 class MetDataWindAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('TIME','COG','HEADING','WDR1','WSR1','WD1','WS1','WDR2','WSR2','WD2','WS2','TIMEDIFF', 'Year','Month','DAY','CLOUDTEXT')
-    ordering = ['TIME']
+    list_display = ('date_time','COG','HEADING','WDR1','WSR1','WD1','WS1','WDR2','WSR2','WD2','WS2','TIMEDIFF', 'Year','Month','DAY','CLOUDTEXT')
+    ordering = ['date_time']
 
     # Register your models here.
 admin.site.register(ship_data.models.GpzdaDateTime, GpzdaDateTimeAdminAdmin)

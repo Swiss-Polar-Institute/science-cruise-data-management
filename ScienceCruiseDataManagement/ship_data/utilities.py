@@ -36,9 +36,29 @@ if __name__ == "__main__":
            == (-35.83807684566667, 18.030716576166668)
 
 
-def check_lat_lon_direction(self, north_south, east_west):
+def check_lat_lon_direction(north_south, east_west):
     '''Check that the latitude and longitude direction eg. N, S, E, W is valid.'''
     if (north_south == 'N' or north_south =='S') and (east_west =='E' or east_west == 'W'):
         return True
     else:
         return False
+
+
+def string_date_time_to_tuple(date_time_string):
+    '''Convert string formatted date and time to integers which can then be handled by the python module, datetime.'''
+    year = int(date_time_string[0:3])
+    month = int(date_time_string[5:6])
+    day = int(date_time_string[8:9])
+    hour = int(date_time_string[11:12])
+    minute = int(date_time_string[14:15])
+    seconds = int(date_time_string[17:])
+
+        # Some GPS sources have the time with hundreds of seconds like.
+        # HHMMSS.tt . Some don't have the ".tt"
+    if "." in date_time_string:
+        millions_of_sec = int(date_time_string.split(".")[1])*10000
+    else:
+        millions_of_sec = 0
+
+    return (year, month, day, hour, minute, seconds, millions_of_sec)
+

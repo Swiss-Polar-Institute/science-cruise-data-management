@@ -111,7 +111,7 @@ class MetDataAll(models.Model):
         verbose_name_plural = "Meterological data - full set"
 
 class MetDataWind(models.Model):
-    TIME = models.DateTimeField(unique=True, verbose_name="Date time")
+    date_time = models.DateTimeField(unique=True, verbose_name="Date time")
     COG = models.FloatField(null=True, blank=True, verbose_name="Course over ground")
     HEADING= models.FloatField(null=True, blank=True, verbose_name="Heading")
     WDR1 = models.FloatField(null=True, blank=True, verbose_name="Relative wind direction 1")

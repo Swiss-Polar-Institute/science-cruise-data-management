@@ -64,7 +64,7 @@ class ProcessNMEAFile:
         seconds = int(time_string[4:6])
 
         # Some GPS sources have the time with hundreds of seconds like.
-        # HHMMSS.tt . Some doesn't have the ".tt"
+        # HHMMSS.tt . Some don't have the ".tt"
         if "." in time_string:
             millions_of_sec = int(time_string.split(".")[1])*10000
         else:
