@@ -206,10 +206,10 @@ def create_hard_disk(hard_disk_uuid, hard_disk_mount_point, base_directory):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Handles how to copy things to the backups")
     parser.add_argument("--detect-new-hard-disk", action='store_true', help="Provides the UUID of the new hard disk")
-    parser.add_argument("--process-hard-disk", action='store_true', help="Requests the directories to be processed from a registered hard disk")
     parser.add_argument("--add-hard-disk", type=str)
     parser.add_argument("--base-directory", type=str)
     parser.add_argument("--hard-disk-mount-point", type=str)
+    parser.add_argument("--process-hard-disk", action='store_true', help="Requests the directories to be processed from a registered hard disk")
 
     args = parser.parse_args()
 
@@ -223,3 +223,5 @@ if __name__ == "__main__":
         create_hard_disk(args.add_hard_disk,
                          os.path.abspath(args.hard_disk_mount_point), # Import for some os.path.join()
                          os.path.abspath(args.base_directory))
+    else:
+        parser.print_help()
