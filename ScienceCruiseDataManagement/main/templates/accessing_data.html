@@ -34,30 +34,34 @@
 
 
         </p>
-        <h3>Ubuntu</h3>
-        NAS host name: storage.lan
+        <h3>Linux</h3>
+        <p>The data storage is accessible using SAMBA/CIFS protocol and the hostname is storage.lan.</p>
+        <p>It could be accessed using the application Dolphin or mounting it:</p>
+        <pre>
+            mkdir /mnt/ace_data # this is needed only once
+            sudo mount -t cifs //storage.lan/ace_data /mnt/ace_data</pre>
 
-        <p>Come and see the Data Management team if you have problems - each computer will be different.</p>
+
+        <p>Come and see the Data Management team if you have problems - each Linux distribution will be a bit different.</p>
 
         <h3>Windows</h3>
         Click on start and run, then type: \\storage.lan - this will take you to the set of folders.
 
         <h3>Mac</h3>
-        Click on go then connect to server.
-        <p>Type smb://storage.lan and you can add this to a list of favourites by clicking on the + button next to where you enter this address. Seleect whichever area you need and double click: it will open in the file browser.</p>
+        <p>Go to Finder (on the Mac toolbar usually the left icon). Open the menu "Go" and then "Connect to server".</p>
+        <p>Type smb://storage.lan and you can add this to a list of favourites by clicking on the + button next to where you enter this address. Select whichever area you need and double click: it will open in the file browser.</p>
 
         <p>**If you need any help please pop along to the Expedition Office at any time. We sometimes have chocolates....**</p>
-
     </div>
 
     <div class="header">
-        <h2>External data - a little more informtion</h2>
+        <h2>External data - a little more information</h2>
     </div>
     <div class="header">
         <h3>Satellite data</h3>
         <p>Sea surface temperature (SST), chlorophyll (chl) and sea-ice data are provided on a daily basis.</p>
 
-        <p><b>Data sources</b>:   Oceancolor (NASA), MODIS (sent by Rafel Simó - thanks Rafel!)</p>
+        <p><b>Data sources</b>: Oceancolor (NASA), MODIS (sent by Rafel Simó - thanks Rafel!)</p>
 
         <h3>Bathymetry and terrain maps of islands</h3>
         <p>You will find a set of bathymetry data, satellite images and terrain maps for the island work. These are generally sorted by the island names, but for larger providers, there could be data for different areas within the provider name (eg. GEBCO). A lot of these datasets come with license agreements and citations which you will hopefully find within the relevant folders in txt or html files. PLEASE observe these licenses and obtain your own copy of the data when back on dry land if necessary.</p>
@@ -71,8 +75,8 @@
         <p>The ship's meteorological data can be found here in daily text files. Each file contains a set of data that are recorded every 30 seconds, and another set that are recorded every 3 seconds. The headers are different so be aware if trying to parse the files. They will appear in the database very soon and other people on board have already parsed the files so please ask before doing it yourself if you want to save some time.</p>
 
         <h3>Navigation (GPS) data</h3>
-        <p>Two sources of GPS data are being brought into this data area in daily files which are updated live. These data are already stored in the database and can be fed into some mapping software so you can see the position of the ship live. The data are collected with a 1-second resolution but the data management team can easily output this in a different resolution if required, just ask. Finally, at the end of each leg, a JPEG of the track and a csv file with positions will be provided in the intranet documents section.</p>
+        <p>Two sources of GPS data are being brought into this data area in daily files which are updated live. These data are already stored in the database and can be fed into some mapping software so you can see the position of the ship live. The data are collected with a 1-second resolution but the data management team can easily output this in a different resolution if required, just ask. Finally, at the end of each leg, a JPEG of the track and a CSV file with positions will be provided in the intranet documents section.</p>
+        <p>We have an NMEA relay software: if you want to connect your mapping software (e.g. OpenCPN or others) let us know and we will provide the connection details.</p>
     </div>
-
 
 {% endblock %}
