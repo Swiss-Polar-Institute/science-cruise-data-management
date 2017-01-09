@@ -41,13 +41,13 @@ class Command(BaseCommand):
 
                     if outcome_lat_lon == True and outcome_date_time == True:
                         (d['latitude'], d['longitude']) = utilities.nmea_lat_long_to_normal(LAT, LAT_NS, LONG, LONG_EW)
-                        (year, month, day, hour, minute, second, millions_of_sec) = utilities.string_date_time_to_tuple(DATE_TIME)
-                        print(year, month, day, hour, minute, second, millions_of_sec)
-                        d['date_time'] = datetime.datetime(year, month, day, hour, minute, second, millions_of_sec)
+                        (year, month, day, hour, minute, second, millions_of_sec, utc) = utilities.string_date_time_to_tuple(DATE_TIME)
+                        print(year, month, day, hour, minute, second, millions_of_sec, utc)
+                        d['date_time'] = datetime.datetime(year, month, day, hour, minute, second, millions_of_sec, utc)
 
                         change_dictionary_contents(d)
 
-                        met_data_all, created = MetDataAll.objects.get_or_create(date_time = d['date_time'], defaults = d)
+                        met_data_all, created = MetDataAll.objects.get_or_create(date_time=d['date_time'], defaults = d)
 
                         print(d)
 
@@ -61,9 +61,9 @@ class Command(BaseCommand):
                     outcome_date_time = check_value(TIME)
 
                     if outcome_date_time == True:
-                        (year, month, day, hour, minute, second, millions_of_sec) = utilities.string_date_time_to_tuple(TIME)
+                        (year, month, day, hour, minute, second, millions_of_sec, utc) = utilities.string_date_time_to_tuple(TIME)
                         #print(year, month, day, hour, minute, second, millions_of_sec)
-                        d['date_time'] = datetime.datetime(year, month, day, hour, minute, second, millions_of_sec)
+                        d['date_time'] = datetime.datetime(year, month, day, hour, minute, second, millions_of_sec, utc)
 
                         change_dictionary_contents(d)
 

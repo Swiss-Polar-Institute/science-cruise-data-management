@@ -101,14 +101,12 @@ class MetDataAll(models.Model):
     CLOUDTEXT = models.FloatField(null=True, blank=True)
     VISCODE = models.FloatField(null=True, blank=True)
 
-
-
-
     def __str__(self):
         return "{}".format(self.date_time)
 
     class Meta:
         verbose_name_plural = "Meterological data - full set"
+
 
 class MetDataWind(models.Model):
     date_time = models.DateTimeField(unique=True, verbose_name="Date time")

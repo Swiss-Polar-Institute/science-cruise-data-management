@@ -1,4 +1,5 @@
 import unittest
+import datetime
 
 def nmea_lat_long_to_normal(latitude, north_south,
                             longitude, east_west):
@@ -46,19 +47,18 @@ def check_lat_lon_direction(north_south, east_west):
 
 def string_date_time_to_tuple(date_time_string):
     '''Convert string formatted date and time to integers which can then be handled by the python module, datetime.'''
-    year = int(date_time_string[0:3])
-    month = int(date_time_string[5:6])
-    day = int(date_time_string[8:9])
-    hour = int(date_time_string[11:12])
-    minute = int(date_time_string[14:15])
-    seconds = int(date_time_string[17:])
+    [date, time] = date_time_string.split(' ')
 
-        # Some GPS sources have the time with hundreds of seconds like.
-        # HHMMSS.tt . Some don't have the ".tt"
-    if "." in date_time_string:
-        millions_of_sec = int(date_time_string.split(".")[1])*10000
-    else:
-        millions_of_sec = 0
+    year = int(date.split('-')[0])
+    month = int(date.split('-')[1])
+    day = int(date.split('-')[2])
 
-    return (year, month, day, hour, minute, seconds, millions_of_sec)
+    hour = int(time.split(':')[0])
+    minute = int(time.split(':')[1])
+    second = int(time.split(':')[2])
+
+    utc = datetime.timezone(datetime.timedelta(0))
+    millions_of_sec = 0
+
+    return (year, month, day, hour, minute, second, millions_of_sec, utc)
 
