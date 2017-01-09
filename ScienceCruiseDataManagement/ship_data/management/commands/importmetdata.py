@@ -1,27 +1,34 @@
 from django.core.management.base import BaseCommand, CommandError
-from ship_data.models import MetDataAll, MetDataWind
+from ship_data.models import MetDataAll, MetDataWind, MetDataFile
 import csv
 from ship_data import utilities
 import datetime
+import glob
+import os
 
 
 class Command(BaseCommand):
     help = 'Adds data to the person table'
 
     def add_arguments(self, parser):
-        parser.add_argument('filename', type=str)
+        parser.add_argument('directory_name', type=str)
 
     def handle(self, *args, **options):
-        print(options['filename'])
-        self.import_data_from_csv(options['filename'])
+        print(options['directory_name'])
+        self.import_data_from_directory(options['directory_name'])
 
-    def add_arguments(self, parser):
-        parser.add_argument('filename', type=str)
+    def import_data_from_directory(self, directory_name):
+        for file in glob.glob(directory_name+"/MAWS*.txt"):
+            basename = os.path.basename(file)
+            if MetDataFile.objects.filter(file_name=basename).exists():
+                print("File already imported: ", basename)
+            else:
+                self.import_data_from_csv(file)
+                metdatafiles = MetDataFile()
+                metdatafiles.file_name= basename
+                metdatafiles.date_imported = datetime.datetime.utcnow()
 
-
-    def handle(self, *args, **options):
-        print(options['filename'])
-        self.import_data_from_csv(options['filename'])
+                metdatafiles.save()
 
     header=0
     def import_data_from_csv(self, filename):
@@ -48,8 +55,10 @@ class Command(BaseCommand):
                         change_dictionary_contents(d)
 
                         met_data_all, created = MetDataAll.objects.get_or_create(date_time=d['date_time'], defaults = d)
-
-                        print(d)
+                        if created==False:
+                            print("Row skipped: ", d)
+                        else:
+                            print("INSERTED: ", d)
 
                     else:
                         print("Row skipped, invalid NS or EW, or datetime missing: ", d)
@@ -68,8 +77,11 @@ class Command(BaseCommand):
                         change_dictionary_contents(d)
 
                         met_data_wind, created = MetDataWind.objects.get_or_create(date_time=d['date_time'], defaults=d)
+                        if created==False:
+                            print("Row skipped: ",d)
 
-                        print(d)
+                        else:
+                            print("INSERTED: ", d)
 
                 else:
                     print("Row skipped: ", row)

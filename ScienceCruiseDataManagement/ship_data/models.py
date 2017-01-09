@@ -121,9 +121,6 @@ class MetDataWind(models.Model):
     WD2 = models.FloatField(null=True, blank=True, verbose_name="Wind direction 2")
     WS2 = models.FloatField(null=True, blank=True, verbose_name="Wind speed 2")
     TIMEDIFF = models.FloatField(null=True, blank=True, verbose_name="Time difference")
-    Year = models.IntegerField(null=True, blank=True)
-    Month = models.IntegerField(null=True, blank=True)
-    DAY = models.IntegerField(null=True, blank=True)
     CLOUDTEXT = models.TextField(null=True, blank=True)
 
     def __str__(self):
@@ -132,3 +129,10 @@ class MetDataWind(models.Model):
     class Meta:
         verbose_name_plural = "Meterological data - wind"
 
+
+class MetDataFile(models.Model):
+    file_name = models.CharField(max_length=255)
+    date_imported = models.DateTimeField(max_length=255)
+
+    def __str__(self):
+        return "{}".format(self.file_name)

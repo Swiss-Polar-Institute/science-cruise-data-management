@@ -23,8 +23,12 @@ class MetDataAllAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['date_time']
 
 class MetDataWindAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('date_time','COG','HEADING','WDR1','WSR1','WD1','WS1','WDR2','WSR2','WD2','WS2','TIMEDIFF', 'Year','Month','DAY','CLOUDTEXT')
+    list_display = ('date_time','COG', 'HEADING','WDR1','WSR1','WD1','WS1','WDR2','WSR2','WD2','WS2','TIMEDIFF', 'CLOUDTEXT')
     ordering = ['date_time']
+
+class MetDataFileAdmin(import_export.admin.ExportMixin,admin.ModelAdmin):
+    list_display = ('file_name', 'date_imported')
+    ordering = ['file_name']
 
     # Register your models here.
 admin.site.register(ship_data.models.GpzdaDateTime, GpzdaDateTimeAdminAdmin)
@@ -32,3 +36,4 @@ admin.site.register(ship_data.models.GpvtgVelocity, GpvtgVelocityAdmin)
 admin.site.register(ship_data.models.GpggaGpsFix, GpggaGpsFixAdmin)
 admin.site.register(ship_data.models.MetDataAll, MetDataAllAdmin)
 admin.site.register(ship_data.models.MetDataWind, MetDataWindAdmin)
+admin.site.register(ship_data.models.MetDataFile, MetDataFileAdmin)
