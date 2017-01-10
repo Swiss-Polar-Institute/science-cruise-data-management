@@ -19,6 +19,7 @@ from main.models import Event, EventAction, Country, FilesStorage, FilesStorageG
 from main import utils
 from ship_data.models import GpggaGpsFix, GpvtgVelocity
 import main.find_locations as find_locations
+import subprocess
 
 class MainMenuView(TemplateView):
     template_name = "main_menu.html"
@@ -361,6 +362,12 @@ class PositionFromDateTime(TemplateView):
 
         return render(request, "position_from_date_time_exec.html", template_information)
 
+class MailState(TemplateView):
+    def get(self, request, *args, **kwargs):
+        s = subprocess.Popen("mailq", stdout=subprocess.PIPE)
+        mails = s.stdout.read()
+
+        return render(request, "mail_state.html", {'mails': mails})
 
 def latest_ship_speed():
     try:
