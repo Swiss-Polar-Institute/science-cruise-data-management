@@ -3,7 +3,8 @@
 {% load static %}
 
 {% block content %}
-Queue of emails:
+Emails that are currently sent. If the Internet connection is down it will keep retrying
+every 10 minutes until the emails are sent.
 <pre>
 {{ mails }}</pre>
 {% endblock %}
