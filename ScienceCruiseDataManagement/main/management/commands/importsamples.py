@@ -55,18 +55,18 @@ class Command(BaseCommand):
                 event_number_string = int(sample.expedition_sample_code.split('/')[5])
 
                 ship_queryset = Ship.objects.all().filter(shortened_name = code_string)
-                #print(ship_queryset)
+                # print(ship_queryset)
                 mission_queryset = Mission.objects.all().filter(acronym = mission_acronym_string)
-                #print(mission_queryset)
+                # print(mission_queryset)
                 leg_queryset = Leg.objects.all().filter(number = leg_string)
-                #print(leg_queryset)
+                # print(leg_queryset)
                 project_queryset = Project.objects.all().filter(number = project_number_string)
-                #print(project_queryset)
-                #print(julian_day)
+                # print(project_queryset)
+                # print(julian_day)
                 person_queryset = Person.objects.all().filter(initials=pi_initials_string)
-                #print(person_queryset)
+                # print(person_queryset)
                 event_queryset = Event.objects.all().filter(number = event_number_string)
-                #print(event_queryset)
+                # print(event_queryset)
 
                 how_many_errors_have_ocurred = 0
 
@@ -111,28 +111,26 @@ class Command(BaseCommand):
                     sample.julian_day = julian_day
                     sample.event = event
                     sample.pi_initials = pi_initials
-                    rows_inserted = rows_inserted+1
+                    rows_inserted += 1
 
                     outcome = self.update_database(sample)
-                    if outcome== "skipped":
-                        skipped = skipped + 1
+                    if outcome == "skipped":
+                        skipped += 1
                     elif outcome == "inserted":
-                        inserted = inserted + 1
+                        inserted += 1
                     elif outcome == "replaced":
-                        replaced = replaced + 1
+                        replaced += 1
                     elif outcome == "identical":
-                        identical = identical + 1
+                        identical += 1
 
-
-                print("TOTAL ROWS PROCESSED= " + str(rows) + "; Inserted = " + str(inserted) + "; Identical = " + str(identical) + "; Skipped = " + str(skipped) + "; Replaced = " + str(replaced))
-
+                print("TOTAL ROWS PROCESSED= ",rows, "; Inserted = ", inserted, "; Identical = ", identical, "; Skipped = ", skipped, "; Replaced = ", replaced)
 
     def report_error(self, row, query_set, object_type, lookup_value):
         """ Shows an error printing the line and an error message. """
         print("error in line:", row)
         if len(query_set) == 0:
             print("Cannot insert row: {} {} does not exist in the database".format(object_type, lookup_value))
-            #print(format(object_type), ": ", query_set)
+            # print(format(object_type), ": ", query_set)
         elif len(query_set) > 1:
             print("There are too many {} objects".format(object_type))
             print(format(object_type), ": ", query_set)
@@ -170,8 +168,6 @@ class Command(BaseCommand):
                     return "replaced"
                 else:
                     return "skipped"
-
-
 
     def compare_samples(self, sample1, sample2):
         same_objects = True
