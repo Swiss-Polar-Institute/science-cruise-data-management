@@ -103,6 +103,10 @@ class EventActionResource(import_export.resources.ModelResource):
         widget=import_export.widgets.ForeignKeyWidget(main.models.TimeUncertainty, 'name')
     )
 
+    latitude = import_export.fields.Field(column_name='latitude', attribute='latitude')
+
+    longitude = import_export.fields.Field(column_name='longitude', attribute='longitude')
+
     position_source = import_export.fields.Field(
         column_name='position_source',
         attribute='position_source',
@@ -131,7 +135,7 @@ class EventActionResource(import_export.resources.ModelResource):
     )
 
     class Meta:
-        fields = ('event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments', )
+        fields = ('event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments', )
         export_order = fields
 
 class EventActionForm(ModelForm):
