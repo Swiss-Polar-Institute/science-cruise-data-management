@@ -195,14 +195,6 @@ class Storage(models.Model):
         return "{}".format(self.name)
 
 
-class Preservation(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField()
-
-    def __str__(self):
-        return "{}".format(self.name)
-
-
 class SpeciesClassification(models.Model):
     phylum = models.CharField(max_length=255)
     class2 = models.CharField('Class', db_column='class', max_length=255)
@@ -353,15 +345,27 @@ class Station(models.Model):
     def __str__(self):
         return "{}".format(self.name)
 
+
 def default_ship_id():
     platform = Platform.objects.get(name=settings.DEFAULT_PLATFORM_NAME)
     return Ship.objects.get(name=platform).id
 
+
 def default_mission_id():
     return Mission.objects.get(name=settings.DEFAULT_MISSION_NAME).id
 
+
 def current_active_leg_id():
     return Leg.current_active_leg().id
+
+
+class Preservation(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return "{}".format(self.name)
+
 
 class Sample(models.Model):
     # It's updated by the function update_expedition_sample_code. But it's null for a moment while we get the
@@ -382,7 +386,8 @@ class Sample(models.Model):
     julian_day = models.IntegerField()
     event = models.ForeignKey('Event')
     pi_initials = models.ForeignKey('Person')
-    preservation = models.CharField(max_length=255, null=True, blank=True)
+    preservation = models.ForeignKey(Preservation, blank=True, null=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return "{}".format(self.expedition_sample_code)

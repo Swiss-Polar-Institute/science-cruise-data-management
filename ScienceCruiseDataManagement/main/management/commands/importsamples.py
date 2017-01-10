@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Sample, Ship, Mission, Leg, Project, Person, Event
+from main.models import Sample, Ship, Mission, Leg, Project, Person, Event, Preservation
 import csv
 import glob
 import codecs
@@ -24,13 +24,12 @@ class Command(BaseCommand):
         with codecs.open(filepath, encoding = 'utf-8', errors='ignore') as csvfile:
             reader = csv.DictReader(csvfile)
 
-            rows=0
-            rows_inserted = 0
-
+            rows = 0
             skipped = 0
             inserted = 0
             identical = 0
             replaced = 0
+            rows_with_errors = 0
 
             for row in reader:
                 print("Processing file: ", filepath)
@@ -44,7 +43,6 @@ class Command(BaseCommand):
                 sample.storage_location = row['storage_location']
                 sample.offloading_port = row['offloading_port']
                 sample.destination = row['destination']
-                #sample.preservation = row['preservation']
 
                 code_string = sample.expedition_sample_code.split('/')[0]
                 mission_acronym_string = sample.expedition_sample_code.split('/')[1]
@@ -54,47 +52,52 @@ class Command(BaseCommand):
                 pi_initials_string = sample.expedition_sample_code.split('/')[6]
                 event_number_string = int(sample.expedition_sample_code.split('/')[5])
 
-                ship_queryset = Ship.objects.all().filter(shortened_name = code_string)
+                ship_queryset = Ship.objects.all().filter(shortened_name=code_string)
                 # print(ship_queryset)
-                mission_queryset = Mission.objects.all().filter(acronym = mission_acronym_string)
+                mission_queryset = Mission.objects.all().filter(acronym=mission_acronym_string)
                 # print(mission_queryset)
-                leg_queryset = Leg.objects.all().filter(number = leg_string)
+                leg_queryset = Leg.objects.all().filter(number=leg_string)
                 # print(leg_queryset)
-                project_queryset = Project.objects.all().filter(number = project_number_string)
+                project_queryset = Project.objects.all().filter(number=project_number_string)
                 # print(project_queryset)
                 # print(julian_day)
                 person_queryset = Person.objects.all().filter(initials=pi_initials_string)
                 # print(person_queryset)
-                event_queryset = Event.objects.all().filter(number = event_number_string)
+                event_queryset = Event.objects.all().filter(number=event_number_string)
                 # print(event_queryset)
+                preservation_queryset = Preservation.objects.all().filter(name=row['preservation'])
 
                 how_many_errors_have_ocurred = 0
 
                 if len(event_queryset) != 1:
                     self.report_error(row, event_queryset, 'event', event_number_string)
-                    how_many_errors_have_ocurred = how_many_errors_have_ocurred + 1
+                    how_many_errors_have_ocurred += 1
 
                 if len(ship_queryset) != 1:
                     self.report_error(row, ship_queryset, 'ship', code_string)
-                    how_many_errors_have_ocurred = how_many_errors_have_ocurred + 1
+                    how_many_errors_have_ocurred += 1
 
                 if len(mission_queryset) != 1:
                     self.report_error(row, mission_queryset, 'mission', mission_acronym_string)
-                    how_many_errors_have_ocurred = how_many_errors_have_ocurred + 1
+                    how_many_errors_have_ocurred += 1
 
                 if len(leg_queryset) !=1:
                     self.report_error(row, leg_queryset, 'leg', leg_string)
-                    how_many_errors_have_ocurred = how_many_errors_have_ocurred + 1
+                    how_many_errors_have_ocurred += 1
 
                 if len(project_queryset) != 1:
                     self.report_error(row, project_queryset, 'project', project_number_string)
-                    how_many_errors_have_ocurred = how_many_errors_have_ocurred + 1
+                    how_many_errors_have_ocurred += 1
 
                 if len(person_queryset) != 1:
                     self.report_error(row, person_queryset, 'person', pi_initials_string)
-                    how_many_errors_have_ocurred = how_many_errors_have_ocurred + 1
+                    how_many_errors_have_ocurred += 1
 
-                rows = rows+1
+                if row['preservation'] != '' and len(preservation_queryset) != 1:
+                    self.report_error(row, preservation_queryset, 'preservation', row['preservation'])
+                    how_many_errors_have_ocurred += 1
+
+                rows += 1
 
                 if how_many_errors_have_ocurred == 0:
                     event = event_queryset[0]
@@ -111,7 +114,9 @@ class Command(BaseCommand):
                     sample.julian_day = julian_day
                     sample.event = event
                     sample.pi_initials = pi_initials
-                    rows_inserted += 1
+
+                    if row['preservation'] != '':
+                        sample.preservation = preservation_queryset[0]
 
                     outcome = self.update_database(sample)
                     if outcome == "skipped":
@@ -122,14 +127,18 @@ class Command(BaseCommand):
                         replaced += 1
                     elif outcome == "identical":
                         identical += 1
+                    else:
+                        print("Something else:", outcome)
+                else:
+                    rows_with_errors += 1
 
-                print("TOTAL ROWS PROCESSED= ",rows, "; Inserted = ", inserted, "; Identical = ", identical, "; Skipped = ", skipped, "; Replaced = ", replaced)
+                print("TOTAL ROWS PROCESSED= ",rows, "; Inserted = ", inserted, "; Identical = ", identical, "; Skipped = ", skipped, "; Replaced = ", replaced, "; Rows with errors = ", rows_with_errors)
 
     def report_error(self, row, query_set, object_type, lookup_value):
         """ Shows an error printing the line and an error message. """
         print("error in line:", row)
         if len(query_set) == 0:
-            print("Cannot insert row: {} {} does not exist in the database".format(object_type, lookup_value))
+            print("Cannot insert row: {} '{}' does not exist in the database".format(object_type, lookup_value))
             # print(format(object_type), ": ", query_set)
         elif len(query_set) > 1:
             print("There are too many {} objects".format(object_type))
