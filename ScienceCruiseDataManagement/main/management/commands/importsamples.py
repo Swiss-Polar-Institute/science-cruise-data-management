@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Sample, Platform, Mission, Leg, Project, Person, Event
+from main.models import Sample, Ship, Mission, Leg, Project, Person, Event
 import csv
 import glob
 import codecs
@@ -54,7 +54,7 @@ class Command(BaseCommand):
                 pi_initials_string = sample.expedition_sample_code.split('/')[6]
                 event_number_string = int(sample.expedition_sample_code.split('/')[5])
 
-                ship_queryset = Platform.objects.all().filter(code = code_string)
+                ship_queryset = Ship.objects.all().filter(shortened_name = code_string)
                 #print(ship_queryset)
                 mission_queryset = Mission.objects.all().filter(acronym = mission_acronym_string)
                 #print(mission_queryset)
