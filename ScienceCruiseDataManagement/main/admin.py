@@ -424,6 +424,9 @@ class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin
         # never shown, it's the primary key
         fields.remove('number')
 
+        # It doesn't exist in the database, it's only in the list
+        fields.remove('created_by')
+
 
         return tuple(fields)
 
