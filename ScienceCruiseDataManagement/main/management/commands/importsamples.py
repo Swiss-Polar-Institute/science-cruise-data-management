@@ -52,20 +52,20 @@ class Command(BaseCommand):
                 pi_initials_string = sample.expedition_sample_code.split('/')[6]
                 event_number_string = int(sample.expedition_sample_code.split('/')[5])
 
-                ship_queryset = Ship.objects.all().filter(shortened_name=code_string)
+                ship_queryset = Ship.objects.filter(shortened_name=code_string)
                 # print(ship_queryset)
-                mission_queryset = Mission.objects.all().filter(acronym=mission_acronym_string)
+                mission_queryset = Mission.objects.filter(acronym=mission_acronym_string)
                 # print(mission_queryset)
-                leg_queryset = Leg.objects.all().filter(number=leg_string)
+                leg_queryset = Leg.objects.filter(number=leg_string)
                 # print(leg_queryset)
-                project_queryset = Project.objects.all().filter(number=project_number_string)
+                project_queryset = Project.objects.filter(number=project_number_string)
                 # print(project_queryset)
                 # print(julian_day)
-                person_queryset = Person.objects.all().filter(initials=pi_initials_string)
+                person_queryset = Person.objects.filter(initials=pi_initials_string)
                 # print(person_queryset)
-                event_queryset = Event.objects.all().filter(number=event_number_string)
+                event_queryset = Event.objects.filter(number=event_number_string)
                 # print(event_queryset)
-                preservation_queryset = Preservation.objects.all().filter(name=row['preservation'])
+                preservation_queryset = Preservation.objects.filter(name=row['preservation'])
 
                 how_many_errors_have_ocurred = 0
 
@@ -130,6 +130,7 @@ class Command(BaseCommand):
                     else:
                         print("Something else:", outcome)
                 else:
+                    input("Press enter to continue")
                     rows_with_errors += 1
 
                 print("TOTAL ROWS PROCESSED= ",rows, "; Inserted = ", inserted, "; Identical = ", identical, "; Skipped = ", skipped, "; Replaced = ", replaced, "; Rows with errors = ", rows_with_errors)
@@ -146,7 +147,7 @@ class Command(BaseCommand):
 
     def find_sample(self, key):
         """Find a sample relating to a key"""
-        sample_queryset = Sample.objects.all().filter(expedition_sample_code=key)
+        sample_queryset = Sample.objects.filter(expedition_sample_code=key)
         if sample_queryset.exists():
             return sample_queryset[0]
         else:
