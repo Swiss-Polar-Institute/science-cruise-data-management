@@ -91,7 +91,7 @@ class Command(BaseCommand):
 
 def change_dictionary_contents(d):
     for key in d.keys():
-        if d[key] == '///' or d[key] == '' or d[key] == '//':
+        if d[key] == '///' or d[key] == '' or d[key] == '//'  or d[key] == '/':
             d[key] = None
 
 def check_value(variable):
