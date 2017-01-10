@@ -222,7 +222,7 @@ class EventActionAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
 
     #description_2.short_description = "Description"
 
-    list_display = ('event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments', 'created_by')
+    list_display = ('event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments', 'created_by')
     ordering = ['-event_id', '-id']
     form = EventActionForm
 
@@ -285,29 +285,29 @@ class EventReportResource(import_export.resources.ModelResource):
                                          attribute='station',
                                          widget=import_export.widgets.ForeignKeyWidget(main.models.Station, 'name'))
 
-    parent_device = import_export.fields.Field(column_name = 'parent device',
-                                               attribute = 'parent_device',
+    parent_device = import_export.fields.Field(column_name='parent device',
+                                               attribute='parent_device',
                                                widget=import_export.widgets.ForeignKeyWidget(main.models.ParentDevice, 'name'))
 
-    start_time = import_export.fields.Field(column_name = 'start_time',
-                                            attribute = 'start_time')
+    start_time = import_export.fields.Field(column_name='start_time',
+                                            attribute='start_time')
 
-    start_latitude = import_export.fields.Field(column_name = 'start_latitude',
-                                                attribute = 'start_latitude')
+    start_latitude = import_export.fields.Field(column_name='start_latitude',
+                                                attribute='start_latitude')
 
-    start_longitude = import_export.fields.Field(column_name = 'start_longitude',
-                                                 attribute = 'start_longitude')
+    start_longitude = import_export.fields.Field(column_name='start_longitude',
+                                                 attribute='start_longitude')
 
-    end_time = import_export.fields.Field(column_name = 'end_time',
-                                          attribute = 'end_time')
+    end_time = import_export.fields.Field(column_name='end_time',
+                                          attribute='end_time')
 
-    end_latitude = import_export.fields.Field(column_name = 'end_latitude',
-                                              attribute = 'end_latitude')
+    end_latitude = import_export.fields.Field(column_name='end_latitude',
+                                              attribute='end_latitude')
 
-    end_longitude = import_export.fields.Field(column_name = 'end_longitude',
-                                               attribute = 'end_longitude')
+    end_longitude = import_export.fields.Field(column_name='end_longitude',
+                                               attribute='end_longitude')
 
-    outcome = import_export.fields.Field(column_name = 'outcome', attribute='outcome')
+    outcome = import_export.fields.Field(column_name ='outcome', attribute='outcome')
 
     # dehydrate_ is an import_eport.resources.ModelResource special prefix
     def dehydrate_start_time(self, event):
@@ -324,6 +324,9 @@ class EventReportResource(import_export.resources.ModelResource):
 
     def dehydrate_end_latitude(self, event):
         return EventReportAdmin.end_latitude(event)
+
+    def dehydrate_end_longitude(self, event):
+        return EventReportAdmin.end_longitude(event)
 
     class Meta:
         fields = ('number', 'station', 'parent_device', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome')
