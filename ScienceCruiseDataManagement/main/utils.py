@@ -5,6 +5,10 @@ import main.models
 from main.models import ParentDevice
 from ship_data.models import GpggaGpsFix
 
+from django.contrib.admin.models import LogEntry, ADDITION
+from django.contrib.auth.models import User
+from django.contrib.admin.options import get_content_type_for_model
+
 
 class Location:
     def __init__(self):
@@ -126,3 +130,19 @@ def ship_location(date_time):
         location.device = device
 
         return location
+
+
+def object_model_created_by(obj):
+    content_type_id = get_content_type_for_model(obj).pk
+    object_id = obj.pk
+    log_entry_queryset = LogEntry.objects.filter(action_flag=ADDITION).filter(content_type_id=content_type_id).filter(action_flag=ADDITION).filter(object_id=object_id)
+
+    if len(log_entry_queryset) == 1:
+        user_id = log_entry_queryset[0].user_id
+
+        user_queryset = User.objects.filter(id=user_id)
+
+        if len(user_queryset) == 1:
+            return user_queryset[0].username
+
+    return "Unknown"

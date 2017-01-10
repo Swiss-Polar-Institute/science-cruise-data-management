@@ -218,12 +218,15 @@ class EventActionAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
 
     #description_2.short_description = "Description"
 
-    list_display = ('event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
+    list_display = ('event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments', 'created_by')
     ordering = ['-event_id', '-id']
     form = EventActionForm
 
-    def sampling_method(self, object):
-        return object.event.parent_device
+    def created_by(self, obj):
+        return main.utils.object_model_created_by(obj)
+
+    def sampling_method(self, obj):
+        return obj.event.parent_device
 
     sampling_method.admin_order_field = "event__parent_device"
     resource_class = EventActionResource
@@ -392,11 +395,14 @@ class EventReportAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
 
 
 class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('number', 'parent_device', 'station', 'data', 'samples', 'outcome')
+    list_display = ('number', 'parent_device', 'station', 'data', 'samples', 'outcome', 'created_by')
     ordering = ['-number']
 
     # used for the import_export
     resource_class = EventResource
+
+    def created_by(self, obj):
+        return main.utils.object_model_created_by(obj)
 
     # This is to have a default value on the foreign key
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
