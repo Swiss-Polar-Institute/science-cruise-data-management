@@ -526,6 +526,9 @@ class SampleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     readonly_fields = ('expedition_sample_code', )
     form = SampleForm
 
+class SampleFileAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ("file_name", "date_imported")
+    ordering = ['file_name']
 
 class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'project_list', 'organisation_list', 'principal_investigator','leg_list')
@@ -627,6 +630,7 @@ admin.site.register(main.models.PositionSource, PositionSourceAdmin)
 admin.site.register(main.models.Preservation, PreservationAdmin)
 admin.site.register(main.models.SpeciesClassification, SpeciesClassificationAdmin)
 admin.site.register(main.models.Sample, SampleAdmin)
+admin.site.register(main.models.SampleFile, SampleFileAdmin)
 admin.site.register(main.models.Person, PersonAdmin)
 admin.site.register(main.models.Organisation, OrganisationAdmin)
 admin.site.register(main.models.Data, DataAdmin)

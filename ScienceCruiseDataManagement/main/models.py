@@ -393,6 +393,14 @@ class Sample(models.Model):
         return "{}".format(self.expedition_sample_code)
 
 
+class SampleFile(models.Model):
+    file_name = models.CharField(max_length=255, unique=True)
+    date_imported = models.DateTimeField()
+
+    def __str__(self):
+        return"{}".format(self.file_name)
+
+
 @receiver(post_save, sender=Sample)
 def update_expedition_sample_code(sender, instance, **kwargs):
     # It's done in the post_save because the sample_id can be part of the expedition_sample_code

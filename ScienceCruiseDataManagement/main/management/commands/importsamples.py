@@ -1,9 +1,11 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Sample, Ship, Mission, Leg, Project, Person, Event, Preservation
+from main.models import Sample, Ship, Mission, Leg, Project, Person, Event, Preservation, SampleFile
 import csv
 import glob
 import codecs
-
+import os
+import datetime
+import shutil
 
 class Command(BaseCommand):
     help = 'Adds data to the sample table'
@@ -17,8 +19,19 @@ class Command(BaseCommand):
 
     def import_data_from_directory(self, directory_name):
         for file in glob.glob(directory_name + "/*.csv"):
-            print("PROCESSING FILES: " + directory_name + "/*.csv")
-            self.import_data_from_csv(file)
+            basename = os.path.basename(file)
+            if SampleFile.objects.filter(file_name=basename).exists():
+                print ("File already imported: ", basename)
+            else:
+                print("PROCESSING FILES: " + directory_name + "/*.csv")
+                self.import_data_from_csv(file)
+                samplefiles = SampleFile()
+                samplefiles.file_name = basename
+                samplefiles.date_imported = datetime.datetime.utcnow()
+
+                samplefiles.save()
+                self.move_imported_file(directory_name, basename)
+                print(basename, " moved from ", directory_name)
 
     def import_data_from_csv(self, filepath):
         with codecs.open(filepath, encoding = 'utf-8', errors='ignore') as csvfile:
@@ -188,3 +201,6 @@ class Command(BaseCommand):
                     same_objects = False
 
         return same_objects
+
+    def move_imported_file(self, original_directory_name, filename):
+        shutil.move(original_directory_name + "/" + filename, original_directory_name + "/../uploaded")
