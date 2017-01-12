@@ -32,7 +32,7 @@ class SharedResourceAdmin(admin.ModelAdmin):
 
 
 class DataManagementProgressAdmin(admin.ModelAdmin):
-    list_display = ('project', 'leg', 'event_recording', 'events_complete', 'sample_recording', 'samples_complete', 'metadata_record', 'data_management_plan',  'data_contact_list')
+    list_display = ('project', 'leg', 'event_recording', 'events_complete', 'sample_recording', 'samples_complete', 'metadata_record', 'data_management_plan',  'data_contact_list', 'last_updated')
     ordering = ['project']
 
     def data_contact_list(self, obj):

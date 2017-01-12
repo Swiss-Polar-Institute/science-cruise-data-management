@@ -112,6 +112,7 @@ class DataManagementProgress(models.Model):
     metadata_record = models.CharField(max_length=255, choices=type_choices)
     data_management_plan = models.CharField(max_length=255, choices=type_choices)
     data_contact = models.ManyToManyField(Person)
+    last_updated = models.DateTimeField(default=django.utils.timezone.now)
 
     def __str__(self):
         return "{}".format(self.project)
