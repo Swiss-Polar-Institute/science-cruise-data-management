@@ -617,6 +617,7 @@ class MessageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('date_time', 'subject', 'message', 'person')
     ordering = ['-date_time']
 
+
 admin.site.register(main.models.Mission, MissionAdmin)
 admin.site.register(main.models.Ship, ShipAdmin)
 admin.site.register(main.models.StationType, StationTypeAdmin)

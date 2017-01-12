@@ -1,5 +1,6 @@
 from django.contrib import admin
 from data_storage_management import models
+from main.models import Person
 import data_storage_management.models
 
 
@@ -30,6 +31,22 @@ class SharedResourceAdmin(admin.ModelAdmin):
     list_display = ('ip', 'shared_resource', 'added_date_time', 'person', 'comment', 'username', 'password')
 
 
+class DataManagementProgressAdmin(admin.ModelAdmin):
+    list_display = ('project', 'leg', 'event_recording', 'events_complete', 'sample_recording', 'samples_complete', 'metadata_record', 'data_management_plan',  'data_contact_list')
+    ordering = ['project']
+
+    def data_contact_list(self, obj):
+        people = obj.data_contact.all()
+
+        result = ""
+        for person in people:
+            if result != "":
+                result = result + ", "
+            result = result + person.name_first + ' ' + person.name_last
+
+        return result
+
+
 # Register your models here.
 admin.site.register(data_storage_management.models.HardDisk, HardDiskAdmin)
 admin.site.register(data_storage_management.models.Directory, ItemAdmin)
@@ -37,3 +54,4 @@ admin.site.register(data_storage_management.models.File, ItemAdmin)
 admin.site.register(data_storage_management.models.DirectoryImportLog, DirectoryImportLog)
 admin.site.register(data_storage_management.models.NASResource, NASResourceAdmin)
 admin.site.register(data_storage_management.models.SharedResource, SharedResourceAdmin)
+admin.site.register(data_storage_management.models.DataManagementProgress, DataManagementProgressAdmin)

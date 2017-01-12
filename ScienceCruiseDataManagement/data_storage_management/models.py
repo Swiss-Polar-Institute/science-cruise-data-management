@@ -1,5 +1,5 @@
 from django.db import models
-from main.models import Person, DeviceType
+from main.models import Person, DeviceType, Project, Leg
 import django.utils.timezone
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -96,3 +96,22 @@ class DirectoryImportLog(models.Model):
     directory = models.ForeignKey(Directory)
     updated_time = models.DateTimeField(default=django.utils.timezone.now)
     success = models.BooleanField()
+
+
+class DataManagementProgress(models.Model):
+    type_choices = (("Complete", "Complete"),
+                    ("In progress", "In progress"),
+                    ("Not started", "Not started"))
+
+    project = models.ForeignKey(Project)
+    leg = models.ForeignKey(Leg)
+    event_recording = models.CharField(max_length=255, choices=type_choices)
+    events_complete = models.BooleanField()
+    sample_recording = models.CharField(max_length=255, choices=type_choices)
+    samples_complete = models.BooleanField()
+    metadata_record = models.CharField(max_length=255, choices=type_choices)
+    data_management_plan = models.CharField(max_length=255, choices=type_choices)
+    data_contact = models.ManyToManyField(Person)
+
+    def __str__(self):
+        return "{}".format(self.project)
