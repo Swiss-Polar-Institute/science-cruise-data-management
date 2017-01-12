@@ -24,9 +24,11 @@ class ProjectsStartsWithLetter(admin.SimpleListFilter):
         else:
             return queryset
 
+
 class MissionAdmin(admin.ModelAdmin):
     list_display = ('name', 'acronym', 'institution', 'description')
     ordering = ['name']
+
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('number', 'title', 'alternative_title', 'principal_investigator', 'abstract')
@@ -138,6 +140,7 @@ class EventActionResource(import_export.resources.ModelResource):
         fields = ('event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments', )
         export_order = fields
 
+
 class EventActionForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(EventActionForm, self).__init__(*args, **kwargs)
@@ -215,6 +218,7 @@ class EventActionForm(ModelForm):
     class Meta:
         model = main.models.EventAction
         fields = '__all__'
+
 
 class EventActionAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
     #def description_2(self, obj):
@@ -455,13 +459,16 @@ class CountryAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name',) # leave comma here for tuple
     ordering = ['name']
 
+
 class IslandAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'mid_lat', 'mid_lon')
     ordering = ['name']
 
+
 class IslandLandingsAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('island', 'person', 'date')
     ordering = ['island']
+
 
 class StorageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'description')
@@ -490,13 +497,16 @@ class TimeUncertaintyAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('code', 'name', 'source')
     ordering = ['name']
 
+
 class TimeSourceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'definition')
     ordering = ['name']
 
+
 class PositionSourceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display= ('name', 'definition')
     ordering = ['name']
+
 
 class PreservationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'description')
@@ -526,9 +536,11 @@ class SampleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     readonly_fields = ('expedition_sample_code', )
     form = SampleForm
 
+
 class SampleFileAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ("file_name", "date_imported")
     ordering = ['file_name']
+
 
 class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'project_list', 'organisation_list', 'principal_investigator','leg_list')
@@ -599,6 +611,7 @@ class ShipAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 class ParentDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'definition')
     ordering = ['name']
+
 
 class MessageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('date_time', 'subject', 'message', 'person')
