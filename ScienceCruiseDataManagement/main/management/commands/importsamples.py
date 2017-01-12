@@ -37,6 +37,56 @@ class Command(BaseCommand):
                 else:
                     print(basename, "NOT MOVED because some errors processing it")
 
+
+    def foreign_key_querysets(self, code_string, mission_acronym_string, leg_string, project_number_string,
+                              pi_initials_string, event_number_string, preservation):
+        querysets = {}
+        querysets['ship'] = Ship.objects.filter(shortened_name=code_string)
+        querysets['mission'] = Mission.objects.filter(acronym=mission_acronym_string)
+        querysets['leg'] = Leg.objects.filter(number=leg_string)
+        querysets['project'] =  Project.objects.filter(number=project_number_string)
+        querysets['person'] = Person.objects.filter(initials=pi_initials_string)
+        querysets['event'] = Event.objects.filter(number=event_number_string)
+        querysets['preservation'] = Preservation.objects.filter(name=preservation)
+
+        return querysets
+
+    def check_foreign_keys(self, row, code_string, mission_acronym_string, leg_string, project_number_string, pi_initials_string, event_number_string, preservation):
+        qs = self.foreign_key_querysets(code_string, mission_acronym_string, leg_string, project_number_string,
+                                        pi_initials_string, event_number_string, preservation)
+
+        how_many_errors_have_ocurred = 0
+
+        if len(qs['event']) != 1:
+            self.report_error(row, qs['event'], 'event', event_number_string)
+            how_many_errors_have_ocurred += 1
+
+        if len(qs['ship']) != 1:
+            self.report_error(row, qs['ship'], 'ship', code_string)
+            how_many_errors_have_ocurred += 1
+
+        if len(qs['mission']) != 1:
+            self.report_error(row, qs['mission'], 'mission', mission_acronym_string)
+            how_many_errors_have_ocurred += 1
+
+        if len(qs['leg']) != 1:
+            self.report_error(row, qs['leg'], 'leg', leg_string)
+            how_many_errors_have_ocurred += 1
+
+        if len(qs['project']) != 1:
+            self.report_error(row, qs['project'], 'project', project_number_string)
+            how_many_errors_have_ocurred += 1
+
+        if len(qs['person']) != 1:
+            self.report_error(row, qs['person'], 'person', pi_initials_string)
+            how_many_errors_have_ocurred += 1
+
+        if preservation != '' and len(qs['preservation']) != 1:
+            self.report_error(row, qs['preservation'], 'preservation', row['preservation'])
+            how_many_errors_have_ocurred += 1
+
+        return how_many_errors_have_ocurred == 0
+
     def import_data_from_csv(self, filepath):
         with codecs.open(filepath, encoding = 'utf-8', errors='ignore') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -49,8 +99,8 @@ class Command(BaseCommand):
             rows_with_errors = 0
 
             for row in reader:
-                print("Processing file: ", filepath)
-                print(row)
+                print("Processing row from file: ", filepath)
+                print("Row:", row)
                 sample = Sample()
                 sample.expedition_sample_code = row['ace_sample_number']
                 sample.project_sample_number = row['project_sample_number']
@@ -68,87 +118,52 @@ class Command(BaseCommand):
                 julian_day = int(sample.expedition_sample_code.split('/')[4])
                 pi_initials_string = sample.expedition_sample_code.split('/')[6]
                 event_number_string = int(sample.expedition_sample_code.split('/')[5])
+                preservation = row['preservation']
 
-                ship_queryset = Ship.objects.filter(shortened_name=code_string)
-                # print(ship_queryset)
-                mission_queryset = Mission.objects.filter(acronym=mission_acronym_string)
-                # print(mission_queryset)
-                leg_queryset = Leg.objects.filter(number=leg_string)
-                # print(leg_queryset)
-                project_queryset = Project.objects.filter(number=project_number_string)
-                # print(project_queryset)
-                # print(julian_day)
-                person_queryset = Person.objects.filter(initials=pi_initials_string)
-                # print(person_queryset)
-                event_queryset = Event.objects.filter(number=event_number_string)
-                # print(event_queryset)
-                preservation_queryset = Preservation.objects.filter(name=row['preservation'])
-
-                how_many_errors_have_ocurred = 0
-
-                if len(event_queryset) != 1:
-                    self.report_error(row, event_queryset, 'event', event_number_string)
-                    how_many_errors_have_ocurred += 1
-
-                if len(ship_queryset) != 1:
-                    self.report_error(row, ship_queryset, 'ship', code_string)
-                    how_many_errors_have_ocurred += 1
-
-                if len(mission_queryset) != 1:
-                    self.report_error(row, mission_queryset, 'mission', mission_acronym_string)
-                    how_many_errors_have_ocurred += 1
-
-                if len(leg_queryset) !=1:
-                    self.report_error(row, leg_queryset, 'leg', leg_string)
-                    how_many_errors_have_ocurred += 1
-
-                if len(project_queryset) != 1:
-                    self.report_error(row, project_queryset, 'project', project_number_string)
-                    how_many_errors_have_ocurred += 1
-
-                if len(person_queryset) != 1:
-                    self.report_error(row, person_queryset, 'person', pi_initials_string)
-                    how_many_errors_have_ocurred += 1
-
-                if row['preservation'] != '' and len(preservation_queryset) != 1:
-                    self.report_error(row, preservation_queryset, 'preservation', row['preservation'])
-                    how_many_errors_have_ocurred += 1
+                while self.check_foreign_keys(row, code_string, mission_acronym_string, leg_string,
+                                              project_number_string, pi_initials_string, event_number_string,
+                                              preservation) != 0:
+                    print("Please fix the broken foreign keys and press ENTER. This row will be retested")
+                    input()
 
                 rows += 1
 
-                if how_many_errors_have_ocurred == 0:
-                    event = event_queryset[0]
-                    ship = ship_queryset[0]
-                    mission = mission_queryset[0]
-                    leg = leg_queryset[0]
-                    project = project_queryset[0]
-                    pi_initials = person_queryset[0]
+                qs = self.foreign_key_querysets(code_string, mission_acronym_string, leg_string,
+                                                project_number_string, pi_initials_string, event_number_string,
+                                                preservation)
 
-                    sample.ship = ship
-                    sample.mission = mission
-                    sample.leg = leg
-                    sample.project = project
-                    sample.julian_day = julian_day
-                    sample.event = event
-                    sample.pi_initials = pi_initials
+                event = qs['event'][0]
+                ship = qs['ship'][0]
+                mission = qs['mission'][0]
+                leg = qs['leg'][0]
+                project = qs['project'][0]
+                pi_initials = qs['person'][0]
 
-                    if row['preservation'] != '':
-                        sample.preservation = preservation_queryset[0]
+                sample.ship = ship
+                sample.mission = mission
+                sample.leg = leg
+                sample.project = project
+                sample.julian_day = julian_day
+                sample.event = event
+                sample.pi_initials = pi_initials
 
-                    outcome = self.update_database(sample)
-                    if outcome == "skipped":
-                        skipped += 1
-                    elif outcome == "inserted":
-                        inserted += 1
-                    elif outcome == "replaced":
-                        replaced += 1
-                    elif outcome == "identical":
-                        identical += 1
-                    else:
-                        print("Something else:", outcome)
+                if preservation != '':
+                    sample.preservation = qs['preservation'][0]
+
+                outcome = self.update_database(sample)
+                if outcome == "skipped":
+                    skipped += 1
+                elif outcome == "inserted":
+                    inserted += 1
+                elif outcome == "replaced":
+                    replaced += 1
+                elif outcome == "identical":
+                    identical += 1
                 else:
-                    input("Press enter to continue")
-                    rows_with_errors += 1
+                    print("Something else:", outcome)
+            else:
+                input("Press enter to continue")
+                rows_with_errors += 1
 
             print("TOTAL ROWS PROCESSED= ",rows, "; Inserted = ", inserted, "; Identical = ", identical, "; Skipped = ", skipped, "; Replaced = ", replaced, "; Rows with errors = ", rows_with_errors)
 
