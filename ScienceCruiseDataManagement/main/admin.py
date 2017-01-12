@@ -618,6 +618,11 @@ class MessageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['-date_time']
 
 
+class TimeChangeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('date_changed_utc', 'difference_to_utc_after_change')
+    ordering = ['date_changed_utc']
+
+
 admin.site.register(main.models.Mission, MissionAdmin)
 admin.site.register(main.models.Ship, ShipAdmin)
 admin.site.register(main.models.StationType, StationTypeAdmin)
@@ -654,6 +659,7 @@ admin.site.register(main.models.NetworkHost, NetworkHostAdmin)
 admin.site.register(main.models.Platform, PlatformAdmin)
 admin.site.register(main.models.PlatformType, PlatformTypeAdmin)
 admin.site.register(main.models.Message, MessageAdmin)
+admin.site.register(main.models.TimeChange, TimeChangeAdmin)
 
 ADMIN_SITE_TITLE = 'Ace Data Admin'
 ADMIN_SITE_HEADER = 'ACE Data Administration'

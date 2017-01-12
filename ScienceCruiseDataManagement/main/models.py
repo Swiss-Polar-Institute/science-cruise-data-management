@@ -584,3 +584,11 @@ class NetworkHost(models.Model):
     hostname = models.CharField(max_length=255)
     location = models.CharField(max_length=255, help_text="In which floor, laboratory, container is this device", blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
+
+
+class TimeChange(models.Model):
+    date_changed_utc = models.DateField()
+    difference_to_utc_after_change = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{}".format(self.date_changed_utc)
