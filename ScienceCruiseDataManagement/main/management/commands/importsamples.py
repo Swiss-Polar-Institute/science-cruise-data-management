@@ -24,14 +24,18 @@ class Command(BaseCommand):
                 print ("File already imported: ", basename)
             else:
                 print("PROCESSING FILES: " + directory_name + "/*.csv")
-                self.import_data_from_csv(file)
-                samplefiles = SampleFile()
-                samplefiles.file_name = basename
-                samplefiles.date_imported = datetime.datetime.utcnow()
+                success = self.import_data_from_csv(file)
 
-                samplefiles.save()
-                self.move_imported_file(directory_name, basename)
-                print(basename, " moved from ", directory_name)
+                if success:
+                    samplefiles = SampleFile()
+                    samplefiles.file_name = basename
+                    samplefiles.date_imported = datetime.datetime.utcnow()
+
+                    samplefiles.save()
+                    self.move_imported_file(directory_name, basename)
+                    print(basename, " moved from ", directory_name)
+                else:
+                    print(basename, "NOT MOVED because some errors processing it")
 
     def import_data_from_csv(self, filepath):
         with codecs.open(filepath, encoding = 'utf-8', errors='ignore') as csvfile:
@@ -146,7 +150,9 @@ class Command(BaseCommand):
                     input("Press enter to continue")
                     rows_with_errors += 1
 
-                print("TOTAL ROWS PROCESSED= ",rows, "; Inserted = ", inserted, "; Identical = ", identical, "; Skipped = ", skipped, "; Replaced = ", replaced, "; Rows with errors = ", rows_with_errors)
+            print("TOTAL ROWS PROCESSED= ",rows, "; Inserted = ", inserted, "; Identical = ", identical, "; Skipped = ", skipped, "; Replaced = ", replaced, "; Rows with errors = ", rows_with_errors)
+
+            return rows_with_errors == 0
 
     def report_error(self, row, query_set, object_type, lookup_value):
         """ Shows an error printing the line and an error message. """
