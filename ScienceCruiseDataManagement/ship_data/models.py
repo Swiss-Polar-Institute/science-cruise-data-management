@@ -1,10 +1,10 @@
 from django.db import models
-from main.models import ParentDevice
+from main.models import SamplingMethod
 
 
 # GPS data from log files
 class GpzdaDateTime(models.Model):
-    device = models.ForeignKey(ParentDevice)
+    device = models.ForeignKey(SamplingMethod)
     date_time = models.DateTimeField(db_index=True)
     local_zone_hours = models.IntegerField()
     local_zone_minutes = models.IntegerField()
@@ -13,7 +13,7 @@ class GpzdaDateTime(models.Model):
         return "main/{}".format(self.date_time)
 
 class GpggaGpsFix(models.Model):
-    device = models.ForeignKey(ParentDevice)
+    device = models.ForeignKey(SamplingMethod)
     date_time = models.DateTimeField(db_index=True)
     latitude = models.FloatField()
     longitude = models.FloatField()
@@ -32,7 +32,7 @@ class GpggaGpsFix(models.Model):
         get_latest_by = "date_time"
 
 class GpvtgVelocity(models.Model):
-    device = models.ForeignKey(ParentDevice)
+    device = models.ForeignKey(SamplingMethod)
     date_time = models.DateTimeField(db_index=True)      # not in the gpvtg string, importer will use the time from the prior string
     true_track_deg = models.FloatField()
     magnetic_track_deg = models.FloatField(null=True, blank=True)

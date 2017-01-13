@@ -2,7 +2,7 @@ import datetime
 
 from django.conf import settings
 import main.models
-from main.models import ParentDevice
+from main.models import SamplingMethod
 from ship_data.models import GpggaGpsFix
 
 from django.contrib.admin.models import LogEntry, ADDITION
@@ -38,7 +38,7 @@ def can_user_change_events(path, user):
 
 
 def latest_ship_position():
-    gps = ParentDevice.objects.get(name=settings.MAIN_GPS)
+    gps = SamplingMethod.objects.get(name=settings.MAIN_GPS)
     positions = GpggaGpsFix.objects.filter(device=gps).order_by('-date_time')
 
     if positions.exists():
@@ -79,7 +79,7 @@ def now_with_timezone():
 
 
 def ship_location(date_time):
-    main_gps = ParentDevice.objects.get(name=settings.MAIN_GPS)
+    main_gps = SamplingMethod.objects.get(name=settings.MAIN_GPS)
     main_gps_id = main_gps.id
 
     # It uses objects.raw so Mysql is using the right index (datetime). The CAST is what it

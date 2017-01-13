@@ -80,15 +80,15 @@ class SamplingMethodFilter(OutcomeReportFilter):
 
     def queryset(self, request, queryset):
         if self.value() is not None and self.value() != '':
-            return queryset.filter(parent_device__id=self.value())
+            return queryset.filter(sampling_method__id=self.value())
         else:
             return queryset
 
     def lookups(self, request, model_admin):
-        parent_devices = main.models.ParentDevice.objects.all().order_by('name')
+        sampling_methods = main.models.SamplingMethod.objects.all().order_by('name')
 
         filter_lookup = []
-        for parent_device in parent_devices:
-            filter_lookup.append((parent_device.id, parent_device.name))
+        for sampling_method in sampling_methods:
+            filter_lookup.append((sampling_method.id, sampling_method.name))
 
         return tuple(filter_lookup)

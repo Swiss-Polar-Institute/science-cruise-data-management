@@ -83,7 +83,7 @@ class DeviceType(models.Model):
         return "{}".format(self.name)
 
 
-class ParentDevice(models.Model):
+class SamplingMethod(models.Model):
     name = models.CharField(max_length=255, unique=True)
     definition = models.CharField(max_length=255, null=True, blank=True)
 
@@ -96,7 +96,7 @@ class ChildDevice(models.Model):
     # correctly (reserved word in Python)
     type_of_device = models.ForeignKey(DeviceType, verbose_name="Type")
     serial_number = models.CharField(max_length=255, unique=True)
-    possible_parents = models.ManyToManyField(ParentDevice)
+    possible_parents = models.ManyToManyField(SamplingMethod)
 
     def __str__(self):
         return "{}-{}".format(self.type_of_device.name, self.serial_number)
@@ -421,10 +421,10 @@ class Event(models.Model):
     type_choices = (("Not yet happened", "Not yet happened"), ("Success", "Success"), ("Failure", "Failure"), ("Invalid", "Invalid"))
 
     number = models.AutoField(primary_key=True)
-    parent_device = models.ForeignKey(ParentDevice, related_name="parent_device_event", verbose_name="Sampling method", help_text="Choose the instrument or method used for sampling")
+    sampling_method = models.ForeignKey(SamplingMethod, related_name="sampling_method_event", verbose_name="Sampling method", help_text="Choose the instrument or method used for sampling")
     child_devices = ChainedManyToManyField(
         ChildDevice,
-        chained_field='parent_device',
+        chained_field='sampling_method',
         chained_model_field='possible_parents',
         blank=True,
         verbose_name="Attached devices",

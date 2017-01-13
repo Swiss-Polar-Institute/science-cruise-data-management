@@ -15,7 +15,7 @@ import main.import_gpx_to_stations
 import main.models
 from main import import_gpx_to_stations
 from main.forms import InputShipDateTime
-from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station, Message, ParentDevice
+from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station, Message, SamplingMethod
 from main import utils
 from ship_data.models import GpggaGpsFix, GpvtgVelocity
 import main.find_locations as find_locations
@@ -371,7 +371,7 @@ class MailState(TemplateView):
 
 def latest_ship_speed():
     try:
-        gps = ParentDevice.objects.get(name=settings.MAIN_GPS)
+        gps = SamplingMethod.objects.get(name=settings.MAIN_GPS)
     except ObjectDoesNotExist:
         return None
 

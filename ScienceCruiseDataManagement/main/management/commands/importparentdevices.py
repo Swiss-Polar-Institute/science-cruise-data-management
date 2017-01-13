@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import ParentDevice
+from main.models import SamplingMethod
 import csv
 
 class Command(BaseCommand):
@@ -17,7 +17,7 @@ class Command(BaseCommand):
             reader = csv.DictReader(csvfile)
             for row in reader:
                 print(row)
-                parent_device = ParentDevice()
+                parent_device = SamplingMethod()
                 parent_device.name = row['name']
                 parent_device.definition = row['definition']
 

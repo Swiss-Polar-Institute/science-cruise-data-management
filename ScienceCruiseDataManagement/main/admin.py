@@ -78,9 +78,9 @@ class EventActionResource(import_export.resources.ModelResource):
     event = import_export.fields.Field(column_name='event', attribute='event')
 
     sampling_method = import_export.fields.Field(
-        column_name='parent_device',
-        attribute='parent_device',
-        widget=import_export.widgets.ForeignKeyWidget(main.models.ParentDevice, 'name')
+        column_name='sampling_method',
+        attribute='sampling_method',
+        widget=import_export.widgets.ForeignKeyWidget(main.models.SamplingMethod, 'name')
     )
 
     type = import_export.fields.Field(column_name='type', attribute='type')
@@ -234,9 +234,9 @@ class EventActionAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
         return main.utils.object_model_created_by(obj)
 
     def sampling_method(self, obj):
-        return obj.event.parent_device
+        return obj.event.sampling_method
 
-    sampling_method.admin_order_field = "event__parent_device"
+    sampling_method.admin_order_field = "event__sampling_method"
     resource_class = EventActionResource
 
 
@@ -262,10 +262,10 @@ class StationAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMix
 class EventResource(import_export.resources.ModelResource):
     number = import_export.fields.Field(column_name = 'number', attribute='number')
 
-    parent_device = import_export.fields.Field(
-        column_name='parent_device',
-        attribute='parent_device',
-        widget=import_export.widgets.ForeignKeyWidget(main.models.ParentDevice, 'name'))
+    sampling_method = import_export.fields.Field(
+        column_name='smapling_method',
+        attribute='sampling_method',
+        widget=import_export.widgets.ForeignKeyWidget(main.models.SamplingMethod, 'name'))
 
     station = import_export.fields.Field(
         column_name='station',
@@ -278,7 +278,7 @@ class EventResource(import_export.resources.ModelResource):
     outcome = import_export.fields.Field(column_name = 'outcome', attribute='outcome')
 
     class Meta:
-        fields = ('number', 'parent_device', 'station', 'data', 'samples', )
+        fields = ('number', 'smpling_method', 'station', 'data', 'samples', )
         export_order = fields
 
 
@@ -289,9 +289,9 @@ class EventReportResource(import_export.resources.ModelResource):
                                          attribute='station',
                                          widget=import_export.widgets.ForeignKeyWidget(main.models.Station, 'name'))
 
-    parent_device = import_export.fields.Field(column_name='parent device',
-                                               attribute='parent_device',
-                                               widget=import_export.widgets.ForeignKeyWidget(main.models.ParentDevice, 'name'))
+    sampling_method = import_export.fields.Field(column_name='sampling method',
+                                               attribute='sampling_method',
+                                               widget=import_export.widgets.ForeignKeyWidget(main.models.SamplingMethod, 'name'))
 
     start_time = import_export.fields.Field(column_name='start_time',
                                             attribute='start_time')
@@ -333,7 +333,7 @@ class EventReportResource(import_export.resources.ModelResource):
         return EventReportAdmin.end_longitude(event)
 
     class Meta:
-        fields = ('number', 'station', 'parent_device', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome')
+        fields = ('number', 'station', 'sampling_method', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome')
         export_order = fields
 
 
@@ -352,7 +352,7 @@ class EventReportAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
 
     @classmethod
     def device_name(cls, obj):
-        return obj.parent_device.name
+        return obj.sampling_method.name
 
     @classmethod
     def _get_event_action(cls, start_or_end, event_id, field):
@@ -406,7 +406,7 @@ class EventReportAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
 
 
 class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('number', 'parent_device', 'station', 'data', 'samples', 'outcome', 'created_by')
+    list_display = ('number', 'sampling_method', 'station', 'data', 'samples', 'outcome', 'created_by')
     ordering = ['-number']
 
     # used for the import_export
@@ -608,7 +608,7 @@ class ShipAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['name']
 
 
-class ParentDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+class SamplingMethodAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'definition')
     ordering = ['name']
 
@@ -628,7 +628,7 @@ admin.site.register(main.models.Ship, ShipAdmin)
 admin.site.register(main.models.StationType, StationTypeAdmin)
 admin.site.register(main.models.ChildDevice, ChildDeviceAdmin)
 admin.site.register(main.models.DeviceType, DeviceTypeAdmin)
-admin.site.register(main.models.ParentDevice, ParentDeviceAdmin)
+admin.site.register(main.models.SamplingMethod, SamplingMethodAdmin)
 admin.site.register(main.models.Project, ProjectAdmin)
 admin.site.register(main.models.Event, EventAdmin)
 admin.site.register(main.models.EventActionDescription, EventActionDescriptionAdmin)
