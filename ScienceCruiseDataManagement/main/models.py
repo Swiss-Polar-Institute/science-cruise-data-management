@@ -388,6 +388,7 @@ class Sample(models.Model):
     pi_initials = models.ForeignKey('Person')
     preservation = models.ForeignKey(Preservation, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
+    file = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return "{}".format(self.expedition_sample_code)

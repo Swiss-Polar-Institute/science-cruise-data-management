@@ -90,6 +90,7 @@ class Command(BaseCommand):
     def import_data_from_csv(self, filepath):
         with codecs.open(filepath, encoding = 'utf-8', errors='ignore') as csvfile:
             reader = csv.DictReader(csvfile)
+            basename = os.path.basename(filepath)
 
             rows = 0
             skipped = 0
@@ -110,6 +111,7 @@ class Command(BaseCommand):
                 sample.storage_location = row['storage_location']
                 sample.offloading_port = row['offloading_port']
                 sample.destination = row['destination']
+                sample.file = basename
 
                 code_string = sample.expedition_sample_code.split('/')[0]
                 mission_acronym_string = sample.expedition_sample_code.split('/')[1]
