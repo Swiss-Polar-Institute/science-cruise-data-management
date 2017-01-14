@@ -122,7 +122,7 @@ class Command(BaseCommand):
                 event_number_string = int(sample.expedition_sample_code.split('/')[5])
                 preservation = row['preservation']
 
-                while self.check_foreign_keys(row, code_string, mission_acronym_string, leg_string,
+                while not self.check_foreign_keys(row, code_string, mission_acronym_string, leg_string,
                                               project_number_string, pi_initials_string, event_number_string,
                                               preservation) != 0:
                     print("Please fix the broken foreign keys and press ENTER. This row will be retested")
@@ -163,11 +163,8 @@ class Command(BaseCommand):
                     identical += 1
                 else:
                     print("Something else:", outcome)
-            else:
-                input("Press enter to continue")
-                rows_with_errors += 1
 
-            print("TOTAL ROWS PROCESSED= ",rows, "; Inserted = ", inserted, "; Identical = ", identical, "; Skipped = ", skipped, "; Replaced = ", replaced, "; Rows with errors = ", rows_with_errors)
+            print("TOTAL ROWS PROCESSED= ",rows, "; Inserted = ", inserted, "; Identical = ", identical, "; Skipped = ", skipped, "; Replaced = ", replaced)
 
             return rows_with_errors == 0
 

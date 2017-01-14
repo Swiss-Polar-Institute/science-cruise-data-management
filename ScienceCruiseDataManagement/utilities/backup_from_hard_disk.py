@@ -56,7 +56,7 @@ def detect_hard_disk():
     print_colored('blue', "Please plug in the hard disk and wait -no need to press enter")
 
     step = 0
-    second_counter = 4
+    second_counter = 8
     while True:
         uuids_after = collect_uuids()
         new_uuids = list(set(uuids_after) - set(uuids_before))

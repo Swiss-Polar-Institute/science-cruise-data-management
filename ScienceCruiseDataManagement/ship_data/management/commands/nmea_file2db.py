@@ -14,7 +14,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('device', type=str,
                             action='store',
-                            help='A ParentDevice table name that is the source of this file')
+                            help='A SamplingMethod table name that is the source of this file')
         parser.add_argument('directory_path', type=str,
                             action='store',
                             help='Directory where to fetch the files from')
@@ -40,7 +40,7 @@ class ProcessNMEAFile:
 
     def process(self):
         if not SamplingMethod.objects.filter(name=self.device_string).exists():
-            print("Error: parent device type {} doesn't exist in the ParentDevice table".format(self.device_string))
+            print("Error: sampling method type {} doesn't exist in the SamplingMethod table".format(self.device_string))
             exit(1)
 
         self.device = SamplingMethod.objects.get(name=self.device_string)
