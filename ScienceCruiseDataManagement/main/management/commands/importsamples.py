@@ -5,7 +5,8 @@ import glob
 import codecs
 import os
 import datetime
-import shutil
+from main import utils
+
 
 class Command(BaseCommand):
     help = 'Adds data to the sample table'
@@ -27,13 +28,7 @@ class Command(BaseCommand):
                 success = self.import_data_from_csv(file)
 
                 if success:
-                    samplefiles = SampleFile()
-                    samplefiles.file_name = basename
-                    samplefiles.date_imported = datetime.datetime.utcnow()
-
-                    samplefiles.save()
-                    self.move_imported_file(directory_name, basename)
-                    print(basename, " moved from ", directory_name)
+                    utils.add_imported(SampleFile, basename)
                 else:
                     print(basename, "NOT MOVED because some errors processing it")
 
@@ -221,6 +216,3 @@ class Command(BaseCommand):
                     same_objects = False
 
         return same_objects
-
-    def move_imported_file(self, original_directory_name, filename):
-        shutil.move(original_directory_name + "/" + filename, original_directory_name + "/../uploaded")

@@ -2,6 +2,7 @@ import datetime
 
 from django.conf import settings
 import main.models
+import shutil
 from main.models import SamplingMethod
 from ship_data.models import GpggaGpsFix
 
@@ -54,14 +55,21 @@ def latest_ship_position():
         return Location()
 
 
-def string_to_date_time(date_time_string):
+def string_to_date_time_format(date_time_string, format):
     try:
-        date_time = datetime.datetime.strptime(date_time_string, "%Y-%m-%d %H:%M:%S")
+        return datetime.datetime.strptime(date_time_string, "%Y-%m-%d %H:%M:%S")
     except ValueError:
+        return None
+
+def string_to_date_time(date_time_string):
+    possible_formats = ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%d.%m.%Y %H:%M"]
+
+    date_time = None
+    for format in possible_formats:
         try:
-            date_time = datetime.datetime.strptime(date_time_string, "%Y-%m-%d %H:%M")
+            date_time = datetime.datetime.strptime(date_time_string, format)
         except ValueError:
-            date_time = None
+            pass
 
     if date_time is not None:
         utc = datetime.timezone(datetime.timedelta(0))
@@ -146,3 +154,26 @@ def object_model_created_by(obj):
             return user_queryset[0].username
 
     return "Unknown"
+
+
+def find_object(obj, field, name):
+    queryset = obj.objects.filter(**{field: name})
+
+    if len(queryset) == 1:
+        return queryset[0]
+    else:
+        return None
+
+
+def move_imported_file(self, original_directory_name, filename):
+    shutil.move(original_directory_name + "/" + filename, original_directory_name + "/../uploaded")
+
+
+def add_imported(cls, directory_name, basename):
+    file = cls()
+    file.file_name = basename
+    file.date_imported = datetime.datetime.utcnow()
+
+    file.save()
+    move_imported_file(directory_name, basename)
+    print(basename, " moved from ", directory_name)

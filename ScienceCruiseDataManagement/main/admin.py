@@ -530,7 +530,7 @@ class SampleForm(ModelForm):
 
 
 class SampleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('expedition_sample_code', 'project_sample_number', 'contents', 'crate_number', 'storage_type', 'storage_location', 'offloading_port', 'destination', 'ship', 'mission', 'leg', 'project', 'julian_day', 'event', 'pi_initials', 'preservation', 'file')
+    list_display = ('expedition_sample_code', 'project_sample_number', 'contents', 'crate_number', 'storage_type', 'storage_location', 'offloading_port', 'destination', 'ship', 'mission', 'leg', 'project', 'julian_day', 'event', 'pi_initials', 'preservation', 'file', 'specific_contents')
     fields = list_display
     ordering = ['expedition_sample_code']
     readonly_fields = ('expedition_sample_code', )

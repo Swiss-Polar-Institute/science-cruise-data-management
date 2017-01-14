@@ -389,17 +389,26 @@ class Sample(models.Model):
     preservation = models.ForeignKey(Preservation, blank=True, null=True)
     description = models.CharField(max_length=255, blank=True, null=True)
     file = models.CharField(max_length=255, blank=True, null=True)
+    specific_contents = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return "{}".format(self.expedition_sample_code)
 
 
-class SampleFile(models.Model):
+class ImportedFile(models.Model):
     file_name = models.CharField(max_length=255, unique=True)
     date_imported = models.DateTimeField()
 
     def __str__(self):
         return"{}".format(self.file_name)
+
+
+class SampleFile(ImportedFile):
+    pass
+
+
+class EventFile(ImportedFile):
+    pass
 
 
 @receiver(post_save, sender=Sample)
@@ -421,7 +430,7 @@ class Event(models.Model):
     type_choices = (("Not yet happened", "Not yet happened"), ("Success", "Success"), ("Failure", "Failure"), ("Invalid", "Invalid"))
 
     number = models.AutoField(primary_key=True)
-    sampling_method = models.ForeignKey(SamplingMethod, related_name="sampling_method_event", verbose_name="Sampling method", help_text="Choose the instrument or method used for sampling")
+    sampling_method = models.ForeignKey(SamplingMethod, related_name="sampling_method_event", help_text="Choose the instrument or method used for sampling")
     child_devices = ChainedManyToManyField(
         ChildDevice,
         chained_field='sampling_method',
