@@ -126,7 +126,7 @@ class PositionsJson(View):
 
             features.append(
                 geojson.Feature(geometry=point, properties={'id': id_text,
-                                                            'text': "{}<br>{}<br>({:.2f}, {:.2f})".format(eventAction.event.parent_device.name, date_time, eventAction.latitude, eventAction.longitude),
+                                                            'text': "{}<br>{}<br>({:.2f}, {:.2f})".format(eventAction.event.sampling_method.name, date_time, eventAction.latitude, eventAction.longitude),
                                                             'marker_color': 'blue'}))
 
         for port in Port.objects.all():
