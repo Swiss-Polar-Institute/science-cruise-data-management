@@ -168,16 +168,16 @@ water_depth: {water_depth}
 general_comments: {general_comments}
 data_source_comments: {data_source_comments}
 """.format(**{'id': event_action.id,
-            'type': event_action.type,
-            'time_source': event_action.time_source,
-            'time_uncertainty': event_action.time_uncertainty,
-            'latitude': event_action.latitude,
-            'longitude': event_action.longitude,
-            'position_source': event_action.position_source,
-            'position_uncertainty': event_action.position_uncertainty,
-            'water_depth': event_action.water_depth,
-            'general_comments': event_action.general_comments,
-            'data_source_comments': event_action.data_source_comments})
+              'type': event_action.type,
+              'time_source': event_action.time_source,
+              'time_uncertainty': event_action.time_uncertainty,
+              'latitude': event_action.latitude,
+              'longitude': event_action.longitude,
+              'position_source': event_action.position_source,
+              'position_uncertainty': event_action.position_uncertainty,
+              'water_depth': event_action.water_depth,
+              'general_comments': event_action.general_comments,
+              'data_source_comments': event_action.data_source_comments})
 
         return event_action_str
 
@@ -200,7 +200,6 @@ data_source_comments: {data_source_comments}
             print("EventAction in the file:", self.event_action2str(event_action))
             for event_db in query_filter:
                 print("EventAction in the database:", self.event_action2str(event_db))
-
 
         return query_filter.exists()
 
