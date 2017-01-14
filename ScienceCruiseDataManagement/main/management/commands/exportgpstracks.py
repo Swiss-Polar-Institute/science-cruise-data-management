@@ -17,10 +17,11 @@ class Command(BaseCommand):
 
 
 def generate_all_tracks(output_directory):
-    generate(output_directory, 1, "1second")
-    generate(output_directory, 60, "1min")
-    generate(output_directory, 300, "5min")
     generate(output_directory, 3600, "1hour")
+
+    # generate(output_directory, 1, "1second")
+    # generate(output_directory, 60, "1min")
+    # generate(output_directory, 300, "5min")
 
 
 def generate(output_directory, seconds, file_suffix):
