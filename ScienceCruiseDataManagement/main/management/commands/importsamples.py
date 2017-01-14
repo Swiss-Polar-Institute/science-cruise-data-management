@@ -215,7 +215,7 @@ class Command(BaseCommand):
     def compare_samples(self, sample1, sample2):
         same_objects = True
         for field in sample1.__dict__.keys():
-            if field != '_state' and field != 'id':
+            if field != '_state' and field != 'id' and field != 'file':
                 if sample1.__dict__[field] != sample2.__dict__[field]:
                     print("Field: {} in database: {}; in spreadsheet: {}: ".format(field, sample1.__dict__[field], sample2.__dict__[field]))
                     same_objects = False
