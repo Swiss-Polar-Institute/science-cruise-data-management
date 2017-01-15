@@ -3,6 +3,7 @@ import datetime
 from django.conf import settings
 import main.models
 import shutil
+import os
 from main.models import SamplingMethod
 from ship_data.models import GpggaGpsFix
 
@@ -165,15 +166,23 @@ def find_object(obj, field, name):
         return None
 
 
-def move_imported_file(self, original_directory_name, filename):
+def move_imported_file(original_directory_name, filename):
     shutil.move(original_directory_name + "/" + filename, original_directory_name + "/../uploaded")
 
 
-def add_imported(cls, directory_name, basename):
-    file = cls()
+def add_imported(filepath, object_type):
+    basename = os.path.basename(filepath)
+    dirname = os.path.dirname(filepath)
+
+    file = main.models.ImportedFile()
     file.file_name = basename
     file.date_imported = datetime.datetime.utcnow()
 
+    utc = datetime.timezone(datetime.timedelta(0))
+    file.date_imported = file.date_imported.replace(tzinfo=utc)
+
+    file.object_type = object_type
+
     file.save()
-    move_imported_file(directory_name, basename)
-    print(basename, " moved from ", directory_name)
+    move_imported_file(dirname, basename)
+    print(basename, " moved from ", dirname)

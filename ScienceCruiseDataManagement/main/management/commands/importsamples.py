@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Sample, Ship, Mission, Leg, Project, Person, Event, Preservation, SampleFile
+from main.models import Sample, Ship, Mission, Leg, Project, Person, Event, Preservation, ImportedFile
 import csv
 import glob
 import codecs
@@ -21,14 +21,14 @@ class Command(BaseCommand):
     def import_data_from_directory(self, directory_name):
         for file in glob.glob(directory_name + "/*.csv"):
             basename = os.path.basename(file)
-            if SampleFile.objects.filter(file_name=basename).exists():
+            if ImportedFile.objects.filter(file_name=basename).filter(object_type="Samples").exists():
                 print ("File already imported: ", basename)
             else:
                 print("PROCESSING FILES: " + directory_name + "/*.csv")
                 success = self.import_data_from_csv(file)
 
                 if success:
-                    utils.add_imported(SampleFile, basename)
+                    utils.add_imported(file, "Samples")
                 else:
                     print(basename, "NOT MOVED because some errors processing it")
 

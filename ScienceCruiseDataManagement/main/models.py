@@ -50,6 +50,7 @@ class Country(models.Model):
     class Meta:
         verbose_name_plural="Countries"
 
+
 class Island(models.Model):
     name = models.CharField(max_length=255, unique=True)
     mid_lat = models.FloatField(null=True, blank=True)
@@ -57,6 +58,7 @@ class Island(models.Model):
 
     def __str__(self):
         return "{}".format(self.name)
+
 
 class IslandLandings(models.Model):
     island = models.ForeignKey(Island)
@@ -398,17 +400,10 @@ class Sample(models.Model):
 class ImportedFile(models.Model):
     file_name = models.CharField(max_length=255, unique=True)
     date_imported = models.DateTimeField()
+    object_type = models.CharField(max_length=255, help_text="From where this was imported from")
 
     def __str__(self):
         return"{}".format(self.file_name)
-
-
-class SampleFile(ImportedFile):
-    pass
-
-
-class EventFile(ImportedFile):
-    pass
 
 
 @receiver(post_save, sender=Sample)
@@ -444,6 +439,7 @@ class Event(models.Model):
     data = models.BooleanField(help_text="Tick this box if raw data will be produced DURING this event (not after post-cruise processing).")
     samples = models.BooleanField(help_text="Tick this box if samples will be collected during this event.")
     outcome = models.CharField(max_length=20, choices=type_choices, help_text="Select the option that best describes the outcome of the event. If the event did not happen because of weather or a decision to not do it, it should be marked as invalid.", default="Success")
+    imported_from_file = models.ForeignKey(ImportedFile, null=True, blank=True)
 
     def __str__(self):
         return "{}".format(self.number)

@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Event, EventAction, SamplingMethod, TimeSource, TimeUncertainty, EventActionDescription, EventFile
+from main.models import Event, EventAction, SamplingMethod, TimeSource, TimeUncertainty, EventActionDescription, ImportedFile
 from main import utils
 
 import csv
@@ -49,11 +49,11 @@ class Command(BaseCommand):
         while True:
             query_set = model.objects.filter(**{field: value})
             if len(query_set) == 0:
-                print("Wanted a", model,"with field:", field, "and value:", value, "but not found")
+                print("Wanted a", model,"with field: '{}' and value: '' but not found".format(field, value))
                 print("Please change the database to have it and press ENTER. Or cancel the import of this spreadsheet (Ctl+C)")
                 input()
             elif len(query_set) > 1:
-                print("Wanted a", model,"with field:", field, "and value:", value, "but found more than one")
+                print("Wanted a {} with field '{}' and value: '{}' but found more than one".format(model, field, value))
                 print("Pleaes change the database to have only one and press ENTER. Or cancel the import of this spreadsheet (Ctl+C)")
             else:
                 return query_set[0]
@@ -133,8 +133,8 @@ class Command(BaseCommand):
         # insert_objects actually always return True (or it throws an exception)
         success = self.insert_objects(events_to_be_inserted)
         if success:
-            utils.add_imported(EventFile, filepath.split("/")[1:len(filepath.split("/")-1)],
-                               os.path.basename(filepath))
+            #
+            utils.add_imported(filepath, "Events")
 
     def event2str(self, event):
         event_str = """EVENT

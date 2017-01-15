@@ -537,7 +537,7 @@ class SampleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     form = SampleForm
 
 
-class SampleFileAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+class ImportedFileAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ("file_name", "date_imported")
     ordering = ['file_name']
 
@@ -649,7 +649,7 @@ admin.site.register(main.models.PositionSource, PositionSourceAdmin)
 admin.site.register(main.models.Preservation, PreservationAdmin)
 admin.site.register(main.models.SpeciesClassification, SpeciesClassificationAdmin)
 admin.site.register(main.models.Sample, SampleAdmin)
-admin.site.register(main.models.SampleFile, SampleFileAdmin)
+admin.site.register(main.models.ImportedFile, ImportedFileAdmin)
 admin.site.register(main.models.Person, PersonAdmin)
 admin.site.register(main.models.Organisation, OrganisationAdmin)
 admin.site.register(main.models.Data, DataAdmin)
