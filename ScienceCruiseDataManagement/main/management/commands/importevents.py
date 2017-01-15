@@ -49,12 +49,14 @@ class Command(BaseCommand):
         while True:
             query_set = model.objects.filter(**{field: value})
             if len(query_set) == 0:
-                print("Wanted a", model,"with field: '{}' and value: '' but not found".format(field, value))
+                print("Processing row: ", row)
+                print("Wanted a '{}' with field: '{}' and value: '' but not found".format(model, field, value))
                 print("Please change the database to have it and press ENTER. Or cancel the import of this spreadsheet (Ctl+C)")
                 input()
             elif len(query_set) > 1:
-                print("Wanted a {} with field '{}' and value: '{}' but found more than one".format(model, field, value))
-                print("Pleaes change the database to have only one and press ENTER. Or cancel the import of this spreadsheet (Ctl+C)")
+                print("Processing row: ", row)
+                print("Wanted a '{}' with field '{}' and value: '{}' but found more than one".format(model, field, value))
+                print("Please change the database to have only one and press ENTER. Or cancel the import of this spreadsheet (Ctl+C)")
             else:
                 return query_set[0]
 
@@ -158,6 +160,7 @@ outcome: {outcome}
         event_action_str = """EVENT ACTION
 id: {id}
 type: {type}
+time: {time}
 time_source: {time_source}
 time_uncertainty: {time_uncertainty}
 latitude: {latitude}
@@ -169,6 +172,7 @@ general_comments: {general_comments}
 data_source_comments: {data_source_comments}
 """.format(**{'id': event_action.id,
               'type': event_action.type,
+              'time': event_action.time,
               'time_source': event_action.time_source,
               'time_uncertainty': event_action.time_uncertainty,
               'latitude': event_action.latitude,
@@ -184,7 +188,7 @@ data_source_comments: {data_source_comments}
     def report_event_exists(self, event):
         query_filter = Event.objects.filter(sampling_method=event.sampling_method).filter(data=event.data).filter(samples=event.samples).filter(outcome=event.outcome)
 
-        if len(query_filter) >= 0:
+        if len(query_filter) > 0:
             print("There are some rows in the database very similar to the existing ones:")
             print("Event in the file:", self.event2str(event))
             for event_db in query_filter:
@@ -195,7 +199,7 @@ data_source_comments: {data_source_comments}
     def report_event_action_exists(self, event_action):
         query_filter = EventAction.objects.filter(time=event_action.time).filter(type=event_action.type).filter(time_source=event_action.time_source).filter(time_uncertainty=event_action.time_uncertainty)
 
-        if len(query_filter) >= 0:
+        if len(query_filter) > 0:
             print("There are some rows in the database very similar to the existing ones:")
             print("EventAction in the file:", self.event_action2str(event_action))
             for event_db in query_filter:
