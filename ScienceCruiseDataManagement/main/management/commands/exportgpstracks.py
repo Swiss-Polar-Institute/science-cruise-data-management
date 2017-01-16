@@ -15,27 +15,24 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         generate_all_tracks(options['output_directory'])
-        # print("============ TRIMBLE")
-        # find_gps_missings(63)
-        # print("============ BRIDGE")
-        # find_gps_missings(64)
-
 
 
 def generate_all_tracks(output_directory):
-    generate_method_2(output_directory, 3600, "1hour")
-    generate_method_2(output_directory, 300, "5min")
-    generate_method_2(output_directory, 60, "1min")
-    generate_method_2(output_directory, 1, "1second")
+    generate_fast(output_directory, 3600, "1hour")
+    generate_fast(output_directory, 300, "5min")
+    generate_fast(output_directory, 60, "1min")
+    generate_fast(output_directory, 1, "1second")
 
 
-def generate_method_2(output_directory, seconds, file_suffix):
+def generate_fast(output_directory, seconds, file_suffix):
     """
     This method uses Mysql datetime 'ends with' instead of doing individual queries
     for each 'seconds'. It's faster but harder to find gaps in the data.
     """
     first_date = GpggaGpsFix.objects.earliest().date_time
     last_date = GpggaGpsFix.objects.latest().date_time
+
+    last_date = datetime.datetime(last_date.year, last_date.month, last_date.day, 23, 59, 59)
 
     filename = "track_{}_{}_{}.csv".format(first_date.strftime("%Y%m%d"), last_date.strftime("%Y%m%d"), file_suffix)
 
@@ -92,35 +89,11 @@ def generate_method_2(output_directory, seconds, file_suffix):
                                      "{:.4f}".format(gps_info.latitude),
                                      "{:.4f}".format(gps_info.longitude)])
 
-        #
-        # if which_gps(date_time_string)
-        # if to_be_written is not None and date_time_string != to_be_written[0] and date_time_string != last_written:
-        #     print("Will write now:", to_be_written[0])
-        #     print("Last writing  :", last_written)
-        #
-        #     csv_writer.writerow(to_be_written)
-        #     last_written = to_be_written[0]
-        #     print("Written Trimble", to_be_written[0])
-        #     to_be_written = None
-        #
-        #
-        # if gps_info.device_id == 64:
-        #     csv_writer.writerow([gps_info.date_time.strftime("%Y-%m-%d %H:%M:%S"),
-        #                          "{:.4f}".format(gps_info.latitude),
-        #                          "{:.4f}".format(gps_info.longitude)])
-        #     print("Written Bridge ", gps_info.date_time.strftime("%Y-%m-%d %H:%M:%S"))
-        #     to_be_written = None
-        #     last_written = gps_info.date_time.strftime("%Y-%m-%d %H:%M:%S")
-        #
-        # else:
-        #     to_be_written = [gps_info.date_time.strftime("%Y-%m-%d %H:%M:%S"),
-        #                      "{:.4f}".format(gps_info.latitude),
-        #                      "{:.4f}".format(gps_info.longitude)]
-
 
 def generate_method_1(output_directory, seconds, file_suffix):
     """
     This method does a query every 'seconds'. Very slow, could be used to find gaps easily on the data.
+    As it is now it is difficult to decide which GPS the get comes from.
     """
     time_delta = datetime.timedelta(seconds=seconds)
 
@@ -160,6 +133,7 @@ def generate_method_1(output_directory, seconds, file_suffix):
 
 
 def find_gps_missings(device):
+    """ Used to find missing gaps in the GPS information. """
     time_delta = datetime.timedelta(seconds=300)
 
     first_date = GpggaGpsFix.objects.earliest().date_time
@@ -183,6 +157,7 @@ def find_gps_missings(device):
 
         if previous_date.day != current_date.day:
             print("Processing now {}".format(current_date))
+
 
 def which_gps(date_time_str):
     gps_bridge_working_intervals = [ ("2016-12-27 13:39:14", "2016-12-28 06:54:14"),
