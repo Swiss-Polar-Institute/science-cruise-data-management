@@ -2,6 +2,16 @@
 {% block title %}Documents{% endblock %}
 
 {% block content %}
+
+<p>This is only a selection of documents to make them easier to access.</p>
+<p>For ship_data, ace_data and photos see <a href="/accessing_data/">Accessing data</a> instructions or come
+and visit us in the office.</p>
+<p>Brief instructions (see <a href="/accessing_data/">Accessing data</a> for detailed instructions):</p>
+<ul>
+    <li>Windows: Click on start and run, then type: \\storage.lan</li>
+    <li>Mac OS X: Go to Finder (on the Mac toolbar usually the left icon). Open the menu "Go" and then "Connect to server. Type smb://storage.lan</li></l>
+</ul>
+
 {% for topic, files in documents.items %}
 <h2>{{ topic }}</h2>
     <ul>
