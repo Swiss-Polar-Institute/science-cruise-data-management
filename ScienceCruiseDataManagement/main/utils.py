@@ -63,7 +63,7 @@ def string_to_date_time_format(date_time_string, format):
         return None
 
 def string_to_date_time(date_time_string):
-    possible_formats = ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%d.%m.%Y %H:%M", "%d-%m-%Y %H:%M:%S"]
+    possible_formats = ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%d.%m.%Y %H:%M", "%d-%m-%Y %H:%M:%S", "%d-%m-%Y %H:%M"]
 
     date_time = None
     for format in possible_formats:

@@ -105,6 +105,10 @@ class Command(BaseCommand):
                 # Save event action begin
                 event_action_begin = EventAction()
                 event_action_begin.time = utils.string_to_date_time(row['start_time'])
+
+                if event_action_begin.time is None:
+                    print("Row", row)
+
                 event_action_begin.description = description_begin
                 event_action_begin.type = EventAction.tbegin()
                 event_action_begin.time_source = time_source
@@ -115,6 +119,10 @@ class Command(BaseCommand):
                 event_action_end.time = utils.string_to_date_time(row['end_time'])
                 event_action_end.description = description_end
                 event_action_end.type = EventAction.tends()
+
+                if event_action_begin.time is None:
+                    print("Row", row)
+
                 event_action_end.time_source = time_source
                 event_action_end.time_uncertainty = time_uncertainty
 
