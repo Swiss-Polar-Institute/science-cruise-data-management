@@ -87,6 +87,18 @@ def now_with_timezone():
     return now
 
 
+def ship_location_exists(date_time, device_id):
+    position_main_gps_query = GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast(%s as datetime) and ship_data_gpggagpsfix.device_id=%s ORDER BY date_time LIMIT 1', [date_time, device_id])
+
+    if abs(position_main_gps_query[0].date_time - date_time).seconds <= 5:
+        # Yes data in between 5 seconds
+        return True
+    else:
+        # No data
+        return False
+
+
+
 def ship_location(date_time):
     main_gps = SamplingMethod.objects.get(name=settings.MAIN_GPS)
     main_gps_id = main_gps.id
