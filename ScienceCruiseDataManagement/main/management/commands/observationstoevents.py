@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 import csv
 import datetime
+import os
 
 
 class Command(BaseCommand):
@@ -16,9 +17,14 @@ class Command(BaseCommand):
     def convert_spreadsheet(self, input_filename):
         csv_reader = csv.reader(open(input_filename, encoding = 'utf-8', errors='ignore'))
 
-        output_filename = "/tmp/test.csv"
+        new_filename = os.path.basename(input_filename)
 
-        csv_writer = csv.writer(open(output_filename, "w"))
+        new_path = os.path.dirname(input_filename)
+        new_filename = "Events-" + new_filename
+
+        new_filepath = os.path.join(new_path, new_filename)
+
+        csv_writer = csv.writer(open(new_filepath, "w"))
 
         csv_writer.writerow(['parent_device', 'data', 'samples', 'start_time', 'type', 'what_happened_start', 'end_time', 'type', 'what_happened_end', 'time_source', 'time_uncertainty', 'general_comments'])
 
@@ -65,20 +71,28 @@ class Command(BaseCommand):
 
             column += 1
 
+        print("Spreadsheet as event format as", new_filepath)
+
+
 def number_of_columns(spreadsheet):
     return len(spreadsheet[0])
+
 
 def column_after_headers():
     return 3
 
+
 def gmt_start_row():
     return 4
+
 
 def gmt_stop_row():
     return 5
 
+
 def date_row():
     return 0
+
 
 def current_date():
     return 3
