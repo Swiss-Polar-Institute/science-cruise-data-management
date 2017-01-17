@@ -10,6 +10,9 @@ from ship_data.models import GpggaGpsFix
 from django.contrib.admin.models import LogEntry, ADDITION
 from django.contrib.auth.models import User
 from django.contrib.admin.options import get_content_type_for_model
+from django.forms.models import model_to_dict
+
+import csv
 
 
 class Location:
@@ -97,6 +100,11 @@ def ship_location_exists(date_time, device_id):
         # No data
         return False
 
+
+def last_midnight(date_time):
+    day = datetime.timedelta(1)
+    date_time = date_time - day
+    return datetime.datetime(date_time.year, date_time.month, date_time.day, 23, 59, 59)
 
 
 def ship_location(date_time):
@@ -198,3 +206,26 @@ def add_imported(filepath, object_type):
     file.save()
     move_imported_file(dirname, basename)
     print(basename, " moved from ", dirname)
+
+def export_table(model, file_path):
+    file = open(file_path, "w")
+
+    csv_writer = csv.writer(file)
+
+    fields = model._meta.get_fields()
+    field_names = [f.name for f in fields]
+    print(field_names)
+    field_names.remove('id')
+
+    csv_writer.writerow(field_names)
+
+    met_data_all = model.objects.all().order_by('date_time')
+
+    for met_data in met_data_all:
+        row = []
+        met_data_dictionary = model_to_dict(met_data)
+
+        for field_name in field_names:
+            row.append(met_data_dictionary[field_name])
+
+        csv_writer.writerow(row)

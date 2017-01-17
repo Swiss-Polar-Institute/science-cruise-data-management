@@ -30,9 +30,7 @@ def generate_fast(output_directory, seconds, file_suffix):
     for each 'seconds'. It's faster but harder to find gaps in the data.
     """
     first_date = GpggaGpsFix.objects.earliest().date_time
-    last_date = GpggaGpsFix.objects.latest().date_time
-
-    last_date = datetime.datetime(last_date.year, last_date.month, last_date.day, 23, 59, 59)
+    last_date = utils.last_midnight(GpggaGpsFix.objects.latest().date_time)
 
     filename = "track_{}_{}_{}.csv".format(first_date.strftime("%Y%m%d"), last_date.strftime("%Y%m%d"), file_suffix)
 

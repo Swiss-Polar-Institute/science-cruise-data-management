@@ -43,6 +43,8 @@ class GpvtgVelocity(models.Model):
 
     class Meta:
         verbose_name_plural = "Gpvtg Velocities"
+        get_latest_by = "date_time"
+
 
 # Meteorological data
 class MetDataAll(models.Model):
@@ -106,6 +108,7 @@ class MetDataAll(models.Model):
 
     class Meta:
         verbose_name_plural = "Meterological data - full set"
+        get_latest_by = "date_time"
 
 
 class MetDataWind(models.Model):
@@ -128,6 +131,7 @@ class MetDataWind(models.Model):
 
     class Meta:
         verbose_name_plural = "Meterological data - wind"
+        get_latest_by = "date_time"
 
 
 class MetDataFile(models.Model):
