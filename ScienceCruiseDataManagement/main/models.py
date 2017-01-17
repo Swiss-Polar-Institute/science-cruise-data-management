@@ -398,12 +398,15 @@ class Sample(models.Model):
 
 
 class ImportedFile(models.Model):
-    file_name = models.CharField(max_length=255, unique=True)
+    file_name = models.CharField(max_length=255)
     date_imported = models.DateTimeField()
-    object_type = models.CharField(max_length=255, help_text="From where this was imported from")
+    object_type = models.CharField(max_length=255, help_text="From where this was imported")
 
     def __str__(self):
         return"{}".format(self.file_name)
+
+    class Meta:
+        unique_together = (('file_name', 'object_type'))
 
 
 @receiver(post_save, sender=Sample)
