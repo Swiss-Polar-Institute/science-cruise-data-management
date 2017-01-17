@@ -330,6 +330,8 @@ class StationType(models.Model):
 
 
 class Station(models.Model):
+    outcome_choices = (("Not yet happened", "Not yet happened"), ("Success", "Success"), ("Cancelled", "Cancelled"))
+
     name = models.IntegerField(unique=True)
     type = models.ForeignKey(StationType)
     latitude = models.FloatField(null=True, blank=True)
@@ -343,6 +345,7 @@ class Station(models.Model):
     position_uncertainty = models.ForeignKey(PositionUncertainty, null=True,blank=True)
     water_depth = models.FloatField(null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
+    outcome = models.CharField(max_length=20, choices=outcome_choices, help_text="Select the option that best describes the outcome of the event. If the event did not happen because of weather or a decision to not do it, it should be marked as invalid.", default="Success")
 
     def __str__(self):
         return "{}".format(self.name)
@@ -441,7 +444,7 @@ class Event(models.Model):
     station = models.ForeignKey(Station, null=True, blank=True, help_text="Only choose a station name where the ship has stopped")
     data = models.BooleanField(help_text="Tick this box if raw data will be produced DURING this event (not after post-cruise processing).")
     samples = models.BooleanField(help_text="Tick this box if samples will be collected during this event.")
-    outcome = models.CharField(max_length=20, choices=type_choices, help_text="Select the option that best describes the outcome of the event. If the event did not happen because of weather or a decision to not do it, it should be marked as invalid.", default="Success")
+    outcome = models.CharField(max_length=20, choices=type_choices, help_text="Select the option that best describes the outcome of the station. If the event did not happen because of weather or a decision to not do it, it should be marked as invalid.", default="Not yet happened")
     imported_from_file = models.ForeignKey(ImportedFile, null=True, blank=True)
 
     def __str__(self):
