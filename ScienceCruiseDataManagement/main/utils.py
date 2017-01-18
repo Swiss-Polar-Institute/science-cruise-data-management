@@ -6,6 +6,7 @@ import shutil
 import os
 from main.models import SamplingMethod
 from ship_data.models import GpggaGpsFix
+import re
 
 from django.contrib.admin.models import LogEntry, ADDITION
 from django.contrib.auth.models import User
@@ -238,10 +239,13 @@ def normalised_csv_file(file_path):
 
     file_contents = file_contents.replace("\t", ",")
 
+    file_contents = re.sub(r'    \n', '\n', file_contents)
+
     previous = ""
 
     while previous != file_contents:
         previous = file_contents
         file_contents = file_contents.replace("\n\n", "\n")
+
 
     return file_contents
