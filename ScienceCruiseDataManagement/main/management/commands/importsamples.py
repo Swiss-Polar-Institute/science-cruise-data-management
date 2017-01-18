@@ -77,7 +77,7 @@ class Command(BaseCommand):
             self.report_error(row, qs['person'], 'person', pi_initials_string)
             how_many_errors_have_ocurred += 1
 
-        if preservation != '' and len(qs['preservation']) != 1:
+        if 'preservation' in row and preservation != '' and len(qs['preservation']) != 1:
             self.report_error(row, qs['preservation'], 'preservation', row['preservation'])
             how_many_errors_have_ocurred += 1
 
@@ -115,7 +115,11 @@ class Command(BaseCommand):
             julian_day = int(sample.expedition_sample_code.split('/')[4])
             pi_initials_string = sample.expedition_sample_code.split('/')[6]
             event_number_string = int(sample.expedition_sample_code.split('/')[5])
-            preservation = row['preservation']
+
+            if 'preservation' in row:
+                preservation = row['preservation']
+            else:
+                preservation = None
 
             while not self.check_foreign_keys(row, code_string, mission_acronym_string, leg_string,
                                           project_number_string, pi_initials_string, event_number_string,
@@ -144,7 +148,7 @@ class Command(BaseCommand):
             sample.event = event
             sample.pi_initials = pi_initials
 
-            if preservation != '':
+            if 'preservation' in row and preservation != '':
                 sample.preservation = qs['preservation'][0]
 
             outcome = self.update_database(sample)
