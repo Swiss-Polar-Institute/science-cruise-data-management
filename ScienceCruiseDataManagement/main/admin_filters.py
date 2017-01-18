@@ -187,7 +187,6 @@ class OffloadingPortFilter(OptionFilter):
         return self._prepare_filter_lookups(main.models.Sample, 'offloading_port', query_by_id=False)
 
 
-
 class EventFilter(OptionFilter):
     title = "Event"
     parameter_name = "event"
@@ -201,4 +200,3 @@ class EventFilter(OptionFilter):
 
     def lookups(self, request, model_admin):
         return self._prepare_filter_lookups(main.models.Sample, 'event', query_by_id=False)
-
