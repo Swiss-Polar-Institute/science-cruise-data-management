@@ -84,85 +84,84 @@ class Command(BaseCommand):
         return how_many_errors_have_ocurred == 0
 
     def import_data_from_csv(self, filepath):
-        with codecs.open(utils.normalised_csv_file(filepath), encoding ='utf-8', errors='ignore') as csvfile:
-            reader = csv.DictReader(csvfile)
-            basename = os.path.basename(filepath)
+        reader = csv.DictReader(io.StringIO(utils.normalised_csv_file(filepath)))
+        basename = os.path.basename(filepath)
 
-            rows = 0
-            skipped = 0
-            inserted = 0
-            identical = 0
-            replaced = 0
-            rows_with_errors = 0
+        rows = 0
+        skipped = 0
+        inserted = 0
+        identical = 0
+        replaced = 0
+        rows_with_errors = 0
 
-            for row in reader:
-                print("Processing row from file: ", filepath)
-                print("Row:", row)
-                sample = Sample()
-                sample.expedition_sample_code = row['ace_sample_number']
-                sample.project_sample_number = row['project_sample_number']
-                sample.contents = row['contents']
-                sample.crate_number = row['crate_number']
-                sample.storage_type = row['storage_type']
-                sample.storage_location = row['storage_location']
-                sample.offloading_port = row['offloading_port']
-                sample.destination = row['destination']
-                sample.file = basename
+        for row in reader:
+            print("Processing row from file: ", filepath)
+            print("Row:", row)
+            sample = Sample()
+            sample.expedition_sample_code = row['ace_sample_number']
+            sample.project_sample_number = row['project_sample_number']
+            sample.contents = row['contents']
+            sample.crate_number = row['crate_number']
+            sample.storage_type = row['storage_type']
+            sample.storage_location = row['storage_location']
+            sample.offloading_port = row['offloading_port']
+            sample.destination = row['destination']
+            sample.file = basename
 
-                code_string = sample.expedition_sample_code.split('/')[0]
-                mission_acronym_string = sample.expedition_sample_code.split('/')[1]
-                leg_string = sample.expedition_sample_code.split('/')[2]
-                project_number_string = sample.expedition_sample_code.split('/')[3]
-                julian_day = int(sample.expedition_sample_code.split('/')[4])
-                pi_initials_string = sample.expedition_sample_code.split('/')[6]
-                event_number_string = int(sample.expedition_sample_code.split('/')[5])
-                preservation = row['preservation']
+            code_string = sample.expedition_sample_code.split('/')[0]
+            mission_acronym_string = sample.expedition_sample_code.split('/')[1]
+            leg_string = sample.expedition_sample_code.split('/')[2]
+            project_number_string = sample.expedition_sample_code.split('/')[3]
+            julian_day = int(sample.expedition_sample_code.split('/')[4])
+            pi_initials_string = sample.expedition_sample_code.split('/')[6]
+            event_number_string = int(sample.expedition_sample_code.split('/')[5])
+            preservation = row['preservation']
 
-                while not self.check_foreign_keys(row, code_string, mission_acronym_string, leg_string,
-                                              project_number_string, pi_initials_string, event_number_string,
-                                              preservation) != 0:
-                    print("Please fix the broken foreign keys and press ENTER. This row will be retested")
-                    input()
+            while not self.check_foreign_keys(row, code_string, mission_acronym_string, leg_string,
+                                          project_number_string, pi_initials_string, event_number_string,
+                                          preservation) != 0:
+                print("Please fix the broken foreign keys and press ENTER. This row will be retested")
+                input()
 
-                rows += 1
+            rows += 1
 
-                qs = self.foreign_key_querysets(code_string, mission_acronym_string, leg_string,
-                                                project_number_string, pi_initials_string, event_number_string,
-                                                preservation)
+            qs = self.foreign_key_querysets(code_string, mission_acronym_string, leg_string,
+                                            project_number_string, pi_initials_string, event_number_string,
+                                            preservation)
 
-                event = qs['event'][0]
-                ship = qs['ship'][0]
-                mission = qs['mission'][0]
-                leg = qs['leg'][0]
-                project = qs['project'][0]
-                pi_initials = qs['person'][0]
+            event = qs['event'][0]
+            ship = qs['ship'][0]
+            mission = qs['mission'][0]
+            leg = qs['leg'][0]
+            project = qs['project'][0]
+            pi_initials = qs['person'][0]
 
-                sample.ship = ship
-                sample.mission = mission
-                sample.leg = leg
-                sample.project = project
-                sample.julian_day = julian_day
-                sample.event = event
-                sample.pi_initials = pi_initials
+            sample.ship = ship
+            sample.mission = mission
+            sample.leg = leg
+            sample.project = project
+            sample.julian_day = julian_day
+            sample.event = event
+            sample.pi_initials = pi_initials
 
-                if preservation != '':
-                    sample.preservation = qs['preservation'][0]
+            if preservation != '':
+                sample.preservation = qs['preservation'][0]
 
-                outcome = self.update_database(sample)
-                if outcome == "skipped":
-                    skipped += 1
-                elif outcome == "inserted":
-                    inserted += 1
-                elif outcome == "replaced":
-                    replaced += 1
-                elif outcome == "identical":
-                    identical += 1
-                else:
-                    print("Something else:", outcome)
+            outcome = self.update_database(sample)
+            if outcome == "skipped":
+                skipped += 1
+            elif outcome == "inserted":
+                inserted += 1
+            elif outcome == "replaced":
+                replaced += 1
+            elif outcome == "identical":
+                identical += 1
+            else:
+                print("Something else:", outcome)
 
-            print("TOTAL ROWS PROCESSED= ",rows, "; Inserted = ", inserted, "; Identical = ", identical, "; Skipped = ", skipped, "; Replaced = ", replaced)
+        print("TOTAL ROWS PROCESSED= ",rows, "; Inserted = ", inserted, "; Identical = ", identical, "; Skipped = ", skipped, "; Replaced = ", replaced)
 
-            return rows_with_errors == 0
+        return rows_with_errors == 0
 
     def report_error(self, row, query_set, object_type, lookup_value):
         """ Shows an error printing the line and an error message. """
