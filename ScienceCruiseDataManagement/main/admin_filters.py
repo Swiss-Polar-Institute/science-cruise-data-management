@@ -186,3 +186,19 @@ class OffloadingPortFilter(OptionFilter):
     def lookups(self, request, model_admin):
         return self._prepare_filter_lookups(main.models.Sample, 'offloading_port', query_by_id=False)
 
+
+
+class EventFilter(OptionFilter):
+    title = "Event"
+    parameter_name = "event"
+    template = "admin/options_filter_event.html"
+
+    def queryset(self, request, queryset):
+        if self.value() is not None and self.value() != '':
+            return queryset.filter(event_id=self.value())
+        else:
+            return queryset
+
+    def lookups(self, request, model_admin):
+        return self._prepare_filter_lookups(main.models.Sample, 'event', query_by_id=False)
+
