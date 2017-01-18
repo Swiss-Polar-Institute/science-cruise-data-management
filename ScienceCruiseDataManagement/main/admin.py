@@ -228,7 +228,7 @@ class EventActionAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
 
     #description_2.short_description = "Description"
 
-    list_display = ('event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments', 'created_by')
+    list_display = ('event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
     ordering = ['-event_id', '-id']
     form = EventActionForm
 
@@ -408,7 +408,7 @@ class EventReportAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
 
 
 class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('number', 'sampling_method', 'station', 'data', 'samples', 'outcome', 'created_by')
+    list_display = ('number', 'sampling_method', 'station', 'data', 'samples', 'outcome')
     ordering = ['-number']
 
     # used for the import_export
@@ -431,7 +431,8 @@ class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin
         fields.remove('number')
 
         # It doesn't exist in the database, it's only in the list
-        fields.remove('created_by')
+        if 'created_by' in fields:
+            fields.remove('created_by')
 
 
         return tuple(fields)

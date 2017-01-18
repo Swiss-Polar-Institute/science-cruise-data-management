@@ -63,7 +63,7 @@ class Command(BaseCommand):
             if last_start_time is not None and last_stop_time is not None and (last_stop_time != current_start_time or last_date != current_date):
                 print("Create new event:", current_date, last_start_time, current_stop_time)
                 csv_writer.writerow(['Predator observing', 'True', 'False', start_date_time_formatted, 'Begins', 'started',
-                                    stop_date_time_formatted, 'ends', 'stopped', 'personal_watch', 'minutes', ''])
+                                    stop_date_time_formatted, 'ends', 'stopped', 'personal watch', 'minutes', ''])
 
             last_start_time = start_date_time
             last_stop_time = current_stop_time
