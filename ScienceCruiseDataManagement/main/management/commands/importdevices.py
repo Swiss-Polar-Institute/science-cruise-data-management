@@ -4,6 +4,8 @@ import os
 import csv
 import codecs
 import glob
+from main import utils
+import io
 
 class Command(BaseCommand):
     help = 'Adds data to the ChildDevice table'
@@ -21,7 +23,7 @@ class Command(BaseCommand):
             self.import_data_from_csv(file)
 
     def import_data_from_csv(self, filepath):
-        with codecs.open(filepath, encoding = 'utf-8', errors='ignore') as csvfile:
+        with codecs.open(io.StringIO(utils.normalised_csv_file(filepath)), encoding = 'utf-8', errors='ignore') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 print(row)

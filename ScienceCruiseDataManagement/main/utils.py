@@ -229,3 +229,14 @@ def export_table(model, file_path):
             row.append(met_data_dictionary[field_name])
 
         csv_writer.writerow(row)
+
+def normalised_csv_file(file_path):
+    """Returns the text of the file replacing \t with , removing empty lines, etc.
+       to be processed by the csv module.
+    """
+    file_contents = open(file_path).readall()
+
+    file_contents = file_contents.replace("\t", ",")
+    file_contents = file_contents.replace("\n\n", "\n")
+
+    return file_contents

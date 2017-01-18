@@ -6,6 +6,7 @@ import codecs
 import os
 import datetime
 from main import utils
+import io
 
 
 class Command(BaseCommand):
@@ -83,7 +84,7 @@ class Command(BaseCommand):
         return how_many_errors_have_ocurred == 0
 
     def import_data_from_csv(self, filepath):
-        with codecs.open(filepath, encoding = 'utf-8', errors='ignore') as csvfile:
+        with codecs.open(utils.normalised_csv_file(file_contents), encoding ='utf-8', errors='ignore') as csvfile:
             reader = csv.DictReader(csvfile)
             basename = os.path.basename(filepath)
 
