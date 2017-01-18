@@ -7,7 +7,9 @@ from django.forms import ModelForm
 import main.lookups
 import main.models
 import main.utils
-from main.admin_filters import OutcomeReportFilter, StationReportFilter, SamplingMethodFilter
+from main.admin_filters import OutcomeReportFilter, StationReportFilter,\
+    SamplingMethodFilter, ProjectFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter,\
+    OffloadingPortFilter
 
 
 class ProjectsStartsWithLetter(admin.SimpleListFilter):
@@ -534,6 +536,7 @@ class SampleAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixi
     fields = list_display
     ordering = ['expedition_sample_code']
     readonly_fields = ('expedition_sample_code', )
+    list_filter = (ProjectFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter, OffloadingPortFilter)
     form = SampleForm
 
 

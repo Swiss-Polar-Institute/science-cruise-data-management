@@ -1,7 +1,7 @@
 import django.utils
 from django.contrib import admin
 from django.utils.encoding import force_text
-
+from django.forms.models import model_to_dict
 import main.models
 
 
@@ -35,6 +35,24 @@ class OptionFilter(admin.SimpleListFilter):
                 'id': lookup,
                 'display': title,
             }
+
+    def _prepare_filter_lookups(self, model, field, query_by_id=True):
+        objects = model.objects.all().order_by(field)
+
+        filter_lookup = []
+        filter_values = []
+        for object in objects:
+            dict_of_model = model_to_dict(object)
+            if dict_of_model[field] not in filter_values:
+                if query_by_id:
+                    id=dict_of_model['id']
+                else:
+                    id=dict_of_model[field]
+
+                filter_lookup.append((id, dict_of_model[field]))
+                filter_values.append(dict_of_model[field])
+
+        return tuple(filter_lookup)
 
 
 class OutcomeReportFilter(OptionFilter):
@@ -73,7 +91,7 @@ class StationReportFilter(OptionFilter):
         return tuple(filter_lookup)
 
 
-class SamplingMethodFilter(OutcomeReportFilter):
+class SamplingMethodFilter(OptionFilter):
     title = "Sampling method"
     parameter_name = "sampling_method"
     template = "admin/options_filter_samplingmethod.html"
@@ -92,3 +110,79 @@ class SamplingMethodFilter(OutcomeReportFilter):
             filter_lookup.append((sampling_method.id, sampling_method.name))
 
         return tuple(filter_lookup)
+
+
+class ProjectFilter(OptionFilter):
+    title = "Project"
+    parameter_name = "project"
+    template = "admin/options_filter_project.html"
+
+    def queryset(self, request, queryset):
+        if self.value() is not None and self.value() != '':
+            return queryset.filter(project__id=self.value())
+        else:
+            return queryset
+
+    def lookups(self, request, model_admin):
+        return self._prepare_filter_lookups(main.models.Project, 'title', query_by_id=True)
+
+
+class SampleContentsFilter(OptionFilter):
+    title = "Contents"
+    parameter_name = "sample_contents"
+    template = "admin/options_filter_sample_contents.html"
+
+    def queryset(self, request, queryset):
+        if self.value() is not None and self.value() != '':
+            return queryset.filter(contents=self.value())
+        else:
+            return queryset
+
+    def lookups(self, request, model_admin):
+        return self._prepare_filter_lookups(main.models.Sample, 'contents', query_by_id=False)
+
+
+class TypeOfStorageFilter(OptionFilter):
+    title = "Type of Storage"
+    parameter_name = "type_of_storage"
+    template = "admin/options_filter_type_of_storage.html"
+
+    def queryset(self, request, queryset):
+        if self.value() is not None and self.value() != '':
+            return queryset.filter(storage_type=self.value())
+        else:
+            return queryset
+
+    def lookups(self, request, model_admin):
+        return self._prepare_filter_lookups(main.models.Sample, 'storage_type', query_by_id=False)
+
+
+class StorageLocationFilter(OptionFilter):
+    title = "Storage location"
+    parameter_name = "storage_location"
+    template = "admin/options_filter_storage_location.html"
+
+    def queryset(self, request, queryset):
+        if self.value() is not None and self.value() != '':
+            return queryset.filter(storage_location=self.value())
+        else:
+            return queryset
+
+    def lookups(self, request, model_admin):
+        return self._prepare_filter_lookups(main.models.Sample, 'storage_location', query_by_id=False)
+
+
+class OffloadingPortFilter(OptionFilter):
+    title = "Offloading port"
+    parameter_name = "offloading_port"
+    template = "admin/options_filter_offloading_port.html"
+
+    def queryset(self, request, queryset):
+        if self.value() is not None and self.value() != '':
+            return queryset.filter(offloading_port=self.value())
+        else:
+            return queryset
+
+    def lookups(self, request, model_admin):
+        return self._prepare_filter_lookups(main.models.Sample, 'offloading_port', query_by_id=False)
+
