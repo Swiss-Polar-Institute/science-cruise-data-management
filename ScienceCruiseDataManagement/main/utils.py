@@ -237,6 +237,11 @@ def normalised_csv_file(file_path):
     file_contents = open(file_path).read()
 
     file_contents = file_contents.replace("\t", ",")
-    file_contents = file_contents.replace("\n\n", "\n")
+
+    previous = ""
+
+    while previous != file_contents:
+        previous = file_contents
+        file_contents = file_contents.replace("\n\n", "\n")
 
     return file_contents
