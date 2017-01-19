@@ -550,6 +550,7 @@ class ImportedFileAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'project_list', 'organisation_list', 'principal_investigator','leg_list')
     ordering = ['name_last']
+    search_fields = ('name_first', 'name_middle', 'name_last')
 
     def project_list(self, obj):
         projects = obj.project.all()
