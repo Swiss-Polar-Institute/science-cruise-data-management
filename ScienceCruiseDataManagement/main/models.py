@@ -300,6 +300,16 @@ class Person(models.Model):
         unique_together = (('name_first', 'name_last'),)
 
 
+class Email(models.Model):
+    person = models.ForeignKey(Person)
+    email_address = models.CharField(max_length=255)
+    webmail_password = models.CharField(max_length=6)
+    server_password = models.CharField(max_length=20)
+
+    def __str__(self):
+        return "{}".format(self.person)
+
+
 class Mission(models.Model):
     name = models.CharField(max_length=255, unique=True)
     acronym = models.CharField(max_length=255)

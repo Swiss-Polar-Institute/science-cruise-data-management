@@ -568,6 +568,11 @@ class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
         return ",".join([str(leg.number) for leg in legs])
 
 
+class EmailAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('person', 'email_address', 'webmail_password', 'server_password')
+    ordering = ['person']
+
+
 class OrganisationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'address', 'country')
     ordering = ['name']
@@ -657,6 +662,7 @@ admin.site.register(main.models.SpeciesClassification, SpeciesClassificationAdmi
 admin.site.register(main.models.Sample, SampleAdmin)
 admin.site.register(main.models.ImportedFile, ImportedFileAdmin)
 admin.site.register(main.models.Person, PersonAdmin)
+admin.site.register(main.models.Email, EmailAdmin)
 admin.site.register(main.models.Organisation, OrganisationAdmin)
 admin.site.register(main.models.Data, DataAdmin)
 admin.site.register(main.models.FilesStorage, FilesStorageAdmin)

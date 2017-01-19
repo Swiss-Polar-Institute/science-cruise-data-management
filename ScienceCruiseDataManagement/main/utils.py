@@ -1,4 +1,5 @@
 import datetime
+import unicodedata
 
 from django.conf import settings
 import main.models
@@ -208,6 +209,7 @@ def add_imported(filepath, object_type):
     move_imported_file(dirname, basename)
     print(basename, " moved from ", dirname)
 
+
 def export_table(model, file_path):
     file = open(file_path, "w")
 
@@ -247,5 +249,10 @@ def normalised_csv_file(file_path):
         previous = file_contents
         file_contents = file_contents.replace("\n\n", "\n")
 
-
     return file_contents
+
+def remove_accents(input_str):
+    nfkd_form = unicodedata.normalize('NFKD', input_str)
+    only_ascii = nfkd_form.encode('ASCII', 'ignore')
+    return only_ascii
+
