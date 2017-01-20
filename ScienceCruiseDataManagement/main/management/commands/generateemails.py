@@ -96,10 +96,10 @@ class Command(BaseCommand):
 
         for email in Email.objects.all().order_by("email_address"):
             print("poll 46.226.111.64")
-            print("proto imap")
-            print("user {}".format(self.username(email.person)))
-            print("pass \"{}\"".format(email.server_password))
-            print("ssl")
-            print("sslfingerprint \"DA:3A:8A:41:09:33:DF:0D:83:85:61:AE:CF:E4:B6:DA\"")
-            print("to {}".format(email))
+            print("  proto imap")
+            print("  user {}".format(self.username(email.person)))
+            print("  pass \"{}\"".format(email.server_password))
+            print("  ssl")
+            print("  sslfingerprint \"DA:3A:8A:41:09:33:DF:0D:83:85:61:AE:CF:E4:B6:DA\"")
+            print("  to {}".format(email))
             print()
