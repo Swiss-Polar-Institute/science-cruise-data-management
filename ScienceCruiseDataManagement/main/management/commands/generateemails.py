@@ -101,5 +101,5 @@ class Command(BaseCommand):
             print("  pass \"{}\"".format(email.server_password))
             print("  ssl")
             print("  sslfingerprint \"DA:3A:8A:41:09:33:DF:0D:83:85:61:AE:CF:E4:B6:DA\"")
-            print("  to {}".self.username(email.person))
+            print("  to {}".format(self.username(email.person)))
             print()
