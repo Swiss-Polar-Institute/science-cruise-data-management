@@ -76,7 +76,7 @@ class Command(BaseCommand):
 
     def generate_users_server(self):
         for email in Email.objects.all().order_by("email_address"):
-            print("useradd --create-home {}".format(email.email_address))
+            print("useradd --create-home {}".format(self.username(email.person)))
             print("echo {}:{} | chpasswd".format(email.email_address, email.server_password))
 
     def generate_webmail_users(self):
