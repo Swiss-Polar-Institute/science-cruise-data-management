@@ -571,6 +571,7 @@ class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 class EmailAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('person', 'email_address', 'webmail_password', 'server_password')
     ordering = ['person']
+    search_fields = ('email_address', )
 
 
 class OrganisationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):

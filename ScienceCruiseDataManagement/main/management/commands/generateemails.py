@@ -19,6 +19,8 @@ class Command(BaseCommand):
             self.generate_users_server()
         elif options['command'] == "printpasswords":
             self.print_passwords()
+        elif options['command'] == "generatewebmailusers":
+            self.generate_webmail_users()
 
     def print_passwords(self):
         for email in Email.objects.all().order_by("email_address"):
@@ -82,7 +84,9 @@ class Command(BaseCommand):
     def generate_webmail_users(self):
         for email in Email.objects.all().order_by("email_address"):
             print("useradd --shell /bin/false --create-home {}".format(self.username(email.person)))
+            print("echo {}:{} | chpasswd".format(self.username(email.person), email.webmail_password))
             print("echo {} | saslpasswd2 -u ace-expedition.net {}".format(email.server_password, self.username(email.person)))
+            print("##############")
 
     def generate_fetchmailrc(self):
         print("defaults")
