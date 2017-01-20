@@ -15,8 +15,8 @@ class Command(BaseCommand):
             self.generate_emails()
         elif options['command'] == "generatefetchmailrc":
             self.generate_fetchmailrc()
-        elif options['command'] == "generateusers":
-            self.generate_users()
+        elif options['command'] == "generateusersserver":
+            self.generate_users_server()
         elif options['command'] == "printpasswords":
             self.print_passwords()
 
@@ -42,9 +42,15 @@ class Command(BaseCommand):
         surname = remove_accents(person.name_last.replace(" ", "")).decode("ascii")
 
         # email = str(firstname) + '.' + str(surname) + '@ace-expedition.net'
-        email = "{}.{}@ace-expedition.net".format(firstname.lower(), surname.lower())
+        email = "{}@ace-expedition.net".format(self.username(person))
 
         return email
+
+    def username(self, person):
+        firstname = remove_accents(person.name_first.replace(" ", "")).decode("ascii")
+        surname = remove_accents(person.name_last.replace(" ", "")).decode("ascii")
+
+        return "{}.{}".format(firstname.lower(), surname.lower())
 
     def generate_password(self, length):
         with subprocess.Popen(["pwgen", str(length)], stdout=subprocess.PIPE) as proc:
@@ -68,3 +74,28 @@ class Command(BaseCommand):
 
             email.save()
 
+    def generate_users_server(self):
+        for email in Email.objects.all().order_by("email_address"):
+            print("useradd --create-home {}".format(email.email_address))
+            print("echo {}:{} | chpasswd".format(email.email_address, email.server_password))
+
+    def generate_webmail_users(self):
+        for email in Email.objects.all().order_by("email_address"):
+            print("useradd --shell /bin/false --create-home {}".format(self.username(email.person)))
+            print("echo {} | saslpasswd2 -u ace-expedition.net {}".format(email.server_password, self.username(email.person)))
+
+    def generate_fetchmailrc(self):
+        print("defaults")
+        print("fetchall")
+        print("flush")
+        print("pass8bits")
+
+        for email in Email.objects.all().order_by("email_address"):
+            print("poll 46.226.111.64")
+            print("proto imap")
+            print("user {}".format(self.username(email.person)))
+            print("pass \"{}\"".format(email.server_password))
+            print("ssl")
+            print("sslfingerprint \"DA:3A:8A:41:09:33:DF:0D:83:85:61:AE:CF:E4:B6:DA\"")
+            print("to {}".format(email))
+            print()
