@@ -85,7 +85,7 @@ class Command(BaseCommand):
         for email in Email.objects.all().order_by("email_address"):
             print("useradd --shell /bin/false --create-home {}".format(self.username(email.person)))
             print("echo {}:{} | chpasswd".format(self.username(email.person), email.webmail_password))
-            print("echo {} | saslpasswd2 -u ace-expedition.net {}".format(email.server_password, self.username(email.person)))
+            print("echo {} | saslpasswd2 -u ace-expedition.net {}".format(email.webmail_password, self.username(email.person)))
             print("##############")
 
     def generate_fetchmailrc(self):
