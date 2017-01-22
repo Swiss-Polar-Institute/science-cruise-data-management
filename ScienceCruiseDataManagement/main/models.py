@@ -528,10 +528,10 @@ class EventAction(models.Model):
     time_source = models.ForeignKey(TimeSource)
     time_uncertainty = models.ForeignKey(TimeUncertainty)
 
-    latitude = models.FloatField(null=True, blank=True)
-    longitude = models.FloatField(null=True, blank=True)
-    position_source = models.ForeignKey(PositionSource, null=True, blank=True)
-    position_uncertainty = models.ForeignKey(PositionUncertainty, null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True, help_text="Only enter position for terrestrial work. Events at sea will automatically get their position from the ship's GPS.")
+    longitude = models.FloatField(null=True, blank=True, help_text="Only enter position for terrestrial work. Events at sea will automatically get their position from the ship's GPS.")
+    position_source = models.ForeignKey(PositionSource, null=True, blank=True, help_text="Only enter position for terrestrial work. Events at sea will automatically get their position from the ship's GPS.")
+    position_uncertainty = models.ForeignKey(PositionUncertainty, null=True, blank=True, help_text="Only enter position for terrestrial work. Events at sea will automatically get their position from the ship's GPS.")
 
     water_depth = models.FloatField(null=True, blank=True)
     general_comments = models.TextField(null=True, blank=True)
