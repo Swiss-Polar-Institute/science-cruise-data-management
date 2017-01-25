@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from main.models import Person, Email
 from main.utils import remove_accents
+from main.models import Leg
 import subprocess
 
 
@@ -21,6 +22,8 @@ class Command(BaseCommand):
             self.print_passwords()
         elif options['command'] == "generatewebmailusers":
             self.generate_webmail_users()
+        elif options['command'] == "invalidateusersotherlegs":
+            self.invalidate_users_from_other_legs()
 
     def print_passwords(self):
         for email in Email.objects.all().order_by("email_address"):
@@ -93,8 +96,14 @@ class Command(BaseCommand):
         print("fetchall")
         print("flush")
         print("pass8bits")
+        print()
 
-        for email in Email.objects.all().order_by("email_address"):
+        active_leg = Leg.current_active_leg()
+
+        for email in Email.objects.filter(person__leg=active_leg).order_by("email_address"):
+            # person = email.person
+            #
+            # print(person.leg)
             print("poll 46.226.111.64")
             print("  proto imap")
             print("  user {}".format(self.username(email.person)))
@@ -102,4 +111,14 @@ class Command(BaseCommand):
             print("  ssl")
             print("  sslfingerprint \"DA:3A:8A:41:09:33:DF:0D:83:85:61:AE:CF:E4:B6:DA\"")
             print("  to {}".format(self.username(email.person)))
-            print()
+            print("")
+
+    def invalidate_users_from_other_legs(self):
+        active_leg = Leg.current_active_leg()
+        print("# the active leg is: ", active_leg)
+        for email in Email.objects.order_by("email_address"):
+            legs = email.person.leg.all()
+            if active_leg in legs:
+                print("# the user {} is in the active leg".format(email.email_address))
+            else:
+                print("echo {}:{}DISABLED | chpasswd".format(self.username(email.person), email.webmail_password))
