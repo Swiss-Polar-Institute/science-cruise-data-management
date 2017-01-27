@@ -361,8 +361,10 @@ class Station(models.Model):
         return "{}".format(self.name)
 
 class ProposedStation(models.Model):
+    type_choices = (("Marine", "Marine"), ("Terrestrial", "Terrestrial"))
+
     name = models.CharField(null=True, blank=True, max_length=100)
-    type = models.CharField(max_length=20)
+    type = models.CharField(choices=type_choices, max_length=20)
     latitude = models.FloatField()
     longitude= models.FloatField()
     comment = models.CharField(max_length=300)
