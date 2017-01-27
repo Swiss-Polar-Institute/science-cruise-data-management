@@ -360,6 +360,15 @@ class Station(models.Model):
     def __str__(self):
         return "{}".format(self.name)
 
+class ProposedStation(models.Model):
+    name = models.CharField(null=True, blank=True, max_length=100)
+    type = models.CharField(max_length=20)
+    latitude = models.FloatField()
+    longitude= models.FloatField()
+    comment = models.CharField(max_length=300)
+
+    def __str__(self):
+        return "{} - {}".format(self.name, self.comment)
 
 def default_ship_id():
     platform = Platform.objects.get(name=settings.DEFAULT_PLATFORM_NAME)

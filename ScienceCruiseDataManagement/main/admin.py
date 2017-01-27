@@ -260,6 +260,11 @@ class StationAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMix
     ordering = ['-name']
 
 
+class ProposedStationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('name', 'type', 'latitude', 'longitude','comment')
+    ordering = ['name']
+
+
 # This is for the import_export
 class EventResource(import_export.resources.ModelResource):
     number = import_export.fields.Field(column_name = 'number', attribute='number')
@@ -646,6 +651,7 @@ admin.site.register(main.models.Event, EventAdmin)
 admin.site.register(main.models.EventActionDescription, EventActionDescriptionAdmin)
 admin.site.register(main.models.EventAction, EventActionAdmin)
 admin.site.register(main.models.Station, StationAdmin)
+admin.site.register(main.models.ProposedStation, ProposedStationAdmin)
 admin.site.register(main.models.Leg, LegAdmin)
 admin.site.register(main.models.EventReport, EventReportAdmin)
 admin.site.register(main.models.Country, CountryAdmin)
