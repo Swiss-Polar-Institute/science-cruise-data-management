@@ -15,7 +15,7 @@ import main.import_gpx_to_stations
 import main.models
 from main import import_gpx_to_stations
 from main.forms import InputShipDateTime
-from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station, Message, SamplingMethod
+from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station, Message, SamplingMethod, ProposedStation
 from main import utils
 from ship_data.models import GpggaGpsFix, GpvtgVelocity
 import main.find_locations as find_locations
@@ -138,6 +138,17 @@ class PositionsJson(View):
                 geojson.Feature(geometry=point, properties={'id': 'Port.{}'.format(port.id),
                                                             'text': port.name,
                                                             'marker_color': 'yellow'}))
+
+        for proposedstation in ProposedStation.objects.all():
+            if proposedstation.longitude is None or proposedstation.latitude is None:
+                continue
+
+            point = geojson.Point((proposedstation.longitude, proposedstation.latitude))
+            features.append(
+                geojson.Feature(geometry=point, properties={'id': 'Planned station',
+                                                            'text': "{}<br>{}<br>({:.2f}, {:.2f})".format(proposedstation.name, proposedstation.comment, proposedstation.latitude, proposedstation.longitude),
+                                                            'marker_color': 'red'}))
+
 
         for station in Station.objects.all():
             if station.longitude is None or station.latitude is None:
