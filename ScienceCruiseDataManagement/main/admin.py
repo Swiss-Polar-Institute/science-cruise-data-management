@@ -270,7 +270,7 @@ class EventResource(import_export.resources.ModelResource):
     number = import_export.fields.Field(column_name = 'number', attribute='number')
 
     sampling_method = import_export.fields.Field(
-        column_name='smapling_method',
+        column_name='sampling_method',
         attribute='sampling_method',
         widget=import_export.widgets.ForeignKeyWidget(main.models.SamplingMethod, 'name'))
 
@@ -285,7 +285,7 @@ class EventResource(import_export.resources.ModelResource):
     outcome = import_export.fields.Field(column_name = 'outcome', attribute='outcome')
 
     class Meta:
-        fields = ('number', 'smpling_method', 'station', 'data', 'samples', )
+        fields = ('number', 'sampling_method', 'station', 'data', 'samples', )
         export_order = fields
 
 
@@ -573,11 +573,34 @@ class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
         return ",".join([str(leg.number) for leg in legs])
 
 
+# This is for the import_export
+class EmailResource(import_export.resources.ModelResource):
+    person_name_first = import_export.fields.Field(
+        column_name='person_name_first',
+        attribute='person',
+        widget=import_export.widgets.ForeignKeyWidget(main.models.Person, 'name_first'))
+
+    person_name_last = import_export.fields.Field(
+        column_name='person_name_last',
+        attribute='person',
+        widget=import_export.widgets.ForeignKeyWidget(main.models.Station, 'name_last')
+    )
+
+    email_address = import_export.fields.Field(column_name='email_address', attribute='email_address')
+    webmail_password = import_export.fields.Field(column_name='webmail_password', attribute='webmail_password')
+    server_password = import_export.fields.Field(column_name='server_password', attribute='server_password')
+
+    class Meta:
+        fields = ('person_name_first', 'person_name_last', 'email_address', 'webmail_password', 'server_password', )
+        export_order = fields
+
+
 class EmailAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('person_name_first', 'person_name_last', 'email_address', 'webmail_password', 'server_password')
     ordering = ['email_address']
     search_fields = ('email_address', )
     list_filter = (EmailLegFilter, )
+    resource_class = EmailResource
 
     def person_name_first(self, obj):
         return obj.person.name_first
