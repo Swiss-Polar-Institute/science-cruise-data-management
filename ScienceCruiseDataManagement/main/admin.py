@@ -10,7 +10,7 @@ import main.utils
 from main.admin_filters import OutcomeReportFilter, StationReportFilter,\
     SamplingMethodFilter, ProjectFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter,\
     OffloadingPortFilter, EventFilter, EmailLegFilter
-
+import main.utils_event
 
 class ProjectsStartsWithLetter(admin.SimpleListFilter):
     title = "Projects starts with A"
@@ -150,7 +150,8 @@ class EventActionForm(ModelForm):
 
         if self._adding_new_event_action():
             # This is to only show the open events when adding a new EventAction
-            filter_open_events = self._filter_open_events()
+            # filter_open_events = self._filter_open_events()
+            filter_open_events = main.utils_event.filter_open_events()
             filter_success_failure = self._filter_event_success_or_failure()
             self.fields['event'].queryset = main.models.Event.objects.filter(filter_open_events).filter(filter_success_failure).order_by('-number')
 
@@ -161,61 +162,6 @@ class EventActionForm(ModelForm):
         # ones that the user should select.
         #return len(self.fields) == 0
         return not self.instance.id
-
-    def _filter_event_success_or_failure(self):
-        filter_query = Q(outcome='Success') | Q(outcome='Failure')
-
-        return filter_query
-
-    def _filter_open_events(self):
-        filter_query = Q(number=0) # Impossible with OR will be the rest
-
-        for open_event_id in self._open_event_numbers():
-                filter_query = filter_query | Q(number=open_event_id)
-
-        return filter_query
-
-    def _action_finished(self, event_action_id, event_number):
-        event_actions_instant = main.models.EventAction.objects.filter(
-                                Q(id=event_action_id) & Q(type="TINSTANT"))
-
-        if len(event_actions_instant) > 0:
-            return True
-
-        event_actions = main.models.EventAction.objects.filter(Q(event=event_number) & Q(type="TENDS"))
-
-        if len(event_actions) > 0:
-            # There is an TENDS event so it's finished
-            return True
-
-        return False
-
-    def _event_not_opened(self, event_id):
-        other_events = main.models.EventAction.objects.filter(Q(event_id=event_id))
-
-        if len(other_events) == 0:
-            return True
-        else:
-            return False
-
-    def _open_event_numbers(self):
-        """ Returns the event IDs that have been started and not finished. """
-        started_not_finished = []
-        event_actions = main.models.EventAction.objects.all()
-        events = main.models.Event.objects.all()
-        open_event_numbers = []
-
-        # Adds events with TBEGNS and not finished
-        for event_action in event_actions:
-            if event_action.type == main.models.EventAction.tbegin():
-                if not self._action_finished(event_action.id, event_action.event.number):
-                    open_event_numbers.append(event_action.event.number)
-
-        for event in events:
-            if self._event_not_opened(event.number):
-                open_event_numbers.append(event.number)
-
-        return open_event_numbers
 
     class Meta:
         model = main.models.EventAction

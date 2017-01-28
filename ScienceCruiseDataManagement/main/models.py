@@ -474,10 +474,15 @@ class Event(models.Model):
     class Meta:
         permissions = cannot_change_events
 
+
 class EventReport(Event):
     class Meta:
         proxy = True
         verbose_name_plural="Event report"
+
+
+class OpenEvents(models.Model):
+    event_id = models.IntegerField(unique=True)
 
 
 class EventActionDescription(models.Model):
