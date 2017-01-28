@@ -70,6 +70,27 @@ class OutcomeReportFilter(OptionFilter):
             return queryset
 
 
+class EmailLegFilter(OptionFilter):
+    title = "Leg"
+    parameter_name = "leg"
+    template = "admin/options_mail_leg.html"
+
+    def queryset(self, request, queryset):
+        if self.value() is not None:
+            return queryset.filter(person__leg__id=self.value())
+        else:
+            return queryset
+
+    def lookups(self, request, model_admin):
+        legs = main.models.Leg.objects.all().order_by('number')
+
+        filter_lookup = []
+        for leg in legs:
+            filter_lookup.append((leg.id, leg.number))
+
+        return tuple(filter_lookup)
+
+
 class StationReportFilter(OptionFilter):
     title = "Station"
     parameter_name = "station"

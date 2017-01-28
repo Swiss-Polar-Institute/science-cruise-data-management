@@ -9,7 +9,7 @@ import main.models
 import main.utils
 from main.admin_filters import OutcomeReportFilter, StationReportFilter,\
     SamplingMethodFilter, ProjectFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter,\
-    OffloadingPortFilter, EventFilter
+    OffloadingPortFilter, EventFilter, EmailLegFilter
 
 
 class ProjectsStartsWithLetter(admin.SimpleListFilter):
@@ -577,6 +577,7 @@ class EmailAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('person', 'email_address', 'webmail_password', 'server_password')
     ordering = ['person']
     search_fields = ('email_address', )
+    list_filter = (EmailLegFilter, )
 
 
 class OrganisationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
