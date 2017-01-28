@@ -574,10 +574,16 @@ class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class EmailAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('person', 'email_address', 'webmail_password', 'server_password')
-    ordering = ['person']
+    list_display = ('person_name_first', 'person_name_last', 'email_address', 'webmail_password', 'server_password')
+    ordering = ['person_name_first']
     search_fields = ('email_address', )
     list_filter = (EmailLegFilter, )
+
+    def person_name_first(self, obj):
+        return obj.person.name_first
+
+    def person_name_last(self, obj):
+        return obj.person.name_last
 
 
 class OrganisationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
