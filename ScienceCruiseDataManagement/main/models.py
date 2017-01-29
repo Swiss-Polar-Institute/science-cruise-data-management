@@ -471,6 +471,11 @@ class Event(models.Model):
     def __str__(self):
         return "{}".format(self.number)
 
+    def save(self, *args, **kwargs):
+        super(Event, self).save(*args, **kwargs)
+        open_event = OpenEvent(event_id=self.id)
+        open_event.save()
+
     class Meta:
         permissions = cannot_change_events
 
@@ -481,8 +486,8 @@ class EventReport(Event):
         verbose_name_plural="Event report"
 
 
-class OpenEvents(models.Model):
-    event_id = models.IntegerField(unique=True)
+class OpenEvent(models.Model):
+    number = models.IntegerField(unique=True, help_text="Event number that is opened")
 
 
 class EventActionDescription(models.Model):
@@ -599,6 +604,14 @@ class EventAction(models.Model):
                 raise ValidationError({
                     'time':"Time in the ends EventAction (this one) can't be earlier than the already entered begin's EventAction"
                 })
+
+    def save(self, *args, **kwargs):
+        super(EventAction, self).save(*args, **kwargs)
+
+        if self.type == EventAction.tends() or self.type == EventAction.tinstant():
+            open_event = OpenEvent.objects.get(event_id=self.id)
+            open_event.delete()
+
 
     def __str__(self):
         return "{}".format(self.event.number)

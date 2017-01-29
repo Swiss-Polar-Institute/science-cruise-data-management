@@ -151,8 +151,8 @@ class EventActionForm(ModelForm):
         if self._adding_new_event_action():
             # This is to only show the open events when adding a new EventAction
             # filter_open_events = self._filter_open_events()
-            filter_open_events = main.utils_event.filter_open_events()
-            filter_success_failure = self._filter_event_success_or_failure()
+            filter_open_events = self._filter_open_events()
+            filter_success_failure = self._filter_events_success_or_failure()
             self.fields['event'].queryset = main.models.Event.objects.filter(filter_open_events).filter(filter_success_failure).order_by('-number')
 
     def _adding_new_event_action(self):
@@ -162,6 +162,21 @@ class EventActionForm(ModelForm):
         # ones that the user should select.
         #return len(self.fields) == 0
         return not self.instance.id
+
+
+    def _filter_open_events(self):
+        filter_query = Q(number=0)  # Impossible with OR will be the rest
+
+        for open_event in main.models.OpenEvent.objects.all():
+            filter_query = filter_query | Q(number=open_event.number)
+
+        return filter_query
+
+
+    def _filter_events_success_or_failure(self):
+        filter_query = Q(outcome='Success') | Q(outcome='Failure')
+
+        return filter_query
 
     class Meta:
         model = main.models.EventAction

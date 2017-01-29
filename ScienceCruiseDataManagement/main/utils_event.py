@@ -44,19 +44,5 @@ def open_event_numbers():
         if event_not_opened(event.number):
             open_event_numbers_list.append(event.number)
 
-    return open_event_numbers_list
-
-
-def filter_open_events():
-    filter_query = Q(number=0)  # Impossible with OR will be the rest
-
-    for open_event_id in open_event_numbers():
-        filter_query = filter_query | Q(number=open_event_id)
-
-    return filter_query
-
-
-def filter_event_success_or_failure():
-    filter_query = Q(outcome='Success') | Q(outcome='Failure')
-
-    return filter_query
+    open_events_numbers_set = set(open_event_numbers_list)
+    return list(open_events_numbers_set)
