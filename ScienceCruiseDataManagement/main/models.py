@@ -473,7 +473,7 @@ class Event(models.Model):
 
     def save(self, *args, **kwargs):
         super(Event, self).save(*args, **kwargs)
-        open_event = OpenEvent(event_id=self.id)
+        open_event = OpenEvent(number=self.number)
         open_event.save()
 
     class Meta:
@@ -487,7 +487,7 @@ class EventReport(Event):
 
 
 class OpenEvent(models.Model):
-    number = models.IntegerField(unique=True, help_text="Event number that is opened")
+    number = models.IntegerField(unique=True, help_text="Event number that is opened", primary_key=True)
 
 
 class EventActionDescription(models.Model):
@@ -609,7 +609,7 @@ class EventAction(models.Model):
         super(EventAction, self).save(*args, **kwargs)
 
         if self.type == EventAction.tends() or self.type == EventAction.tinstant():
-            open_event = OpenEvent.objects.get(event_id=self.id)
+            open_event = OpenEvent.objects.get(number=self.event_id)
             open_event.delete()
 
 

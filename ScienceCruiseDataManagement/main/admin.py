@@ -163,7 +163,6 @@ class EventActionForm(ModelForm):
         #return len(self.fields) == 0
         return not self.instance.id
 
-
     def _filter_open_events(self):
         filter_query = Q(number=0)  # Impossible with OR will be the rest
 
