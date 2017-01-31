@@ -110,10 +110,12 @@ Subject: {Subject}
             # There are no messages to be notified
             return
 
-        message_body = """There are some oversized emails in your mailbox (see the bottom of this email).
+        message_body = """Hello,
+
+There are some oversized emails in your mailbox (see the bottom of this email).
 
 You will not receive the oversized email and the attachment will not be downloaded.
-We recommend you contact the sender and ask for a smaller version (<100 KB).
+We recommend you contact the sender and ask for a smaller version (<200 KB).
 
 If it's really crucial to download the attachment, let us know (data@ace-expedition.net)
 and we will try to download it to a shared folder (this will not be private unless you
@@ -130,9 +132,9 @@ Data team
             send_mail(
                  'Oversized email',
                  message_body,
-                 'data@ace-expedition.net',
+                 'Data team <data@ace-expedition.net>',
                  [email_to_notify],
-                fail_silently=False,
+                 fail_silently=False,
             )
 
     def _process_mailbox(self, imap, login):
