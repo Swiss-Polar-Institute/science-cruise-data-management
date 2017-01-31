@@ -568,6 +568,11 @@ class EmailAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     def person_name_last(self, obj):
         return obj.person.name_last
 
+class EmailOversizeNotifiedAdmin(admin.ModelAdmin):
+    list_display = ('from_email', 'to_email_address', 'date_string', 'size', 'subject', 'imap_uuid')
+
+    def to_email_address(self, obj):
+        return obj.to_email.email_address
 
 class OrganisationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'address', 'country')
@@ -669,6 +674,7 @@ admin.site.register(main.models.Platform, PlatformAdmin)
 admin.site.register(main.models.PlatformType, PlatformTypeAdmin)
 admin.site.register(main.models.Message, MessageAdmin)
 admin.site.register(main.models.TimeChange, TimeChangeAdmin)
+admin.site.register(main.models.EmailOversizeNotified, EmailOversizeNotifiedAdmin)
 
 ADMIN_SITE_TITLE = 'Ace Data Admin'
 ADMIN_SITE_HEADER = 'ACE Data Administration'

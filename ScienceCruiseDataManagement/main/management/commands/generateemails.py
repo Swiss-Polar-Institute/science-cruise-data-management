@@ -3,6 +3,7 @@ from main.models import Person, Email
 from main.utils import remove_accents
 from main.models import Leg
 import subprocess
+from django.conf import settings
 
 
 class Command(BaseCommand):
@@ -96,6 +97,7 @@ class Command(BaseCommand):
         print("fetchall")
         print("flush")
         print("pass8bits")
+        print("limit {}".format(settings.MAXIMUM_EMAIL_SIZE))
         print()
 
         active_leg = Leg.current_active_leg()
