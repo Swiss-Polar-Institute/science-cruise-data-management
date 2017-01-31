@@ -110,15 +110,15 @@ Subject: {Subject}
             # There are no messages to be notified
             return
 
-        message_body = """There are some oversized emails in your mailbox.
-    For more information about this email, see the bottom of this email).
+        message_body = """There are some oversized emails in your mailbox (see the bottom of this email).
 
 You will not receive the oversized email and the attachment will not be downloaded.
 We recommend you contact the sender and ask for a smaller version (<100 KB).
 
-If it's really crucial to download these attachments, let us know (data@ace-expedition.net)
-and we will try to download them then pass them to you in a shared folder
-(note this will not be private unless you ask us to do otherwise).
+If it's really crucial to download the attachment, let us know (data@ace-expedition.net)
+and we will try to download it to a shared folder (this will not be private unless you
+ask us to do otherwise). When it has downloaded, you will receive an email telling you
+where you can find it.
 
 {}
 
