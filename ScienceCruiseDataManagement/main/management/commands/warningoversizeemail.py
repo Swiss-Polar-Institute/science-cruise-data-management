@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
+import socket
 import imaplib
 import sys
 import email
@@ -186,6 +187,7 @@ Data team
         username = email_address.split("@")[0]
         password = self._get_imap_password(email_address)
 
+        socket.setdefaulttimeout(30)
         self._imap = imaplib.IMAP4(settings.IMAP_SERVER)
 
         try:
@@ -219,4 +221,6 @@ Data team
                     break
                 except ConnectionResetError:
                     print("Connection Reset Error for user: {}. Trying again".format(email_account))
+                except socket.timeout:
+                    print("Connection timeout Error for user: {}. Trying again".format(email_account))
 
