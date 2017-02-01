@@ -60,20 +60,20 @@ class ReadOnlyIfUserCantChangeEvents:
         return []
 
 
-class ChildDeviceForm(ModelForm):
+class SpecificDeviceForm(ModelForm):
     # The AutoCompleteSelectField is disabled because this widget didn't work correctly
     # type_of_device = AutoCompleteSelectField(lookup_class=main.lookups.DeviceTypeLookup, allow_new=False)
 
     class Meta:
-        model = main.models.ChildDevice
+        model = main.models.SpecificDevice
         fields = '__all__'
 
 
 class EventForm(ModelForm):
     class Meta:
         model = main.models.Event
-        exclude = ('child_devices', )
-        # 'child_device' is not here on purpose, for now
+        exclude = ('specific_devices', )
+        # 'specific_device' is not here on purpose, for now
 
 
 class EventActionResource(import_export.resources.ModelResource):
@@ -410,18 +410,76 @@ class StationTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['type']
 
 
-class ChildDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('device_type_name', 'serial_number')
+class SpecificDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('type_of_device', 'type_of_identifying_mark', 'identifying_mark', 'possible_parent_list')
 
-    def device_type_name(self, obj):
-        return obj.type_of_device.name
+    #def device_type_name(self, obj):
+     #   return obj.type_of_device.name
 
     # TODO: doesn't work here, check it again
     # ordering = ['device_type_name__name']
 
-    device_type_name.admin_order_field = 'device_type_name__name'
-    form = ChildDeviceForm
+    def possible_parent_list(self, obj):
+        parents = obj.possible_parent.all()
 
+        result = ""
+        for parent in parents:
+            if result != "":
+                result = result + ", "
+            result = result + parent.type_of_device.full_name
+
+        return result
+
+
+    #device_type_name.admin_order_field = 'device_type_name__name'
+    form = SpecificDeviceForm
+
+class DeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('full_name', 'shortened_name', 'description', 'make','model', 'main_device_type_list', 'possible_platform_list', 'device_contact_list', 'leg_used_list', 'project_list')
+    ordering = ['full_name']
+
+    def possible_platform_list(self, obj):
+        possible_platforms = obj.platform.all()
+
+        result = ""
+        for possible_platform in possible_platforms:
+            if result != "":
+                result = result + ", "
+            result = result + possible_platform.name
+
+        return result
+
+    def main_device_type_list(self, obj):
+        main_devices = obj.main_device_type.all()
+
+        result = ""
+        for main_device in main_devices:
+            if result != "":
+                result = result + ", "
+            result = result + main_device.name
+
+        return result
+
+    def device_contact_list(self, obj):
+        people = obj.device_contact.all()
+
+        result = ""
+        for person in people:
+            if result != "":
+                result = result + ", "
+            result = result + person.name_first + ' ' + person.name_last
+
+        return result
+
+    def project_list(self, obj):
+        projects = obj.project.all()
+
+        return ",".join([project.title for project in projects])
+
+    def leg_used_list(self, obj):
+        legs = obj.leg_used.all()
+
+        return ",".join([str(leg.number) for leg in legs])
 
 class CountryAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name',) # leave comma here for tuple
@@ -641,7 +699,7 @@ class TimeChangeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 admin.site.register(main.models.Mission, MissionAdmin)
 admin.site.register(main.models.Ship, ShipAdmin)
 admin.site.register(main.models.StationType, StationTypeAdmin)
-admin.site.register(main.models.ChildDevice, ChildDeviceAdmin)
+admin.site.register(main.models.SpecificDevice, SpecificDeviceAdmin)
 admin.site.register(main.models.DeviceType, DeviceTypeAdmin)
 admin.site.register(main.models.SamplingMethod, SamplingMethodAdmin)
 admin.site.register(main.models.Project, ProjectAdmin)
@@ -678,6 +736,7 @@ admin.site.register(main.models.PlatformType, PlatformTypeAdmin)
 admin.site.register(main.models.Message, MessageAdmin)
 admin.site.register(main.models.TimeChange, TimeChangeAdmin)
 admin.site.register(main.models.EmailOversizeNotified, EmailOversizeNotifiedAdmin)
+admin.site.register(main.models.Device, DeviceAdmin)
 
 ADMIN_SITE_TITLE = 'Ace Data Admin'
 ADMIN_SITE_HEADER = 'ACE Data Administration'

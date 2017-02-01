@@ -94,20 +94,6 @@ class SamplingMethod(models.Model):
         return "{} - {}".format(self.name, self.definition)
 
 
-class ChildDevice(models.Model):
-    # The name is "type_of_device" because if it's type the Form doesn't work
-    # correctly (reserved word in Python)
-    type_of_device = models.ForeignKey(DeviceType, verbose_name="Type")
-    serial_number = models.CharField(max_length=255, unique=True)
-    possible_parents = models.ManyToManyField(SamplingMethod)
-
-    def __str__(self):
-        return "{}-{}".format(self.type_of_device.name, self.serial_number)
-
-    class Meta:
-        unique_together = (('type_of_device', 'serial_number'))
-
-
 class PositionUncertainty(models.Model):
     code = models.CharField(max_length=255, unique=True)
     table_code = models.CharField(max_length=255)
@@ -340,6 +326,40 @@ class Project(models.Model):
         return "{} - {}".format(self.number, self.title)
 
 
+class Device(models.Model):
+    # Table contains full details of instruments.
+    full_name = models.CharField(max_length=255, help_text="Give the full name of the device, eg. Simrad EK80 echo sounder.")
+    shortened_name = models.CharField(max_length=255, null=True, blank=True, help_text="A brief name by which the device is often known, eg. CTD.")
+    description = models.TextField(help_text="Give a full description of the device which includes some information about what it is used for, how it can be used and any specific details that separate it from similar instruments. If you have a URL about the device, please include it here.")
+    make = models.CharField(max_length=255, null=True, blank=True)
+    model = models.CharField(max_length=255, null=True, blank=True)
+    main_device_type = models.ManyToManyField(DeviceType, related_name='device_type', null=True, blank=True, help_text="Select one or more options of available, from this list of controlled vocabulary devices. If there is nothing suitable, do not select anything. Note that there are some very specific devices and other more general categories, all of which should be selected if they are correct.")
+    platform = models.ManyToManyField(Platform, related_name='possible_platform', help_text="Select one or more platforms from which the device was operated or deployed.")
+    device_contact = models.ManyToManyField(Person, help_text="Select the person / people who operated or was responsible for the instrument at some point during the voyage. This does not have to be every user of the instrument, but the main operator(s) for each leg.")
+    leg_used = models.ManyToManyField(Leg, help_text="Select the leg(s) on which the device was used.")
+    project = models.ManyToManyField(Project, help_text="Select the projects which used the device or got samples / data from its deployments.")
+
+    def __str__(self):
+        return "{}".format(self.full_name)
+
+
+class SpecificDevice(models.Model):
+    # The name is "type_of_device" because if it's type the Form doesn't work
+    # correctly (reserved word in Python)
+    type_choices = (("serial number", "serial number"), ("no identifying mark", "no identifying mark"), ("mark handwritten on", "mark handwritten on"))
+
+    type_of_device = models.ForeignKey(Device, verbose_name="Type", help_text="Choose the type of device")
+    identifying_mark = models.CharField(max_length=255, null=True, blank=True, help_text="If the device has an identifying number (prefereably a serial number), entering it here. This mark should distinguish from another instrument of the same type.")
+    type_of_identifying_mark = models.CharField(max_length=50, choices=type_choices, help_text="Choose the type of identifying mark on the instrument.")
+    possible_parent = models.ManyToManyField('SpecificDevice', null=True, blank=True, help_text="If the device is deployed by attaching it to another instrument, then it has a parent: enter this device here. Some devices may have more than one parent device, for example if the parent device breaks and is swapped.")
+
+    def __str__(self):
+        return "{} - {}".format(self.type_of_device.full_name, self.identifying_mark)
+
+    class Meta:
+        unique_together = (('type_of_device', 'identifying_mark'))
+
+
 class StationType(models.Model):
     type = models.CharField(max_length=255, unique=True)
     description = models.TextField(null=True, blank=True)
@@ -462,15 +482,15 @@ class Event(models.Model):
 
     number = models.AutoField(primary_key=True)
     sampling_method = models.ForeignKey(SamplingMethod, related_name="sampling_method_event", help_text="Choose the instrument or method used for sampling")
-    child_devices = ChainedManyToManyField(
-        ChildDevice,
-        chained_field='sampling_method',
+    specific_devices = ChainedManyToManyField(
+        SpecificDevice,
+        chained_field='linked_device',
         chained_model_field='possible_parents',
         blank=True,
         verbose_name="Attached devices",
         help_text="Choose any devices that are attached to your instrument"
     )
-    #    models.ManyToManyField(ChildDevice)
+    #    models.ManyToManyField(SpecificDevice)
     station = models.ForeignKey(Station, null=True, blank=True, help_text="Only choose a station name where the ship has stopped")
     data = models.BooleanField(help_text="Tick this box if raw data will be produced DURING this event (not after post-cruise processing).")
     samples = models.BooleanField(help_text="Tick this box if samples will be collected during this event.")
