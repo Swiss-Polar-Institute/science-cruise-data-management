@@ -186,7 +186,6 @@ Data team
         username = email_address.split("@")[0]
         password = self._get_imap_password(email_address)
 
-        print("****** Login: ", username)
         self._imap = imaplib.IMAP4(settings.IMAP_SERVER)
 
         try:
@@ -212,11 +211,12 @@ Data team
 
         emails_active_leg = Email.objects.filter(person__leg=active_leg).order_by("email_address")
 
-        for email_account in emails_active_leg:
+        for (index, email_account) in enumerate(emails_active_leg):
             while True:
                 try:
+                    print("Checking: {} {}/{}".format(email_account.email_address, index+1, len(emails_active_leg)))
                     self.check_user(email_account.email_address)
                     break
                 except ConnectionResetError:
-                    print("Connection Reset Error for user: {}. Trying again:".format(email_account))
+                    print("Connection Reset Error for user: {}. Trying again".format(email_account))
 
