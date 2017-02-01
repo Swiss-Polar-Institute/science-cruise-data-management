@@ -47,7 +47,7 @@ class Notify:
         msg = email.message_from_bytes(data[0][1])
 
         information = {}
-        information['From'] = msg['From']
+        information['From'] = str(email.header.make_header(email.header.decode_header(msg['From'])))
         information['Date'] = msg['Date']
         information['Subject'] = str(email.header.make_header(email.header.decode_header(msg['Subject'])))
         information['Size'] = "{} KB".format(int(size / 1024))
@@ -59,11 +59,15 @@ class Notify:
     def _notified_for_email(self, headers, email_address):
         email_object = Email.objects.get(email_address=email_address)
 
+        # encodes as ascii to avoid problems with an old Mysql
+        subject=headers['Subject'].encode('ascii', 'ignore')
+        from_email=headers['From'].encode('ascii', 'ignore')
+
         email_oversized_notified = EmailOversizeNotified.objects.filter(date_string=headers['Date'],
                                                                         size=headers['_size_in_bytes'],
-                                                                        subject=headers['Subject'],
+                                                                        subject=subject,
                                                                         to_email=email_object,
-                                                                        from_email=headers['From'],
+                                                                        from_email=from_email,
                                                                         imap_uuid=headers['_imap_uuid'])
 
         return len(email_oversized_notified) > 0
@@ -78,11 +82,15 @@ class Notify:
             email_oversize = EmailOversizeNotified()
             email = Email.objects.get(email_address=email_address)
 
+            # encodes as ascii to avoid problems with an old Mysql
+            subject = headers['Subject'].encode('ascii', 'ignore')
+            from_email = headers['From'].encode('ascii', 'ignore')
+
             email_oversize.to_email = email
             email_oversize.date_string = headers['Date']
             email_oversize.size = headers['_size_in_bytes']
-            email_oversize.from_email = headers['From']
-            email_oversize.subject = headers['Subject']
+            email_oversize.from_email = from_email
+            email_oversize.subject = subject
             email_oversize.imap_uuid = headers['_imap_uuid']
 
             email_oversize.save()
@@ -140,11 +148,11 @@ Data team
     def _process_mailbox(self, imap, email_to_notify):
         rv, sizes = imap.uid('FETCH', '1:*', '(RFC822.SIZE)')
         if rv != 'OK':
-            print("No messages found!")
+            print("No messages can't be retrieved!")
             return
 
         if sizes == [None]:
-            print("No messages found")
+            print("No messages in the mailbox")
             return
 
         headers_for_oversized_messages = []
@@ -174,16 +182,15 @@ Data team
         username = email_address.split("@")[0]
         password = self._get_imap_password(email_address)
 
+        print("****** Login: ", username)
         self._imap = imaplib.IMAP4(settings.IMAP_SERVER)
 
         try:
-            print("Trying to login:", username)
+            print("Login")
             rv, data = self._imap.login(username, password)
         except imaplib.IMAP4.error:
             print("Login failed for:", username)
             sys.exit(1)
-
-        print(rv, data)
 
         print("Select INBOX")
         rv, data = self._imap.select("INBOX")
