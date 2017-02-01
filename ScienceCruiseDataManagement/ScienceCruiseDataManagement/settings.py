@@ -219,6 +219,6 @@ def expedition_sample_code(sample):
     return expedition_sample_code
 
 EXPEDITION_SAMPLE_CODE = expedition_sample_code
-MAXIMUM_EMAIL_SIZE = 120*1024
+MAXIMUM_EMAIL_SIZE = 225*1024
 # IMAP_SERVER = "192.168.20.40"
 IMAP_SERVER = "46.226.111.64"
