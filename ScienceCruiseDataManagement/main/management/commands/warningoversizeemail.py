@@ -143,7 +143,7 @@ Data team
             print("No messages found!")
             return
 
-        if sizes == [None]:
+        if sizes == "[None]":
             print("No messages found")
             return
 
