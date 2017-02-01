@@ -77,6 +77,8 @@ class Notify:
             already_notified = self._notified_for_email(headers, email_address)
 
             if already_notified:
+                print("Already notified message. Not saving headers in the database")
+                pprint.pprint(headers)
                 continue
 
             email_oversize = EmailOversizeNotified()
@@ -104,6 +106,8 @@ class Notify:
             already_notified = self._notified_for_email(headers, email_to_notify)
 
             if already_notified:
+                print("Already notified. Skipping sending notification")
+                pprint.pprint(headers)
                 continue
 
             information += """From: {From}
@@ -209,4 +213,10 @@ Data team
         emails_active_leg = Email.objects.filter(person__leg=active_leg).order_by("email_address")
 
         for email_account in emails_active_leg:
-            self.check_user(email_account.email_address)
+            while True:
+                try:
+                    self.check_user(email_account.email_address)
+                    break
+                except ConnectionResetError:
+                    print("Connection Reset Error for user: {}. Trying again:".format(email_account))
+
