@@ -65,9 +65,9 @@ class Notify:
 
         email_oversized_notified = EmailOversizeNotified.objects.filter(date_string=headers['Date'],
                                                                         size=headers['_size_in_bytes'],
-                                                                        subject=subject,
+                                                                        #subject=subject,
                                                                         to_email=email_object,
-                                                                        from_email=from_email,
+                                                                        #from_email=from_email,
                                                                         imap_uuid=headers['_imap_uuid'])
 
         return len(email_oversized_notified) > 0
