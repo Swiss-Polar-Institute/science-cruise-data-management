@@ -143,6 +143,10 @@ Data team
             print("No messages found!")
             return
 
+        if sizes == []:
+            print("No messages found")
+            return
+
         headers_for_oversized_messages = []
         for message_information_size in sizes:
             message_information_size = message_information_size.decode()
