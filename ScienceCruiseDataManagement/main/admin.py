@@ -569,10 +569,13 @@ class EmailAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
         return obj.person.name_last
 
 class EmailOversizeNotifiedAdmin(admin.ModelAdmin):
-    list_display = ('from_email', 'to_email_address', 'date_string', 'size', 'subject', 'imap_uuid')
+    list_display = ('from_email', 'to_email_address', 'date_string', 'size_kb', 'subject', 'imap_uuid', 'added')
 
     def to_email_address(self, obj):
         return obj.to_email.email_address
+
+    def size_kb(self, obj):
+        return "{}".format(int(obj.size/1024))
 
 class OrganisationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'address', 'country')

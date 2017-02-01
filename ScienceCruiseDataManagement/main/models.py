@@ -317,6 +317,7 @@ class EmailOversizeNotified(models.Model):
     size = models.IntegerField()
     subject = models.CharField(max_length=1024)
     imap_uuid = models.CharField(max_length=50)
+    added = models.DateTimeField(default=timezone.now)
 
 class Mission(models.Model):
     name = models.CharField(max_length=255, unique=True)
