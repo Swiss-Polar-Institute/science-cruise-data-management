@@ -163,21 +163,22 @@ Data team
         self._notify_user(headers_for_oversized_messages, email_to_notify)
         self._save_headers_as_notified(headers_for_oversized_messages, email_to_notify)
 
-    def _get_imap_password(self, login):
-        password = Email.objects.get(email_address="{}@ace-expedition.net".format(login)).server_password
+    def _get_imap_password(self, email_address):
+        password = Email.objects.get(email_address=email_address).server_password
 
         return password
 
-    def check_user(self, login):
-        password = self._get_imap_password(login)
+    def check_user(self, email_address):
+        username = email_address.split("@")[0]
+        password = self._get_imap_password(email_address)
 
         self._imap = imaplib.IMAP4(settings.IMAP_SERVER)
 
         try:
-            print("Trying to login:", login)
-            rv, data = self._imap.login(login, password)
+            print("Trying to login:", username)
+            rv, data = self._imap.login(username, password)
         except imaplib.IMAP4.error:
-            print("Login failed for:", login)
+            print("Login failed for:", username)
             sys.exit(1)
 
         print(rv, data)
@@ -187,7 +188,7 @@ Data team
 
         if rv == 'OK':
             print("Processing mailbox...")
-            self._process_mailbox(self._imap, login)
+            self._process_mailbox(self._imap, email_address)
             self._imap.close()
         else:
             print("ERROR: Unable to open mailbox", rv)
@@ -199,4 +200,4 @@ Data team
         emails_active_leg = Email.objects.filter(person__leg=active_leg).order_by("email_address")
 
         for email_account in emails_active_leg:
-            self.check_user(email_account)
+            self.check_user(email_account.email_address)
