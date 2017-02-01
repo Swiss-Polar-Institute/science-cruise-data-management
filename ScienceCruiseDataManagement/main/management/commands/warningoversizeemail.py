@@ -137,9 +137,7 @@ Data team
                  fail_silently=False,
             )
 
-    def _process_mailbox(self, imap, login):
-        email_to_notify = "{}@ace-expedition.net".format(login)
-
+    def _process_mailbox(self, imap, email_to_notify):
         rv, sizes = imap.uid('FETCH', '1:*', '(RFC822.SIZE)')
         if rv != 'OK':
             print("No messages found!")
