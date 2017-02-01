@@ -6,6 +6,7 @@ from django.conf import settings
 from django.db.models import Q
 from smart_selects.db_fields import ChainedManyToManyField
 from django.db.models.signals import post_save
+from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.conf import settings
 
@@ -479,6 +480,7 @@ class Event(models.Model):
         return "{}".format(self.number)
 
     def save(self, *args, **kwargs):
+        # Event without event action: it's opened
         super(Event, self).save(*args, **kwargs)
         open_event = OpenEvent(number=self.number)
         open_event.save()
@@ -616,15 +618,38 @@ class EventAction(models.Model):
         super(EventAction, self).save(*args, **kwargs)
 
         if self.type == EventAction.tends() or self.type == EventAction.tinstant():
+            # Closes the event (it had to be open, else there is an error somewhere)
             open_event = OpenEvent.objects.get(number=self.event_id)
             open_event.delete()
+        elif self.type == EventAction.tbegin():
+            # If the event is not open: creates an open event (it could have been opened
+            # if it was already tbegin())
+            event_is_open = OpenEvent.objects.filter(number=self.event_id).exists()
 
+            if not event_is_open:
+                open_event = OpenEvent(number=self.event_id)
+                open_event.save()
+        else:
+            assert False
+
+    def delete(self, using=None, keep_parents=False):
+        super(EventAction, self).delete(using=using, keep_parents=keep_parents)
 
     def __str__(self):
         return "{}".format(self.event.number)
 
     class Meta:
         permissions = cannot_change_events_action
+
+
+@receiver(post_delete, sender=EventAction)
+def delete_event_action(sender, instance, **kwargs):
+    if instance.type == EventAction.tends() or instance.type == EventAction.tinstant:
+        event_is_open = OpenEvent.objects.filter(number=instance.event_id).exists()
+
+        if not event_is_open:
+            open_event = OpenEvent(number=instance.event_id)
+            open_event.save()
 
 
 class Message(models.Model):
