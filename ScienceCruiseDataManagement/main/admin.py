@@ -215,6 +215,11 @@ class LegAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
         return obj == main.models.Leg.current_active_leg()
 
 
+class CtdCastAdmin(admin.ModelAdmin):
+    list_display = ('ctd_cast_number', 'event_number', 'leg_number')
+    ordering = ['ctd_cast_number']
+
+
 class StationAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'type', 'latitude', 'longitude', 'leg', 'arrival_time', 'departure_time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'outcome', 'comment')
     ordering = ['-name']
@@ -737,6 +742,7 @@ admin.site.register(main.models.Message, MessageAdmin)
 admin.site.register(main.models.TimeChange, TimeChangeAdmin)
 admin.site.register(main.models.EmailOversizeNotified, EmailOversizeNotifiedAdmin)
 admin.site.register(main.models.Device, DeviceAdmin)
+admin.site.register(main.models.CtdCast, CtdCastAdmin)
 
 ADMIN_SITE_TITLE = 'Ace Data Admin'
 ADMIN_SITE_HEADER = 'ACE Data Administration'

@@ -532,6 +532,16 @@ class EventActionDescription(models.Model):
     def __str__(self):
         return "{}".format(self.name)
 
+
+class CtdCast(models.Model):
+    ctd_cast_number = models.IntegerField()
+    event_number = models.ForeignKey(Event)
+    leg_number = models.ForeignKey(Leg)
+
+    def __str__(self):
+        return "{}".format(self.ctd_cast_number)
+
+
 class StorageCrate(models.Model):
     name = models.CharField(max_length=255, unique=True)
     location = models.CharField(max_length=255)
