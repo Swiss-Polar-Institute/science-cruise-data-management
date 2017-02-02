@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Coordinates conversoin{% endblock %}
+{% load static %}
+
+{% block content %}
+Converted:
+{% if list_of_coordinates %}
+<table border="1">
+    <thead> <th>{{input_format_name}}</th><th>{{output_format_name1}}</th><th>{{output_format_name2}}</th> </thead>
+    {% for coordinate in list_of_coordinates %}
+    <tr>
+        <td>{{ coordinate.input }}</td> <td>{{ coordinate.output1 }}</td> <td>{{ coordinate.output2 }}</td>
+    <tr>
+    {% endfor %}
+</table>
+{% endif %}
+<hr>
+Convert more coordinates: <form action="/coordinates_conversion/" method="post">
+    {% csrf_token %}
+    <table>
+    {{ form }}
+    </table>
+    <input type="submit" value="Submit" />
+</form>
+
+{% endblock %}

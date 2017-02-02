@@ -14,8 +14,9 @@ from django.core.exceptions import ObjectDoesNotExist
 import main.import_gpx_to_stations
 import main.models
 from main import import_gpx_to_stations
-from main.forms import InputShipDateTime
-from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station, Message, SamplingMethod, ProposedStation
+from main.forms import InputShipDateTime, InputCoordinates
+from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station,\
+    Message, SamplingMethod, ProposedStation
 from main import utils
 from ship_data.models import GpggaGpsFix, GpvtgVelocity
 import main.find_locations as find_locations
@@ -354,6 +355,32 @@ class ImportPortsFromGpx(View):
         }
 
         return render(request, "import_ports_from_gpx_exec.html", template_information)
+
+class CoordinatesConversion(TemplateView):
+    def get(selfself, request, *args, **kwargs):
+        form = InputCoordinates()
+        return render(request, "coordinates_conversion.html", {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        coordinates = request.POST['coordinates']
+
+        form = InputCoordinates()
+
+        template_information = {}
+        template_information['form'] = form
+
+        template_information['input_format_name'] = "Name1"
+        template_information['output_format_name1'] = "Output format 1"
+        template_information['output_format_name2'] = "Output format 2"
+
+        template_information['list_of_coordinates'] = []
+        template_information['list_of_coordinates'].append({"input":"1",
+                                                             "output1": "3",
+                                                             "output2": "4"
+                                                            })
+
+
+        return render(request, "coordinates_conversion_exec.html", template_information)
 
 
 class PositionFromDateTime(TemplateView):
