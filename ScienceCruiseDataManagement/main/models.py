@@ -535,7 +535,7 @@ class EventActionDescription(models.Model):
 
 class CtdCast(models.Model):
     ctd_cast_number = models.IntegerField()
-    event_number = models.ForeignKey(Event)
+    event_number = models.OneToOneField(Event)
     leg_number = models.ForeignKey(Leg)
     ctd_operator = models.ForeignKey(Person, null=True, blank=True)
     ctd_file_name = models.CharField(max_length=255, null=True, blank=True)
@@ -548,6 +548,9 @@ class CtdCast(models.Model):
 
     def __str__(self):
         return "{}".format(self.ctd_cast_number)
+
+    class Meta:
+        unique_together= (('ctd_cast_number', 'leg_number'),)
 
 
 class StorageCrate(models.Model):

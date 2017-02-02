@@ -197,6 +197,8 @@ TRACK_MAP_FILEPATH = "/tmp/track.geojson"
 # For default options
 DEFAULT_PLATFORM_NAME = "Akademik Treshnikov"
 DEFAULT_MISSION_NAME = "Antarctic Circumnavigation Expedition"
+DEFAULT_CTD_OPERATOR_FIRSTNAME = "Marie-Noelle"
+DEFAULT_CTD_OPERATOR_LASTNAME = "Houssais"
 
 def expedition_sample_code(sample):
     # From a sample returns the sample_code - from different fields
