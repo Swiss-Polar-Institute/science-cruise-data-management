@@ -537,6 +537,14 @@ class CtdCast(models.Model):
     ctd_cast_number = models.IntegerField()
     event_number = models.ForeignKey(Event)
     leg_number = models.ForeignKey(Leg)
+    ctd_operator = models.ForeignKey(Person, null=True, blank=True)
+    ctd_file_name = models.CharField(max_length=255, null=True, blank=True)
+    ice_coverage = models.CharField(max_length=255, null=True, blank=True)
+    sea_state = models.CharField(max_length=255, null=True, blank=True)
+    water_depth = models.FloatField(null=True, blank=True)
+    surface_temperature = models.FloatField(null=True, blank=True)
+    surface_salinity = models.FloatField(null=True, blank=True)
+    comments = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return "{}".format(self.ctd_cast_number)
