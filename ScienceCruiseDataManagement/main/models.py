@@ -502,9 +502,13 @@ class Event(models.Model):
 
     def save(self, *args, **kwargs):
         # Event without event action: it's opened
+        previous_id = self.number
         super(Event, self).save(*args, **kwargs)
-        open_event = OpenEvent(number=self.number)
-        open_event.save()
+
+        if previous_id is None:
+            # It's a new object, update OpenEvent table
+            open_event = OpenEvent(number=self.number)
+            open_event.save()
 
     class Meta:
         permissions = cannot_change_events
@@ -626,14 +630,19 @@ class EventAction(models.Model):
                            (Q(event_id=event_id) & (Q(type=tbegin)))) == 0:
                     raise ValidationError("Cannot add '{}' because '{}' doesn't exist".format(tends_text, tbegin_text))
 
+            if event_action_type == tbegin and \
+                len(EventAction.objects.filter(Q(event_id=event_id) & (Q(type=tbegin)))) > 0:
+                raise ValidationError("Cannot add '{}' because this Event already had a '{}'".format(tbegin_text, tbegin_text))
+
         if event_action_type == tends:
             # Here if the type is tends() it has a start for sure or the validation
             # would have already failed
-            event_begin = EventAction.objects.get(Q(event_id=event_id) & Q(type=tbegin))
-            if self.time < event_begin.time:
-                raise ValidationError({
-                    'time':"Time in the ends EventAction (this one) can't be earlier than the already entered begin's EventAction"
-                })
+            event_begins = EventAction.objects.filter(Q(event_id=event_id) & Q(type=tbegin))
+            for event_begin in event_begins:
+                if self.time < event_begin.time:
+                    raise ValidationError({
+                        'time':"Time in the ends EventAction (this one) can't be earlier than the already entered begin's EventAction"
+                    })
 
     def save(self, *args, **kwargs):
         super(EventAction, self).save(*args, **kwargs)
