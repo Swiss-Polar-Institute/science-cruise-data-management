@@ -77,7 +77,7 @@ def convert_decimal_degrees_to(coordinate, type_of_coordinates):
 
 
         latitude_string = "{:.0f} {:.3f} {}".format(latitude_degree, latitude_decimal_minute, hemisphere)
-        longitude_string = "{:.0f} {:.3f} {}".format(latitude_degree, latitude_decimal_minute, side)
+        longitude_string = "{:.0f} {:.3f} {}".format(longitude_degree, longitude_decimal_minute, side)
 
         return "{} {}".format(latitude_string, longitude_string)
 
@@ -99,7 +99,7 @@ def convert_decimal_degrees_to(coordinate, type_of_coordinates):
             side = "W"
 
         latitude_string = "{:.0f} {:.0f} {:.3f} {}".format(latitude_degree, latitude_minute, latitude_second, hemisphere)
-        longitude_string = "{:.0f} {:.0f} {:.3f} {}".format(latitude_degree, latitude_minute, latitude_second, side)
+        longitude_string = "{:.0f} {:.0f} {:.3f} {}".format(longitude_degree, longitude_minute, latitude_second, side)
 
         return "{} {}".format(latitude_string, longitude_string)
 
