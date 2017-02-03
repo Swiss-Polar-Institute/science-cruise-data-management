@@ -14,7 +14,12 @@ class InputShipDateTime(forms.Form):
 
 
 class InputCoordinates(forms.Form):
-    coordinates = forms.CharField(help_text="List of coordinates to convert. Must be in one of the formats: ",
+    coordinates = forms.CharField(help_text="""List of coordinates to convert. Must be in one of the formats:<br>
+24 53 42.300 S 24 53 42.300 E<br>
+24 53.705 S 24 53.705 W<br>
+-24.895 24.895
+<br>
+""",
                                   required=True,
                                   label="List of coordinates",
-                                  widget=forms.Textarea(attrs={"cols": "20", "rows": "10", }))
+                                  widget=forms.Textarea(attrs={"cols": "40", "rows": "20", }))

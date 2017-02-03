@@ -21,6 +21,7 @@ from main import utils
 from ship_data.models import GpggaGpsFix, GpvtgVelocity
 import main.find_locations as find_locations
 import subprocess
+import main.utils_coordinates as utils_coordinates
 
 class MainMenuView(TemplateView):
     template_name = "main_menu.html"
@@ -356,8 +357,9 @@ class ImportPortsFromGpx(View):
 
         return render(request, "import_ports_from_gpx_exec.html", template_information)
 
+
 class CoordinatesConversion(TemplateView):
-    def get(selfself, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         form = InputCoordinates()
         return render(request, "coordinates_conversion.html", {"form": form})
 
@@ -369,16 +371,7 @@ class CoordinatesConversion(TemplateView):
         template_information = {}
         template_information['form'] = form
 
-        template_information['input_format_name'] = "Name1"
-        template_information['output_format_name1'] = "Output format 1"
-        template_information['output_format_name2'] = "Output format 2"
-
-        template_information['list_of_coordinates'] = []
-        template_information['list_of_coordinates'].append({"input":"1",
-                                                             "output1": "3",
-                                                             "output2": "4"
-                                                            })
-
+        utils_coordinates.process(coordinates, template_information)
 
         return render(request, "coordinates_conversion_exec.html", template_information)
 
