@@ -32,7 +32,7 @@ class Command(BaseCommand):
         for line in csv_reader:
             input_spreadsheet.append(line)
 
-        column = column_after_headers()
+        column = column_after_headers(input_spreadsheet)
 
         last_stop_time = None
         last_start_time = None
@@ -78,9 +78,14 @@ def number_of_columns(spreadsheet):
     return len(spreadsheet[0])
 
 
-def column_after_headers():
-    return 3
+def column_after_headers(spreadsheet):
+    """ Returns the column number for 21-Dec (start of the expedition). """
+    for (i, cell) in enumerate(spreadsheet[date_row()]):
+        if cell == "21-Dec":
+            return i
 
+    # Column not found with 21-Dec
+    assert False
 
 def gmt_start_row():
     return 4
