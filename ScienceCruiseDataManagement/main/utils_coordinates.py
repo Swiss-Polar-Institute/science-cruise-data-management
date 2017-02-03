@@ -1,6 +1,15 @@
 import re
 
 
+def pretty_name(name):
+    if name == "decimal_degrees":
+        return "Decimal degrees"
+    elif name == "decimal_degrees_minutes":
+        return "Degrees and decimal minutes"
+    elif name == "decimal_degrees_minutes_seconds":
+        return "Degrees, minutes and decimal seconds"
+
+
 def coordinates_formats():
     return ["decimal_degrees", "decimal_degrees_minutes", "decimal_degrees_minutes_seconds"]
 
@@ -71,9 +80,9 @@ def convert_decimal_degrees_to(coordinate, type_of_coordinates):
             hemisphere = "N"
 
         if longitude_sign == -1:
-            side = "E"
-        else:
             side = "W"
+        else:
+            side = "E"
 
 
         latitude_string = "{:.0f} {:.3f} {}".format(latitude_degree, latitude_decimal_minute, hemisphere)
@@ -94,9 +103,9 @@ def convert_decimal_degrees_to(coordinate, type_of_coordinates):
             hemisphere = "N"
 
         if longitude_sign == -1:
-            side = "E"
-        else:
             side = "W"
+        else:
+            side = "E"
 
         latitude_string = "{:.0f} {:.0f} {:.3f} {}".format(latitude_degree, latitude_minute, latitude_second, hemisphere)
         longitude_string = "{:.0f} {:.0f} {:.3f} {}".format(longitude_degree, longitude_minute, latitude_second, side)
@@ -142,9 +151,9 @@ def process(coordinates, template_information):
 
         previous_name_coordinate = name_coordinate
 
-        template_information['input_format_name'] = name_coordinate
-        template_information['output_format_name1'] = formats[0]
-        template_information['output_format_name2'] = formats[1]
+        template_information['input_format_name'] = pretty_name(name_coordinate)
+        template_information['output_format_name1'] = pretty_name(formats[0])
+        template_information['output_format_name2'] = pretty_name(formats[1])
 
         template_information['list_of_coordinates'].append({"input": coordinate,
                                                             "output1": convert_to(coordinate, formats[0]),
