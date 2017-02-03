@@ -680,9 +680,12 @@ class EventAction(models.Model):
         super(EventAction, self).save(*args, **kwargs)
 
         if self.type == EventAction.tends() or self.type == EventAction.tinstant():
-            # Closes the event (it had to be open, else there is an error somewhere)
-            open_event = OpenEvent.objects.get(number=self.event_id)
-            open_event.delete()
+            # The event could be closed: in case that the user is changing an existing event.
+            open_events = OpenEvent.objects.filter(number=self.event_id)
+
+            if open_events.exists():
+                open_events[0].delete()
+
         elif self.type == EventAction.tbegin():
             # If the event is not open: creates an open event (it could have been opened
             # if it was already tbegin())
