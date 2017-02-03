@@ -26,7 +26,7 @@ def convert_to_decimal_degrees(coordinate):
         return (latitude, longitude)
 
     elif type_of_coordinate == "decimal_degrees_minutes":
-        m = re.match("(^[0-9]+) ([0-9]+\.[0-9]+) ([NS]) ([0-9])+ ([0-9]+\.[0-9]+) ([EW])$", coordinate)
+        m = re.match("(^[0-9]+) ([0-9]+\.[0-9]+) ([NS]) ([0-9]+) ([0-9]+\.[0-9]+) ([EW])$", coordinate)
         latitude = float(m.group(1)) + float(m.group(2))/60
         if m.group(3) == "S":
             latitude = latitude * -1
@@ -127,7 +127,7 @@ def process(coordinates, template_information):
 
         name_coordinate = detect_name_coordinate(coordinate)
         if name_coordinate is None:
-            template_information["error"] = "This coordinate: {} is not in a valid format. Aborts.".format(coordinate)
+            template_information["error"] = "Coordinate: '{}' is not in a valid format. Aborts.".format(coordinate)
             break
         formats = coordinates_formats()
 

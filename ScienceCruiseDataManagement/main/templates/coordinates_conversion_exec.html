@@ -3,17 +3,24 @@
 {% load static %}
 
 {% block content %}
+{% if error %}
+    <p style="color:red">
+        <b>Error: {{ error }}</b>
+    </p>
+{% else %}
 Converted:
-{% if list_of_coordinates %}
-<table class="table table-bordered">
-    <thead> <th>{{input_format_name}}</th><th>{{output_format_name1}}</th><th>{{output_format_name2}}</th> </thead>
-    {% for coordinate in list_of_coordinates %}
-    <tr>
-        <td>{{ coordinate.input }}</td> <td>{{ coordinate.output1 }}</td> <td>{{ coordinate.output2 }}</td>
-    <tr>
-    {% endfor %}
-</table>
+    {% if list_of_coordinates %}
+    <table class="table table-bordered">
+        <thead> <th>{{input_format_name}}</th><th>{{output_format_name1}}</th><th>{{output_format_name2}}</th> </thead>
+        {% for coordinate in list_of_coordinates %}
+        <tr>
+            <td>{{ coordinate.input }}</td> <td>{{ coordinate.output1 }}</td> <td>{{ coordinate.output2 }}</td>
+        <tr>
+        {% endfor %}
+    </table>
+    {% endif %}
 {% endif %}
+
 <hr>
 Convert more coordinates: <form action="/coordinates_conversion/" method="post">
     {% csrf_token %}

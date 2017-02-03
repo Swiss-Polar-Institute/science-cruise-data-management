@@ -366,7 +366,7 @@ class CoordinatesConversion(TemplateView):
     def post(self, request, *args, **kwargs):
         coordinates = request.POST['coordinates']
 
-        form = InputCoordinates()
+        form = InputCoordinates(initial={'coordinates': coordinates})
 
         template_information = {}
         template_information['form'] = form
