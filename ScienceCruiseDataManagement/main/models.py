@@ -552,6 +552,14 @@ class CtdCast(models.Model):
     class Meta:
         unique_together= (('ctd_cast_number', 'leg_number'),)
 
+class TmrCast(models.Model):
+    tmr_cast_number = models.IntegerField()
+    event_number = models.OneToOneField(Event)
+    leg_number = models.ForeignKey(Leg)
+
+    def __str__(self):
+        return "{}".format(self.tmr_cast_number)
+
 
 class StorageCrate(models.Model):
     name = models.CharField(max_length=255, unique=True)

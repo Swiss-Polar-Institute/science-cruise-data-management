@@ -220,6 +220,11 @@ class CtdCastAdmin(admin.ModelAdmin):
     ordering = ['ctd_cast_number', 'event_number', 'leg_number']
 
 
+class TmrCastAdmin(admin.ModelAdmin):
+    list_display = ('tmr_cast_number', 'event_number', 'leg_number')
+    ordering = ['tmr_cast_number', 'event_number', 'leg_number']
+
+
 class StationAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'type', 'latitude', 'longitude', 'leg', 'arrival_time', 'departure_time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'outcome', 'comment')
     ordering = ['-name']
@@ -743,6 +748,7 @@ admin.site.register(main.models.TimeChange, TimeChangeAdmin)
 admin.site.register(main.models.EmailOversizeNotified, EmailOversizeNotifiedAdmin)
 admin.site.register(main.models.Device, DeviceAdmin)
 admin.site.register(main.models.CtdCast, CtdCastAdmin)
+admin.site.register(main.models.TmrCast, TmrCastAdmin)
 
 ADMIN_SITE_TITLE = 'Ace Data Admin'
 ADMIN_SITE_HEADER = 'ACE Data Administration'
