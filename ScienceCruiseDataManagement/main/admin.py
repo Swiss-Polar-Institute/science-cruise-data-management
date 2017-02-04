@@ -653,6 +653,12 @@ class OrganisationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['name']
 
 
+class OnboardRoleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('role', 'description')
+    ordering = ['role']
+    search_fields = ('role',)
+
+
 class DataAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('event', 'project', 'storage_location', 'checked')
     ordering = ['event']
@@ -752,6 +758,7 @@ admin.site.register(main.models.EmailOversizeNotified, EmailOversizeNotifiedAdmi
 admin.site.register(main.models.Device, DeviceAdmin)
 admin.site.register(main.models.CtdCast, CtdCastAdmin)
 admin.site.register(main.models.TmrCast, TmrCastAdmin)
+admin.site.register(main.models.OnboardRole, OnboardRoleAdmin)
 
 ADMIN_SITE_TITLE = 'Ace Data Admin'
 ADMIN_SITE_HEADER = 'ACE Data Administration'

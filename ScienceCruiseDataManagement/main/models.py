@@ -296,6 +296,7 @@ class Email(models.Model):
     def __str__(self):
         return "{}".format(self.person)
 
+
 class EmailOversizeNotified(models.Model):
     from_email = models.CharField(max_length=1024)
     to_email = models.ForeignKey(Email)
@@ -304,6 +305,15 @@ class EmailOversizeNotified(models.Model):
     subject = models.CharField(max_length=1024)
     imap_uuid = models.CharField(max_length=50)
     added = models.DateTimeField(default=timezone.now)
+
+
+class OnboardRole(models.Model):
+    role = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{}".format(self.role)
+
 
 class Mission(models.Model):
     name = models.CharField(max_length=255, unique=True)
