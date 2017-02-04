@@ -423,7 +423,7 @@ class StationTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class SpecificDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('type_of_device', 'type_of_identifying_mark', 'identifying_mark', 'possible_parent_list')
+    list_display = ('type_of_device', 'type_of_identifying_mark', 'identifying_mark', 'make', 'model', 'possible_parent_list')
 
     #def device_type_name(self, obj):
      #   return obj.type_of_device.name
@@ -447,7 +447,7 @@ class SpecificDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     form = SpecificDeviceForm
 
 class DeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('full_name', 'shortened_name', 'description', 'make','model', 'main_device_type_list', 'possible_platform_list', 'device_contact_list', 'leg_used_list', 'project_list')
+    list_display = ('full_name', 'shortened_name', 'description', 'main_device_type_list', 'possible_platform_list', 'device_contact_list', 'leg_used_list', 'project_list')
     ordering = ['full_name']
 
     def possible_platform_list(self, obj):
