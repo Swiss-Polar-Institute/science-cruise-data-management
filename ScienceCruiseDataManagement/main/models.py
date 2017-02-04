@@ -261,6 +261,14 @@ class Ship(models.Model):
         return "{}".format(self.name)
 
 
+class OnboardRole(models.Model):
+    role = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{}".format(self.role)
+
+
 class Person(models.Model):
     title_choices = (("Mr", "Mr."),
                      ("Ms", "Ms."),
@@ -274,7 +282,8 @@ class Person(models.Model):
     name_middle = models.CharField(max_length=255, blank=True, null=True)
     name_last = models.CharField(max_length=255)
     initials = models.CharField(max_length=5, unique=True)
-    project = models.ManyToManyField('Project')
+    project = models.ForeignKey('Project', null=True, blank=True)
+    onboard_role = models.ForeignKey(OnboardRole, null=True, blank=True)
     organisation = models.ManyToManyField(Organisation)
     principal_investigator = models.BooleanField()
     leg = models.ManyToManyField(Leg, blank=True)
@@ -305,14 +314,6 @@ class EmailOversizeNotified(models.Model):
     subject = models.CharField(max_length=1024)
     imap_uuid = models.CharField(max_length=50)
     added = models.DateTimeField(default=timezone.now)
-
-
-class OnboardRole(models.Model):
-    role = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
-
-    def __str__(self):
-        return "{}".format(self.role)
 
 
 class Mission(models.Model):

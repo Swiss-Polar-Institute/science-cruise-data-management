@@ -584,14 +584,9 @@ class ImportedFileAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'project_list', 'organisation_list', 'principal_investigator','leg_list')
+    list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'project', 'onboard_role', 'organisation_list', 'principal_investigator','leg_list')
     ordering = ['name_last']
     search_fields = ('name_first', 'name_middle', 'name_last')
-
-    def project_list(self, obj):
-        projects = obj.project.all()
-
-        return ",".join([project.title for project in projects])
 
     def organisation_list(self, obj):
         organisations = obj.organisation.all()
