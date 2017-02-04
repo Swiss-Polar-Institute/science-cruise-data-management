@@ -215,7 +215,7 @@ class TailDirectory:
         else:
             self.current_file = None
 
-        self.SLEEP_INTERVAL = 0.5   # for when new lines keep appearing
+        self.SLEEP_INTERVAL = 2   # for when new lines keep appearing
         self.callback = callback
 
     def read_all_directory(self):
