@@ -190,6 +190,7 @@ class EventActionAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
 
     list_display = ('event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
     ordering = ['-event_id', '-id']
+
     form = EventActionForm
     search_fields = ('event__number', )
 
@@ -505,6 +506,7 @@ class IslandAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 class IslandLandingsAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('island', 'person', 'date')
     ordering = ['island']
+    search_fields = ('island__name', 'person__name_first', 'person__name_last')
 
 
 class StorageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
