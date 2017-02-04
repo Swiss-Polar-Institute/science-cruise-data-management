@@ -224,7 +224,7 @@ def export_table(model, file_path):
 
     met_data_all = model.objects.all().order_by('date_time')
 
-    for met_data in met_data_all:
+    for met_data in met_data_all.iterator():
         row = []
         met_data_dictionary = model_to_dict(met_data)
 
