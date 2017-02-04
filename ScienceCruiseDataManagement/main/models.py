@@ -354,6 +354,7 @@ class SpecificDevice(models.Model):
     type_choices = (("serial number", "serial number"), ("no identifying mark", "no identifying mark"), ("mark handwritten on", "mark handwritten on"))
 
     type_of_device = models.ForeignKey(Device, verbose_name="Type", help_text="Choose the type of device")
+    description = models.TextField(null=True, blank=True, help_text="Give a full description of the device which includes some information about what it is used for, how it can be used and any specific details that separate it from similar instruments. If you have a URL about the device, please include it here.")
     identifying_mark = models.CharField(max_length=255, null=True, blank=True, help_text="If the device has an identifying number (prefereably a serial number), entering it here. This mark should distinguish from another instrument of the same type.")
     type_of_identifying_mark = models.CharField(max_length=50, choices=type_choices, help_text="Choose the type of identifying mark on the instrument.")
     make = models.CharField(max_length=255, null=True, blank=True)
