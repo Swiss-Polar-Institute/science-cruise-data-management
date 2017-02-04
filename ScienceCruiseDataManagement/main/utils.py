@@ -1,6 +1,7 @@
 import datetime
 import unicodedata
 
+from django.db import connection
 from django.conf import settings
 import main.models
 import shutil
@@ -234,6 +235,49 @@ def export_table(model, file_path):
         csv_writer.writerow(row)
 
     file.close()
+
+def sql_row_to_dictionary(sql_row, field_names):
+    d = {}
+
+    for (index, field_name) in enumerate(field_names):
+        d[field_name] = sql_row[index]
+
+    return d
+
+
+def export_table_fast(model, file_path):
+    file = open(file_path, "w")
+
+    csv_writer = csv.writer(file)
+
+    fields = model._meta.get_fields()
+    field_names = [f.name for f in fields]
+    print(field_names)
+    field_names.remove('id')
+
+    csv_writer.writerow(field_names)
+
+    table_name = model._meta.db_table
+
+    with connection.cursor() as cursor:
+        query = "SELECT {} FROM {} ORDER BY date_time".format(",".join(field_names), table_name)
+        cursor.execute(query)
+
+        while True:
+            sql_row = cursor.fetchone()
+            if sql_row is None:
+                break
+
+            csv_row = []
+            met_data_dictionary = sql_row_to_dictionary(sql_row, field_names)
+
+            for field_name in field_names:
+                csv_row.append(met_data_dictionary[field_name])
+
+            csv_writer.writerow(csv_row)
+
+    file.close()
+
 
 def normalised_csv_file(file_path):
     """Returns the text of the file replacing \t with , removing empty lines, etc.

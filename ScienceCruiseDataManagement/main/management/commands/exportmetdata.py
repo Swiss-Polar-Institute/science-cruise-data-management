@@ -53,6 +53,6 @@ def export(data_type, output_directory):
     else:
         assert False
 
-    utils.export_table(table, file_path)
+    utils.export_table_fast(table, file_path)
 
     return filename
