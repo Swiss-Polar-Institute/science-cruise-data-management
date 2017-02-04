@@ -246,7 +246,6 @@ def export_table(model, file_path, first_date, last_date):
             for field_name in field_names:
                 row.append(met_data_dictionary[field_name])
 
-            print(met_data.date_time)
             csv_writer.writerow(row)
 
         current_date += one_day
