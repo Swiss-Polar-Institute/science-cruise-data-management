@@ -343,10 +343,6 @@ class Device(models.Model):
     shortened_name = models.CharField(max_length=255, null=True, blank=True, help_text="A brief name by which the device is often known, eg. CTD.")
     description = models.TextField(help_text="Give a full description of the device which includes some information about what it is used for, how it can be used and any specific details that separate it from similar instruments. If you have a URL about the device, please include it here.")
     main_device_type = models.ManyToManyField(DeviceType, related_name='device_type', blank=True, help_text="Select one or more options of available, from this list of controlled vocabulary devices. If there is nothing suitable, do not select anything. Note that there are some very specific devices and other more general categories, all of which should be selected if they are correct.")
-    platform = models.ManyToManyField(Platform, related_name='possible_platform', help_text="Select one or more platforms from which the device was operated or deployed.")
-    device_contact = models.ManyToManyField(Person, help_text="Select the person / people who operated or was responsible for the instrument at some point during the voyage. This does not have to be every user of the instrument, but the main operator(s) for each leg.")
-    leg_used = models.ManyToManyField(Leg, help_text="Select the leg(s) on which the device was used.")
-    project = models.ManyToManyField(Project, help_text="Select the projects which used the device or got samples / data from its deployments.")
 
     def __str__(self):
         return "{}".format(self.full_name)
@@ -362,7 +358,12 @@ class SpecificDevice(models.Model):
     type_of_identifying_mark = models.CharField(max_length=50, choices=type_choices, help_text="Choose the type of identifying mark on the instrument.")
     make = models.CharField(max_length=255, null=True, blank=True)
     model = models.CharField(max_length=255, null=True, blank=True)
-    possible_parent = models.ManyToManyField('SpecificDevice', blank=True, help_text="If the device is deployed by attaching it to another instrument, then it has a parent: enter this device here. Some devices may have more than one parent device, for example if the parent device breaks and is swapped.")
+    parent = models.ManyToManyField('SpecificDevice', blank=True, help_text="If the device is deployed by attaching it to another instrument, then it has a parent: enter this device here. Some devices may have more than one parent device, for example if the parent device breaks and is swapped.")
+    platform = models.ManyToManyField(Platform, related_name='possible_platform', help_text="Select one or more platforms from which the device was operated or deployed.")
+    device_contact = models.ManyToManyField(Person, help_text="Select the person / people who operated or was responsible for the instrument at some point during the voyage. This does not have to be every user of the instrument, but the main operator(s) for each leg.")
+    leg_used = models.ManyToManyField(Leg, help_text="Select the leg(s) on which the device was used.")
+    project = models.ManyToManyField(Project, help_text="Select the projects which used the device or got samples / data from its deployments.")
+
 
     def __str__(self):
         return "{} - {}".format(self.type_of_device.full_name, self.identifying_mark)

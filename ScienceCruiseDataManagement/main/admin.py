@@ -423,7 +423,7 @@ class StationTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class SpecificDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('type_of_device', 'type_of_identifying_mark', 'identifying_mark', 'make', 'model', 'possible_parent_list')
+    list_display = ('type_of_device', 'type_of_identifying_mark', 'identifying_mark', 'make', 'model', 'parent_list', 'platform_list', 'device_contact_list', 'leg_used_list', 'project_list')
 
     #def device_type_name(self, obj):
      #   return obj.type_of_device.name
@@ -431,8 +431,8 @@ class SpecificDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     # TODO: doesn't work here, check it again
     # ordering = ['device_type_name__name']
 
-    def possible_parent_list(self, obj):
-        parents = obj.possible_parent.all()
+    def parent_list(self, obj):
+        parents = obj.parent.all()
 
         result = ""
         for parent in parents:
@@ -442,33 +442,14 @@ class SpecificDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
         return result
 
-
-    #device_type_name.admin_order_field = 'device_type_name__name'
-    form = SpecificDeviceForm
-
-class DeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('full_name', 'shortened_name', 'description', 'main_device_type_list', 'possible_platform_list', 'device_contact_list', 'leg_used_list', 'project_list')
-    ordering = ['full_name']
-
-    def possible_platform_list(self, obj):
-        possible_platforms = obj.platform.all()
+    def platform_list(self, obj):
+        platforms = obj.platform.all()
 
         result = ""
-        for possible_platform in possible_platforms:
+        for platform in platforms:
             if result != "":
                 result = result + ", "
-            result = result + possible_platform.name
-
-        return result
-
-    def main_device_type_list(self, obj):
-        main_devices = obj.main_device_type.all()
-
-        result = ""
-        for main_device in main_devices:
-            if result != "":
-                result = result + ", "
-            result = result + main_device.name
+            result = result + platform.name
 
         return result
 
@@ -492,6 +473,25 @@ class DeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
         legs = obj.leg_used.all()
 
         return ",".join([str(leg.number) for leg in legs])
+
+
+    #device_type_name.admin_order_field = 'device_type_name__name'
+    form = SpecificDeviceForm
+
+class DeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('full_name', 'shortened_name', 'description', 'main_device_type_list')
+    ordering = ['full_name']
+
+    def main_device_type_list(self, obj):
+        main_devices = obj.main_device_type.all()
+
+        result = ""
+        for main_device in main_devices:
+            if result != "":
+                result = result + ", "
+            result = result + main_device.name
+
+        return result
 
 class CountryAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name',) # leave comma here for tuple
