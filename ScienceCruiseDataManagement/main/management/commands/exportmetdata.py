@@ -41,8 +41,6 @@ def export(data_type, output_directory):
     first_date = MetDataAll.objects.earliest().date_time
     last_date = MetDataAll.objects.latest().date_time
 
-    last_date = utils.last_midnight(last_date)
-
     filename = "metdata_{}_{}_{}.csv".format(data_type, first_date.strftime("%Y%m%d"), last_date.strftime("%Y%m%d"))
 
     file_path = os.path.join(output_directory, filename)

@@ -281,6 +281,7 @@ def normalised_csv_file(file_path):
 
     return file_contents
 
+
 def remove_accents(input_str):
     nfkd_form = unicodedata.normalize('NFKD', input_str)
     only_ascii = nfkd_form.encode('ASCII', 'ignore')
