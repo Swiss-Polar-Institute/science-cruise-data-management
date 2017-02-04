@@ -233,6 +233,8 @@ def export_table(model, file_path):
 
         csv_writer.writerow(row)
 
+    file.close()
+
 def normalised_csv_file(file_path):
     """Returns the text of the file replacing \t with , removing empty lines, etc.
        to be processed by the csv module.
