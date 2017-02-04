@@ -36,6 +36,7 @@ def delete_old_files(output_directory, new_files):
         print("Deleting old file:", file_to_delete)
         os.remove(os.path.join(output_directory, file_to_delete))
 
+
 def export(data_type, output_directory):
     first_date = MetDataAll.objects.earliest().date_time
     last_date = MetDataAll.objects.latest().date_time
@@ -53,6 +54,6 @@ def export(data_type, output_directory):
     else:
         assert False
 
-    utils.export_table_fast(table, file_path)
+    utils.export_table(table, file_path, first_date, last_date)
 
     return filename

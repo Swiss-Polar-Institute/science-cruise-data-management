@@ -14,6 +14,7 @@ from django.contrib.admin.models import LogEntry, ADDITION
 from django.contrib.auth.models import User
 from django.contrib.admin.options import get_content_type_for_model
 from django.forms.models import model_to_dict
+from django.db.models import Q
 
 import csv
 
@@ -104,10 +105,19 @@ def ship_location_exists(date_time, device_id):
         return False
 
 
+def set_utc(date_time):
+    utc = datetime.timezone(datetime.timedelta(0))
+    date_time = date_time.replace(tzinfo=utc)
+    return date_time
+
+
 def last_midnight(date_time):
     day = datetime.timedelta(1)
     date_time = date_time - day
-    return datetime.datetime(date_time.year, date_time.month, date_time.day, 23, 59, 59)
+    last_midnight_date_time = datetime.datetime(date_time.year, date_time.month, date_time.day, 23, 59, 59)
+
+    last_midnight_date_time = set_utc(last_midnight_date_time)
+    return last_midnight_date_time
 
 
 def ship_location(date_time):
@@ -211,7 +221,7 @@ def add_imported(filepath, object_type):
     print(basename, " moved from ", dirname)
 
 
-def export_table(model, file_path):
+def export_table(model, file_path, first_date, last_date):
     file = open(file_path, "w")
 
     csv_writer = csv.writer(file)
@@ -223,18 +233,26 @@ def export_table(model, file_path):
 
     csv_writer.writerow(field_names)
 
-    met_data_all = model.objects.all().order_by('date_time')
+    current_date = first_date
+    one_day = datetime.timedelta(days=1)
 
-    for met_data in met_data_all.iterator():
-        row = []
-        met_data_dictionary = model_to_dict(met_data)
+    while current_date <= last_date:
+        current_date_tomorrow = current_date + one_day
+        met_data_all = model.objects.filter(Q(date_time__gte=current_date) & Q(date_time__lt=current_date_tomorrow)).order_by('date_time')
+        for met_data in met_data_all:
+            row = []
+            met_data_dictionary = model_to_dict(met_data)
 
-        for field_name in field_names:
-            row.append(met_data_dictionary[field_name])
+            for field_name in field_names:
+                row.append(met_data_dictionary[field_name])
 
-        csv_writer.writerow(row)
+            print(met_data.date_time)
+            csv_writer.writerow(row)
+
+        current_date += one_day
 
     file.close()
+
 
 def sql_row_to_dictionary(sql_row, field_names):
     d = {}
@@ -243,40 +261,6 @@ def sql_row_to_dictionary(sql_row, field_names):
         d[field_name] = sql_row[index]
 
     return d
-
-
-def export_table_fast(model, file_path):
-    file = open(file_path, "w")
-
-    csv_writer = csv.writer(file)
-
-    fields = model._meta.get_fields()
-    field_names = [f.name for f in fields]
-    print(field_names)
-    field_names.remove('id')
-
-    csv_writer.writerow(field_names)
-
-    table_name = model._meta.db_table
-
-    with connection.cursor() as cursor:
-        query = "SELECT {} FROM {} ORDER BY date_time".format(",".join(field_names), table_name)
-        cursor.execute(query)
-
-        while True:
-            sql_row = cursor.fetchone()
-            if sql_row is None:
-                break
-
-            csv_row = []
-            met_data_dictionary = sql_row_to_dictionary(sql_row, field_names)
-
-            for field_name in field_names:
-                csv_row.append(met_data_dictionary[field_name])
-
-            csv_writer.writerow(csv_row)
-
-    file.close()
 
 
 def normalised_csv_file(file_path):

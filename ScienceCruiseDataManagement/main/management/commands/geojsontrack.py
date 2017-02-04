@@ -5,6 +5,7 @@ import datetime
 from main import utils
 import geojson
 
+
 class Command(BaseCommand):
     help = 'Outputs the track on Geojson format. See the settings for the frequency'
 
@@ -15,10 +16,10 @@ class Command(BaseCommand):
         geojson_track = GeoJsonTrack()
         geojson_track.run()
 
+
 class GeoJsonTrack:
     def __init__(self):
         pass
-
 
     def run(self):
         time_delta = datetime.timedelta(seconds=settings.MAP_RESOLUTION_SECONDS)
