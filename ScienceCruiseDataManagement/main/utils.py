@@ -228,7 +228,6 @@ def export_table(model, file_path, first_date, last_date):
 
     fields = model._meta.get_fields()
     field_names = [f.name for f in fields]
-    print(field_names)
     field_names.remove('id')
 
     csv_writer.writerow(field_names)

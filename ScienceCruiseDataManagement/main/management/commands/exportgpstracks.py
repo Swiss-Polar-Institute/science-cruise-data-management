@@ -5,34 +5,43 @@ from main import utils
 import csv
 import os
 from django.db.models import Q
+import glob
 
 
 class Command(BaseCommand):
     help = 'Outputs the track in CSV format.'
 
     def add_arguments(self, parser):
-        parser.add_argument('output_directory', type=str)
+        parser.add_argument('output_directory', type=str, help="Will delete existing files that started on the same start date")
+        parser.add_argument('start', type=str, help="Start of the GPS data. Format: YYYY-MM-DD")
+        parser.add_argument('end', type=str, help="End of the GPS data. Format: YYYY-MM-DD")
 
     def handle(self, *args, **options):
-        generate_all_tracks(options['output_directory'])
+        generate_all_tracks(options['output_directory'], options['start'], options['end'])
 
 
-def generate_all_tracks(output_directory):
-    generate_fast(output_directory, 3600, "1hour")
-    generate_fast(output_directory, 300, "5min")
-    generate_fast(output_directory, 60, "1min")
-    generate_fast(output_directory, 1, "1second")
+def generate_all_tracks(output_directory, start, end):
+    generate_fast(output_directory, 3600, "1hour", start, end)
+    generate_fast(output_directory, 300, "5min", start, end)
+    generate_fast(output_directory, 60, "1min", start, end)
+    generate_fast(output_directory, 1, "1second", start, end)
 
 
-def generate_fast(output_directory, seconds, file_suffix):
+def generate_fast(output_directory, seconds, file_suffix, start, end):
     """
     This method uses Mysql datetime 'ends with' instead of doing individual queries
     for each 'seconds'. It's faster but harder to find gaps in the data.
     """
-    first_date = GpggaGpsFix.objects.earliest().date_time
-    last_date = utils.last_midnight(GpggaGpsFix.objects.latest().date_time)
+    first_date = datetime.datetime.strptime(start, "%Y-%m-%d")
+    last_date = datetime.datetime.strptime(end, "%Y-%m-%d")
 
-    filename = "track_{}_{}_{}.csv".format(first_date.strftime("%Y%m%d"), last_date.strftime("%Y%m%d"), file_suffix)
+    starts_file_format = first_date.strftime("%Y%m%d")
+    ends_file_format = last_date.strftime("%Y%m%d")
+
+    filename = "track_{}_{}_{}.csv".format(starts_file_format, ends_file_format, file_suffix)
+
+    files_to_delete = glob.glob(os.path.join(output_directory, "track_{}_*_{}.csv".format(starts_file_format,
+                                                                                          file_suffix)))
 
     print("Will start processing:", filename)
 
@@ -44,12 +53,26 @@ def generate_fast(output_directory, seconds, file_suffix):
 
     csv_writer.writerow(["date_time", "latitude", "longitude"])
 
+    one_day = datetime.timedelta(days=1)
+
+    current_day = first_date
+    while current_day <= last_date:
+        process_day(current_day, seconds, csv_writer)
+        current_day += one_day
+
+    delete_files(files_to_delete)
+
+
+def process_day(date_time_process, seconds, csv_writer):
+    date_time_process_tomorrow = date_time_process + datetime.timedelta(days=1)
+
+    today_filter = Q(date_time__gte=date_time_process) & Q(date_time__lt=date_time_process_tomorrow)
     if seconds == 1:
-        query_set = GpggaGpsFix.objects.all().order_by('date_time')
+        query_set = GpggaGpsFix.objects.filter(today_filter).order_by('date_time')
     elif seconds == 60:
-        query_set = GpggaGpsFix.objects.filter(date_time__contains=':00.').order_by('date_time')
+        query_set = GpggaGpsFix.objects.filter(today_filter).filter(date_time__contains=':00.').order_by('date_time')
     elif seconds == 300:
-        query_set = GpggaGpsFix.objects.filter(Q(date_time__contains=':00:00.') |
+        query_set = GpggaGpsFix.objects.filter(today_filter).filter(Q(date_time__contains=':00:00.') |
                                                Q(date_time__contains=':05:00.') |
                                                Q(date_time__contains=':10:00.') |
                                                Q(date_time__contains=':15:00.') |
@@ -65,9 +88,6 @@ def generate_fast(output_directory, seconds, file_suffix):
         query_set = GpggaGpsFix.objects.filter(date_time__contains=':00:00').order_by('date_time')
     else:
         assert False # need to add a if case for this
-
-    to_be_written = None
-    last_written = None
 
     # 64: GPS Bridge
     # 63: GPS Trimble
@@ -86,6 +106,12 @@ def generate_fast(output_directory, seconds, file_suffix):
                 csv_writer.writerow([gps_info.date_time.strftime("%Y-%m-%d %H:%M:%S"),
                                      "{:.4f}".format(gps_info.latitude),
                                      "{:.4f}".format(gps_info.longitude)])
+
+
+def delete_files(files):
+    for file in files:
+        print("Deleting file:", file)
+        os.remove(file)
 
 
 def generate_method_1(output_directory, seconds, file_suffix):

@@ -12,6 +12,7 @@ from main.admin_filters import OutcomeReportFilter, StationReportFilter,\
     OffloadingPortFilter, EventFilter, EmailLegFilter
 import main.utils_event
 
+
 class ProjectsStartsWithLetter(admin.SimpleListFilter):
     title = "Projects starts with A"
     parameter_name = 'letter'
