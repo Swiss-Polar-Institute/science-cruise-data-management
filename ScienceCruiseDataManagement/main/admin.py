@@ -386,7 +386,7 @@ class EventReportAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
 
 
 class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('number', 'sampling_method', 'station', 'data', 'samples', 'outcome')
+    list_display = ('number', 'sampling_method', 'station', 'data', 'samples', 'outcome', 'comments')
     ordering = ['-number']
 
     # used for the import_export

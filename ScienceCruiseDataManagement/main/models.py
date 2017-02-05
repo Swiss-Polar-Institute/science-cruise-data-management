@@ -513,6 +513,7 @@ class Event(models.Model):
     samples = models.BooleanField(help_text="Tick this box if samples will be collected during this event.")
     outcome = models.CharField(max_length=20, choices=type_choices, help_text="Select the option that best describes the outcome of the station. If the event did not happen because of weather or a decision to not do it, it should be marked as invalid.", default="Not yet happened")
     imported_from_file = models.ForeignKey(ImportedFile, null=True, blank=True)
+    comments = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return "{}".format(self.number)
