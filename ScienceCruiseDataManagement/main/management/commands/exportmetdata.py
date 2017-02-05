@@ -41,7 +41,8 @@ def export(data_type, output_directory, start, end):
 
     first_date = utils.set_utc(first_date)
 
-    filename = "metdata_{}_{}_{}.csv".format(data_type, first_date.strftime("%Y%m%d"), last_date.strftime("%Y%m%d"))
+    first_date_formatted = first_date.strftime("%Y%m%d")
+    filename = "metdata_{}_{}_{}.csv".format(data_type, first_date_formatted, last_date.strftime("%Y%m%d"))
 
     file_path = os.path.join(output_directory, filename)
 
@@ -53,7 +54,7 @@ def export(data_type, output_directory, start, end):
         assert False
 
     # It will delete all the files that started the same day for the same metdata type (all, wind)
-    files_to_delete = glob.glob(os.path.join(output_directory, "metdata_{}_{}_*.csv"))
+    files_to_delete = glob.glob(os.path.join(output_directory, "metdata_{}_{}_*.csv").format(data_type, first_date_formatted))
     if file_path in files_to_delete:
         files_to_delete.remove(file_path)   # In case that this script is re-generating an existing file
 
