@@ -34,8 +34,11 @@ class Command(BaseCommand):
 
         column = column_after_headers(input_spreadsheet)
 
-        last_stop_time = None
-        last_start_time = None
+        current_event_start_date_time_formatted = None
+        last_stop_time_formatted = None
+        last_start_time_formatted = None
+        last_stop_time_formatted = None
+
         while column < number_of_columns(input_spreadsheet):
             current_start_time = input_spreadsheet[gmt_start_row()][column]
             current_stop_time = input_spreadsheet[gmt_stop_row()][column]
@@ -49,25 +52,27 @@ class Command(BaseCommand):
             else:
                 year = 2017
 
-            start_date_time = datetime.datetime.strptime(current_date + "-" + str(year) + " " + current_start_time,
-                                                                   "%d-%b-%Y %H:%M")
+            formatted_current_start_date_time = datetime.datetime.strptime("{}-{} {}".format(current_date, year, current_start_time), "%d-%b-%Y %H:%M")
+            formatted_current_stop_date_time = datetime.datetime.strptime("{}-{} {}".format(current_date, year, current_stop_time), "%d-%b-%Y %H:%M")
 
-            stop_date_time = datetime.datetime.strptime(current_date + "-" + str(year) + " " + current_stop_time,
-                                                                   "%d-%b-%Y %H:%M")
+            if current_event_start_date_time_formatted is None:
+                current_event_start_date_time_formatted = formatted_current_start_date_time
 
-            if last_start_time is not None:
-                start_date_time_formatted = last_start_time.strftime("%Y-%m-%d %H:%M")
+            if last_start_time_formatted is not None and last_stop_time_formatted is not None \
+                    and ((formatted_current_start_date_time != last_stop_time_formatted or
+                              (column + 1 == number_of_columns(input_spreadsheet)))): # it's the last one
 
-            stop_date_time_formatted = stop_date_time.strftime("%Y-%m-%d %H:%M")
+                if column + 1 == number_of_columns(input_spreadsheet):
+                    last_stop_time_formatted = formatted_current_stop_date_time
 
-            if last_start_time is not None and last_stop_time is not None and (last_stop_time != current_start_time or last_date != current_date):
-                print("Create new event:", current_date, last_start_time, current_stop_time)
-                csv_writer.writerow(['Predator observing', 'True', 'False', start_date_time_formatted, 'Begins', 'started',
-                                    stop_date_time_formatted, 'ends', 'stopped', 'personal watch', 'minutes', ''])
+                print("Create new event:", current_event_start_date_time_formatted, last_stop_time_formatted)
+                csv_writer.writerow(['Predator observing', 'True', 'False', current_event_start_date_time_formatted, 'Begins', 'started',
+                                    last_stop_time_formatted, 'ends', 'stopped', 'personal watch', 'minutes', ''])
 
-            last_start_time = start_date_time
-            last_stop_time = current_stop_time
-            last_date = current_date
+                current_event_start_date_time_formatted = formatted_current_start_date_time
+
+            last_start_time_formatted = formatted_current_start_date_time
+            last_stop_time_formatted = formatted_current_stop_date_time
 
             column += 1
 
@@ -97,7 +102,3 @@ def gmt_stop_row():
 
 def date_row():
     return 0
-
-
-def current_date():
-    return 3
