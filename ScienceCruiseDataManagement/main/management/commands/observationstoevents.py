@@ -92,6 +92,7 @@ def column_after_headers(spreadsheet):
     # Column not found with 21-Dec
     assert False
 
+
 def gmt_start_row():
     return 4
 

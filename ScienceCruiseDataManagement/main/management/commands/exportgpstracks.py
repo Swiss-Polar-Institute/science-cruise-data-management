@@ -48,10 +48,10 @@ def generate_fast(output_directory, seconds, file_suffix, start, end):
 
     files_to_delete = glob.glob(os.path.join(output_directory, "track_{}_*_{}.csv".format(starts_file_format,
                                                                                           file_suffix)))
-
     print("Will start processing:", filename)
 
     file_path = os.path.join(output_directory, filename)
+    files_to_delete.remove(file_path)   # In case that this script is re-generating the file
 
     file = open(file_path, "w")
 
@@ -91,7 +91,7 @@ def process_day(date_time_process, seconds, csv_writer):
                                                Q(date_time__contains=':50:00.') |
                                                Q(date_time__contains=':55:00.')).order_by('date_time')
     elif seconds == 3600:
-        query_set = GpggaGpsFix.objects.filter(date_time__contains=':00:00').order_by('date_time')
+        query_set = GpggaGpsFix.objects.filter(today_filter).filter(date_time__contains=':00:00').order_by('date_time')
     else:
         assert False # need to add a if case for this
 
