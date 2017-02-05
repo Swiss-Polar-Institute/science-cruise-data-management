@@ -51,7 +51,9 @@ def generate_fast(output_directory, seconds, file_suffix, start, end):
     print("Will start processing:", filename)
 
     file_path = os.path.join(output_directory, filename)
-    files_to_delete.remove(file_path)   # In case that this script is re-generating the file
+    
+    if file_path in files_to_delete:
+        files_to_delete.remove(file_path)   # In case that this script is re-generating the file
 
     file = open(file_path, "w")
 
