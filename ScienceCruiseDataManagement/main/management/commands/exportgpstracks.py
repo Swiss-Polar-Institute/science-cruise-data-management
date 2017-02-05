@@ -14,7 +14,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('output_directory', type=str, help="Will delete existing files that started on the same start date")
         parser.add_argument('start', type=str, help="Start of the GPS data. Format: YYYY-MM-DD")
-        parser.add_argument('end', type=str, help="End of the GPS data. Format: YYYY-MM-DD")
+        parser.add_argument('end', type=str, help="End of the GPS data. Format: YYYY-MM-DD or 'yesterday'")
 
     def handle(self, *args, **options):
         generate_all_tracks(options['output_directory'], options['start'], options['end'])
@@ -33,7 +33,13 @@ def generate_fast(output_directory, seconds, file_suffix, start, end):
     for each 'seconds'. It's faster but harder to find gaps in the data.
     """
     first_date = datetime.datetime.strptime(start, "%Y-%m-%d")
-    last_date = datetime.datetime.strptime(end, "%Y-%m-%d")
+    first_date = utils.set_utc(first_date)
+
+    if end == "yesterday":
+        last_date = utils.last_midnight()
+    else:
+        last_date = datetime.datetime.strptime(end, "%Y-%m-%d")
+        last_date = utils.set_utc(last_date)
 
     starts_file_format = first_date.strftime("%Y%m%d")
     ends_file_format = last_date.strftime("%Y%m%d")

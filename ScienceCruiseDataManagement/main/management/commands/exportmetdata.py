@@ -12,8 +12,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('output_directory', type=str, help="Output directory. Files with the same beginning date will be deleted")
-        parser.add_argument('start', type=str, help="Format YYYY-MM-DD")
-        parser.add_argument('end', type=str, help="Format YYYY-MM-DD")
+        parser.add_argument('start', type=str, help="Format YYYY-MM-DD or 'yesterday'")
+        parser.add_argument('end', type=str, help="Format YYYY-MM-DD or 'yesterday'")
 
     def handle(self, *args, **options):
         output_directory = options['output_directory']
@@ -32,7 +32,14 @@ def delete_files(files):
 
 def export(data_type, output_directory, start, end):
     first_date = datetime.datetime.strptime(start, "%Y-%m-%d")
-    last_date = datetime.datetime.strptime(end, "%Y-%m-%d")
+
+    if end == "yesterday":
+        last_date = utils.last_midnight()
+    else:
+        last_date = datetime.datetime.strptime(end, "%Y-%m-%d")
+        last_date = utils.set_utc(last_date)
+
+    first_date = utils.set_utc(first_date)
 
     filename = "metdata_{}_{}_{}.csv".format(data_type, first_date.strftime("%Y%m%d"), last_date.strftime("%Y%m%d"))
 

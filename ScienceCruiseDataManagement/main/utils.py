@@ -111,7 +111,10 @@ def set_utc(date_time):
     return date_time
 
 
-def last_midnight(date_time):
+def last_midnight():
+    date_time = datetime.datetime.utcnow()
+    date_time = set_utc(date_time)
+
     day = datetime.timedelta(1)
     date_time = date_time - day
     last_midnight_date_time = datetime.datetime(date_time.year, date_time.month, date_time.day, 23, 59, 59)
@@ -222,6 +225,7 @@ def add_imported(filepath, object_type):
 
 
 def export_table(model, file_path, first_date, last_date):
+    print("Exporting to file:", file_path)
     file = open(file_path, "w")
 
     csv_writer = csv.writer(file)
@@ -236,6 +240,7 @@ def export_table(model, file_path, first_date, last_date):
     one_day = datetime.timedelta(days=1)
 
     while current_date <= last_date:
+        print("Processing:", current_date.strftime("%Y-%m-%d"), "Last date:", last_date.strftime("%Y-%m-%d"))
         current_date_tomorrow = current_date + one_day
         met_data_all = model.objects.filter(Q(date_time__gte=current_date) & Q(date_time__lt=current_date_tomorrow)).order_by('date_time')
         for met_data in met_data_all:
