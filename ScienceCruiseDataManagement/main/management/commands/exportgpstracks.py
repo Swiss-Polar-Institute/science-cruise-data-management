@@ -51,11 +51,11 @@ def generate_fast(output_directory, seconds, file_suffix, start, end):
     print("Will start processing:", filename)
 
     file_path = os.path.join(output_directory, filename)
-    
+
     if file_path in files_to_delete:
         files_to_delete.remove(file_path)   # In case that this script is re-generating the file
 
-    file = open(file_path, "w")
+    file = open(file_path + ".tmp", "w")
 
     csv_writer = csv.writer(file)
 
@@ -69,6 +69,10 @@ def generate_fast(output_directory, seconds, file_suffix, start, end):
         current_day += one_day
 
     delete_files(files_to_delete)
+
+    file.close()
+
+    os.rename(file_path + ".tmp", file_path)
 
 
 def process_day(date_time_process, seconds, csv_writer):

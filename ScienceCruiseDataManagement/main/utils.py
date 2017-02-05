@@ -226,7 +226,7 @@ def add_imported(filepath, object_type):
 
 def export_table(model, file_path, first_date, last_date):
     print("Exporting to file:", file_path)
-    file = open(file_path, "w")
+    file = open(file_path + ".tmp", "w")
 
     csv_writer = csv.writer(file)
 
@@ -255,6 +255,7 @@ def export_table(model, file_path, first_date, last_date):
         current_date += one_day
 
     file.close()
+    os.rename(file_path + ".tmp", file_path)
 
 
 def sql_row_to_dictionary(sql_row, field_names):
