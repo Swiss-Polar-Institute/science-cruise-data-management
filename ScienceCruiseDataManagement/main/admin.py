@@ -500,7 +500,7 @@ class CountryAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class IslandAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name', 'mid_lat', 'mid_lon')
+    list_display = ('name', 'mid_lat', 'mid_lon', 'island_group')
     ordering = ['name']
 
 

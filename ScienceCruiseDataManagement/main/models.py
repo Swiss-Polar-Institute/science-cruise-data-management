@@ -56,6 +56,7 @@ class Island(models.Model):
     name = models.CharField(max_length=255, unique=True)
     mid_lat = models.FloatField(null=True, blank=True)
     mid_lon = models.FloatField(null=True, blank=True)
+    island_group = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return "{}".format(self.name)
