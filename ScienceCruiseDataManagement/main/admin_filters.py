@@ -213,3 +213,21 @@ class DeviceTypeFilter(OptionFilter):
 
     def lookups(self, request, model_admin):
         return self._prepare_filter_lookups(main.models.Device, 'full_name', query_by_id=True)
+
+
+class ContactFilter(OptionFilter):
+    title = "Contact"
+    parameter_name = "contact"
+    template = "admin/options_filter_contact.html"
+
+    def filter(self, request, queryset):
+        return queryset.filter(device_contact=self.value())
+
+    def lookups(self, request, model_admin):
+        contacts = main.models.Person.objects.all().order_by('name_first')
+
+        filter_lookup = []
+        for contact in contacts:
+            filter_lookup.append((contact.id, "{} {}".format(contact.name_first, contact.name_last)))
+
+        return tuple(filter_lookup)
