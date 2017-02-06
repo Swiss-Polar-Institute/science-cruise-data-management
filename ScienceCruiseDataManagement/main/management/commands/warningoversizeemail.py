@@ -54,6 +54,7 @@ class Notify:
         information['Size'] = "{} KB".format(int(size / 1024))
         information['_size_in_bytes'] = size
         information['_imap_uuid'] = message_uuid
+        information['Uuid'] = message_uuid
 
         return information
 
@@ -98,7 +99,6 @@ class Notify:
 
             email_oversize.save()
 
-
     def _notify_user(self, headers_list, email_to_notify):
         pprint.pprint(headers_list)
 
@@ -115,6 +115,7 @@ class Notify:
 Date: {Date}
 Size: {Size}
 Subject: {Subject}
+UUID: {Uuid}
 
 """.format(**headers)
 
@@ -139,7 +140,6 @@ where you can find it.
 
 Data team
 """.format(information)
-
 
         if self._dry_run == False:
             send_mail(
