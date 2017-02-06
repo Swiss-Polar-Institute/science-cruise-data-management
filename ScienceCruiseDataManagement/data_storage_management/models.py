@@ -1,5 +1,5 @@
 from django.db import models
-from main.models import Person, DeviceType, Project, Leg
+from main.models import Person, DeviceType, Project, Leg, SpecificDevice
 import django.utils.timezone
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -53,6 +53,8 @@ class Item(models.Model):
     nas_resource = models.ForeignKey(NASResource, null=True, blank=True)
 
     added_date_time  = models.DateTimeField(default=django.utils.timezone.now)
+
+    source_instrument = models.ManyToManyField(SpecificDevice, null=True, blank=True, help_text="Select the instrument(s) which produced the data in this folder.")
 
     def __str__(self):
         if self.hard_disk is not None:
