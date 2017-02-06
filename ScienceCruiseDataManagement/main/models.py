@@ -569,6 +569,8 @@ class CtdCast(models.Model):
 
     class Meta:
         unique_together= (('ctd_cast_number', 'leg_number'),)
+        verbose_name_plural = "CTD casts"
+
 
 class TmrCast(models.Model):
     tmr_cast_number = models.IntegerField()
@@ -579,7 +581,7 @@ class TmrCast(models.Model):
         return "{}".format(self.tmr_cast_number)
 
     class Meta:
-        unique_together= (('tmr_cast_number', 'leg_number'),)
+        unique_together = (('tmr_cast_number', 'leg_number'),)
 
 
 class StorageCrate(models.Model):
