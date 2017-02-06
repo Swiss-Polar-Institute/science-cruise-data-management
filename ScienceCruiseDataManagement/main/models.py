@@ -236,7 +236,7 @@ class Platform(models.Model):
     url = models.CharField(max_length=255, null=True, blank=True)
     code = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, unique=True)
-    country = models.ForeignKey(Country)
+    country = models.ForeignKey(Country, null=True, blank=True)
     platform_type = models.ForeignKey(PlatformType)
     source = models.CharField(max_length=255, choices=settings.VOCAB_SOURCES)
 
