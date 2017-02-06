@@ -103,6 +103,7 @@ class LegNumberFilter(LegFilter):
     def filter(self, request, queryset):
         return queryset.filter(leg_number=self.value())
 
+
 class StationReportFilter(OptionFilter):
     title = "Station"
     parameter_name = "station"
@@ -263,3 +264,18 @@ class StationTypeFilter(OptionFilter):
 
     def lookups(self, request, model_admin):
         return self._prepare_filter_lookups(main.models.StationType, 'type', query_by_id=True)
+
+
+class PrincipalInvestigatorFilter(OptionFilter):
+    title = "Principal Investigation true/false"
+    parameter_name = "principal_investigator_true_false"
+    template = "admin/options_filter_principal_investigator_true_false.html"
+
+    def filter(self, request, queryset):
+        return queryset.filter(principal_investigator=self.value())
+
+    def lookups(selfself, request, model_admin):
+        return (
+            ('True', 'True'),
+            ('False', 'False')
+        )
