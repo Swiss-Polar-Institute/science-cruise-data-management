@@ -201,3 +201,15 @@ class EventFilter(OptionFilter):
 
     def lookups(self, request, model_admin):
         return self._prepare_filter_lookups(main.models.Sample, 'event', query_by_id=False)
+
+
+class DeviceTypeFilter(OptionFilter):
+    title = "Type of device"
+    parameter_name = "device_type"
+    template = "admin/options_filter_device_type.html"
+
+    def filter(self, request, queryset):
+        return queryset.filter(type_of_device=self.value())
+
+    def lookups(self, request, model_admin):
+        return self._prepare_filter_lookups(main.models.Device, 'full_name', query_by_id=True)

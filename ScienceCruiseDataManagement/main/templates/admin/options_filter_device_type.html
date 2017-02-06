@@ -1,0 +1,11 @@
+{% load i18n %}
+<h3>{% blocktrans with filter_title=title %} By {{ filter_title }} {% endblocktrans %}</h3>
+
+<form method="get">
+    <select name="device_type" style="width:100%">
+        {% for choice in choices %}
+        <option value="{{choice.id|iriencode}}" {% if choice.selected %} selected {% endif %}>{{choice.display}}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="submit">
+</form>
