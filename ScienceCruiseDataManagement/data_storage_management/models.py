@@ -54,7 +54,7 @@ class Item(models.Model):
 
     added_date_time  = models.DateTimeField(default=django.utils.timezone.now)
 
-    source_instrument = models.ManyToManyField(SpecificDevice, null=True, blank=True, help_text="Select the instrument(s) which produced the data in this folder.")
+    source_instrument = models.ManyToManyField(SpecificDevice, blank=True, help_text="Select the instrument(s) which produced the data in this folder.")
 
     def __str__(self):
         if self.hard_disk is not None:
