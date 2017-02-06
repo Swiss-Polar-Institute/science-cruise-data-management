@@ -231,3 +231,16 @@ class ContactFilter(OptionFilter):
             filter_lookup.append((contact.id, "{} {}".format(contact.name_first, contact.name_last)))
 
         return tuple(filter_lookup)
+
+
+class ProjectFilter(OptionFilter):
+    title = "Project"
+    parameter_name = "project"
+    template = "admin/options_filter_project.html"
+
+    def filter(self, request, queryset):
+        return queryset.filter(project=self.value())
+
+    def lookups(self, request, model_admin):
+        return self._prepare_filter_lookups(main.models.Project, 'title', query_by_id=True)
+

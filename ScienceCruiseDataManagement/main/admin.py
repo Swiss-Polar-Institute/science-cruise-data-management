@@ -9,7 +9,7 @@ import main.models
 import main.utils
 from main.admin_filters import OutcomeReportFilter, StationReportFilter,\
     SamplingMethodFilter, ProjectFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter,\
-    OffloadingPortFilter, EventFilter, EmailLegFilter, DeviceTypeFilter, ContactFilter
+    OffloadingPortFilter, EventFilter, EmailLegFilter, DeviceTypeFilter, ContactFilter, ProjectFilter
 import main.utils_event
 
 
@@ -425,7 +425,7 @@ class StationTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 class SpecificDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('type_of_device', 'description', 'type_of_identifying_mark', 'identifying_mark', 'make', 'model', 'parent_list', 'platform_list', 'device_contact_list', 'leg_used_list', 'project_list', 'calibration_required', 'calibration_documents', 'calibration_comments', 'device_comments')
-    list_filter = (DeviceTypeFilter, ContactFilter, )
+    list_filter = (DeviceTypeFilter, ContactFilter, ProjectFilter, )
 
     #def device_type_name(self, obj):
      #   return obj.type_of_device.name
