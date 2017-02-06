@@ -56,6 +56,7 @@ class DataManagementProgressAdmin(admin.ModelAdmin):
 # Register your models here.
 admin.site.register(data_storage_management.models.HardDisk, HardDiskAdmin)
 admin.site.register(data_storage_management.models.Directory, ItemAdmin)
+admin.site.register(data_storage_management.models.ShipData, ItemAdmin)
 admin.site.register(data_storage_management.models.File, ItemAdmin)
 admin.site.register(data_storage_management.models.DirectoryImportLog, DirectoryImportLog)
 admin.site.register(data_storage_management.models.NASResource, NASResourceAdmin)

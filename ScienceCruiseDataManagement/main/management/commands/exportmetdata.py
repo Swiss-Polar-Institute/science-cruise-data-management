@@ -7,6 +7,7 @@ import re
 import datetime
 import glob
 
+
 class Command(BaseCommand):
     help = 'Outputs the track in CSV format.'
 
