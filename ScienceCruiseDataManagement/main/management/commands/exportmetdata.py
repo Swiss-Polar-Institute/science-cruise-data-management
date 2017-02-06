@@ -33,8 +33,19 @@ def delete_files(files):
 def export(data_type, output_directory, start, end):
     first_date = datetime.datetime.strptime(start, "%Y-%m-%d")
 
+    if data_type == "all":
+        table = MetDataAll
+    elif data_type == "wind":
+        table = MetDataWind
+    else:
+        assert False
+
     if end == "yesterday":
-        last_date = utils.last_midnight()
+        yesterday = utils.last_midnight()
+        last_available_date = table.objects.latest().date_time
+
+        last_date = min(yesterday, last_available_date)
+
     else:
         last_date = datetime.datetime.strptime(end, "%Y-%m-%d")
         last_date = utils.set_utc(last_date)
@@ -45,13 +56,6 @@ def export(data_type, output_directory, start, end):
     filename = "metdata_{}_{}_{}.csv".format(data_type, first_date_formatted, last_date.strftime("%Y%m%d"))
 
     file_path = os.path.join(output_directory, filename)
-
-    if data_type == "all":
-        table = MetDataAll
-    elif data_type == "wind":
-        table = MetDataWind
-    else:
-        assert False
 
     # It will delete all the files that started the same day for the same metdata type (all, wind)
     files_to_delete = glob.glob(os.path.join(output_directory, "metdata_{}_{}_*.csv").format(data_type, first_date_formatted))
