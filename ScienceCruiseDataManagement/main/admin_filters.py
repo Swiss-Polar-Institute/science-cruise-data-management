@@ -77,23 +77,26 @@ class OutcomeReportFilter(OptionFilter):
         return queryset.filter(outcome=self.value())
 
 
-class EmailLegFilter(OptionFilter):
+class LegFilter(OptionFilter):
     title = "Leg"
     parameter_name = "leg"
-    template = "admin/options_mail_leg.html"
+    template = "admin/options_filter_leg.html"
 
     def filter(self, request, queryset):
         return queryset.filter(person__leg__id=self.value())
 
     def lookups(self, request, model_admin):
-        legs = main.models.Leg.objects.all().order_by('number')
+        return self._prepare_filter_lookups(main.models.Leg, 'number', query_by_id=True)
 
-        filter_lookup = []
-        for leg in legs:
-            filter_lookup.append((leg.id, leg.number))
 
-        return tuple(filter_lookup)
+class PersonLegFilter(LegFilter):
+    def filter(self, request, queryset):
+        return queryset.filter(person__leg__id=self.value())
 
+
+class UsedLegFilter(LegFilter):
+    def filter(self, request, queryset):
+        return queryset.filter(leg_used=self.value())
 
 class StationReportFilter(OptionFilter):
     title = "Station"

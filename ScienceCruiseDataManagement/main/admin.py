@@ -8,8 +8,8 @@ import main.lookups
 import main.models
 import main.utils
 from main.admin_filters import OutcomeReportFilter, StationReportFilter,\
-    SamplingMethodFilter, ProjectFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter,\
-    OffloadingPortFilter, EventFilter, EmailLegFilter, DeviceTypeFilter, ContactFilter, ProjectFilter
+    SamplingMethodFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter,\
+    OffloadingPortFilter, EventFilter, LegFilter, DeviceTypeFilter, ContactFilter, ProjectFilter, UsedLegFilter
 import main.utils_event
 
 
@@ -425,7 +425,7 @@ class StationTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 class SpecificDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('type_of_device', 'description', 'type_of_identifying_mark', 'identifying_mark', 'make', 'model', 'parent_list', 'platform_list', 'device_contact_list', 'leg_used_list', 'project_list', 'calibration_required', 'calibration_documents', 'calibration_comments', 'device_comments')
-    list_filter = (DeviceTypeFilter, ContactFilter, ProjectFilter, )
+    list_filter = (DeviceTypeFilter, ContactFilter, ProjectFilter, UsedLegFilter,)
 
     #def device_type_name(self, obj):
      #   return obj.type_of_device.name
@@ -627,7 +627,7 @@ class EmailAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('person_name_first', 'person_name_last', 'email_address', 'webmail_password', 'server_password')
     ordering = ['email_address']
     search_fields = ('email_address', )
-    list_filter = (EmailLegFilter, )
+    list_filter = (LegFilter,)
     resource_class = EmailResource
 
     def person_name_first(self, obj):
