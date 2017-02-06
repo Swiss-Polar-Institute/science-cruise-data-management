@@ -23,6 +23,16 @@ class OptionFilter(admin.SimpleListFilter):
         else:
             return self._value
 
+    def queryset(self, request, queryset):
+        if self.value() is not None:
+            return self.filter(request, queryset)
+        else:
+            return queryset
+
+    def filter(self, request, queryset):
+        raise NotImplementedError(
+            "a from_string() method")
+
     def choices(self, changelist):
         yield {
             'selected': self.value() is None,
@@ -63,11 +73,8 @@ class OutcomeReportFilter(OptionFilter):
     def lookups(self, request, model_admin):
         return main.models.Event.type_choices
 
-    def queryset(self, request, queryset):
-        if self.value() is not None:
-            return queryset.filter(outcome=self.value())
-        else:
-            return queryset
+    def filter(self, request, queryset):
+        return queryset.filter(outcome=self.value())
 
 
 class EmailLegFilter(OptionFilter):
@@ -75,11 +82,8 @@ class EmailLegFilter(OptionFilter):
     parameter_name = "leg"
     template = "admin/options_mail_leg.html"
 
-    def queryset(self, request, queryset):
-        if self.value() is not None:
-            return queryset.filter(person__leg__id=self.value())
-        else:
-            return queryset
+    def filter(self, request, queryset):
+        return queryset.filter(person__leg__id=self.value())
 
     def lookups(self, request, model_admin):
         legs = main.models.Leg.objects.all().order_by('number')
@@ -96,11 +100,8 @@ class StationReportFilter(OptionFilter):
     parameter_name = "station"
     template = "admin/options_filter_station.html"
 
-    def queryset(self, request, queryset):
-        if self.value() is not None:
-            return queryset.filter(station__id=self.value())
-        else:
-            return queryset
+    def filter(self, request, queryset):
+        return queryset.filter(station__id=self.value())
 
     def lookups(self, request, model_admin):
         stations = main.models.Station.objects.all().order_by('name')
@@ -117,11 +118,8 @@ class SamplingMethodFilter(OptionFilter):
     parameter_name = "sampling_method"
     template = "admin/options_filter_samplingmethod.html"
 
-    def queryset(self, request, queryset):
-        if self.value() is not None and self.value() != '':
-            return queryset.filter(sampling_method__id=self.value())
-        else:
-            return queryset
+    def filter(self, request, queryset):
+        return queryset.filter(sampling_method__id=self.value())
 
     def lookups(self, request, model_admin):
         sampling_methods = main.models.SamplingMethod.objects.all().order_by('name')
@@ -138,11 +136,8 @@ class ProjectFilter(OptionFilter):
     parameter_name = "project"
     template = "admin/options_filter_project.html"
 
-    def queryset(self, request, queryset):
-        if self.value() is not None and self.value() != '':
-            return queryset.filter(project__id=self.value())
-        else:
-            return queryset
+    def filter(self, request, queryset):
+        return queryset.filter(project__id=self.value())
 
     def lookups(self, request, model_admin):
         return self._prepare_filter_lookups(main.models.Project, 'title', query_by_id=True)
@@ -153,11 +148,8 @@ class SampleContentsFilter(OptionFilter):
     parameter_name = "sample_contents"
     template = "admin/options_filter_sample_contents.html"
 
-    def queryset(self, request, queryset):
-        if self.value() is not None and self.value() != '':
-            return queryset.filter(contents=self.value())
-        else:
-            return queryset
+    def filter(self, request, queryset):
+        return queryset.filter(contents=self.value())
 
     def lookups(self, request, model_admin):
         return self._prepare_filter_lookups(main.models.Sample, 'contents', query_by_id=False)
@@ -168,11 +160,8 @@ class TypeOfStorageFilter(OptionFilter):
     parameter_name = "type_of_storage"
     template = "admin/options_filter_type_of_storage.html"
 
-    def queryset(self, request, queryset):
-        if self.value() is not None and self.value() != '':
-            return queryset.filter(storage_type=self.value())
-        else:
-            return queryset
+    def filter(self, request, queryset):
+        return queryset.filter(storage_type=self.value())
 
     def lookups(self, request, model_admin):
         return self._prepare_filter_lookups(main.models.Sample, 'storage_type', query_by_id=False)
@@ -183,11 +172,8 @@ class StorageLocationFilter(OptionFilter):
     parameter_name = "storage_location"
     template = "admin/options_filter_storage_location.html"
 
-    def queryset(self, request, queryset):
-        if self.value() is not None and self.value() != '':
-            return queryset.filter(storage_location=self.value())
-        else:
-            return queryset
+    def filter(self, request, queryset):
+        return queryset.filter(storage_location=self.value())
 
     def lookups(self, request, model_admin):
         return self._prepare_filter_lookups(main.models.Sample, 'storage_location', query_by_id=False)
@@ -198,11 +184,8 @@ class OffloadingPortFilter(OptionFilter):
     parameter_name = "offloading_port"
     template = "admin/options_filter_offloading_port.html"
 
-    def queryset(self, request, queryset):
-        if self.value() is not None and self.value() != '':
-            return queryset.filter(offloading_port=self.value())
-        else:
-            return queryset
+    def filter(self, request, queryset):
+        return queryset.filter(offloading_port=self.value())
 
     def lookups(self, request, model_admin):
         return self._prepare_filter_lookups(main.models.Sample, 'offloading_port', query_by_id=False)
@@ -213,11 +196,8 @@ class EventFilter(OptionFilter):
     parameter_name = "event"
     template = "admin/options_filter_event.html"
 
-    def queryset(self, request, queryset):
-        if self.value() is not None and self.value() != '':
-            return queryset.filter(event_id=self.value())
-        else:
-            return queryset
+    def filter(self, request, queryset):
+        return queryset.filter(event_id=self.value())
 
     def lookups(self, request, model_admin):
         return self._prepare_filter_lookups(main.models.Sample, 'event', query_by_id=False)
