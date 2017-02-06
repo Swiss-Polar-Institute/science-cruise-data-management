@@ -83,7 +83,7 @@ class LegFilter(OptionFilter):
     template = "admin/options_filter_leg.html"
 
     def filter(self, request, queryset):
-        raise NotImplemented("Subclasses of LegFilters has to implement it")
+        return queryset.filter(leg__id=self.value())
 
     def lookups(self, request, model_admin):
         return self._prepare_filter_lookups(main.models.Leg, 'number', query_by_id=True)
@@ -106,7 +106,7 @@ class LegNumberFilter(LegFilter):
 class StationReportFilter(OptionFilter):
     title = "Station"
     parameter_name = "station"
-    template = "admin/options_filter_station.html"
+    template = "admin/options_filter_station_type.html"
 
     def filter(self, request, queryset):
         return queryset.filter(station__id=self.value())
@@ -252,3 +252,14 @@ class ProjectFilter(OptionFilter):
     def lookups(self, request, model_admin):
         return self._prepare_filter_lookups(main.models.Project, 'title', query_by_id=True)
 
+
+class StationTypeFilter(OptionFilter):
+    title = "Station type"
+    parameter_name = "station_type"
+    template = "admin/options_filter_station_type.html"
+
+    def filter(self, request, queryset):
+        return queryset.filter(type=self.value())
+
+    def lookups(self, request, model_admin):
+        return self._prepare_filter_lookups(main.models.StationType, 'type', query_by_id=True)

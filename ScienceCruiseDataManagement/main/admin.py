@@ -10,7 +10,7 @@ import main.utils
 from main.admin_filters import OutcomeReportFilter, StationReportFilter,\
     SamplingMethodFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter,\
     OffloadingPortFilter, EventFilter, LegFilter, DeviceTypeFilter, ContactFilter, ProjectFilter, UsedLegFilter,\
-    LegNumberFilter
+    LegNumberFilter, StationTypeFilter
 import main.utils_event
 
 
@@ -234,6 +234,7 @@ class TmrCastAdmin(admin.ModelAdmin):
 class StationAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'type', 'latitude', 'longitude', 'leg', 'arrival_time', 'departure_time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'outcome', 'comment')
     ordering = ['-name']
+    list_filter = (StationTypeFilter, LegFilter)
 
 
 class ProposedStationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
