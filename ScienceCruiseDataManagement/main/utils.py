@@ -115,7 +115,7 @@ def last_midnight():
     date_time = datetime.datetime.utcnow()
     date_time = set_utc(date_time)
 
-    day = datetime.timedelta(1)
+    day = datetime.timedelta(days=1)
     date_time = date_time - day
     last_midnight_date_time = datetime.datetime(date_time.year, date_time.month, date_time.day, 23, 59, 59)
 
