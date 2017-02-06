@@ -223,4 +223,6 @@ Data team
                     print("Connection Reset Error for user: {}. Trying again".format(email_account))
                 except socket.timeout:
                     print("Connection timeout Error for user: {}. Trying again".format(email_account))
+                except OSError:
+                    print("Probably 'Network is unreachable' error for user {}. Trying again".format(email_account))
 
