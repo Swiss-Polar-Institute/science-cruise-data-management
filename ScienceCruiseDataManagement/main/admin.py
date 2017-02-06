@@ -9,7 +9,8 @@ import main.models
 import main.utils
 from main.admin_filters import OutcomeReportFilter, StationReportFilter,\
     SamplingMethodFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter,\
-    OffloadingPortFilter, EventFilter, LegFilter, DeviceTypeFilter, ContactFilter, ProjectFilter, UsedLegFilter
+    OffloadingPortFilter, EventFilter, LegFilter, DeviceTypeFilter, ContactFilter, ProjectFilter, UsedLegFilter,\
+    LegNumberFilter
 import main.utils_event
 
 
@@ -221,6 +222,8 @@ class LegAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 class CtdCastAdmin(admin.ModelAdmin):
     list_display = ('ctd_cast_number', 'event_number', 'leg_number', 'ctd_operator', 'ctd_file_name', 'ice_coverage', 'sea_state', 'water_depth', 'surface_temperature', 'surface_salinity', 'comments')
     ordering = ['ctd_cast_number', 'event_number', 'leg_number']
+
+    list_filter = (LegNumberFilter, )
 
 
 class TmrCastAdmin(admin.ModelAdmin):
