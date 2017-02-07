@@ -126,15 +126,14 @@ UUID: {Uuid}
 
         message_body = """Hello,
 
-There are some oversized emails in your mailbox (see the bottom of this email).
+There are some oversized emails in your mailbox (see the bottom of this email for details).
 
 You will not receive the oversized email and the attachment will not be downloaded.
 We recommend you contact the sender and ask for a smaller version (<200 KB).
 
-If it's really crucial to download the attachment, let us know (data@ace-expedition.net)
-and we will try to download it to a shared folder (this will not be private unless you
-ask us to do otherwise). When it has downloaded, you will receive an email telling you
-where you can find it.
+If it's really crucial to download the attachment, forward the details below for the
+relevant email, to data@ace-expedition.net and we will try to download it. When it has
+downloaded, you will receive an email telling you where you can find it.
 
 {}
 
