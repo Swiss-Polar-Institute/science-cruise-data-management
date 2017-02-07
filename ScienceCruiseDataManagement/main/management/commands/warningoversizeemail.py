@@ -50,7 +50,12 @@ class Notify:
         information = {}
         information['From'] = str(email.header.make_header(email.header.decode_header(msg['From'])))
         information['Date'] = msg['Date']
-        information['Subject'] = str(email.header.make_header(email.header.decode_header(msg['Subject'])))
+
+        if 'Subject' not in msg:
+            information['Subject'] = ""
+        else:
+            information['Subject'] = str(email.header.make_header(email.header.decode_header(msg['Subject'])))
+
         information['Size'] = "{} KB".format(int(size / 1024))
         information['_size_in_bytes'] = size
         information['_imap_uuid'] = message_uuid
