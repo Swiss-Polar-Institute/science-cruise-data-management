@@ -274,7 +274,7 @@ class PrincipalInvestigatorFilter(OptionFilter):
     def filter(self, request, queryset):
         return queryset.filter(principal_investigator=self.value())
 
-    def lookups(selfself, request, model_admin):
+    def lookups(self, request, model_admin):
         return (
             ('True', 'True'),
             ('False', 'False')

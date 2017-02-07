@@ -10,7 +10,7 @@ import main.utils
 from main.admin_filters import OutcomeReportFilter, StationReportFilter,\
     SamplingMethodFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter,\
     OffloadingPortFilter, EventFilter, LegFilter, DeviceTypeFilter, ContactFilter, ProjectFilter, UsedLegFilter,\
-    LegNumberFilter, StationTypeFilter, PrincipalInvestigatorFilter
+    LegNumberFilter, StationTypeFilter, PrincipalInvestigatorFilter, PersonLegFilter
 import main.utils_event
 
 
@@ -632,7 +632,7 @@ class EmailAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('person_name_first', 'person_name_last', 'email_address', 'webmail_password', 'server_password')
     ordering = ['email_address']
     search_fields = ('email_address', )
-    list_filter = (LegFilter,)
+    list_filter = (PersonLegFilter, )
     resource_class = EmailResource
 
     def person_name_first(self, obj):
