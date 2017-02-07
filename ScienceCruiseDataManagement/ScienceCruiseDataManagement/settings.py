@@ -192,7 +192,7 @@ UPDATE_LOCATION_POSITION_SOURCE_NAME = "Ship's GPS"
 
 MAP_RESOLUTION_SECONDS = 1800
 
-TRACK_MAP_FILEPATH = "/mnt/data_admin/geojson_track"
+TRACK_MAP_FILEPATH = "/mnt/data_admin/geojson_track/geojson.track"
 
 # For default options
 DEFAULT_PLATFORM_NAME = "Akademik Treshnikov"
