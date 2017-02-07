@@ -107,7 +107,7 @@ class LegNumberFilter(LegFilter):
 class StationReportFilter(OptionFilter):
     title = "Station"
     parameter_name = "station"
-    template = "admin/options_filter_station_type.html"
+    template = "admin/options_filter_station.html"
 
     def filter(self, request, queryset):
         return queryset.filter(station__id=self.value())
