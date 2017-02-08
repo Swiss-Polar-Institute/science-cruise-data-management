@@ -297,6 +297,10 @@ class EventReportResource(import_export.resources.ModelResource):
 
     outcome = import_export.fields.Field(column_name ='outcome', attribute='outcome')
 
+    event_comments = import_export.fields.Field(column_name='comments',
+                                                attribute='comments',
+                                                widget=import_export.widgets.ForeignKeyWidget(main.models.Event, 'comments'))
+
     # dehydrate_ is an import_eport.resources.ModelResource special prefix
     def dehydrate_start_time(self, event):
         return EventReportAdmin.start_time(event)
@@ -317,7 +321,7 @@ class EventReportResource(import_export.resources.ModelResource):
         return EventReportAdmin.end_longitude(event)
 
     class Meta:
-        fields = ('number', 'station', 'sampling_method', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome')
+        fields = ('number', 'station', 'sampling_method', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome', 'event_comments')
         export_order = fields
 
 
@@ -392,6 +396,7 @@ class EventReportAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
 class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('number', 'sampling_method', 'station', 'data', 'samples', 'outcome', 'comments')
     ordering = ['-number']
+    search_fields = ('number',)
 
     # used for the import_export
     resource_class = EventResource

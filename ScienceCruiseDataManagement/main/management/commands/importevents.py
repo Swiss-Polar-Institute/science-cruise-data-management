@@ -83,6 +83,7 @@ class Command(BaseCommand):
                                                                      SamplingMethod,
                                                                      'name')
                 event.outcome = "Success"
+                event.comments= row['general_comments']
 
                 time_uncertainty = self.find_foreign_key_object(['time_uncertainty'],
                                                                 row,
