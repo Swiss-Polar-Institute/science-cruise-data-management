@@ -85,7 +85,6 @@ class Notify:
 
             if already_notified:
                 print("Already notified message. Not saving headers in the database")
-                pprint.pprint(headers)
                 continue
 
             email_oversize = EmailOversizeNotified()
@@ -113,7 +112,6 @@ class Notify:
 
             if already_notified:
                 print("Already notified. Skipping sending notification")
-                pprint.pprint(headers)
                 continue
 
             information += """From: {From}
