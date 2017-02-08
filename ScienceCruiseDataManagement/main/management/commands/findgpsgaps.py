@@ -18,8 +18,8 @@ class Command(BaseCommand):
         parser.add_argument('gps', type=str, help="Gps device name (SamplingMethod) to find the gaps (e.g. 'GPS Bridge1' or 'GPS Trimble'")
         parser.add_argument('output_directory', type=str, help="Output directory with the JSON data")
         parser.add_argument('basefilename', type=str, help="e.g. gaps-bridge1 . Start, end date and .json will be appended")
-        parser.add_argument('start', type=str, help="Start of the GPS data. Format: YYYY-MM-DD")
-        parser.add_argument('end', type=str, help="End of the GPS data. Format: YYYY-MM-DD or 'yesterday'")
+        parser.add_argument('start', type=str, help="Start of the GPS data. Format: YYYYMMDD")
+        parser.add_argument('end', type=str, help="End of the GPS data. Format: YYYYMMDD or 'yesterday'")
 
     def handle(self, *args, **options):
         find_data_gaps_gps = FindDataGapsGps(options['gps'], options['start'], options['end'])
@@ -33,7 +33,7 @@ class FindDataGapsGps:
         self.device_id = device.id
 
         # Find first_date
-        first_date = datetime.datetime.strptime(wanted_start_str, "%Y-%m-%d")
+        first_date = datetime.datetime.strptime(wanted_start_str, "%Y%m%d")
         first_date_database_qs = GpggaGpsFix.objects.filter(device_id=self.device_id).filter(Q(date_time__gte=first_date)).order_by('date_time')
         first_date_database = first_date_database_qs.first().date_time
 
@@ -50,7 +50,7 @@ class FindDataGapsGps:
         if wanted_end_str == "yesterday":
             last_date = utils.last_midnight()
         else:
-            last_date = utils.set_utc(datetime.datetime.strptime(wanted_end_str, "%Y-%m-%d"))
+            last_date = utils.set_utc(datetime.datetime.strptime(wanted_end_str, "%Y%m%d"))
 
         self.last_date = last_date
         self.last_date_str = last_date.strftime("%Y-%m-%d %H:%M:%S")
