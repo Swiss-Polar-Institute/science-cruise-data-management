@@ -171,37 +171,10 @@ def generate_method_1(output_directory, seconds, file_suffix):
             print("No data for:", current_date)
 
         if previous_date.day != current_date.day:
-            print("Processing now:", current_date)
+            print("Generating CSV GPS info:", current_date)
 
         previous_date = current_date
         current_date = current_date + time_delta
-
-
-def find_gps_missings(device):
-    """ Used to find missing gaps in the GPS information. """
-    time_delta = datetime.timedelta(seconds=300)
-
-    first_date = GpggaGpsFix.objects.earliest().date_time
-    last_date = GpggaGpsFix.objects.latest().date_time
-
-    current_date = first_date
-    previous_state = "disconnected"
-
-    while current_date < last_date:
-        location_exists = utils.ship_location_exists(current_date, device)
-
-        if location_exists and previous_state == "disconnected":
-            print("Starts at", current_date)
-            previous_state = "connected"
-        elif not location_exists and previous_state == "connected":
-            print("Stops at ", current_date)
-            previous_state = "disconnected"
-
-        previous_date = current_date
-        current_date = current_date + time_delta
-
-        if previous_date.day != current_date.day:
-            print("Processing now {}".format(current_date))
 
 
 def which_gps(date_time_str):

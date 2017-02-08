@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from main.models import SamplingMethod
+from django.db.models import Q
 import datetime
 from main import utils
 import json
@@ -33,7 +34,8 @@ class FindDataGapsGps:
 
         # Find first_date
         first_date = datetime.datetime.strptime(wanted_start_str, "%Y-%m-%d")
-        first_date_database = GpggaGpsFix.objects.filter(device_id=self.device_id).earliest().date_time
+        first_date_database_qs = GpggaGpsFix.objects.filter(device_id=self.device_id).filter(Q(date_time__gte=first_date)).order_by('date_time')
+        first_date_database = first_date_database_qs.first().date_time
 
         first_date = utils.set_utc(first_date)
         first_date_database = utils.set_utc(first_date_database)
@@ -117,6 +119,6 @@ class FindDataGapsGps:
             current_date = current_date + time_delta
 
             if previous_date.day != current_date.day:
-                print("Processing now {}".format(current_date))
+                print("Finding gaps on: {}".format(current_date))
 
         return gps_information
