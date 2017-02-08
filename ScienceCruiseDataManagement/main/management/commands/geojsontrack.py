@@ -38,8 +38,6 @@ class GeoJsonTrack:
 
             current_date = current_date + time_delta
 
-            print(current_date)
-
         track = geojson.LineString(locations)
 
         file = open(settings.TRACK_MAP_FILEPATH, "w")
