@@ -6,6 +6,9 @@ import csv
 import os
 from django.db.models import Q
 import glob
+from main.management.commands import findgpsgaps
+
+gps_bridge_working_intervals = None
 
 
 class Command(BaseCommand):
@@ -21,6 +24,12 @@ class Command(BaseCommand):
 
 
 def generate_all_tracks(output_directory, start, end):
+    global gps_bridge_working_intervals
+
+    gps_gaps = findgpsgaps.FindDataGapsGps("GPS Bridge1", start, end)
+
+    gps_bridge_working_intervals = gps_gaps.find_gps_missings()
+
     generate_fast(output_directory, 3600, "1hour", start, end)
     generate_fast(output_directory, 300, "5min", start, end)
     generate_fast(output_directory, 60, "1min", start, end)
@@ -107,7 +116,7 @@ def process_day(date_time_process, seconds, csv_writer):
     for gps_info in query_set.iterator():
         date_time_string = gps_info.date_time.strftime("%Y-%m-%d %H:%M:%S")
 
-        if which_gps(date_time_string) == "bridge":
+        if which_gps(date_time_string) == "GPS Bridge1":
             if gps_info.device_id == 64:
                 csv_writer.writerow([gps_info.date_time.strftime("%Y-%m-%d %H:%M:%S"),
                                      "{:.4f}".format(gps_info.latitude),
@@ -196,18 +205,9 @@ def find_gps_missings(device):
 
 
 def which_gps(date_time_str):
-    gps_bridge_working_intervals = [ ("2016-12-27 13:39:14", "2016-12-28 06:54:14"),
-                                     ("2016-12-28 07:09:14", "2017-01-01 10:59:14"),
-                                     ("2017-01-01 11:24:14", "2017-01-05 00:04:14"),
-                                     ("2017-01-05 02:09:14", "2017-01-11 00:04:14"),
-                                     ("2017-01-11 02:34:14", "2017-01-11 08:49:14"),
-                                     ("2017-01-11 08:54:14", "2017-01-11 00:04:14"),
-                                     ("2017-01-11 02:34:14", "2017-01-11 08:49:14"),
-                                     ("2017-01-11 08:54:14", "2017-01-13 08:44:14"),
-                                     ("2017-01-13 11:29:14", "2017-12-12 00:00:00")]
-
     for interval in gps_bridge_working_intervals:
-        if date_time_str > interval[0] and date_time_str <= interval[1]:
+        if interval['starts'] < date_time_str <= interval['stops']:
+        # if date_time_str > interval['starts'] and date_time_str <= interval['stops']:
             return "bridge"
 
     return "trimble"

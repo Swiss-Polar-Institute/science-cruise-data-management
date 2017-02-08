@@ -1,6 +1,7 @@
 import datetime
 import unicodedata
 
+from django.db.models.query import EmptyQuerySet
 from django.db import connection
 from django.conf import settings
 import main.models
@@ -97,12 +98,12 @@ def now_with_timezone():
 def ship_location_exists(date_time, device_id):
     position_main_gps_query = GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast(%s as datetime) and ship_data_gpggagpsfix.device_id=%s ORDER BY date_time LIMIT 1', [date_time, device_id])
 
-    if abs(position_main_gps_query[0].date_time - date_time).seconds <= 5:
-        # Yes data in between 5 seconds
-        return True
-    else:
-        # No data
-        return False
+    # Raw query set doesn't have .exists() or ._len_
+    for position in position_main_gps_query:
+        if abs(position.date_time - date_time).seconds <= 5:
+            return True
+
+    return False
 
 
 def set_utc(date_time):
