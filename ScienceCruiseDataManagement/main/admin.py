@@ -14,21 +14,6 @@ from main.admin_filters import OutcomeReportFilter, StationReportFilter,\
 import main.utils_event
 
 
-class ProjectsStartsWithLetter(admin.SimpleListFilter):
-    title = "Projects starts with A"
-    parameter_name = 'letter'
-
-    def lookups(self, request, model_admin):
-        return (('a', 'Starts with A'),
-                ('b', 'Starts with B'))
-
-    def queryset(self, request, queryset):
-        if self.value() is not None and self.value() != '':
-            return queryset.filter(name__startswith=self.value())
-        else:
-            return queryset
-
-
 class MissionAdmin(admin.ModelAdmin):
     list_display = ('name', 'acronym', 'institution', 'description')
     ordering = ['name']
@@ -36,7 +21,6 @@ class MissionAdmin(admin.ModelAdmin):
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('number', 'title', 'alternative_title', 'principal_investigator', 'abstract')
-    list_filter = (ProjectsStartsWithLetter,)
     ordering = ['number']
 
 
