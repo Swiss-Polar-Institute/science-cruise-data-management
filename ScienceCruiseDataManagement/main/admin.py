@@ -24,7 +24,7 @@ class ProjectAdmin(admin.ModelAdmin):
     ordering = ['number']
 
 
-class ReadOnlyIfUserCantChangeEvents:
+class ReadOnlyIfUserCantChange:
     def get_readonly_fields(self, request, obj=None):
         if not main.utils.can_user_change_events(request.path, request.user):
             fields_from_model = []
@@ -168,7 +168,7 @@ class EventActionForm(ModelForm):
         fields = '__all__'
 
 
-class EventActionAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
+class EventActionAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
     #def description_2(self, obj):
     #    return obj.event_action_type.description
 
@@ -195,7 +195,7 @@ class EventActionDescriptionAdmin(admin.ModelAdmin):
     ordering = ['name']
 
 
-class LegAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+class LegAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('number', 'start_time', 'start_port', 'end_time', 'end_port', 'active_leg')
     ordering = ['number']
 
@@ -215,7 +215,7 @@ class TmrCastAdmin(admin.ModelAdmin):
     ordering = ['tmr_cast_number', 'event_number', 'leg_number']
 
 
-class StationAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
+class StationAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'type', 'latitude', 'longitude', 'leg', 'arrival_time', 'departure_time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'outcome', 'comment')
     ordering = ['-name']
     list_filter = (StationTypeFilter, LegFilter)
@@ -309,7 +309,7 @@ class EventReportResource(import_export.resources.ModelResource):
         export_order = fields
 
 
-class EventReportAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
+class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome')
     list_filter = (SamplingMethodFilter, OutcomeReportFilter, StationReportFilter)
 
@@ -377,7 +377,7 @@ class EventReportAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.Expor
         return EventReportAdmin._get_event_action_end(obj.number, 'longitude')
 
 
-class EventAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
+class EventAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('number', 'sampling_method', 'station', 'data', 'samples', 'outcome', 'comments')
     ordering = ['-number']
     search_fields = ('number',)
@@ -493,12 +493,12 @@ class CountryAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['name']
 
 
-class IslandAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+class IslandAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'mid_lat', 'mid_lon', 'island_group')
     ordering = ['name']
 
 
-class IslandLandingsAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+class IslandLandingsAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('island', 'person', 'date')
     ordering = ['island']
     search_fields = ('island__name', 'person__name_first', 'person__name_last')
@@ -563,7 +563,7 @@ class SampleForm(ModelForm):
         fields = '__all__'
 
 
-class SampleAdmin(ReadOnlyIfUserCantChangeEvents, import_export.admin.ExportMixin, admin.ModelAdmin):
+class SampleAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('expedition_sample_code', 'project_sample_number', 'contents', 'crate_number', 'storage_type', 'storage_location', 'offloading_port', 'destination', 'ship', 'mission', 'leg', 'project', 'julian_day', 'event', 'pi_initials', 'preservation', 'file', 'specific_contents')
     fields = list_display
     ordering = ['expedition_sample_code']
@@ -578,7 +578,7 @@ class ImportedFileAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['file_name']
 
 
-class PersonAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+class PersonAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'project', 'onboard_role', 'organisation_list', 'principal_investigator','leg_list')
     ordering = ['name_last']
     search_fields = ('name_first', 'name_middle', 'name_last')
@@ -701,7 +701,7 @@ class MessageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['-date_time']
 
 
-class TimeChangeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+class TimeChangeAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('date_changed_utc', 'difference_to_utc_after_change')
     ordering = ['date_changed_utc']
 

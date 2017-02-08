@@ -10,11 +10,7 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.conf import settings
 
-cannot_change_events = (("cannot_change_events_special", "Cannot change events (special)"),)
-cannot_change_events_action = (("cannot_change_events_action_special", "Cannot change events action (special)"),)
-
-cannot_change_events_all = [cannot_change_events, cannot_change_events_action]
-
+cannot_change = (("cannot_change_special", "Cannot change (special)"),)
 
 def next_event_number():
     latest = Event.objects.all().aggregate(Max('number'))
@@ -529,7 +525,7 @@ class Event(models.Model):
             open_event.save()
 
     class Meta:
-        permissions = cannot_change_events
+        permissions = cannot_change
 
 
 class EventReport(Event):
@@ -724,7 +720,7 @@ class EventAction(models.Model):
         return "{}".format(self.event.number)
 
     class Meta:
-        permissions = cannot_change_events_action
+        permissions = cannot_change
 
 
 @receiver(post_delete, sender=EventAction)
