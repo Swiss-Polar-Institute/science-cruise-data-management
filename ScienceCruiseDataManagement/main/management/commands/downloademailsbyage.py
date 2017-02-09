@@ -75,6 +75,9 @@ class MessageDownloader:
         fetchmailrc.write(self.fetchmailrc())
         fetchmailrc.close()
 
+        # Ensures permissions needed by fetchmail
+        os.chmod(file_name, 700)
+
         self.execute_fetchmail(file_name)
 
     def fetchmailrc(self):
@@ -128,7 +131,9 @@ class DownloadMailsByAge:
         self.messages.sort()
         self.usernames_to_download = self.prioritize_usernames()
 
-        print("List to download:")
+        print("")
+        print("List to download ({}):".format(len(self.usernames_to_download)))
+        print("================")
         for email in self.usernames_to_download:
             print(email)
 
@@ -179,13 +184,16 @@ class DownloadMailsByAge:
                 if oldest_messages[message.username].timestamp > message.timestamp:
                     oldest_messages[message.username] = message
 
+        print("")
         print("Stats")
         print("=====")
         print("age: {} seconds".format(age))
         print("age: {:.2f} hours".format(age / 3600))
         print("age: {:.2f} days".format(age / 3600 / 24))
-        print("")
 
+        print("")
+        print("Oldest messages per user")
+        print("========================")
         print("UTC now: {}".format(datetime.datetime.utcnow()))
         for username in oldest_messages.keys():
             print("{} {}".format(oldest_messages[username].date_time, username))
