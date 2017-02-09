@@ -76,7 +76,7 @@ class MessageDownloader:
         fetchmailrc.close()
 
         # Ensures permissions needed by fetchmail
-        os.chmod(file_name, 700)
+        os.chmod(file_name, 0o700)
 
         self.execute_fetchmail(file_name)
 
