@@ -310,7 +310,7 @@ class EventReportResource(import_export.resources.ModelResource):
 
 
 class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome')
+    list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome', 'comments')
     list_filter = (SamplingMethodFilter, OutcomeReportFilter, StationReportFilter)
 
     resource_class = EventReportResource
