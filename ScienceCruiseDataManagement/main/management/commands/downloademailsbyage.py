@@ -61,7 +61,7 @@ class MessageDownloader:
         pidfile = os.path.join(self.temporary_directory, "pid")
         while True:
             cmd = "fetchmail --fetchmailrc {} --pidfile {}".format(file_name, pidfile)
-            exit_status = os.system(cmd)
+            exit_status = execute_log(cmd)
             if exit_status == 0:
                 break
             else:
@@ -103,6 +103,13 @@ poll {imap_server}
         return config_txt
 
 
+def execute_log(cmd):
+    now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    print("Will execute: {}".format(now, cmd))
+    exit_status = os.system(cmd)
+    return exit_status
+
+
 class DownloadMailsByAge:
     def __init__(self, server_or_file):
         if server_or_file == "server":
@@ -123,8 +130,7 @@ class DownloadMailsByAge:
         output_file = datetime.datetime.utcnow().strftime("usernames-to-download-%Y-%m-%d %H:%M:%S")
         while True:
             cmd = "ssh root@ace-expedition.net ./messages_to_download.py > '{}'".format(output_file)
-            print("Executing: {}".format(cmd))
-            exit_status = os.system(cmd)
+            exit_status = execute_log(cmd)
 
             if exit_status == 0:
                 break
