@@ -6,6 +6,7 @@ import os
 import shutil
 import time
 
+TEMP_DIRECTORY = os.path.join(os.getenv("HOME"), "downloademailsbyage")
 
 class Command(BaseCommand):
     help = 'Connects to the server and download emails per priority'
@@ -16,6 +17,7 @@ class Command(BaseCommand):
                             help="Creates the Django users from the Person table")
 
     def handle(self, *args, **options):
+
         download_mails_by_age = DownloadMailsByAge(options['server_or_file'])
         download_mails_by_age.fetch_list_of_messages()
         download_mails_by_age.print_stats()
@@ -55,11 +57,13 @@ class Message:
 class MessageDownloader:
     def __init__(self, username):
         self.username = username
-        self.temporary_directory = "fetchmail-temporary"
+        self.temporary_directory = os.path.join(TEMP_DIRECTORY, "fetchmail-temporary")
         shutil.rmtree(self.temporary_directory, ignore_errors=True)
         os.makedirs(self.temporary_directory)
 
     def execute_fetchmail(self, file_name):
+        print("")
+        print("Downloading messages for {}".format(self.username))
         pidfile = os.path.join(self.temporary_directory, "pid")
         while True:
             cmd = "fetchmail --fetchmailrc {} --pidfile {}".format(file_name, pidfile)
@@ -111,7 +115,7 @@ poll {imap_server}
 
 def execute_log(cmd):
     now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-    print("{} will execute: {}".format(now, cmd))
+    print("{} Executing: {}".format(now, cmd))
     exit_status = os.system(cmd)
     return exit_status
 
@@ -133,11 +137,6 @@ class DownloadMailsByAge:
         self.messages.sort()
         self.usernames_to_download = self.prioritize_usernames()
 
-        print("")
-        print("List to download ({}):".format(len(self.usernames_to_download)))
-        print("================")
-        for email in self.usernames_to_download:
-            print(email)
 
     def download_messages(self):
         for username in self.usernames_to_download:
@@ -146,8 +145,9 @@ class DownloadMailsByAge:
 
     def download_list_of_file_messages_from_server(self):
         output_file = datetime.datetime.utcnow().strftime("usernames-to-download-%Y-%m-%d %H:%M:%S")
+        output_file_path = os.path.join(TEMP_DIRECTORY, output_file)
         while True:
-            cmd = "ssh -o ConnectTimeout=120 -o ServerAliveInterval=120 -v root@{} ./messages_to_download.py > '{}'".format(settings.IMAP_SERVER, output_file)
+            cmd = "ssh -o ConnectTimeout=120 -o ServerAliveInterval=120 root@{} ./messages_to_download.py > '{}'".format(settings.IMAP_SERVER, output_file_path)
             exit_status = execute_log(cmd)
 
             if exit_status == 0:
@@ -155,7 +155,7 @@ class DownloadMailsByAge:
             else:
                 print("Trying again to fetch the list of usernames to download")
 
-        messages = self.read_messages_file(output_file)
+        messages = self.read_messages_file(output_file_path)
         return messages
 
     def read_messages_file(self, file_path):
@@ -172,19 +172,35 @@ class DownloadMailsByAge:
         return messages
 
     def print_stats(self):
-        now = int(datetime.datetime.utcnow().strftime("%s"))
+        print("")
+        print("Stats")
+        print("=====")
+
+        if len(self.messages) == 0:
+            print("No stats")
+            return
+
+        now = datetime.datetime.utcnow()
+        now_timestamp = int(now.strftime("%s"))
         age_seconds = 0
 
         oldest_messages = {}
+        messages_per_user = {}
 
         for message in self.messages:
-            age_seconds += (now - message.timestamp)
+            age_seconds += (now_timestamp - message.timestamp)
+            username = message.username
 
-            if message.username not in oldest_messages:
-                oldest_messages[message.username] = message
+            if username not in oldest_messages:
+                oldest_messages[username] = message
             else:
-                if oldest_messages[message.username].timestamp > message.timestamp:
-                    oldest_messages[message.username] = message
+                if oldest_messages[username].timestamp > message.timestamp:
+                    oldest_messages[username] = message
+
+            if username not in messages_per_user:
+                messages_per_user[username] = 1
+            else:
+                messages_per_user[username] += 1
 
         age_hours = age_seconds / 3600
         print("")
@@ -195,11 +211,16 @@ class DownloadMailsByAge:
 
         print("Average age of message: {:.2f} hours".format(age_hours/len(self.messages)))
 
+        print("")
         print("Oldest messages per user")
         print("========================")
-        print("UTC now: {}".format(datetime.datetime.utcnow()))
         for username in oldest_messages.keys():
-            print("{} {}".format(oldest_messages[username].date_time, username))
+            oldest_message_date_time = oldest_messages[username].date_time
+            seconds_ago = (now-oldest_message_date_time).seconds
+
+            print("{} {:.2f} (number of messages: {})".format((username, seconds_ago/3600, messages_per_user[username])))
+
+        print("")
 
     def sort_messages(self):
         self.messages.sort()
