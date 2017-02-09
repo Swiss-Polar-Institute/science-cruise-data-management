@@ -692,8 +692,8 @@ class ShipAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class SamplingMethodAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name', 'definition')
-    ordering = ['name']
+    list_display = ('name', 'definition', 'validity', 'date_validity_changed')
+    ordering = ['name', 'validity']
 
 
 class MessageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):

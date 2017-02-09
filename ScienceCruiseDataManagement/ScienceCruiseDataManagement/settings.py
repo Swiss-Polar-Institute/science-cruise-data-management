@@ -168,6 +168,7 @@ VOCAB_SOURCES = (("seadatanet", "Sea Data Net"),
                  ("britishoceanographicdatacentre", "British Oceanographic Data Centre (BODC)"))
 DEVICE_SOURCE_DEFAULT= "generatedforace"
 UNCERTAINTY_DEFAULT = "britishoceanoraphicdatacentre"
+VALIDITY_OPTIONS = (("valid", "valid"), ("redundant", "redundant"))
 
 # JQUERY is loaded when necessary from the static files
 USE_DJANGO_JQUERY = False
