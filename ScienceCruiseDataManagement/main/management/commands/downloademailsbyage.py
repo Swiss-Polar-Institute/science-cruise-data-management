@@ -51,6 +51,7 @@ class Message:
     def __lt__(self, other):
         return self.timestamp < other.timestamp
 
+
 class MessageDownloader:
     def __init__(self, username):
         self.username = username
@@ -63,7 +64,8 @@ class MessageDownloader:
         while True:
             cmd = "fetchmail --fetchmailrc {} --pidfile {}".format(file_name, pidfile)
             exit_status = execute_log(cmd)
-            if exit_status == 0:
+            print("Exit status: {}".format(exit_status))
+            if exit_status == 0 or exit_status == 1 or exit_status == 13:
                 break
             else:
                 print("Will try again to fetch for {}".format(self.username))
@@ -171,12 +173,12 @@ class DownloadMailsByAge:
 
     def print_stats(self):
         now = int(datetime.datetime.utcnow().strftime("%s"))
-        age = 0
+        age_seconds = 0
 
         oldest_messages = {}
 
         for message in self.messages:
-            age += (now - message.timestamp)
+            age_seconds += (now - message.timestamp)
 
             if message.username not in oldest_messages:
                 oldest_messages[message.username] = message
@@ -184,14 +186,15 @@ class DownloadMailsByAge:
                 if oldest_messages[message.username].timestamp > message.timestamp:
                     oldest_messages[message.username] = message
 
+        age_hours = age_seconds / 3600
         print("")
         print("Stats")
         print("=====")
-        print("age: {} seconds".format(age))
-        print("age: {:.2f} hours".format(age / 3600))
-        print("age: {:.2f} days".format(age / 3600 / 24))
+        print("Age: {:.2f} hours".format(age_hours))
+        print("Messages: {}".len(self.messages))
 
-        print("")
+        print("Average age of message: {:.2f}".format(age_hours/self.messages))
+
         print("Oldest messages per user")
         print("========================")
         print("UTC now: {}".format(datetime.datetime.utcnow()))
