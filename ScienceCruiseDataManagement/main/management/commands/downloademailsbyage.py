@@ -177,7 +177,7 @@ class DownloadMailsByAge:
         print("=====")
 
         if len(self.messages) == 0:
-            print("No stats")
+            print("No messages, no stats")
             return
 
         now = datetime.datetime.utcnow()
@@ -203,9 +203,6 @@ class DownloadMailsByAge:
                 messages_per_user[username] += 1
 
         age_hours = age_seconds / 3600
-        print("")
-        print("Stats")
-        print("=====")
         print("Age: {:.2f} hours".format(age_hours))
         print("Number of Messages: {}".format(len(self.messages)))
 
@@ -218,7 +215,7 @@ class DownloadMailsByAge:
             oldest_message_date_time = oldest_messages[username].date_time
             seconds_ago = (now-oldest_message_date_time).seconds
 
-            print("{} {:.2f} (number of messages: {})".format((username, seconds_ago/3600, messages_per_user[username])))
+            print("{} {:.2f} (number of messages: {})".format(username, seconds_ago/3600, messages_per_user[username]))
 
         print("")
 
