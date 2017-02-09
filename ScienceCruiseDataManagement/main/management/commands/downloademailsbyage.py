@@ -211,11 +211,11 @@ class DownloadMailsByAge:
         print("")
         print("Oldest messages per user")
         print("========================")
-        for username in oldest_messages.keys():
+        for username in self.usernames_to_download:
             oldest_message_date_time = oldest_messages[username].date_time
             seconds_ago = (now-oldest_message_date_time).seconds
 
-            print("{} {:.2f} (number of messages: {})".format(username, seconds_ago/3600, messages_per_user[username]))
+            print("{}\t{:.2f} (number of messages: {})".format(username, seconds_ago/3600, messages_per_user[username]))
 
         print("")
 
