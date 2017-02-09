@@ -121,7 +121,7 @@ class DownloadMailsByAge:
         if self.server_or_file == "server":
             self.messages = self.download_list_of_file_messages_from_server()
         elif self.server_or_file == "file":
-            self.messages = self.load_list_of_file_messages_from_file()
+            self.messages = self.read_messages_file()
         else:
             assert False
 
@@ -148,10 +148,10 @@ class DownloadMailsByAge:
             else:
                 print("Trying again to fetch the list of usernames to download")
 
-        messages = self.load_list_of_file_messages_from_file(output_file)
+        messages = self.read_messages_file(output_file)
         return messages
 
-    def load_list_of_file_messages_from_file(self, file_path):
+    def read_messages_file(self, file_path):
         print("Will read from: {}".format(file_path))
         fp = open(file_path, "r")
 
