@@ -193,7 +193,7 @@ class DownloadMailsByAge:
         print("Age: {:.2f} hours".format(age_hours))
         print("Number of Messages: {}".format(len(self.messages)))
 
-        print("Average age of message: {:.2f} hours".format(age_hours/self.messages))
+        print("Average age of message: {:.2f} hours".format(age_hours/len(self.messages)))
 
         print("Oldest messages per user")
         print("========================")
