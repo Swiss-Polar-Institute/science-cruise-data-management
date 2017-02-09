@@ -17,7 +17,7 @@ class Command(BaseCommand):
                             help="Creates the Django users from the Person table")
 
     def handle(self, *args, **options):
-
+        os.makedirs(TEMP_DIRECTORY, exist_ok=True)
         download_mails_by_age = DownloadMailsByAge(options['server_or_file'])
         download_mails_by_age.fetch_list_of_messages()
         download_mails_by_age.print_stats()
