@@ -148,7 +148,8 @@ class DownloadMailsByAge:
             else:
                 print("Trying again to fetch the list of usernames to download")
 
-        self.load_list_of_file_messages_from_file(output_file)
+        messages = self.load_list_of_file_messages_from_file(output_file)
+        return messages
 
     def load_list_of_file_messages_from_file(self, file_path):
         print("Will read from: {}".format(file_path))
