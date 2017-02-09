@@ -129,7 +129,7 @@ class DownloadMailsByAge:
     def download_list_of_file_messages_from_server(self):
         output_file = datetime.datetime.utcnow().strftime("usernames-to-download-%Y-%m-%d %H:%M:%S")
         while True:
-            cmd = "ssh -v root@ace-expedition.net ./messages_to_download.py > '{}'".format(output_file)
+            cmd = "ssh -v root@{} ./messages_to_download.py > '{}'".format(settings.IMAP_SERVER, output_file)
             exit_status = execute_log(cmd)
 
             if exit_status == 0:
