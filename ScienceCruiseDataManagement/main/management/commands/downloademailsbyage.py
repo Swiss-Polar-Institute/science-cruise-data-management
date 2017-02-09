@@ -17,6 +17,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         download_mails_by_age = DownloadMailsByAge(options['server_or_file'])
+        download_mails_by_age.fetch_list_of_messages()
         download_mails_by_age.print_stats()
         download_mails_by_age.download_messages()
 
@@ -112,24 +113,34 @@ def execute_log(cmd):
 
 class DownloadMailsByAge:
     def __init__(self, server_or_file):
-        if server_or_file == "server":
+        self.server_or_file = server_or_file
+        self.messages = None
+        self.usernames_to_download = None
+
+    def fetch_list_of_messages(self):
+        if self.server_or_file == "server":
             self.messages = self.download_list_of_file_messages_from_server()
-        elif server_or_file == "file":
+        elif self.server_or_file == "file":
             self.messages = self.load_list_of_file_messages_from_file()
         else:
             assert False
 
-        self.sort_messages()
-        self.to_download = self.prioritize_usernames()
-        print("List to download:")
+        self.messages.sort()
+        self.usernames_to_download = self.prioritize_usernames()
 
-        for email in self.to_download:
+        print("List to download:")
+        for email in self.usernames_to_download:
             print(email)
+
+    def download_messages(self):
+        for username in self.usernames_to_download:
+            downloader = MessageDownloader(username)
+            downloader.fetchmail()
 
     def download_list_of_file_messages_from_server(self):
         output_file = datetime.datetime.utcnow().strftime("usernames-to-download-%Y-%m-%d %H:%M:%S")
         while True:
-            cmd = "ssh -v root@{} ./messages_to_download.py > '{}'".format(settings.IMAP_SERVER, output_file)
+            cmd = "ssh -o ConnectTimeout=120 -o ServerAliveInterval=120 -v root@{} ./messages_to_download.py > '{}'".format(settings.IMAP_SERVER, output_file)
             exit_status = execute_log(cmd)
 
             if exit_status == 0:
@@ -140,6 +151,7 @@ class DownloadMailsByAge:
         self.load_list_of_file_messages_from_file(output_file)
 
     def load_list_of_file_messages_from_file(self, file_path):
+        print("Will read from: {}".format(file_path))
         fp = open(file_path, "r")
 
         messages = []
@@ -149,7 +161,7 @@ class DownloadMailsByAge:
             messages.append(message)
 
         fp.close()
-
+        print("Read messages: {}".format(messages))
         return messages
 
     def print_stats(self):
@@ -189,8 +201,3 @@ class DownloadMailsByAge:
                 to_download.append(message.username)
 
         return to_download
-
-    def download_messages(self):
-        for username in self.to_download:
-            downloader = MessageDownloader(username)
-            downloader.fetchmail()
