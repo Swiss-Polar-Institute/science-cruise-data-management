@@ -105,7 +105,7 @@ poll {imap_server}
 
 def execute_log(cmd):
     now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-    print("Will execute: {}".format(now, cmd))
+    print("{} will execute: {}".format(now, cmd))
     exit_status = os.system(cmd)
     return exit_status
 
@@ -129,7 +129,7 @@ class DownloadMailsByAge:
     def download_list_of_file_messages_from_server(self):
         output_file = datetime.datetime.utcnow().strftime("usernames-to-download-%Y-%m-%d %H:%M:%S")
         while True:
-            cmd = "ssh root@ace-expedition.net ./messages_to_download.py > '{}'".format(output_file)
+            cmd = "ssh -v root@ace-expedition.net ./messages_to_download.py > '{}'".format(output_file)
             exit_status = execute_log(cmd)
 
             if exit_status == 0:
