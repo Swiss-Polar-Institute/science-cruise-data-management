@@ -70,7 +70,7 @@ class FindDataGapsGps:
 
         gps_missings = self.find_gps_missings()
 
-        json.dump(gps_missings, fp)
+        json.dump(gps_missings, fp, indent=2, sort_keys=True)
 
         fp.close()
         shutil.move(file_path_tmp, file_path)
