@@ -162,7 +162,6 @@ class DownloadMailsByAge:
             messages.append(message)
 
         fp.close()
-        print("Read messages: {}".format(messages))
         return messages
 
     def print_stats(self):
