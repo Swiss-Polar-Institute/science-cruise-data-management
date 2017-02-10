@@ -20,7 +20,7 @@ class MetadataGenerator:
 
     def create_all_records(self):
         print("create all records")
-        root = etree.Element("root")
+        root = etree.Element("DIF")
         root.append(etree.Element("child1"))
         child2 = etree.SubElement(root, "child2")
         child3 = etree.SubElement(root, "child3")

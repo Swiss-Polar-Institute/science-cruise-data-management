@@ -151,7 +151,7 @@ class DownloadMailsByAge:
     def download_messages(self):
         for (index, username) in enumerate(self.usernames_to_download):
             downloader = MessageDownloader(username)
-            downloader.set_progress(index+1, len(self.usernames_to_download), self.oldest_messages[username])
+            downloader.set_progress(index+1, len(self.usernames_to_download), self.oldest_messages[username].date_time)
             downloader.fetchmail()
 
     def download_list_of_file_messages_from_server(self):
