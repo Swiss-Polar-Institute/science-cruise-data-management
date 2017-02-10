@@ -12,14 +12,30 @@
         <!-- Our Antarctic map related code -->
         <script src="{% static '/js/antarctic_map.js' %}"></script>
 		<script src="{% static '/js/main_map.js' %}"></script>
+
+<script type="text/javascript">
+function toggle_events(cb){
+    if (cb.checked) {
+        LAYERS['positions'].addTo(map);
+    }
+    else {
+        LAYERS['positions'].remove();
+    }
+}
+</script>
+
 {% endblock %}
 
 {% block content %}
+
+<input value="on" id="show_events" type="checkbox" onclick="toggle_events(this); checked" />
+<label for="show_events">Show events</label>
+
 <div class="container-fluid fill">
     <div id="map">
 
     </div>
- </div>
+</div>
 
 	<script type="text/javascript">
 		$(document).ready(function() {

@@ -1,3 +1,5 @@
+var LAYERS = {};
+
 function antarctic_map_main() {
     var initialZoom = 0;
     var projection_name = 'EPSG:3031';
@@ -69,7 +71,7 @@ function addGeojsonLayer(data, style) {
     newLayer.addTo(map);
 }
 
-function loadAndPlotGeojsonMarkers(url) {
+function loadAndPlotGeojsonMarkers(url, layer_name) {
     $.getJSON(url,
         function(geojson) {
             var pointToLayer = function(feature, latlng) {
@@ -84,7 +86,9 @@ function loadAndPlotGeojsonMarkers(url) {
                     make_marker_clickable(layer);
             };
 
-            L.geoJSON(geojson, {pointToLayer: pointToLayer, onEachFeature: onEachFeature}).addTo(map);
+            var layer = L.geoJSON(geojson, {pointToLayer: pointToLayer, onEachFeature: onEachFeature});
+            layer.addTo(map);
+            LAYERS[layer_name] = layer;
         }
     );
 }
