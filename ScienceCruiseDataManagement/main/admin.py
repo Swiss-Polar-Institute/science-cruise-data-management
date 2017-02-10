@@ -312,6 +312,7 @@ class EventReportResource(import_export.resources.ModelResource):
 class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome', 'comments')
     list_filter = (SamplingMethodFilter, OutcomeReportFilter, StationReportFilter)
+    search_fields = ('number',)
 
     resource_class = EventReportResource
 
@@ -640,7 +641,7 @@ class EmailOversizeNotifiedAdmin(admin.ModelAdmin):
         return "{}".format(int(obj.size/1024))
 
 class OrganisationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name', 'address', 'country')
+    list_display = ('name', 'address', 'city', 'country')
     ordering = ['name']
 
 

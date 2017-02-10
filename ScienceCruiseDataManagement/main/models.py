@@ -211,6 +211,7 @@ class SampleContent(models.Model):
 class Organisation(models.Model):
     name = models.CharField(max_length=255, unique=True)
     address = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=255, blank=True, null=True)
     country = models.ForeignKey(Country, null=True)
 
     def __str__(self):
