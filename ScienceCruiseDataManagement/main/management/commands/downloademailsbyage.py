@@ -75,7 +75,7 @@ class MessageDownloader:
         print("* Downloading messages for {} (user {} of {})".format(self.username, self.current, self.total))
         while True:
             oldest_message_minutes = datetime.datetime.utcnow() - self.oldest_message_date_time
-            print("Oldest message datetime: {} minutes old".format(oldest_message_minutes))
+            print("Oldest message datetime: {:.2f} minutes old".format((oldest_message_minutes.seconds/60)))
             cmd = "fetchmail --timeout 120 --fetchmailrc {} --pidfile {}".format(file_name, pidfile)
             exit_status = execute_log(cmd)
             print("Exit status: {}".format(exit_status))
@@ -225,12 +225,16 @@ class DownloadMailsByAge:
         print("")
         print("Oldest messages per user")
         print("========================")
+        starts = datetime.datetime.utcnow()
         for username in self.usernames_to_download:
             oldest_message_date_time = self.oldest_messages[username].date_time
             seconds_ago = (now-oldest_message_date_time).seconds
             minutes_ago = seconds_ago / 60
             print("{}\t{:.2f} minutes (number of messages: {})".format(username, minutes_ago, messages_per_user[username]))
 
+        ends = datetime.datetime.utcnow()
+        elapsed = ends - starts
+        print("To download all the messages it took: {:.2f} minutes".format(elapsed.seconds/60))
         print("")
 
     def sort_messages(self):
