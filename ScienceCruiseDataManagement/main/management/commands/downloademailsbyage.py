@@ -60,10 +60,16 @@ class MessageDownloader:
         self.temporary_directory = os.path.join(TEMP_DIRECTORY, "fetchmail-temporary")
         shutil.rmtree(self.temporary_directory, ignore_errors=True)
         os.makedirs(self.temporary_directory)
+        self.current = None
+        self.total = None
+
+    def set_progress(self, current, total):
+        self.current = current
+        self.total = total
 
     def execute_fetchmail(self, file_name):
         print("")
-        print("Downloading messages for {}".format(self.username))
+        print("Downloading messages for {} ({} of {})".format(self.username, self.current, self.total))
         pidfile = os.path.join(self.temporary_directory, "pid")
         while True:
             cmd = "fetchmail --fetchmailrc {} --pidfile {}".format(file_name, pidfile)
@@ -139,8 +145,9 @@ class DownloadMailsByAge:
 
 
     def download_messages(self):
-        for username in self.usernames_to_download:
+        for (index, username) in enumerate(self.usernames_to_download):
             downloader = MessageDownloader(username)
+            downloader.set_progress(index+1, len(self.usernames_to_download))
             downloader.fetchmail()
 
     def download_list_of_file_messages_from_server(self):
