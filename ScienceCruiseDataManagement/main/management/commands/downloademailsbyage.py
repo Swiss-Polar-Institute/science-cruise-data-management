@@ -155,6 +155,9 @@ class DownloadMailsByAge:
             else:
                 print("Trying again to fetch the list of usernames to download")
 
+            # Allows Control+C to cancel
+            time.sleep(1)
+
         messages = self.read_messages_file(output_file_path)
         return messages
 
