@@ -72,7 +72,7 @@ class MessageDownloader:
         print("Downloading messages for {} ({} of {})".format(self.username, self.current, self.total))
         pidfile = os.path.join(self.temporary_directory, "pid")
         while True:
-            cmd = "fetchmail --fetchmailrc {} --pidfile {}".format(file_name, pidfile)
+            cmd = "fetchmail --timeout 120 --fetchmailrc {} --pidfile {}".format(file_name, pidfile)
             exit_status = execute_log(cmd)
             print("Exit status: {}".format(exit_status))
             if exit_status == 0 or exit_status == 1 or exit_status == 13 or exit_status == 256:
