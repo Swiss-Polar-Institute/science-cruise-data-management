@@ -203,10 +203,10 @@ class DownloadMailsByAge:
                 messages_per_user[username] += 1
 
         age_hours = age_seconds / 3600
-        print("Age: {:.2f} hours".format(age_hours))
+        print("Total combined age: {} minutes".format(int(age_hours / 60)))
         print("Number of Messages: {}".format(len(self.messages)))
 
-        print("Average age of message: {:.2f} hours".format(age_hours/len(self.messages)))
+        print("Average age of message: {} minutes".format(int(age_hours/len(self.messages))))
 
         print("")
         print("Oldest messages per user")
@@ -215,7 +215,7 @@ class DownloadMailsByAge:
             oldest_message_date_time = oldest_messages[username].date_time
             seconds_ago = (now-oldest_message_date_time).seconds
 
-            print("{}\t{:.2f} (number of messages: {})".format(username, seconds_ago/3600, messages_per_user[username]))
+            print("{}\t{:.2f} minutes (number of messages: {})".format(username, seconds_ago/60, messages_per_user[username]))
 
         print("")
 
