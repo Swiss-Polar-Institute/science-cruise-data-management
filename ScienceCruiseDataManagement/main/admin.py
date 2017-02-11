@@ -2,7 +2,7 @@ import import_export
 from django.conf import settings
 from django.contrib import admin
 from django.db.models import Q
-from django.forms import ModelForm
+from django.forms import ModelForm, ModelChoiceField
 
 import main.lookups
 import main.models
@@ -129,6 +129,11 @@ class EventActionResource(import_export.resources.ModelResource):
         export_order = fields
 
 
+class EventNumberAndSamplingMethod(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return "{}-{}".format(obj.number, obj.sampling_method.name)
+
+
 class EventActionForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(EventActionForm, self).__init__(*args, **kwargs)
@@ -139,7 +144,11 @@ class EventActionForm(ModelForm):
             # filter_open_events = self._filter_open_events()
             filter_open_events = self._filter_open_events()
             filter_success_failure = self._filter_events_success_or_failure()
-            self.fields['event'].queryset = main.models.Event.objects.filter(filter_open_events).filter(filter_success_failure).order_by('-number')
+            open_events = main.models.Event.objects.filter(filter_open_events).filter(filter_success_failure).order_by('-number')
+
+            self.fields['event'] = EventNumberAndSamplingMethod(queryset=open_events)
+        else:
+            self.fields['event'] = EventNumberAndSamplingMethod(queryset=main.models.Event.objects.all().order_by('-number'))
 
     def _adding_new_event_action(self):
         # Returns True if the user is adding an event (instead of modifying it)
