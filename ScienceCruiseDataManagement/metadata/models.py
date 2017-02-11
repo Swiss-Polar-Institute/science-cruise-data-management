@@ -49,7 +49,8 @@ class MetadataEntry(models.Model):
     def __str__(self):
         return "{}-{}".format(self.entry_id, self.entry_title)
 
-class Data_Set_Citation(models.Model):
+
+class DataSetCitation(models.Model):
     dataset_creator = models.ForeignKey(Person, null=True, blank=True)
     dataset_title = models.CharField(max_length=255, null=True, blank=True)
     dataset_release_date = models.DateField(null=True,blank=True)
@@ -59,4 +60,77 @@ class Data_Set_Citation(models.Model):
 
     def __str__(self):
         return "{}".format(self.dataset_title)
+
+######personnel
+
+
+class Parameters(models.Model):
+    category = models.CharField(max_length=255)
+    topic = models.CharField(max_length=255)
+    term = models.CharField(max_length=255)
+    variable_level_1 = models.CharField(max_length=255, null=True, blank=True)
+    variable_level_2 = models.CharField(max_length=255, null=True, blank=True)
+    variable_level_3 = models.CharField(max_length=255, null=True, blank=True)
+    detailed_variable = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return "{} - {} - {}".format(self.category, self.topic, self.term)
+
+
+class iso_topic_category(models.Model):
+    uuid = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.uuid)
+
+#### sensor_name
+
+#### source name
+
+
+class TemporalCoverage(models.Model):
+    start_date = models.DateField(null=True, blank=True)
+    stop_date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return "{} - {}".format(self.start_date, self.stop_date)
+
+
+class SpatialCoverage(models.Model):
+    southernmost_latitude = models.CharField(max_length=10, null=True, blank=True)
+    northernmost_latitude = models.CharField(max_length=10, null=True, blank=True)
+    westernmost_longitude = models.CharField(max_length=10, null=True, blank=True)
+    easternmost_longitude = models.CharField(max_length=10, null=True, blank=True)
+    minimum_altitude = models.CharField(max_length=10, null=True, blank=True)
+    maximum_altitude = models.CharField(max_length=10, null=True, blank=True)
+    minimum_depth = models.CharField(max_length=10, null=True, blank=True)
+    maximum_depth = models.CharField(max_length=10, null=True, blank=True)
+
+    def __str__(self):
+        return "{} {} {} {}".format(self.southernmost_latitude, self.northernmost_latitude, self.westernmost_longitude, self.easternmost_longitude)
+
+
+class Location(models.Model):
+    location_category = models.CharField(max_length=255, null=True, blank=True)
+    location_type = models.CharField(max_length=255, null=True, blank=True)
+    location_subregion1 = models.CharField(max_length=255, null=True, blank=True)
+    detailed_location = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.location_subregion1)
+
+
+class DataResolution(models.Model):
+    latitude_resolution = models.CharField(max_length=20, null=True, blank=True)
+    longitude_resolution = models.CharField(max_length=20, null=True, blank=True)
+    horizontal_resolution_range = models.ForeignKey(HorizontalResolutionRange, null=True, blank=True)
+    vertical_resolution = models.CharField(max_length=20, null=True, blank=True)
+    vertical_resolution_range = models.ForeignKey(VerticalResolutionRange, null=True, blank=True)
+    temporal_resolution = models.CharField(max_length=20, null=True, blank=True)
+    temporal_resolution_range = models.ForeignKey(TemporalResolutionRange, null=True, blank=True)
+
+    def __str__(self):
+        return "{} {} {} {}".format(self.latitude_resolution, self.longitude_resolution, self.vertical_resolution, self.temporal_resolution)
+
+
 
