@@ -18,12 +18,12 @@ class MetadataEntry(models.Model):
     entry_title= models.CharField(max_length=255)
     data_set_citation = models.ManyToManyField(DataSetCitation, null=True, blank=True)
     personnel = models.ManyToManyField(Person)
-    parameters = models.ManyToManyField(Parameter)
+    parameters = models.ManyToManyField(Parameters)
     iso_topic_category = models.ManyToManyField(IsoTopicCategory)
     sensor_name = models.ManyToManyField(SpecificDevice, null=True, blank=True)
     source_name = models.ManyToManyField(Platform, null=True, blank=True)
     temporal_coverage = models.ManyToManyField(TemporalCoverage, null=True, blank=True)
-    data_set_progress = models.ForeignKey(DataSetProgress, null=True, blank=True)
+    data_set_progress = models.CharField(max_length=255, null=True, blank=True)
     spatial_coverage = models.ManyToManyField(SpatialCoverage,null=True,blank=True)
     location = models.ManyToManyField(Location, null=True, blank=True)
     data_resolution= models.ManyToManyField(DataResolution, null=True, blank=True)
@@ -77,7 +77,7 @@ class Parameters(models.Model):
         return "{} - {} - {}".format(self.category, self.topic, self.term)
 
 
-class iso_topic_category(models.Model):
+class IsoTopicCategory(models.Model):
     uuid = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
@@ -133,4 +133,66 @@ class DataResolution(models.Model):
         return "{} {} {} {}".format(self.latitude_resolution, self.longitude_resolution, self.vertical_resolution, self.temporal_resolution)
 
 
+class HorizontalResolutionRange(models.Model):
+    uuid = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.uuid)
+
+
+class VerticalResolutionRange(models.Model):
+    uuid = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.uuid)
+
+
+class TemporalResolutionRange(models.Model)
+    uuid = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.uuid)
+
+
+#### project
+
+
+class DataCenter(models.Model):
+    data_center_name = models.ForeignKey(DataCenterName)
+    data_set_id = models.CharField(max_length=255, null=True, blank=True)
+    personnel = models.ManyToManyField(Personnel)
+
+    def __str__(self):
+        return "{}".format(self.data_center_name)
+
+
+class DataCenterName(models.Model):
+    short_name = models.CharField(max_length=255)
+    long_name = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.short_name)
+
+
+class Distribution(models.Model):
+    distribution_media = models.CharField(max_length=255, null=True, blank=True)
+    distribution_size = models.CharField(max_length=255, null=True, blank=True)
+    distribution_format = models.CharField(max_length=255, null=True, blank=True)
+    fees = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return "{} {} {}".format(self.distribution_media, self.distribution_format, self.distribution_size)
+
+
+class Summary(models.Model):
+    abstract = models.TextField(null=True, blank=True)
+    purpose = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.abstract)
+
+
+class IdnNode(models.Model):
+    short_name = models.CharField(max_length=255, null=True, blank=True)
+    long_name = models.TextField(null=True, blank=True)
 
