@@ -73,6 +73,8 @@ class MessageDownloader:
         print("")
         pidfile = os.path.join(self.temporary_directory, "pid")
         print("* Downloading messages for {} (user {} of {})".format(self.username, self.current, self.total))
+        starts = datetime.datetime.utcnow()
+
         while True:
             oldest_message_minutes = datetime.datetime.utcnow() - self.oldest_message_date_time
             print("Oldest message datetime: {:.2f} minutes old".format((oldest_message_minutes.seconds/60)))
@@ -84,6 +86,11 @@ class MessageDownloader:
             else:
                 print("Will try again to fetch for {}".format(self.username))
                 time.sleep(2)
+
+        ends = datetime.datetime.utcnow()
+        elapsed = ends - starts
+        print("To download all the messages it took: {:.2f} minutes".format(elapsed.seconds/60))
+
 
     def fetchmail(self):
         file_name = os.path.join(self.temporary_directory, "fetchmailrc-downloader")
@@ -225,16 +232,12 @@ class DownloadMailsByAge:
         print("")
         print("Oldest messages per user")
         print("========================")
-        starts = datetime.datetime.utcnow()
         for username in self.usernames_to_download:
             oldest_message_date_time = self.oldest_messages[username].date_time
             seconds_ago = (now-oldest_message_date_time).seconds
             minutes_ago = seconds_ago / 60
             print("{}\t{:.2f} minutes (number of messages: {})".format(username, minutes_ago, messages_per_user[username]))
 
-        ends = datetime.datetime.utcnow()
-        elapsed = ends - starts
-        print("To download all the messages it took: {:.2f} minutes".format(elapsed.seconds/60))
         print("")
 
     def sort_messages(self):
