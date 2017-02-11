@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'ship_data',
     'data_storage_management',
     'main',  # ScienceCruiseManagement main app
+    'metadata',
 
 ]
 
