@@ -11,7 +11,7 @@ from django.dispatch import receiver
 from django.conf import settings
 from main.models import Person, Organisation, SpecificDevice, Platform, Mission
 
-# Create your models here.
+############## MAIN DIF METADATA MODELS ###############
 
 class MetadataEntry(models.Model):
     entry_id = models.CharField(max_length=255, unique=True)
@@ -198,3 +198,15 @@ class IdnNode(models.Model):
     short_name = models.CharField(max_length=255, null=True, blank=True)
     long_name = models.TextField(null=True, blank=True)
 
+
+############### DIF CONTROLLED VOCABULARY TABLES #################
+
+class HorizontalResolutionRange(models.Model):
+    Horizontal_Resolution_Range	= models.CharField(max_length=255, null=True, blank=True)
+    UUID = models.CharField(max_length=255, null=True, blank=True)
+    keyword_version = models.CharField(max_length=255, null=True, blank=True)
+    keyword_revision_date= models.DateTimeField(null=True, blank=True)
+    download_date = (null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.Horizontal_Resolution_Range)
