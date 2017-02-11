@@ -18,7 +18,7 @@ class MetadataEntry(models.Model):
     entry_title= models.CharField(max_length=255)
     data_set_citation = models.ManyToManyField(DataSetCitation, null=True, blank=True)
     personnel = models.ManyToManyField(Person)
-    parameters = models.ManyToManyField(Parameters)
+    parameters = models.ManyToManyField(Parameter)
     iso_topic_category = models.ManyToManyField(IsoTopicCategory)
     sensor_name = models.ManyToManyField(SpecificDevice, null=True, blank=True)
     source_name = models.ManyToManyField(Platform, null=True, blank=True)
@@ -73,7 +73,7 @@ class Personnel(models.Model):
         return "{} {} - {}".format(self.first_name, self.last_name, self.role)
 
 
-class Parameters(models.Model):
+class Parameter(models.Model):
     category = models.CharField(max_length=255)
     topic = models.CharField(max_length=255)
     term = models.CharField(max_length=255)
@@ -202,11 +202,147 @@ class IdnNode(models.Model):
 ############### DIF CONTROLLED VOCABULARY TABLES #################
 
 class HorizontalResolutionRange(models.Model):
-    Horizontal_Resolution_Range	= models.CharField(max_length=255, null=True, blank=True)
-    UUID = models.CharField(max_length=255, null=True, blank=True)
+    horizontal_resolution_range	= models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date= models.DateTimeField(null=True, blank=True)
-    download_date = (null=True, blank=True)
+    download_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return "{}".format(self.Horizontal_Resolution_Range)
+
+
+class Instrument(models.Model):
+    category = models.CharField(max_length=255, null=True, blank=True)
+    class = models.CharField(max_length=255, null=True, blank=True)
+    type = models.CharField(max_length=255, null=True, blank=True)
+    subtype = models.CharField(max_length=255, null=True, blank=True)
+    short_Name = models.CharField(max_length=255, null=True, blank=True)
+    long_Name = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, null=True, blank=True)
+    keyword_version = models.CharField(max_length=255, null=True, blank=True)
+    keyword_revision_date = models.DateTimeField(null=True, blank=True)
+    download_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.Short_Name)
+
+
+class ScienceKeyword(models.Model):
+    category = models.CharField(max_length=255, null=True, blank=True)
+    topic = models.CharField(max_length=255, null=True, blank=True)
+    term = models.CharField(max_length=255, null=True, blank=True)
+    variable_Level_1 = models.CharField(max_length=255, null=True, blank=True)
+    variable_Level_2 = models.CharField(max_length=255, null=True, blank=True)
+    variable_Level_3 = models.CharField(max_length=255, null=True, blank=True)
+    detailed_Variable = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, null=True, blank=True)
+    download_date = models.DateTimeField(null=True, blank=True)
+    keyword_version = models.CharField(max_length=255, null=True, blank=True)
+    keyword_revision_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.Term)
+
+
+class Location(models.Model):
+    location_Category = models.CharField(max_length=255, null=True, blank=True)
+    location_Type = models.CharField(max_length=255, null=True, blank=True)
+    location_Subregion1 = models.CharField(max_length=255, null=True, blank=True)
+    location_Subregion2 = models.CharField(max_length=255, null=True, blank=True)
+    location_Subregion3 = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, null=True, blank=True)
+    keyword_version = models.CharField(max_length=255, null=True, blank=True)
+    keyword_revision_date = models.DateTimeField(null=True, blank=True)
+    download_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return "{} - {} - {} - {}".format(self.Location_Category, self.Location_Type, self.Location_Subregion1, self.Location_Subregion2)
+
+
+class Platform(models.Model):
+    category = models.CharField(max_length=255, null=True, blank=True)
+    series_Entity = models.CharField(max_length=255, null=True, blank=True)
+    short_Name = models.CharField(max_length=255, null=True, blank=True)
+    long_Name = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, null=True, blank=True)
+    keyword_version = models.CharField(max_length=255, null=True, blank=True)
+    keyword_revision_date = models.DateTimeField(null=True, blank=True)
+    download_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.Short_Name)
+
+
+class Project(models.Model):
+    bucket = models.CharField(max_length=255, null=True, blank=True)
+    short_Name = models.CharField(max_length=255, null=True, blank=True)
+    long_Name = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, null=True, blank=True)
+    keyword_version = models.CharField(max_length=255, null=True, blank=True)
+    keyword_revision_date = models.DateTimeField(null=True, blank=True)
+    download_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.Short_Name)
+
+
+class Provider(models.Model):
+    bucket_Level0 = models.CharField(max_length=255, null=True, blank=True)
+    bucket_Level1 = models.CharField(max_length=255, null=True, blank=True)
+    bucket_Level2 = models.CharField(max_length=255, null=True, blank=True)
+    bucket_Level3 = models.CharField(max_length=255, null=True, blank=True)
+    short_Name = models.CharField(max_length=255, null=True, blank=True)
+    long_Name = models.CharField(max_length=255, null=True, blank=True)
+    data_center_url = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, null=True, blank=True)
+    keyword_version = models.CharField(max_length=255, null=True, blank=True)
+    keyword_revision_date = models.DateTimeField(null=True, blank=True
+    download_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.Short_Name)
+
+
+class RUContentType(models.Model):
+    type = models.CharField(max_length=255, null=True, blank=True)
+    subtype = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, null=True, blank=True)
+    keyword_version = models.CharField(max_length=255, null=True, blank=True)
+    keyword_revision_date = models.DateTimeField(null=True, blank=True)
+    download_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.Type)
+
+
+class TemporalResolutionRange(models.Model):
+    temporal_resolution_range = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, null=True, blank=True)
+    keyword_version = models.CharField(max_length=255, null=True, blank=True)
+    keyword_revision_date = models.DateTimeField(null=True, blank=True)
+    download_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.Temporal_Resolution_Range)
+
+
+class VerticalResolutionRange(models.Model):
+    vertical_resolution_range = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, null=True, blank=True)
+    keyword_version = models.CharField(max_length=255, null=True, blank=True)
+    keyword_revision_date = models.DateTimeField(null=True, blank=True)
+    download_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.Vertical_Resolution_Range)
+
+
+
+
+
+
+
+
+
+
