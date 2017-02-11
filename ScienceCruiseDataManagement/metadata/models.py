@@ -61,7 +61,16 @@ class DataSetCitation(models.Model):
     def __str__(self):
         return "{}".format(self.dataset_title)
 
-######personnel
+
+class Personnel(models.Model):
+    role = models.ManyToManyField(DatasetRole)
+    first_name = models.OneToOneField(Person, null=True, blank=True)
+    last_name = models.OneToOneField(Person)
+    email= models.CharField(max_length=255, null=True, blank=True)
+    contact_address = models.ForeignKey(Organisation, null=True, blank=True)
+
+    def __str__(self):
+        return "{} {} - {}".format(self.first_name, self.last_name, self.role)
 
 
 class Parameters(models.Model):
@@ -82,10 +91,6 @@ class IsoTopicCategory(models.Model):
 
     def __str__(self):
         return "{}".format(self.uuid)
-
-#### sensor_name
-
-#### source name
 
 
 class TemporalCoverage(models.Model):
@@ -152,9 +157,6 @@ class TemporalResolutionRange(models.Model)
 
     def __str__(self):
         return "{}".format(self.uuid)
-
-
-#### project
 
 
 class DataCenter(models.Model):
