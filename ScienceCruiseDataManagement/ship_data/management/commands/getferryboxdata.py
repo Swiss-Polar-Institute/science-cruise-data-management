@@ -29,7 +29,6 @@ class Command(BaseCommand):
                 break
 
             line = line.split(",")
-            print(line)
             date = line[0][1:]
             time = line[1]
             salinity = line[21]
