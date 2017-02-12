@@ -3,7 +3,7 @@ from metadata.models import Provider
 import csv
 
 class Command(BaseCommand):
-    help = 'Adds data to the platform table.'
+    help = 'Adds data to the provider table.'
 
     def add_arguments(self, parser):
         parser.add_argument('filename', type=str)
