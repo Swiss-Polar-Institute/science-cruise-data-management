@@ -375,7 +375,6 @@ class CoordinatesConversion(TemplateView):
 
         return render(request, "coordinates_conversion_exec.html", template_information)
 
-
 class PositionFromDateTime(TemplateView):
     def get(self, request, *args, **kwargs):
         form = InputShipDateTime(initial={'ship_date_time': timezone.now})

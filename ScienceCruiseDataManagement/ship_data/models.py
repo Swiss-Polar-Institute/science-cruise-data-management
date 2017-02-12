@@ -1,6 +1,16 @@
 from django.db import models
 from main.models import SamplingMethod
+import main.models
 
+
+class Ferrybox(models.Model):
+    date_time = models.DateTimeField()
+    salinity = models.FloatField()
+    conductivity = models.FloatField()
+    temperature = models.FloatField()
+
+    class Meta:
+        get_latest_by = "date_time"
 
 # GPS data from log files
 class GpzdaDateTime(models.Model):

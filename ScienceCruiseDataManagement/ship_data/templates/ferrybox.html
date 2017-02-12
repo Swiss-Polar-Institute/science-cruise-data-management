@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Ferrybox{% endblock %}
+{% load static %}
+{% block extra_head %}
+<script type="text/javascript" src="{% static '/js/external/Chart.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<h1>Latest ferrybox latest data</h1>
+
+Date: {{ latest_information.date_time }}<br>
+Salinity: {{ latest_information.salinity }}<br>
+Conductivity: {{ latest_information.conductivity }}<br>
+Temperature: {{ latest_information.temperature }}<br>
+{% endblock %}

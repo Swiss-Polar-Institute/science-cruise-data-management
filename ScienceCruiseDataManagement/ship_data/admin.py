@@ -33,6 +33,10 @@ class MetDataFileAdmin(import_export.admin.ExportMixin,admin.ModelAdmin):
     list_display = ('file_name', 'date_imported')
     ordering = ['file_name']
 
+class FerryboxAdmin(admin.ModelAdmin):
+    list_display = ('date_time', 'salinity', 'conductivity', 'temperature')
+    ordering = ['date_time']
+
 # Register your models here.
 admin.site.register(ship_data.models.GpzdaDateTime, GpzdaDateTimeAdmin)
 admin.site.register(ship_data.models.GpvtgVelocity, GpvtgVelocityAdmin)
@@ -40,3 +44,4 @@ admin.site.register(ship_data.models.GpggaGpsFix, GpggaGpsFixAdmin)
 admin.site.register(ship_data.models.MetDataAll, MetDataAllAdmin)
 admin.site.register(ship_data.models.MetDataWind, MetDataWindAdmin)
 admin.site.register(ship_data.models.MetDataFile, MetDataFileAdmin)
+admin.site.register(ship_data.models.Ferrybox, FerryboxAdmin)

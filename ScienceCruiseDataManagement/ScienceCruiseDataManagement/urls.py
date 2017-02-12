@@ -19,6 +19,7 @@ from data_storage_management.views import HardDiskJson
 from main.views import MainMenuView, MainMapView, PositionsJson, LatestShipPosition, CountryListView, FileStorageView,\
     InteractiveMapView, EventListView, ImportPortsFromGpx, DocumentsView, AccessingDataView, PositionFromDateTime,\
     CoordinatesConversion, TrackJson, MailState
+from ship_data.views import FerryboxView
 from data_storage_management.views import HardDiskJson, DirectoryUpdateJson
 from django.conf import settings
 from django.conf.urls.static import static
@@ -44,7 +45,8 @@ urlpatterns = [
     url(r'^accessing_data/', AccessingDataView.as_view()),
     url(r'^position_from_date_time/', PositionFromDateTime.as_view()),
     url(r'^coordinates_conversion/', CoordinatesConversion.as_view()),
-    url(r'mail_state/', MailState.as_view()),
+    url(r'^mail_state/', MailState.as_view()),
+    url(r'^ferrybox/', FerryboxView.as_view())
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
   + static("/documents_storage/", document_root=settings.DOCUMENTS_DIRECTORY) \
   + static("/ethz_forecast_data/", document_root=settings.FORECAST_DIRECTORY)
