@@ -8,6 +8,7 @@ class Ferrybox(models.Model):
     salinity = models.FloatField()
     conductivity = models.FloatField()
     temperature = models.FloatField()
+    fluorimeter = models.FloatField()
 
     class Meta:
         get_latest_by = "date_time"

@@ -7,6 +7,7 @@ import subprocess
 import datetime
 from main import utils
 
+
 class Command(BaseCommand):
     help = 'Ferrybox data'
 
@@ -34,6 +35,7 @@ class Command(BaseCommand):
             salinity = line[21]
             conductivity = line[22]
             temperature = line[23]
+            fluorimeter = line[25]
 
             date_time = datetime.datetime.strptime("{}{}".format(date, time),
                                                    "%d%m%y%H%M%S")
@@ -45,5 +47,6 @@ class Command(BaseCommand):
             ferrybox_information.salinity = salinity
             ferrybox_information.conductivity = conductivity
             ferrybox_information.temperature = temperature
+            ferrybox_information.fluorimeter = fluorimeter
 
             ferrybox_information.save()
