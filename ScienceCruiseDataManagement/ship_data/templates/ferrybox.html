@@ -47,8 +47,8 @@ var data_graph1 = {};
     var temperature = {
         data: temperatures,
         label: "temperature",
-        backgroundColor: "rgba(0,0,0,0)",
         borderColor: "rgba(200, 200, 0, 1)",
+        fill: false,
         units: "C",
         yAxisID: "temperature",
         label: 'Temperature'
@@ -57,8 +57,8 @@ var data_graph1 = {};
     var salinity = {
         data: salinities,
         label: "salinity",
-        backgroundColor: "rgba(0,0,0,0)",
         borderColor: "rgba(0, 200, 200, 1)",
+        fill: false,
         units: "salinity",
         yAxisID: "salinity",
         label: "Salinity"
@@ -69,8 +69,9 @@ var data_graph1 = {};
     data_graph1['datasets'] = datasets;
     var yAxes = [{
                     type: 'linear',
-                    position: 'left',
-                    id: "temperature"
+                    position: 'right',
+                    id: "temperature",
+                    fontColor: "rgba(0, 200, 200, 1)"
                 }, {
                     type: 'linear',
                     position: 'right',
@@ -85,8 +86,8 @@ var data_graph2 = {};
     var fluorimeter = {
         data: fluorimeter,
         label: "fluorimeter",
-        backgroundColor: "rgba(0,0,0,0)",
         borderColor: "rgba(200, 200, 0, 1)",
+        fill: false,
         units: "C",
         yAxisID: "fluorimeter",
         label: "Fluorimeter"
@@ -96,7 +97,7 @@ var data_graph2 = {};
 
 
     var yAxes = [{  type: 'linear',
-                    position: 'left',
+                    position: 'right',
                     id: "fluorimeter"
                 }];
 
