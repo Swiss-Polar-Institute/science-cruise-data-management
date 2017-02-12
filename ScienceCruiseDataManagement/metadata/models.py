@@ -3,42 +3,6 @@ from main.models import Person, Organisation, Platform
 
 ############## MAIN DIF METADATA MODELS ###############
 
-class MetadataEntry(models.Model):
-    entry_id = models.CharField(max_length=255, unique=True, help_text="Unique document identifier of the metadata record. The identifier is case insensitive. The <Entry_ID> consists of 1 to 80 alphanumeric characters of the UTF-8 set, including underbar (_), hyphen (-) and period (.).")
-    entry_title= models.CharField(max_length=220, help_text="Title of the data set described by the metadata. For example, <Entry_Title>Aerosol characterization and snow chemistry at Terra Nova Bay 2001-2003 </Entry_Title> provides an adequate amount of information to guide the user.")
-    data_set_citation = models.ManyToManyField(DataSetCitation, null=True, blank=True)
-    personnel = models.ManyToManyField(Personnel, help_text="The point of contact for more information about the data set or the metadata.")
-    parameters = models.ManyToManyField(Parameter)
-    sensor_name = models.ManyToManyField(Instrument, null=True, blank=True)
-    source_name = models.ManyToManyField(Platform, null=True, blank=True)
-    temporal_coverage = models.ManyToManyField(TemporalCoverage, null=True, blank=True)
-    data_set_progress = models.ForeignKey(DatasetProgress, null=True, blank=True)
-    spatial_coverage = models.ManyToManyField(SpatialCoverage,null=True,blank=True)
-    location = models.ManyToManyField(Location, null=True, blank=True)
-    data_resolution= models.ManyToManyField(DataResolution, null=True, blank=True)
-    project = models.ManyToManyField(Project, null=True, blank=True)
-    quality = models.CharField(max_length=255, null=True, blank=True, help_text="This field allows the author to provide information about the quality of the data or any quality assurance procedures followed in producing the data. Include indicators of data quality or quality flags. Include recognized or potential problems with quality. Established quality control mechanisms should be included. Established quantitative quality measurements should be included.")
-    access_constraints = models.TextField(null=True, blank=True, help_text="This field allows the author to provide information about any constraints for accessing the data set. This includes any special restrictions, legal prerequisites, limitations and/or warnings on obtaining the data set.")
-    use_constraints = models.TextField(null=True, blank=True, help_text="This field allows the author to describe how the data may or may not be used after access is granted to assure the protection of privacy or intellectual property.  This includes any special restrictions, legal prerequisites, terms and conditions, and/or limitations on using the data set.  Data providers may request acknowledgement of the data from users and claim no responsibility for quality and completeness of data.")
-    data_set_language = models.CharField(max_length=255, null=True, blank=True, help_text="DEFAULT=English")
-    originating_center = models.CharField(max_length=240, null=True, blank=True, help_text="The data center or data producer who originally generated the dataset.")
-    data_center = models.ManyToManyField(Provider, help_text="The <Data Center> is the data center, organization, or institution responsible for distributing the data.")
-    distribution = models.ManyToManyField(Distribution, null=True, blank=True)
-    summary = models.ForeignKey(Summary, help_text="This field provides a brief description of the data set along with the purpose of the data. This allows potential users to determine if the data set is useful for their needs.")
-    parent_dif = models.CharField(max_length=255, null=True, blank=True)
-    idn_node = models.ManyToManyField(IdnNode, null=True, blank=True)
-    metadata_name= models.CharField(max_length=255, help_text="DEFAULT=CEOS IDN DIF")
-    metadata_version = models.CharField(max_length=80, help_text="DEFAULT=VERSION 9.9")
-    dif_creation_date = models.CharField(max_length=50, null=True, blank=True)
-    last_dif_revision_date = models.CharField(max_length=50, null=True, blank=True)
-    dif_revision_history = models.TextField(null=True, blank=True)
-    future_dif_review_date = models.CharField(null=True, blank=True)
-    private = models.CharField(max_length=10, null=True, blank=True, help_text="True or False")
-
-    def __str__(self):
-        return "{}-{}".format(self.entry_id, self.entry_title)
-
-
 class DataSetCitation(models.Model):
     dataset_creator = models.ForeignKey(Person, null=True, blank=True)
     dataset_title = models.CharField(max_length=255, null=True, blank=True)
@@ -52,8 +16,8 @@ class DataSetCitation(models.Model):
 
 
 class Personnel(models.Model):
-    dataset_role = models.ManyToManyField(DatasetRole)
-    datacite_contributor_type = models.ManyToManyField(DataciteContributorType)
+    dataset_role = models.ManyToManyField('DatasetRole')
+    datacite_contributor_type = models.ManyToManyField('DataciteContributorType')
     first_name = models.OneToOneField(Person, null=True, blank=True)
     last_name = models.OneToOneField(Person)
     email= models.CharField(max_length=80, null=True, blank=True)
@@ -123,18 +87,18 @@ class Location(models.Model):
 class DataResolution(models.Model):
     latitude_resolution = models.CharField(max_length=20, null=True, blank=True)
     longitude_resolution = models.CharField(max_length=20, null=True, blank=True)
-    horizontal_resolution_range = models.ForeignKey(HorizontalResolutionRange, null=True, blank=True)
+    horizontal_resolution_range = models.ForeignKey('HorizontalResolutionRange', null=True, blank=True)
     vertical_resolution = models.CharField(max_length=20, null=True, blank=True)
-    vertical_resolution_range = models.ForeignKey(VerticalResolutionRange, null=True, blank=True)
+    vertical_resolution_range = models.ForeignKey('VerticalResolutionRange', null=True, blank=True)
     temporal_resolution = models.CharField(max_length=20, null=True, blank=True)
-    temporal_resolution_range = models.ForeignKey(TemporalResolutionRange, null=True, blank=True)
+    temporal_resolution_range = models.ForeignKey('TemporalResolutionRange', null=True, blank=True)
 
     def __str__(self):
         return "{} {} {} {}".format(self.latitude_resolution, self.longitude_resolution, self.vertical_resolution, self.temporal_resolution)
 
 
 class DataCenter(models.Model):
-    data_center_name = models.ForeignKey(DataCenterName)
+    data_center_name = models.ForeignKey('DataCenterName')
     data_set_id = models.CharField(max_length=255, null=True, blank=True, help_text="is a data set identifier assigned by the data center (may or may not be the same as the <Entry_ID>.")
     personnel = models.ManyToManyField(Personnel, help_text="Contact information for the data.")
 
@@ -151,9 +115,9 @@ class DataCenterName(models.Model):
 
 
 class Distribution(models.Model):
-    distribution_media = models.ForeignKey(DistributionMedia, null=True, blank=True, help_text="The media options for the user receiving the data.")
+    distribution_media = models.ForeignKey('DistributionMedia', null=True, blank=True, help_text="The media options for the user receiving the data.")
     distribution_size = models.CharField(max_length=80, null=True, blank=True, help_text = "An approximate size (in KB, MB or GB) for the entire data set. Specify if data are compressed and the method of compression.")
-    distribution_format = models.ForeignKey(DistributionFormat, null=True, blank=True, help_text="The data format used to distribute the data.")
+    distribution_format = models.ForeignKey('DistributionFormat', null=True, blank=True, help_text="The data format used to distribute the data.")
     fees = models.CharField(max_length=80, null=True, blank=True, help_text="Cost of <Distribution_Media> or distribution costs if any. Specify if there are no costs.")
 
     def __str__(self):
@@ -343,10 +307,37 @@ class DataciteContributorType(models.Model):
     def __str__(self):
         return "{}".format(self.contributor_type)
 
+class MetadataEntry(models.Model):
+    entry_id = models.CharField(max_length=255, unique=True, help_text="Unique document identifier of the metadata record. The identifier is case insensitive. The <Entry_ID> consists of 1 to 80 alphanumeric characters of the UTF-8 set, including underbar (_), hyphen (-) and period (.).")
+    entry_title= models.CharField(max_length=220, help_text="Title of the data set described by the metadata. For example, <Entry_Title>Aerosol characterization and snow chemistry at Terra Nova Bay 2001-2003 </Entry_Title> provides an adequate amount of information to guide the user.")
+    data_set_citation = models.ManyToManyField(DataSetCitation, null=True, blank=True)
+    personnel = models.ManyToManyField(Personnel, help_text="The point of contact for more information about the data set or the metadata.")
+    parameters = models.ManyToManyField(Parameter)
+    sensor_name = models.ManyToManyField(Instrument, null=True, blank=True)
+    source_name = models.ManyToManyField(Platform, null=True, blank=True)
+    temporal_coverage = models.ManyToManyField(TemporalCoverage, null=True, blank=True)
+    data_set_progress = models.ForeignKey(DatasetProgress, null=True, blank=True)
+    spatial_coverage = models.ManyToManyField(SpatialCoverage,null=True,blank=True)
+    location = models.ManyToManyField(Location, null=True, blank=True)
+    data_resolution= models.ManyToManyField(DataResolution, null=True, blank=True)
+    project = models.ManyToManyField(Project, null=True, blank=True)
+    quality = models.CharField(max_length=255, null=True, blank=True, help_text="This field allows the author to provide information about the quality of the data or any quality assurance procedures followed in producing the data. Include indicators of data quality or quality flags. Include recognized or potential problems with quality. Established quality control mechanisms should be included. Established quantitative quality measurements should be included.")
+    access_constraints = models.TextField(null=True, blank=True, help_text="This field allows the author to provide information about any constraints for accessing the data set. This includes any special restrictions, legal prerequisites, limitations and/or warnings on obtaining the data set.")
+    use_constraints = models.TextField(null=True, blank=True, help_text="This field allows the author to describe how the data may or may not be used after access is granted to assure the protection of privacy or intellectual property.  This includes any special restrictions, legal prerequisites, terms and conditions, and/or limitations on using the data set.  Data providers may request acknowledgement of the data from users and claim no responsibility for quality and completeness of data.")
+    data_set_language = models.CharField(max_length=255, null=True, blank=True, help_text="DEFAULT=English")
+    originating_center = models.CharField(max_length=240, null=True, blank=True, help_text="The data center or data producer who originally generated the dataset.")
+    data_center = models.ManyToManyField(Provider, help_text="The <Data Center> is the data center, organization, or institution responsible for distributing the data.")
+    distribution = models.ManyToManyField(Distribution, null=True, blank=True)
+    summary = models.ForeignKey(Summary, help_text="This field provides a brief description of the data set along with the purpose of the data. This allows potential users to determine if the data set is useful for their needs.")
+    parent_dif = models.CharField(max_length=255, null=True, blank=True)
+    idn_node = models.ManyToManyField(IdnNode, null=True, blank=True)
+    metadata_name= models.CharField(max_length=255, help_text="DEFAULT=CEOS IDN DIF")
+    metadata_version = models.CharField(max_length=80, help_text="DEFAULT=VERSION 9.9")
+    dif_creation_date = models.CharField(max_length=50, null=True, blank=True)
+    last_dif_revision_date = models.CharField(max_length=50, null=True, blank=True)
+    dif_revision_history = models.TextField(null=True, blank=True)
+    future_dif_review_date = models.CharField(null=True, blank=True)
+    private = models.CharField(max_length=10, null=True, blank=True, help_text="True or False")
 
-
-
-
-
-
-
+    def __str__(self):
+        return "{}-{}".format(self.entry_id, self.entry_title)
