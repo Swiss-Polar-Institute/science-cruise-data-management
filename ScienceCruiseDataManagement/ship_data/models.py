@@ -4,7 +4,7 @@ import main.models
 
 
 class Ferrybox(models.Model):
-    date_time = models.DateTimeField()
+    date_time = models.DateTimeField(db_index=True)
     salinity = models.FloatField()
     conductivity = models.FloatField()
     temperature = models.FloatField()

@@ -41,10 +41,13 @@ function plot(canvas_name, data) {
     });
 };
 
+var temperatures = JSON.parse('{{ temperatures | escapejs }}');
+var salinities = JSON.parse('{{ salinities | escapejs }}')
+
 var data = {};
     var temperature = {
-        data: [{x: -20, y: 5}, {x: -19, y: 8}, {x: -15, y: 6}],
-        // data: {{ temperatures | escapejs }},
+        // data: [{x: -20, y: 5}, {x: -19, y: 8}, {x: -15, y: 6}],
+        data: temperatures,
         label: "temperature",
         backgroundColor: "rgba(0,0,0,0)",
         units: "celsius",
@@ -54,7 +57,8 @@ var data = {};
     };
 
     var salinity = {
-        data: [{x: -20, y: 30}, {x: -19, y: 28}, {x: -15, y: 12}],
+        // data: [{x: -20, y: 30}, {x: -19, y: 28}, {x: -15, y: 12}],
+        data: salinities,
         label: "salinity",
         backgroundColor: "rgba(0,0,0,0)",
         borderColor: "rgba(0, 200, 200, 1)",
