@@ -336,9 +336,8 @@ class DistributionFormat(models.Model):
 # the cruise to avoid having to contact PIs post cruise.
 
 class DataciteContributorType(models.Model):
-    contributor_seq = models.IntegerField()
     contributor_type = models.CharField(max_length=50)
-    version = models.CharField(max_length=10)
+    datacite_schema_version = models.CharField(max_length=10)
     in_datacite = models.BooleanField()
 
     def __str__(self):
