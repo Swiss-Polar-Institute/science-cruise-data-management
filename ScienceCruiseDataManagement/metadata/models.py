@@ -151,9 +151,9 @@ class DataCenterName(models.Model):
 
 
 class Distribution(models.Model):
-    distribution_media = models.CharField(max_length=80, null=True, blank=True, help_text="The media options for the user receiving the data.")
+    distribution_media = models.ForeignKey(DistributionMedia, null=True, blank=True, help_text="The media options for the user receiving the data.")
     distribution_size = models.CharField(max_length=80, null=True, blank=True, help_text = "An approximate size (in KB, MB or GB) for the entire data set. Specify if data are compressed and the method of compression.")
-    distribution_format = models.CharField(max_length=80, null=True, blank=True, help_text="The data format used to distribute the data.")
+    distribution_format = models.ForeignKey(DistributionFormat, null=True, blank=True, help_text="The data format used to distribute the data.")
     fees = models.CharField(max_length=80, null=True, blank=True, help_text="Cost of <Distribution_Media> or distribution costs if any. Specify if there are no costs.")
 
     def __str__(self):
@@ -308,6 +308,26 @@ class DatasetProgress(models.Model):
 
     def __str__(self):
         return "{}".format(self.type)
+
+
+class DistributionMedia(models.Model):
+    media_type = models.CharField(max_length=80)
+    distribution_media = models.CharField(max_length=80)
+    download_date = models.DateTimeField()
+    in_gcmd = models.BooleanField()
+
+    def __str__(self):
+        return "{}".format(self.distribution_media)
+
+
+class DistributionFormat(models.Model):
+    distribution_format = models.CharField(max_length=80)
+    description = models.CharField(max_length=80, null=True, blank=True)
+    download_date = models.DateTimeField()
+    in_gcmd = models.BooleanField()
+
+    def __str__(self):
+        return "{}".format(self.distribution_format)
 
 ###### Datacite controlled vocabularies
 
