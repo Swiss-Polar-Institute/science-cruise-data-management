@@ -6,7 +6,9 @@
 {% endblock %}
 
 {% block content %}
-<h1>Latest ferrybox latest data</h1>
+<h1>Latest ferrybox data</h1>
+You can find the complete data set for analysis in the data <a href="/accessing_data">storage area</a> (ace_data/ferrybox).
+
 This is updated every 5 minutes.<p>
 
 Date: {{ latest_information.date_time }} ({{ latest_information_minutes_ago }} minutes ago)<br>
@@ -15,7 +17,10 @@ Temperature: {{ latest_information.temperature }}<br>
 Fluorimeter: {{ latest_information.fluorimeter }}<br>
 
 <canvas id="graph1" width="400" height="60"></canvas>
+<center>(hours)</center>
+<p></p>
 <canvas id="graph2" width="400" height="60"></canvas>
+<center>(hours)</center>
     <script>
 function plot(canvas_name, data, yAxes) {
     var canvas = document.getElementById(canvas_name);
@@ -27,7 +32,8 @@ function plot(canvas_name, data, yAxes) {
                 yAxes: yAxes,
                 xAxes: [{
                     type: 'linear',
-                    position: 'bottom'
+                    position: 'bottom',
+                    label: 'test'
                 }]
             }
         }
@@ -44,7 +50,8 @@ var data_graph1 = {};
         backgroundColor: "rgba(0,0,0,0)",
         borderColor: "rgba(200, 200, 0, 1)",
         units: "C",
-        yAxisID: "temperature"
+        yAxisID: "temperature",
+        label: 'Temperature'
     };
 
     var salinity = {
@@ -53,13 +60,13 @@ var data_graph1 = {};
         backgroundColor: "rgba(0,0,0,0)",
         borderColor: "rgba(0, 200, 200, 1)",
         units: "salinity",
-        yAxisID: "salinity"
+        yAxisID: "salinity",
+        label: "Salinity"
     };
 
     var datasets = [temperature, salinity];
 
     data_graph1['datasets'] = datasets;
-
     var yAxes = [{
                     type: 'linear',
                     position: 'left',
@@ -81,7 +88,8 @@ var data_graph2 = {};
         backgroundColor: "rgba(0,0,0,0)",
         borderColor: "rgba(200, 200, 0, 1)",
         units: "C",
-        yAxisID: "fluorimeter"
+        yAxisID: "fluorimeter",
+        label: "Fluorimeter"
     };
 
     var datasets = [fluorimeter];
