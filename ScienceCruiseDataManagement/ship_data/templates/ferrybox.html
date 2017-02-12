@@ -9,29 +9,22 @@
 <h1>Latest ferrybox latest data</h1>
 This is updated every 5 minutes.<p>
 
-Date: {{ latest_information.date_time }}<br>
+Date: {{ latest_information.date_time }} ({{ latest_information_minutes_ago }} minutes ago)<br>
 Salinity: {{ latest_information.salinity }}<br>
-Conductivity: {{ latest_information.conductivity }}<br>
 Temperature: {{ latest_information.temperature }}<br>
+Fluorimeter: {{ latest_information.fluorimeter }}<br>
 
-<canvas id="ferrybox" width="400" height="60"></canvas>
+<canvas id="graph1" width="400" height="60"></canvas>
+<canvas id="graph2" width="400" height="60"></canvas>
     <script>
-function plot(canvas_name, data) {
+function plot(canvas_name, data, yAxes) {
     var canvas = document.getElementById(canvas_name);
     var chart = new Chart.Line(canvas, {
         type: 'line',
         data: data,
         options: {
             scales: {
-                yAxes: [{
-                    type: 'linear',
-                    position: 'left',
-                    id: "temperature"
-                }, {
-                    type: 'linear',
-                    position: 'right',
-                    id: "salinity"
-                }],
+                yAxes: yAxes,
                 xAxes: [{
                     type: 'linear',
                     position: 'bottom'
@@ -44,20 +37,17 @@ function plot(canvas_name, data) {
 var temperatures = JSON.parse('{{ temperatures | escapejs }}');
 var salinities = JSON.parse('{{ salinities | escapejs }}')
 
-var data = {};
+var data_graph1 = {};
     var temperature = {
-        // data: [{x: -20, y: 5}, {x: -19, y: 8}, {x: -15, y: 6}],
         data: temperatures,
         label: "temperature",
         backgroundColor: "rgba(0,0,0,0)",
-        units: "celsius",
         borderColor: "rgba(200, 200, 0, 1)",
         units: "C",
         yAxisID: "temperature"
     };
 
     var salinity = {
-        // data: [{x: -20, y: 30}, {x: -19, y: 28}, {x: -15, y: 12}],
         data: salinities,
         label: "salinity",
         backgroundColor: "rgba(0,0,0,0)",
@@ -68,10 +58,43 @@ var data = {};
 
     var datasets = [temperature, salinity];
 
-    data['datasets'] = datasets;
+    data_graph1['datasets'] = datasets;
 
-    plot("ferrybox", data);
+    var yAxes = [{
+                    type: 'linear',
+                    position: 'left',
+                    id: "temperature"
+                }, {
+                    type: 'linear',
+                    position: 'right',
+                    id: "salinity"
+                }];
 
+    plot("graph1", data_graph1, yAxes);
+
+///////////////////////////////////////////////////////////////////////////////////////////
+var fluorimeter = JSON.parse('{{ fluorimeter | escapejs }}')
+var data_graph2 = {};
+    var fluorimeter = {
+        data: fluorimeter,
+        label: "fluorimeter",
+        backgroundColor: "rgba(0,0,0,0)",
+        borderColor: "rgba(200, 200, 0, 1)",
+        units: "C",
+        yAxisID: "fluorimeter"
+    };
+
+    var datasets = [fluorimeter];
+
+
+    var yAxes = [{  type: 'linear',
+                    position: 'left',
+                    id: "fluorimeter"
+                }];
+
+    data_graph2['datasets'] = datasets;
+
+    plot("graph2", data_graph2, yAxes);
 </script>
 
 {% endblock %}

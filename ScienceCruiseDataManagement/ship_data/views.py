@@ -3,6 +3,7 @@ from django.views.generic import TemplateView
 from ship_data.models import Ferrybox
 from django.db.models import Q
 from django.forms.models import model_to_dict
+from main import utils
 
 import datetime
 import json
@@ -14,24 +15,30 @@ class FerryboxView(TemplateView):
         salinities = get_ferrybox_data_24_hours('salinity')
         fluorimeters = get_ferrybox_data_24_hours('fluorimeter')
 
+        now_utc = utils.set_utc(datetime.datetime.utcnow())
+
+        latest_information_minutes_ago = int((now_utc - latest_information.date_time).seconds / 60)
+
         return render(request, "ferrybox.html", {"latest_information": latest_information,
+                                                 "latest_information_minutes_ago": latest_information_minutes_ago,
                                                  "temperatures": json.dumps(temperatures),
                                                  "salinities": json.dumps(salinities),
-                                                 "fluorimeters": json.dumps(fluorimeters)
+                                                 "fluorimeter": json.dumps(fluorimeters)
                                                  }
                       )
 
 def get_ferrybox_data_24_hours(field):
     result = []
     latest_data = Ferrybox.objects.latest()
-
-    one_hour = datetime.timedelta(hours=1)
+    start_time = utils.set_utc(latest_data.date_time)
+    end_time = utils.set_utc(latest_data.date_time - datetime.timedelta(days=1))
+    delta_time = datetime.timedelta(minutes=10)
     current_time = latest_data.date_time
 
-    for last_hours in range(0, 24):
+    while current_time > end_time:
         d = {}
-        d['x'] = -last_hours
-        ferrybox = Ferrybox.objects.filter(Q(date_time__lt=current_time)).order_by('-date_time')
+        d['x'] = -((start_time - current_time).seconds/3600)
+        ferrybox = Ferrybox.objects.filter(Q(date_time__lte=current_time)).order_by('-date_time')
 
         if not ferrybox.exists():
             break
@@ -40,6 +47,6 @@ def get_ferrybox_data_24_hours(field):
         d['y'] = ferrybox[field]
 
         result.append(d)
-        current_time -= one_hour
+        current_time -= delta_time
 
     return result
