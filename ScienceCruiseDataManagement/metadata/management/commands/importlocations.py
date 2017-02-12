@@ -5,24 +5,6 @@ import csv
 class Command(BaseCommand):
     help = 'Adds data to the location table.'
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class Command(BaseCommand):
-    help = 'Adds data to the mission table'
-
     def add_arguments(self, parser):
         parser.add_argument('filename', type=str)
 
@@ -35,10 +17,15 @@ class Command(BaseCommand):
             reader = csv.DictReader(csvfile)
             for row in reader:
                 print(row)
-                mission = Mission()
-                mission.name = row['name']
-                mission.acronym= row['acronym']
-                mission.institution = row['institution']
-                mission.description = row['description']
+                location = Location()
+                location.location_category = row['Location_Category']
+                location.location_type = row['Location_Type']
+                location.location_subregion1= row['Location_Subregion1']
+                location.location_subregion2 = row['Location_Subregion2']
+                location.location_subregion3= row['Location_Subregion3']
+                location.uuid = row['UUID']
+                location.keyword_version = row['keyword_version']
+                location.keyword_revision_date = row['keyword_revision_date']
+                location.download_date = row['download_date']
 
-                mission.save()
+                location.save()
