@@ -18,8 +18,8 @@ class DataSetCitation(models.Model):
 class Personnel(models.Model):
     dataset_role = models.ManyToManyField('DatasetRole')
     datacite_contributor_type = models.ManyToManyField('DataciteContributorType')
-    first_name = models.OneToOneField(Person, null=True, blank=True)
-    last_name = models.OneToOneField(Person)
+    first_name = models.OneToOneField(Person, related_name='name_first', null=True, blank=True)
+    last_name = models.OneToOneField(Person, related_name='name_last')
     email= models.CharField(max_length=80, null=True, blank=True)
     contact_address = models.ForeignKey(Organisation, null=True, blank=True)
 
@@ -336,7 +336,7 @@ class MetadataEntry(models.Model):
     dif_creation_date = models.CharField(max_length=50, null=True, blank=True)
     last_dif_revision_date = models.CharField(max_length=50, null=True, blank=True)
     dif_revision_history = models.TextField(null=True, blank=True)
-    future_dif_review_date = models.CharField(null=True, blank=True)
+    future_dif_review_date = models.CharField(max_length=50, null=True, blank=True)
     private = models.CharField(max_length=10, null=True, blank=True, help_text="True or False")
 
     def __str__(self):
