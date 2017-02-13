@@ -44,9 +44,9 @@ class Parameter(models.Model):
     variable_level_3 = models.CharField(max_length=255, null=True, blank=True)
     detailed_variable = models.CharField(max_length=255, null=True, blank=True)
     uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    download_date = models.DateField(null=True, blank=True)
+    download_date = models.DateTimeField(null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
-    keyword_revision_date = models.DateField(null=True, blank=True)
+    keyword_revision_date = models.DateTimeField(null=True, blank=True)
     in_gcmd = models.BooleanField()
 
     def __str__(self):
