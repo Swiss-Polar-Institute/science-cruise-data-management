@@ -146,7 +146,8 @@ class SummaryAdmin(admin.ModelAdmin):
 
 
 class IdnNodeAdmin(admin.ModelAdmin):
-    list_display = ('short_name', 'long_name')
+    list_display = ('idn_node_short_name', 'idn_node_use_description', 'idn_node_long_name', 'keyword_version', 'revision_date',
+                    'keyword_status', 'download_date')
 
 
 class HorizontalResolutionRangeAdmin(admin.ModelAdmin):

@@ -149,11 +149,6 @@ class Summary(models.Model):
         verbose_name_plural = "Summaries"
 
 
-class IdnNode(models.Model):
-    short_name = models.CharField(max_length=255, null=True, blank=True)
-    long_name = models.TextField(null=True, blank=True)
-
-
 ############### DIF CONTROLLED VOCABULARY TABLES #################
 
 class HorizontalResolutionRange(models.Model):
@@ -331,6 +326,21 @@ class DistributionFormat(models.Model):
 
     def __str__(self):
         return "{}".format(self.distribution_format)
+
+
+    class IdnNode(models.Model):
+        idn_node_short_name = models.CharField(max_length=255, null=True, blank=True)
+        idn_node_use_description = models.CharField(max_length=255, null=True, blank=True)
+        idn_node_long_name = models.TextField(null=True, blank=True)
+        keyword_version = models.CharField(max_length=255, null=True,blank=True)
+        revision_date = models.DateTimeField(null=True, blank=True)
+        keyword_status = models.CharField(max_length=255, null=True, blank=True)
+        download_date = models.DateTimeField(null=True, blank=True)
+        in_gcmd= models.BooleanField()
+
+    def __str__(self):
+        return "{}".format(self.idn_node_short_name)
+
 
 ###### Datacite controlled vocabularies
 

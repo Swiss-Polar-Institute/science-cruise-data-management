@@ -8,7 +8,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('filename', type=str)
-
+f
     def handle(self, *args, **options):
         print(options['filename'])
         self.import_data_from_csv(options['filename'])
