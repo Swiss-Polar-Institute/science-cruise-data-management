@@ -14,9 +14,12 @@ class DataSetCitation(models.Model):
     def __str__(self):
         return "{}".format(self.dataset_title)
 
+    class Meta:
+        unique_together = (('dataset_creator', 'dataset_title'))
+
 
 class Personnel(models.Model):
-    dataset_role = models.ManyToManyField('DatasetRole')
+    dataset_role = models.ManyToManyField('DatasetRole', unique=True)
     datacite_contributor_type = models.ManyToManyField('DataciteContributorType')
     first_name = models.OneToOneField(Person, related_name='firstname', null=True, blank=True)
     last_name = models.OneToOneField(Person, related_name='lastname')
@@ -48,6 +51,9 @@ class Parameter(models.Model):
 
     def __str__(self):
         return "{} - {} - {}".format(self.category, self.topic, self.term)
+
+    class Meta:
+        unique_together = (('category', 'topic', 'term', 'variable_level_1', 'variable_level_2', 'variable_level_3', 'detailed_variable'))
 
 
 class TemporalCoverage(models.Model):
@@ -88,6 +94,9 @@ class Location(models.Model):
         return "{} - {} - {} - {}".format(self.location_category, self.location_type, self.location_subregion1,
                                           self.location_subregion2)
 
+    class Meta:
+        unique_together = (('locatioN_category', 'location_type', 'location_subregion1', 'location_subregion2', 'location_subregion3'))
+
 
 class DataResolution(models.Model):
     latitude_resolution = models.CharField(max_length=20, null=True, blank=True)
@@ -104,7 +113,7 @@ class DataResolution(models.Model):
 
 class DataCenter(models.Model):
     data_center_name = models.ForeignKey('DataCenterName')
-    data_set_id = models.CharField(max_length=255, null=True, blank=True, help_text="is a data set identifier assigned by the data center (may or may not be the same as the <Entry_ID>.")
+    data_set_id = models.CharField(max_length=80, null=True, blank=True, help_text="This is a data set identifier assigned by the data center (may or may not be the same as the <Entry_ID>.")
     personnel = models.ManyToManyField(Personnel, help_text="Contact information for the data.")
 
     def __str__(self):
@@ -148,7 +157,7 @@ class IdnNode(models.Model):
 ############### DIF CONTROLLED VOCABULARY TABLES #################
 
 class HorizontalResolutionRange(models.Model):
-    horizontal_resolution_range	= models.CharField(max_length=255, null=True, blank=True)
+    horizontal_resolution_range	= models.CharField(max_length=255, unique=True)
     uuid = models.CharField(max_length=255, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date= models.DateTimeField(null=True, blank=True)
@@ -175,6 +184,9 @@ class Instrument(models.Model):
     def __str__(self):
         return "{}".format(self.short_name)
 
+    class Meta:
+        unique_together = (('category','instrument_class','type', 'subtype', 'short_name', 'long_name'))
+
 
 class Platform(models.Model):
     category = models.CharField(max_length=255, null=True, blank=True)
@@ -189,6 +201,9 @@ class Platform(models.Model):
 
     def __str__(self):
         return "{}".format(self.short_name)
+
+    class Meta:
+        unique_together = (('type_of_device', 'identifying_mark'))
 
 
 class Project(models.Model):
