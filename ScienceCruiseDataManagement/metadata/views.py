@@ -39,8 +39,8 @@ class MetadataEntryView(TemplateView):
         rows.append(('ID', metadata_entry.entry_id))
         rows.append(('Title', metadata_entry.entry_title))
 
-        # people = concatenate_entries(metadata_entry.personnel, ['name_first'])
-        # rows.append(('Personnel', people))
+        people = concatenate_entries(metadata_entry.personnel, ['person.name_first', 'person.name_last'])
+        rows.append(('Personnel', people))
 
         data_set_citation = concatenate_entries(metadata_entry.data_set_citation, ['dataset_title', 'dataset_creator'])
         rows.append(('Data set citation', data_set_citation))
@@ -48,6 +48,18 @@ class MetadataEntryView(TemplateView):
         rows.append(('Projects', projects))
 
         return render(request, "metadata_entry.html", {'rows': rows})
+
+
+def get_attribute_from_field(object, field):
+    # here field is a string and can contain ".": it will get resolved recursively
+    assert isinstance(field, str)
+
+    if "." in field:
+        field_in_parts = field.split(".")
+        field2 = getattr(object, field_in_parts[0])
+        return get_attribute_from_field(field2, ".".join(field_in_parts[1:]))
+    else:
+        return getattr(object, field)
 
 
 def concatenate_entries(objects, fields):
@@ -62,12 +74,10 @@ def concatenate_entries(objects, fields):
     list_of_strings = []
 
     for object in objects.all():
-        object_dictionary = model_to_dict(object)
-
         fields_data = []
         for field in fields:
-            fields_data.append(object_dictionary[field])
+            fields_data.append(get_attribute_from_field(object, field))
 
-        list_of_strings.append("-".join(fields_data))
+        list_of_strings.append(" ".join(fields_data))
 
-    return ",".join(list_of_strings)
+    return ", ".join(list_of_strings)
