@@ -2,154 +2,6 @@ from django.db import models
 from main.models import Person, Organisation, Platform
 from django.conf import settings
 
-############## MAIN DIF METADATA MODELS ###############
-
-class DataSetCitation(models.Model):
-    dataset_creator = models.ForeignKey(Person, null=True, blank=True)
-    dataset_title = models.CharField(max_length=255, null=True, blank=True)
-    dataset_release_date = models.DateField(null=True,blank=True)
-    dataset_publisher = models.ForeignKey(Organisation, null=True, blank=True)
-    version = models.CharField(max_length=10, null=True, blank=True)
-    other_citation_details = models.CharField(max_length=255, null=True, blank=True)
-
-    def __str__(self):
-        return "{}".format(self.dataset_title)
-
-    class Meta:
-        unique_together = (('dataset_creator', 'dataset_title'))
-
-
-class Personnel(models.Model):
-    dataset_role = models.ManyToManyField('DatasetRole')
-    datacite_contributor_type = models.ManyToManyField('DataciteContributorType')
-    person = models.OneToOneField(Person, null=True, blank=True)
-    email = models.CharField(max_length=80, null=True, blank=True)
-    contact_address = models.ForeignKey(Organisation, null=True, blank=True)
-
-    def __str__(self):
-        dataset_roles = self.dataset_role.all()
-        dataset_role_str = ",".join([dataset_role.role for dataset_role in dataset_roles])
-        return "{} - {}".format(str(self.person), dataset_role_str)
-
-    class Meta:
-        verbose_name_plural = "Personnel"
-
-
-class Parameter(models.Model):
-    category = models.CharField(max_length=255)
-    topic = models.CharField(max_length=255)
-    term = models.CharField(max_length=255)
-    variable_level_1 = models.CharField(max_length=255, null=True, blank=True)
-    variable_level_2 = models.CharField(max_length=255, null=True, blank=True)
-    variable_level_3 = models.CharField(max_length=255, null=True, blank=True)
-    detailed_variable = models.CharField(max_length=255, null=True, blank=True)
-    uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    download_date = models.DateTimeField(null=True, blank=True)
-    keyword_version = models.CharField(max_length=255, null=True, blank=True)
-    keyword_revision_date = models.DateTimeField(null=True, blank=True)
-    in_gcmd = models.BooleanField()
-
-    def __str__(self):
-        return "{} - {} - {}".format(self.category, self.topic, self.term)
-
-    class Meta:
-        unique_together = (('category', 'topic', 'term', 'variable_level_1', 'variable_level_2', 'variable_level_3', 'detailed_variable'))
-
-
-class TemporalCoverage(models.Model):
-    start_date = models.DateField(null=True, blank=True)
-    stop_date = models.DateField(null=True, blank=True)
-
-    def __str__(self):
-        return "{} - {}".format(self.start_date, self.stop_date)
-
-
-class SpatialCoverage(models.Model):
-    southernmost_latitude = models.FloatField(null=True, blank=True)
-    northernmost_latitude = models.FloatField(null=True, blank=True)
-    westernmost_longitude = models.FloatField(null=True, blank=True)
-    easternmost_longitude = models.FloatField(null=True, blank=True)
-    minimum_altitude = models.FloatField(null=True, blank=True)
-    maximum_altitude = models.FloatField(null=True, blank=True)
-    minimum_depth = models.FloatField(null=True, blank=True)
-    maximum_depth = models.FloatField(null=True, blank=True)
-
-    def __str__(self):
-        return "{} {} {} {}".format(self.southernmost_latitude, self.northernmost_latitude, self.westernmost_longitude, self.easternmost_longitude)
-
-
-class Location(models.Model):
-    location_category = models.CharField(max_length=255, null=True, blank=True)
-    location_type = models.CharField(max_length=255, null=True, blank=True)
-    location_subregion1 = models.CharField(max_length=255, null=True, blank=True)
-    location_subregion2 = models.CharField(max_length=255, null=True, blank=True)
-    location_subregion3 = models.CharField(max_length=255, null=True, blank=True)
-    detailed_location = models.CharField(max_length=255, null=True, blank=True)
-    uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    keyword_version = models.CharField(max_length=255, null=True, blank=True)
-    keyword_revision_date = models.DateTimeField(null=True, blank=True)
-    download_date = models.DateTimeField(null=True, blank=True)
-    in_gcmd = models.BooleanField()
-
-    def __str__(self):
-        return "{} - {} - {} - {}".format(self.location_category, self.location_type, self.location_subregion1,
-                                          self.location_subregion2)
-
-    class Meta:
-        unique_together = (('location_category', 'location_type', 'location_subregion1', 'location_subregion2', 'location_subregion3', 'detailed_location'))
-
-
-class DataResolution(models.Model):
-    latitude_resolution = models.CharField(max_length=20, null=True, blank=True)
-    longitude_resolution = models.CharField(max_length=20, null=True, blank=True)
-    horizontal_resolution_range = models.ForeignKey('HorizontalResolutionRange', null=True, blank=True)
-    vertical_resolution = models.CharField(max_length=20, null=True, blank=True)
-    vertical_resolution_range = models.ForeignKey('VerticalResolutionRange', null=True, blank=True)
-    temporal_resolution = models.CharField(max_length=20, null=True, blank=True)
-    temporal_resolution_range = models.ForeignKey('TemporalResolutionRange', null=True, blank=True)
-
-    def __str__(self):
-        return "{} {} {} {}".format(self.latitude_resolution, self.longitude_resolution, self.vertical_resolution, self.temporal_resolution)
-
-
-class DataCenter(models.Model):
-    data_center_name = models.ForeignKey('DataCenterName')
-    data_set_id = models.CharField(max_length=80, null=True, blank=True, help_text="This is a data set identifier assigned by the data center (may or may not be the same as the <Entry_ID>.")
-    personnel = models.ManyToManyField(Personnel, help_text="Contact information for the data.")
-
-    def __str__(self):
-        return "{}".format(self.data_center_name)
-
-
-class DataCenterName(models.Model):
-    short_name = models.CharField(max_length=160)
-    long_name = models.CharField(max_length=240, null=True, blank=True)
-
-    def __str__(self):
-        return "{}".format(self.short_name)
-
-
-class Distribution(models.Model):
-    distribution_media = models.ForeignKey('DistributionMedia', null=True, blank=True, help_text="The media options for the user receiving the data.")
-    distribution_size = models.CharField(max_length=80, null=True, blank=True, help_text = "An approximate size (in KB, MB or GB) for the entire data set. Specify if data are compressed and the method of compression.")
-    distribution_format = models.ForeignKey('DistributionFormat', null=True, blank=True, help_text="The data format used to distribute the data.")
-    fees = models.CharField(max_length=80, null=True, blank=True, help_text="Cost of <Distribution_Media> or distribution costs if any. Specify if there are no costs.")
-
-    def __str__(self):
-        return "{} {} {}".format(self.distribution_media, self.distribution_format, self.distribution_size)
-
-
-class Summary(models.Model):
-    abstract = models.TextField()
-    purpose = models.TextField(null=True, blank=True)
-
-    def __str__(self):
-        return "{}".format(self.abstract)
-
-    class Meta:
-        verbose_name_plural = "Summaries"
-
-
 ############### DIF CONTROLLED VOCABULARY TABLES #################
 
 class HorizontalResolutionRange(models.Model):
@@ -359,6 +211,157 @@ class DataciteContributorType(models.Model):
 
     def __str__(self):
         return "{}".format(self.contributor_type)
+
+
+############## MAIN DIF METADATA MODELS ###############
+
+class DataSetCitation(models.Model):
+    dataset_creator = models.ForeignKey(Person, null=True, blank=True)
+    dataset_title = models.CharField(max_length=255, null=True, blank=True)
+    dataset_release_date = models.DateField(null=True,blank=True)
+    dataset_publisher = models.ForeignKey(Provider, null=True, blank=True)
+    version = models.CharField(max_length=10, null=True, blank=True)
+    other_citation_details = models.CharField(max_length=255, null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.dataset_title)
+
+    class Meta:
+        unique_together = (('dataset_creator', 'dataset_title'))
+
+
+class Personnel(models.Model):
+    dataset_role = models.ManyToManyField('DatasetRole')
+    datacite_contributor_type = models.ManyToManyField('DataciteContributorType')
+    person = models.OneToOneField(Person, null=True, blank=True)
+    email = models.CharField(max_length=80, null=True, blank=True)
+    contact_address = models.ForeignKey(Organisation, null=True, blank=True)
+
+    def __str__(self):
+        dataset_roles = self.dataset_role.all()
+        dataset_role_str = ",".join([dataset_role.role for dataset_role in dataset_roles])
+        return "{} - {}".format(str(self.person), dataset_role_str)
+
+    class Meta:
+        verbose_name_plural = "Personnel"
+
+
+class Parameter(models.Model):
+    category = models.CharField(max_length=255)
+    topic = models.CharField(max_length=255)
+    term = models.CharField(max_length=255)
+    variable_level_1 = models.CharField(max_length=255, null=True, blank=True)
+    variable_level_2 = models.CharField(max_length=255, null=True, blank=True)
+    variable_level_3 = models.CharField(max_length=255, null=True, blank=True)
+    detailed_variable = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    download_date = models.DateTimeField(null=True, blank=True)
+    keyword_version = models.CharField(max_length=255, null=True, blank=True)
+    keyword_revision_date = models.DateTimeField(null=True, blank=True)
+    in_gcmd = models.BooleanField()
+
+    def __str__(self):
+        return "{} - {} - {}".format(self.category, self.topic, self.term)
+
+    class Meta:
+        unique_together = (('category', 'topic', 'term', 'variable_level_1', 'variable_level_2', 'variable_level_3', 'detailed_variable'))
+
+
+class TemporalCoverage(models.Model):
+    start_date = models.DateField(null=True, blank=True)
+    stop_date = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return "{} - {}".format(self.start_date, self.stop_date)
+
+
+class SpatialCoverage(models.Model):
+    southernmost_latitude = models.FloatField(null=True, blank=True)
+    northernmost_latitude = models.FloatField(null=True, blank=True)
+    westernmost_longitude = models.FloatField(null=True, blank=True)
+    easternmost_longitude = models.FloatField(null=True, blank=True)
+    minimum_altitude = models.FloatField(null=True, blank=True)
+    maximum_altitude = models.FloatField(null=True, blank=True)
+    minimum_depth = models.FloatField(null=True, blank=True)
+    maximum_depth = models.FloatField(null=True, blank=True)
+
+    def __str__(self):
+        return "{} {} {} {}".format(self.southernmost_latitude, self.northernmost_latitude, self.westernmost_longitude, self.easternmost_longitude)
+
+
+class Location(models.Model):
+    location_category = models.CharField(max_length=255, null=True, blank=True)
+    location_type = models.CharField(max_length=255, null=True, blank=True)
+    location_subregion1 = models.CharField(max_length=255, null=True, blank=True)
+    location_subregion2 = models.CharField(max_length=255, null=True, blank=True)
+    location_subregion3 = models.CharField(max_length=255, null=True, blank=True)
+    detailed_location = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    keyword_version = models.CharField(max_length=255, null=True, blank=True)
+    keyword_revision_date = models.DateTimeField(null=True, blank=True)
+    download_date = models.DateTimeField(null=True, blank=True)
+    in_gcmd = models.BooleanField()
+
+    def __str__(self):
+        return "{} - {} - {} - {}".format(self.location_category, self.location_type, self.location_subregion1,
+                                          self.location_subregion2)
+
+    class Meta:
+        unique_together = (('location_category', 'location_type', 'location_subregion1', 'location_subregion2', 'location_subregion3', 'detailed_location'))
+
+
+class DataResolution(models.Model):
+    latitude_resolution = models.CharField(max_length=20, null=True, blank=True)
+    longitude_resolution = models.CharField(max_length=20, null=True, blank=True)
+    horizontal_resolution_range = models.ForeignKey('HorizontalResolutionRange', null=True, blank=True)
+    vertical_resolution = models.CharField(max_length=20, null=True, blank=True)
+    vertical_resolution_range = models.ForeignKey('VerticalResolutionRange', null=True, blank=True)
+    temporal_resolution = models.CharField(max_length=20, null=True, blank=True)
+    temporal_resolution_range = models.ForeignKey('TemporalResolutionRange', null=True, blank=True)
+
+    def __str__(self):
+        return "{} {} {} {}".format(self.latitude_resolution, self.longitude_resolution, self.vertical_resolution, self.temporal_resolution)
+
+
+class DataCenter(models.Model):
+    data_center_name = models.ForeignKey('DataCenterName')
+    data_set_id = models.CharField(max_length=80, null=True, blank=True, help_text="This is a data set identifier assigned by the data center (may or may not be the same as the <Entry_ID>.")
+    personnel = models.ManyToManyField(Personnel, help_text="Contact information for the data.")
+
+    def __str__(self):
+        return "{}".format(self.data_center_name)
+
+
+class DataCenterName(models.Model):
+    short_name = models.CharField(max_length=160)
+    long_name = models.CharField(max_length=240, null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.short_name)
+
+
+class Distribution(models.Model):
+    distribution_media = models.ForeignKey('DistributionMedia', null=True, blank=True, help_text="The media options for the user receiving the data.")
+    distribution_size = models.CharField(max_length=80, null=True, blank=True, help_text = "An approximate size (in KB, MB or GB) for the entire data set. Specify if data are compressed and the method of compression.")
+    distribution_format = models.ForeignKey('DistributionFormat', null=True, blank=True, help_text="The data format used to distribute the data.")
+    fees = models.CharField(max_length=80, null=True, blank=True, help_text="Cost of <Distribution_Media> or distribution costs if any. Specify if there are no costs.")
+
+    def __str__(self):
+        return "{} {} {}".format(self.distribution_media, self.distribution_format, self.distribution_size)
+
+
+class Summary(models.Model):
+    abstract = models.TextField()
+    purpose = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.abstract)
+
+    class Meta:
+        verbose_name_plural = "Summaries"
+
+
+
 
 
 ##### Full metadata entry ######
