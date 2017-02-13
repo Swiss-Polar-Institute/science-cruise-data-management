@@ -23,10 +23,16 @@ class Command(BaseCommand):
                 platform.series_entity = row['Series_Entity']
                 platform.short_name = row['Short_Name']
                 platform.long_name = row['Long_Name']
-                platform.uuid = row['UUID']
+                platform.detailed_platform = row['Detailed_Platform']
+
+                if row['UUID'] == '':
+                    platform.uuid = None
+                else:
+                    platform.uuid = row['UUID']
+
                 platform.keyword_version = row['keyword_version']
                 platform.keyword_revision_date = row['keyword_revision_date']
-                platform.download_date = ['download_date']
+                platform.download_date = row['download_date']
                 platform.in_gcmd = settings.DEFAULT_IN_GCMD
 
                 platform.save()

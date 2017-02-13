@@ -20,7 +20,7 @@ class Command(BaseCommand):
                 print(row)
                 temporalresolutionrange = TemporalResolutionRange()
                 temporalresolutionrange.temporal_resolution_range = row['Temporal_Resolution_Range']
-                temporalresolutionrange.uuid = ['UUID']
+                temporalresolutionrange.uuid = row['UUID']
                 temporalresolutionrange.keyword_version = row['keyword_version']
                 temporalresolutionrange.keyword_revision_date = row['keyword_revision_date']
                 temporalresolutionrange.download_date= row['download_date']

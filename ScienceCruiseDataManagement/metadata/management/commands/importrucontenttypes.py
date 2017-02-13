@@ -21,7 +21,7 @@ class Command(BaseCommand):
                 rucontenttype = RUContentType()
                 rucontenttype.type = row['Type']
                 rucontenttype.subtype = row['Subtype']
-                rucontenttype.uuid = ['UUID']
+                rucontenttype.uuid = row['UUID']
                 rucontenttype.keyword_version = row['keyword_version']
                 rucontenttype.keyword_revision_date = row['keyword_revision_date']
                 rucontenttype.download_date = row['download_date']

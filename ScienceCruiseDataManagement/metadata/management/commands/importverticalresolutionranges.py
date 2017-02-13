@@ -20,7 +20,7 @@ class Command(BaseCommand):
                 print(row)
                 verticalresolutionrange = VerticalResolutionRange()
                 verticalresolutionrange.vertical_resolution_range = row['Vertical_Resolution_Range']
-                verticalresolutionrange.uuid = ['UUID']
+                verticalresolutionrange.uuid = row['UUID']
                 verticalresolutionrange.keyword_version = row['keyword_version']
                 verticalresolutionrange.keyword_revision_date = row['keyword_revision_date']
                 verticalresolutionrange.download_date= row['download_date']

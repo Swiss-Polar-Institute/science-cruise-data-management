@@ -194,6 +194,7 @@ class Platform(models.Model):
     series_entity = models.CharField(max_length=255, null=True, blank=True)
     short_name = models.CharField(max_length=255, null=True, blank=True)
     long_name = models.CharField(max_length=255, null=True, blank=True)
+    detailed_platform = models.CharField(max_length=255, null=True, blank=True)
     uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date = models.DateTimeField(null=True, blank=True)
@@ -204,7 +205,7 @@ class Platform(models.Model):
         return "{}".format(self.short_name)
 
     class Meta:
-        unique_together = (('category', 'series_entity', 'short_name', 'long_name'))
+        unique_together = (('category', 'series_entity', 'short_name', 'long_name', 'detailed_platform', 'uuid'))
 
 
 class Project(models.Model):

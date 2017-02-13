@@ -159,7 +159,7 @@ class InstrumentAdmin(admin.ModelAdmin):
 
 
 class PlatformAdmin(admin.ModelAdmin):
-    list_display = ('category', 'series_entity', 'short_name', 'long_name', 'uuid', 'keyword_version',
+    list_display = ('category', 'series_entity', 'short_name', 'long_name', 'detailed_platform', 'uuid', 'keyword_version',
                     'keyword_revision_date', 'download_date', 'in_gcmd')
 
 
