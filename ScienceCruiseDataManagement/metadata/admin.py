@@ -133,6 +133,10 @@ class DataCenterAdmin(admin.ModelAdmin):
         return ",".join([str(person) for person in people])
 
 
+class DataCenterNameAdmin(admin.ModelAdmin):
+    list_display = ('short_name', 'long_name')
+
+
 class DistributionAdmin(admin.ModelAdmin):
     list_display = ('distribution_media', 'distribution_size', 'distribution_format', 'fees')
 
@@ -235,3 +239,4 @@ admin.site.register(metadata.models.DataciteContributorType, DataciteContributor
 admin.site.register(metadata.models.TemporalResolutionRange, TemporalResolutionRangeAdmin)
 admin.site.register(metadata.models.Project, ProjectAdmin)
 admin.site.register(metadata.models.DistributionMedia, DistributionMediaAdmin)
+admin.site.register(metadata.models.DataCenterName, DataCenterNameAdmin)
