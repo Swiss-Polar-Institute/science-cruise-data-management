@@ -19,8 +19,8 @@ class Command(BaseCommand):
             for row in reader:
                 print(row)
                 datasetprogress = DatasetProgress()
-                datasetprogress.type = row['Type']
-                datasetprogress.definition = row['Definition']
+                datasetprogress.type = row['type']
+                datasetprogress.definition = row['definition']
                 datasetprogress.download_date= row['download_date']
                 datasetprogress.in_gcmd = settings.DEFAULT_IN_GCMD
 
