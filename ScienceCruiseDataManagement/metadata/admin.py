@@ -84,7 +84,7 @@ class DataSetCitationAdmin(admin.ModelAdmin):
 
 class PersonnelAdmin(admin.ModelAdmin):
     list_display = ('dataset_role_list', 'datacite_contributor_type_list',
-                    'first_name', 'last_name', 'email', 'contact_address')
+                    'person', 'email', 'contact_address')
 
     def dataset_role_list(self, obj):
         dataset_roles = obj.dataset_role.all()

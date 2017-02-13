@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}List of metadata entries{% endblock %}
+{% load static %}
+{% block extra_head %}
+<script type="text/javascript" src="{% static '/js/external/Chart.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<h1>List of Metadata entries</h1>
+{% for metadata_entry in metadata_entry_list %}
+    <li>{{ metadata_entry.entry_title }}</li>
+{% empty %}
+    <li>No metadata entries yet.</li>
+{% endfor %}
+</ul>
+
+{% endblock %}

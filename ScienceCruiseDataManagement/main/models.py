@@ -363,7 +363,7 @@ class SpecificDevice(models.Model):
     platform = models.ManyToManyField(Platform, related_name='possible_platform', help_text="Select one or more platforms from which the device was operated or deployed.")
     device_contact = models.ManyToManyField(Person, help_text="Select the person / people who operated or was responsible for the instrument at some point during the voyage. This does not have to be every user of the instrument, but the main operator(s) for each leg.")
     leg_used = models.ManyToManyField(Leg, help_text="Select the leg(s) on which the device was used.")
-    project = models.ManyToManyField(Project, help_text="Select the projects which used the device or got samples / data from its deployments.")
+    project = models.ManyToManyField(Project, help_text="Select the templates which used the device or got samples / data from its deployments.")
     calibration_required = models.BooleanField(help_text="Select this box if this device should be calibrated.")
     calibration_documents = models.BooleanField(help_text="Select this box if this device should be calibrated and the calibration documents are in the data folder.")
     calibration_comments = models.CharField(max_length=255, null=True, blank=True)

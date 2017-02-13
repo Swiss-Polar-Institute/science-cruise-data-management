@@ -16,7 +16,7 @@ class Command(BaseCommand):
         call_command('importislands', os.path.join(directory, "islands.csv"))
         call_command('importorganisations', os.path.join(directory, "organisations.csv"))
         call_command('importpeople', os.path.join(directory, "participants.csv"))
-        call_command('importprojects', os.path.join(directory, "projects.csv"))
+        call_command('importprojects', os.path.join(directory, "templates.csv"))
         call_command('importplatformtypes', os.path.join(directory, "platform_types.csv"))
         call_command('importplatforms', os.path.join(directory, "platforms.csv"))
         call_command('importships', os.path.join(directory, "ships.csv"))

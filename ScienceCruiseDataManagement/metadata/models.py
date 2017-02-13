@@ -21,15 +21,14 @@ class DataSetCitation(models.Model):
 class Personnel(models.Model):
     dataset_role = models.ManyToManyField('DatasetRole')
     datacite_contributor_type = models.ManyToManyField('DataciteContributorType')
-    first_name = models.OneToOneField(Person, related_name='firstname', null=True, blank=True)
-    last_name = models.OneToOneField(Person, related_name='lastname')
+    person = models.OneToOneField(Person, null=True, blank=True)
     email = models.CharField(max_length=80, null=True, blank=True)
     contact_address = models.ForeignKey(Organisation, null=True, blank=True)
 
     def __str__(self):
         dataset_roles = self.dataset_role.all()
         dataset_role_str = ",".join([dataset_role.role for dataset_role in dataset_roles])
-        return "{} {} - {}".format(self.first_name, self.last_name, dataset_role_str)
+        return "{} - {}".format(str(self.person), dataset_role_str)
 
     class Meta:
         verbose_name_plural = "Personnel"
@@ -352,7 +351,7 @@ class DataciteContributorType(models.Model):
 
 class MetadataEntry(models.Model):
     entry_id = models.CharField(max_length=255, unique=True, help_text="Unique document identifier of the metadata record. The identifier is case insensitive. The <Entry_ID> consists of 1 to 80 alphanumeric characters of the UTF-8 set, including underbar (_), hyphen (-) and period (.).")
-    entry_title= models.CharField(max_length=220, help_text="Title of the data set described by the metadata. For example, <Entry_Title>Aerosol characterization and snow chemistry at Terra Nova Bay 2001-2003 </Entry_Title> provides an adequate amount of information to guide the user.")
+    entry_title = models.CharField(max_length=220, help_text="Title of the data set described by the metadata. For example, <Entry_Title>Aerosol characterization and snow chemistry at Terra Nova Bay 2001-2003 </Entry_Title> provides an adequate amount of information to guide the user.")
     data_set_citation = models.ManyToManyField(DataSetCitation, blank=True)
     personnel = models.ManyToManyField(Personnel, help_text="The point of contact for more information about the data set or the metadata.")
     parameters = models.ManyToManyField(Parameter)
