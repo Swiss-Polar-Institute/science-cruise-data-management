@@ -20,11 +20,16 @@ class Personnel(models.Model):
     datacite_contributor_type = models.ManyToManyField('DataciteContributorType')
     first_name = models.OneToOneField(Person, related_name='firstname', null=True, blank=True)
     last_name = models.OneToOneField(Person, related_name='lastname')
-    email= models.CharField(max_length=80, null=True, blank=True)
+    email = models.CharField(max_length=80, null=True, blank=True)
     contact_address = models.ForeignKey(Organisation, null=True, blank=True)
 
     def __str__(self):
-        return "{} {} - {}".format(self.first_name, self.last_name, self.role)
+        dataset_roles = self.dataset_role.all()
+        dataset_role_str = ",".join([dataset_role.role for dataset_role in dataset_roles])
+        return "{} {} - {}".format(self.first_name, self.last_name, dataset_role_str)
+
+    class Meta:
+        verbose_name_plural = "Personnel"
 
 
 class Parameter(models.Model):
@@ -54,14 +59,14 @@ class TemporalCoverage(models.Model):
 
 
 class SpatialCoverage(models.Model):
-    southernmost_latitude = models.CharField(max_length=10, null=True, blank=True)
-    northernmost_latitude = models.CharField(max_length=10, null=True, blank=True)
-    westernmost_longitude = models.CharField(max_length=10, null=True, blank=True)
-    easternmost_longitude = models.CharField(max_length=10, null=True, blank=True)
-    minimum_altitude = models.CharField(max_length=10, null=True, blank=True)
-    maximum_altitude = models.CharField(max_length=10, null=True, blank=True)
-    minimum_depth = models.CharField(max_length=10, null=True, blank=True)
-    maximum_depth = models.CharField(max_length=10, null=True, blank=True)
+    southernmost_latitude = models.FloatField(null=True, blank=True)
+    northernmost_latitude = models.FloatField(null=True, blank=True)
+    westernmost_longitude = models.FloatField(null=True, blank=True)
+    easternmost_longitude = models.FloatField(null=True, blank=True)
+    minimum_altitude = models.FloatField(null=True, blank=True)
+    maximum_altitude = models.FloatField(null=True, blank=True)
+    minimum_depth = models.FloatField(null=True, blank=True)
+    maximum_depth = models.FloatField(null=True, blank=True)
 
     def __str__(self):
         return "{} {} {} {}".format(self.southernmost_latitude, self.northernmost_latitude, self.westernmost_longitude, self.easternmost_longitude)
@@ -80,8 +85,8 @@ class Location(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{} - {} - {} - {}".format(self.Location_Category, self.Location_Type, self.Location_Subregion1,
-                                          self.Location_Subregion2)
+        return "{} - {} - {} - {}".format(self.location_category, self.location_type, self.location_subregion1,
+                                          self.location_subregion2)
 
 
 class DataResolution(models.Model):
@@ -131,6 +136,9 @@ class Summary(models.Model):
     def __str__(self):
         return "{}".format(self.abstract)
 
+    class Meta:
+        verbose_name_plural = "Summaries"
+
 
 class IdnNode(models.Model):
     short_name = models.CharField(max_length=255, null=True, blank=True)
@@ -148,7 +156,7 @@ class HorizontalResolutionRange(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{}".format(self.Horizontal_Resolution_Range)
+        return "{}".format(self.horizontal_resolution_range)
 
 
 class Instrument(models.Model):
@@ -165,7 +173,7 @@ class Instrument(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{}".format(self.Short_Name)
+        return "{}".format(self.short_name)
 
 
 class Platform(models.Model):
@@ -180,7 +188,7 @@ class Platform(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{}".format(self.Short_Name)
+        return "{}".format(self.short_name)
 
 
 class Project(models.Model):
@@ -194,7 +202,7 @@ class Project(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{}".format(self.Short_Name)
+        return "{}".format(self.short_name)
 
 
 class Provider(models.Model):
@@ -212,7 +220,7 @@ class Provider(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{}".format(self.Short_Name)
+        return "{}".format(self.short_name)
 
 
 class RUContentType(models.Model):
@@ -225,7 +233,7 @@ class RUContentType(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{}".format(self.Type)
+        return "{}".format(self.type)
 
 
 class TemporalResolutionRange(models.Model):
@@ -237,7 +245,7 @@ class TemporalResolutionRange(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{}".format(self.Temporal_Resolution_Range)
+        return "{}".format(self.temporal_resolution_range)
 
 
 class VerticalResolutionRange(models.Model):
@@ -249,7 +257,7 @@ class VerticalResolutionRange(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{}".format(self.Vertical_Resolution_Range)
+        return "{}".format(self.vertical_resolution_range)
 
 
 ###### RECOMMENDED VOCABULARIES FOR THE DIF FIELDS #####
@@ -272,6 +280,10 @@ class DatasetProgress(models.Model):
 
     def __str__(self):
         return "{}".format(self.type)
+
+    class Meta:
+        verbose_name_plural="Dataset progress"
+
 
 
 class DistributionMedia(models.Model):
@@ -341,3 +353,6 @@ class MetadataEntry(models.Model):
 
     def __str__(self):
         return "{}-{}".format(self.entry_id, self.entry_title)
+
+    class Meta:
+        verbose_name_plural = "Metadata entries"
