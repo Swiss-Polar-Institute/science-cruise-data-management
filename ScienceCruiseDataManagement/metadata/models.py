@@ -19,7 +19,7 @@ class DataSetCitation(models.Model):
 
 
 class Personnel(models.Model):
-    dataset_role = models.ManyToManyField('DatasetRole', unique=True)
+    dataset_role = models.ManyToManyField('DatasetRole')
     datacite_contributor_type = models.ManyToManyField('DataciteContributorType')
     first_name = models.OneToOneField(Person, related_name='firstname', null=True, blank=True)
     last_name = models.OneToOneField(Person, related_name='lastname')
@@ -43,7 +43,7 @@ class Parameter(models.Model):
     variable_level_2 = models.CharField(max_length=255, null=True, blank=True)
     variable_level_3 = models.CharField(max_length=255, null=True, blank=True)
     detailed_variable = models.CharField(max_length=255, null=True, blank=True)
-    uuid = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
     download_date = models.DateField(null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date = models.DateField(null=True, blank=True)
@@ -84,7 +84,7 @@ class Location(models.Model):
     location_subregion1 = models.CharField(max_length=255, null=True, blank=True)
     location_subregion2 = models.CharField(max_length=255, null=True, blank=True)
     location_subregion3 = models.CharField(max_length=255, null=True, blank=True)
-    uuid = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date = models.DateTimeField(null=True, blank=True)
     download_date = models.DateTimeField(null=True, blank=True)
@@ -95,7 +95,7 @@ class Location(models.Model):
                                           self.location_subregion2)
 
     class Meta:
-        unique_together = (('locatioN_category', 'location_type', 'location_subregion1', 'location_subregion2', 'location_subregion3'))
+        unique_together = (('location_category', 'location_type', 'location_subregion1', 'location_subregion2', 'location_subregion3'))
 
 
 class DataResolution(models.Model):
@@ -158,7 +158,7 @@ class IdnNode(models.Model):
 
 class HorizontalResolutionRange(models.Model):
     horizontal_resolution_range	= models.CharField(max_length=255, unique=True)
-    uuid = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date= models.DateTimeField(null=True, blank=True)
     download_date = models.DateTimeField(null=True, blank=True)
@@ -175,7 +175,7 @@ class Instrument(models.Model):
     subtype = models.CharField(max_length=255, null=True, blank=True)
     short_name = models.CharField(max_length=255, null=True, blank=True)
     long_name = models.CharField(max_length=255, null=True, blank=True)
-    uuid = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date = models.DateTimeField(null=True, blank=True)
     download_date = models.DateTimeField(null=True, blank=True)
@@ -193,7 +193,7 @@ class Platform(models.Model):
     series_entity = models.CharField(max_length=255, null=True, blank=True)
     short_name = models.CharField(max_length=255, null=True, blank=True)
     long_name = models.CharField(max_length=255, null=True, blank=True)
-    uuid = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date = models.DateTimeField(null=True, blank=True)
     download_date = models.DateTimeField(null=True, blank=True)
@@ -203,14 +203,14 @@ class Platform(models.Model):
         return "{}".format(self.short_name)
 
     class Meta:
-        unique_together = (('type_of_device', 'identifying_mark'))
+        unique_together = ('category', 'series_entity', 'short_name', 'long_name')
 
 
 class Project(models.Model):
     bucket = models.CharField(max_length=255, null=True, blank=True)
     short_name = models.CharField(max_length=255, null=True, blank=True)
     long_name = models.CharField(max_length=255, null=True, blank=True)
-    uuid = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date = models.DateTimeField(null=True, blank=True)
     download_date = models.DateTimeField(null=True, blank=True)
@@ -228,7 +228,7 @@ class Provider(models.Model):
     short_name = models.CharField(max_length=255, null=True, blank=True)
     long_name = models.CharField(max_length=255, null=True, blank=True)
     data_center_url = models.CharField(max_length=255, null=True, blank=True)
-    uuid = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date = models.DateTimeField(null=True, blank=True)
     download_date = models.DateTimeField(null=True, blank=True)
@@ -241,7 +241,7 @@ class Provider(models.Model):
 class RUContentType(models.Model):
     type = models.CharField(max_length=255, null=True, blank=True)
     subtype = models.CharField(max_length=255, null=True, blank=True)
-    uuid = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date = models.DateTimeField(null=True, blank=True)
     download_date = models.DateTimeField(null=True, blank=True)
@@ -253,7 +253,7 @@ class RUContentType(models.Model):
 
 class TemporalResolutionRange(models.Model):
     temporal_resolution_range = models.CharField(max_length=255, null=True, blank=True)
-    uuid = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date = models.DateTimeField(null=True, blank=True)
     download_date = models.DateTimeField(null=True, blank=True)
@@ -265,7 +265,7 @@ class TemporalResolutionRange(models.Model):
 
 class VerticalResolutionRange(models.Model):
     vertical_resolution_range = models.CharField(max_length=255, null=True, blank=True)
-    uuid = models.CharField(max_length=255, null=True, blank=True)
+    uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date = models.DateTimeField(null=True, blank=True)
     download_date = models.DateTimeField(null=True, blank=True)
