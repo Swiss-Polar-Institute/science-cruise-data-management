@@ -23,6 +23,7 @@ Date: {{date_time}}
     <b>Links:</b>
     <ul>
         <li><a href="/map">Map</a></li>
+        <li><a href="/ferrybox">Ferrybox live</a></li>
         <li><a href="/position_from_date_time/">Find ship's location</a></li>
         <li><a href="/coordinates_conversion/">Coordinates conversion</a></li>
         <li><a href="/storage">Storage</a></li>
@@ -31,7 +32,6 @@ Date: {{date_time}}
         <li><a href="/ethz_forecast_data/navitool_maxi_ace.html">ETHZ forecast</a></li>
         <li><a href="http://192.168.20.40">Mail</a></li>
         <li><a href="/admin">Admin</a> (e.g. to enter events)</li>
-        <!-- <li><a href="/position_from_date_time"</a>Position from date time</li> -->
         {% if perms.main.can_add_station %}
         <li><a href="/import_ports_from_gpx/">Import ports from OpenCPN (or any GPX file)</a></li>
         {% endif %}
