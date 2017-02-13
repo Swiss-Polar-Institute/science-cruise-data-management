@@ -285,7 +285,6 @@ class DatasetProgress(models.Model):
         verbose_name_plural="Dataset progress"
 
 
-
 class DistributionMedia(models.Model):
     media_type = models.CharField(max_length=80)
     distribution_media = models.CharField(max_length=80)

@@ -54,7 +54,7 @@ class MetadataEntryAdmin(admin.ModelAdmin):
     def data_resolution_list(self, obj):
         data_resolutions = obj.data_resolution.all()
 
-        return ",".join([str(data_resolution for data_resolution in data_resolutions)])
+        return ",".join([str(data_resolution) for data_resolution in data_resolutions])
 
     def project_list(self, obj):
         projects = obj.project.all()
@@ -67,7 +67,7 @@ class MetadataEntryAdmin(admin.ModelAdmin):
         return ",".join([str(data_center) for data_center in data_centers])
 
     def distribution_list(self, obj):
-        distributions = obj.distribution_list.all()
+        distributions = obj.distribution.all()
 
         return ",".join([str(distribution) for distribution in distributions])
 
@@ -180,6 +180,11 @@ class TemporalResolutionRangeAdmin(admin.ModelAdmin):
                     'download_date', 'in_gcmd')
 
 
+class TemporalResolutionRangeAdmin(admin.ModelAdmin):
+    list_display = ('temporal_resolution_range', 'uuid', 'keyword_version', 'keyword_revision_date',
+                    'download_date', 'in_gcmd')
+
+
 class VerticalResolutionRangeAdmin(admin.ModelAdmin):
     list_display = ('vertical_resolution_range', 'uuid', 'keyword_version', 'keyword_revision_date',
                     'download_date', 'in_gcmd')
@@ -227,3 +232,6 @@ admin.site.register(metadata.models.DatasetRole, DatasetRoleAdmin)
 admin.site.register(metadata.models.DatasetProgress, DatasetProgressAdmin)
 admin.site.register(metadata.models.DistributionFormat, DistributionFormatAdmin)
 admin.site.register(metadata.models.DataciteContributorType, DataciteContributorTypeAdmin)
+admin.site.register(metadata.models.TemporalResolutionRange, TemporalResolutionRangeAdmin)
+admin.site.register(metadata.models.Project, ProjectAdmin)
+admin.site.register(metadata.models.DistributionMedia, DistributionMediaAdmin)
