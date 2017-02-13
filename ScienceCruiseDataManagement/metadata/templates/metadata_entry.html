@@ -4,8 +4,6 @@
 
 {% block content %}
 <h1>Metadata entry</h1>
-Title: {{ entry_title }}
-Projects: {{ projects }}
 
 <table class="table table-bordered">
     <thead> <th>Field</th><th>Value</th> </thead>
@@ -15,4 +13,7 @@ Projects: {{ projects }}
     <tr>
     {% endfor %}
 </table>
+
+Back to <a href="/metadata">list of metadata</a>
+
 {% endblock %}
