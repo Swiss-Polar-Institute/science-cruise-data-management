@@ -41,9 +41,9 @@ class Parameter(models.Model):
     variable_level_3 = models.CharField(max_length=255, null=True, blank=True)
     detailed_variable = models.CharField(max_length=255, null=True, blank=True)
     uuid = models.CharField(max_length=255, null=True, blank=True)
-    download_date = models.DateTimeField(null=True, blank=True)
+    download_date = models.DateField(null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
-    keyword_revision_date = models.DateTimeField(null=True, blank=True)
+    keyword_revision_date = models.DateField(null=True, blank=True)
     in_gcmd = models.BooleanField()
 
     def __str__(self):
@@ -343,12 +343,12 @@ class MetadataEntry(models.Model):
     parent_dif = models.CharField(max_length=255, null=True, blank=True)
     idn_node = models.ManyToManyField(IdnNode)
     metadata_name= models.CharField(max_length=255, help_text="DEFAULT=CEOS IDN DIF")
-    metadata_version = models.CharField(max_length=80, help_text="DEFAULT=VERSION 9.9")
-    dif_creation_date = models.CharField(max_length=50, null=True, blank=True)
-    last_dif_revision_date = models.CharField(max_length=50, null=True, blank=True)
+    metadata_version = models.CharField(max_length=80, default="TEST", help_text="DEFAULT=VERSION 9.9")
+    dif_creation_date = models.DateField(null=True, blank=True)
+    last_dif_revision_date = models.DateField(null=True, blank=True)
     dif_revision_history = models.TextField(null=True, blank=True)
-    future_dif_review_date = models.CharField(max_length=50, null=True, blank=True)
-    private = models.CharField(max_length=10, null=True, blank=True, help_text="True or False")
+    future_dif_review_date = models.DateField(null=True, blank=True)
+    private = models.BooleanField()
 
     def __str__(self):
         return "{}-{}".format(self.entry_id, self.entry_title)
