@@ -85,6 +85,7 @@ class DataSetCitationAdmin(admin.ModelAdmin):
 class PersonnelAdmin(admin.ModelAdmin):
     list_display = ('dataset_role_list', 'datacite_contributor_type_list',
                     'person', 'email', 'contact_address')
+    search_fields =('dataset_role_list', 'person')
 
     def dataset_role_list(self, obj):
         dataset_roles = obj.dataset_role.all()
@@ -101,6 +102,8 @@ class ParameterAdmin(admin.ModelAdmin):
     list_display = ('category', 'topic', 'term', 'variable_level_1', 'variable_level_2',
                     'variable_level_3', 'detailed_variable', 'uuid', 'download_date',
                     'keyword_version', 'keyword_revision_date', 'in_gcmd')
+    search_fields = ('category', 'topic', 'term', 'variable_level_1', 'variable_level_2',
+                    'variable_level_3', 'detailed_variable')
 
 
 class TemporalCoverageAdmin(admin.ModelAdmin):
@@ -116,6 +119,8 @@ class LocationAdmin(admin.ModelAdmin):
     list_display = ('location_category', 'location_type', 'location_subregion1',
                     'location_subregion2', 'location_subregion3', 'detailed_location', 'uuid',
                     'keyword_version', 'keyword_revision_date', 'download_date', 'in_gcmd')
+    search_fields = ('location_category', 'location_type', 'location_subregion1',
+                    'location_subregion2', 'location_subregion3', 'detailed_location')
 
 
 class DataResolutionAdmin(admin.ModelAdmin):
@@ -126,6 +131,7 @@ class DataResolutionAdmin(admin.ModelAdmin):
 
 class DataCenterAdmin(admin.ModelAdmin):
     list_display = ('data_center_name', 'data_set_id', 'personnel_list')
+    search_fields = ('data_center_name',)
 
     def personnel_list(self, obj):
         people = obj.project.all()
@@ -148,71 +154,81 @@ class SummaryAdmin(admin.ModelAdmin):
 class IdnNodeAdmin(admin.ModelAdmin):
     list_display = ('idn_node_short_name', 'idn_node_use_description', 'idn_node_long_name', 'keyword_version', 'revision_date',
                     'keyword_status', 'download_date')
+    search_fields = ('idn_node_short_name', 'idn_node_use_description', 'idn_node_long_name')
 
 
 class HorizontalResolutionRangeAdmin(admin.ModelAdmin):
     list_display = ('horizontal_resolution_range', 'uuid', 'keyword_version', 'keyword_revision_date', 'download_date', 'in_gcmd')
+    search_fields = ('horizontal_resolution_range',)
 
 
 class InstrumentAdmin(admin.ModelAdmin):
     list_display = ('category', 'instrument_class', 'type', 'subtype', 'short_name', 'long_name',
                     'uuid', 'keyword_version', 'keyword_revision_date', 'download_date', 'in_gcmd')
+    search_fields = ('category', 'instrument_class', 'type', 'subtype', 'short_name', 'long_name')
 
 
 class PlatformAdmin(admin.ModelAdmin):
     list_display = ('category', 'series_entity', 'short_name', 'long_name', 'detailed_platform', 'uuid', 'keyword_version',
                     'keyword_revision_date', 'download_date', 'in_gcmd')
+    search_fields = ('category', 'series_entity', 'short_name', 'long_name', 'detailed_platform')
 
 
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('bucket', 'short_name', 'long_name', 'uuid', 'keyword_version',
                     'keyword_revision_date', 'download_date', 'in_gcmd')
+    search_fields = ('bucket', 'short_name', 'long_name')
 
 
 class ProviderAdmin(admin.ModelAdmin):
     list_display = ('bucket_Level0', 'bucket_Level1', 'bucket_Level2', 'bucket_Level3',
                     'short_name', 'long_name', 'data_center_url', 'uuid', 'keyword_version',
                     'keyword_revision_date', 'download_date', 'in_gcmd')
+    search_fields = ('bucket_Level0', 'bucket_Level1', 'bucket_Level2', 'bucket_Level3',
+                    'short_name', 'long_name', 'data_center_url')
 
 
 class RUContentTypeAdmin(admin.ModelAdmin):
     list_display = ('type', 'subtype', 'uuid', 'keyword_version', 'keyword_revision_date',
                     'download_date', 'in_gcmd')
+    search_fields = ('type', 'subtype')
 
 
 class TemporalResolutionRangeAdmin(admin.ModelAdmin):
     list_display = ('temporal_resolution_range', 'uuid', 'keyword_version', 'keyword_revision_date',
                     'download_date', 'in_gcmd')
-
-
-class TemporalResolutionRangeAdmin(admin.ModelAdmin):
-    list_display = ('temporal_resolution_range', 'uuid', 'keyword_version', 'keyword_revision_date',
-                    'download_date', 'in_gcmd')
+    search_fields = ('temporal_resolution_range',)
 
 
 class VerticalResolutionRangeAdmin(admin.ModelAdmin):
     list_display = ('vertical_resolution_range', 'uuid', 'keyword_version', 'keyword_revision_date',
                     'download_date', 'in_gcmd')
+    search_fields = ('vertical_resolution_range',)
 
 
 class DatasetRoleAdmin(admin.ModelAdmin):
     list_display = ('role', 'description', 'in_gcmd')
+    search_fields = ('role',)
 
 
 class DatasetProgressAdmin(admin.ModelAdmin):
     list_display = ('type', 'description', 'download_date', 'in_gcmd')
+    search_fields = ('type', 'description')
 
 
 class DistributionMediaAdmin(admin.ModelAdmin):
     list_display = ('media_type', 'distribution_media', 'download_date', 'in_gcmd')
+    search_fields = ('media_type', 'distribution_media')
 
 
 class DistributionFormatAdmin(admin.ModelAdmin):
     list_display = ('distribution_format', 'description', 'download_date', 'in_gcmd')
+    search_fields = ('distribution_format', 'description')
 
 
 class DataciteContributorTypeAdmin(admin.ModelAdmin):
     list_display = ('contributor_type', 'datacite_schema_version', 'in_datacite')
+    search_fields = ('contributor_type',)
 
 
 admin.site.register(metadata.models.MetadataEntry, MetadataEntryAdmin)
