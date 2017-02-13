@@ -18,8 +18,8 @@ class DataSetCitation(models.Model):
 class Personnel(models.Model):
     dataset_role = models.ManyToManyField('DatasetRole')
     datacite_contributor_type = models.ManyToManyField('DataciteContributorType')
-    first_name = models.OneToOneField(Person, related_name='name_first', null=True, blank=True)
-    last_name = models.OneToOneField(Person, related_name='name_last')
+    first_name = models.OneToOneField(Person, related_name='firstname', null=True, blank=True)
+    last_name = models.OneToOneField(Person, related_name='lastname')
     email= models.CharField(max_length=80, null=True, blank=True)
     contact_address = models.ForeignKey(Organisation, null=True, blank=True)
 
