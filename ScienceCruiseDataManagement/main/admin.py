@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.db.models import Q
 from django.forms import ModelForm, ModelChoiceField
+from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 
 import main.lookups
 import main.models
@@ -146,9 +147,16 @@ class EventActionForm(ModelForm):
             filter_success_failure = self._filter_events_success_or_failure()
             open_events = main.models.Event.objects.filter(filter_open_events).filter(filter_success_failure).order_by('-number')
 
-            self.fields['event'] = EventNumberAndSamplingMethod(queryset=open_events)
+            event_number_and_sampling_method = EventNumberAndSamplingMethod(queryset=open_events)
+            self.fields['event'] = event_number_and_sampling_method
         else:
-            self.fields['event'] = EventNumberAndSamplingMethod(queryset=main.models.Event.objects.all().order_by('-number'))
+            event_number_and_sampling_method = EventNumberAndSamplingMethod(queryset=main.models.Event.objects.all().order_by('-number'))
+            self.fields['event'] = event_number_and_sampling_method
+
+        rel_model = self.Meta.model
+        rel = rel_model._meta.get_field('event').rel
+        self.fields['event'].widget = RelatedFieldWidgetWrapper(self.fields['event'].widget, rel, admin.site,
+                                                                can_add_related=True, can_change_related=True)
 
     def _adding_new_event_action(self):
         # Returns True if the user is adding an event (instead of modifying it)
