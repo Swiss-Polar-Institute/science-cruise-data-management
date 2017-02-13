@@ -32,6 +32,7 @@ class Command(BaseCommand):
             line = line.split(",")
             date = line[0][1:]
             time = line[1]
+            oxygen = line[12]
             salinity = line[21]
             conductivity = line[22]
             temperature = line[23]
@@ -46,6 +47,7 @@ class Command(BaseCommand):
             ferrybox_information.date_time = date_time
             ferrybox_information.salinity = salinity
             ferrybox_information.conductivity = conductivity
+            ferrybox_information.oxygen = oxygen
             ferrybox_information.temperature = temperature
             ferrybox_information.fluorimeter = fluorimeter
 

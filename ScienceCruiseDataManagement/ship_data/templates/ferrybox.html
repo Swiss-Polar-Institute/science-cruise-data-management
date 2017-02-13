@@ -12,9 +12,10 @@ You can find the complete data set for analysis in the data <a href="/accessing_
 This is updated every 5 minutes.<p>
 
 Date: {{ latest_information.date_time }} ({{ latest_information_minutes_ago }} minutes ago)<br>
-Salinity: {{ latest_information.salinity }}<br>
 Temperature: {{ latest_information.temperature }}<br>
+Salinity: {{ latest_information.salinity }}<br>
 Fluorimeter: {{ latest_information.fluorimeter }}<br>
+Oxygen: {{ latest_information.oxygen }} <p>
 
 <canvas id="graph1" width="400" height="60"></canvas>
 <center>(hours)</center>
@@ -80,7 +81,9 @@ var data_graph1 = {};
     plot("graph1", data_graph1, yAxes);
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-var fluorimeter = JSON.parse('{{ fluorimeter | escapejs }}')
+var fluorimeter = JSON.parse('{{ fluorimeter | escapejs }}');
+var oxygen = JSON.parse('{{ oxygen | escapejs }}');
+
 var data_graph2 = {};
     var fluorimeter = {
         data: fluorimeter,
@@ -92,11 +95,25 @@ var data_graph2 = {};
         label: "Fluorimeter"
     };
 
-    var datasets = [fluorimeter];
+    var oxygen = {
+        data: oxygen,
+        label: "oxygen",
+        borderColor: "rgba(0, 200, 200, 1)",
+        fill: false,
+        units: "test",
+        yAxisID: "oxygen",
+        label: "Oxygen"
+        };
+
+    var datasets = [fluorimeter, oxygen];
 
     var yAxes = [{  type: 'linear',
                     position: 'right',
-                    id: "fluorimeter"
+                    id: 'fluorimeter'
+                }, {
+                    type: 'linear',
+                    position: 'right',
+                    id: 'oxygen'
                 }];
 
     data_graph2['datasets'] = datasets;

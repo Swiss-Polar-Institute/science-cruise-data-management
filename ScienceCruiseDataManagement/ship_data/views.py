@@ -14,6 +14,7 @@ class FerryboxView(TemplateView):
         temperatures = get_ferrybox_data_24_hours('temperature')
         salinities = get_ferrybox_data_24_hours('salinity')
         fluorimeters = get_ferrybox_data_24_hours('fluorimeter')
+        oxygen = get_ferrybox_data_24_hours('oxygen')
 
         now_utc = utils.set_utc(datetime.datetime.utcnow())
 
@@ -23,7 +24,8 @@ class FerryboxView(TemplateView):
                                                  "latest_information_minutes_ago": latest_information_minutes_ago,
                                                  "temperatures": json.dumps(temperatures),
                                                  "salinities": json.dumps(salinities),
-                                                 "fluorimeter": json.dumps(fluorimeters)
+                                                 "fluorimeter": json.dumps(fluorimeters),
+                                                 "oxygen": json.dumps(oxygen)
                                                  }
                       )
 
@@ -44,6 +46,11 @@ def get_ferrybox_data_24_hours(field):
             break
 
         ferrybox = model_to_dict(ferrybox[0])
+
+        if field == 'oxygen' and ferrybox[field] == 0:
+            # TODO: delete this if when there is more than 1 day of valid data
+            break
+
         d['y'] = ferrybox[field]
 
         result.append(d)
