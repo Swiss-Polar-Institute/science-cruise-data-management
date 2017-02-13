@@ -19,8 +19,8 @@ class Command(BaseCommand):
             for row in reader:
                 print(row)
                 datasetrole = DatasetRole()
-                datasetrole.role = row['Role']
-                datasetrole.definition = row['Definition']
+                datasetrole.role = row['role']
+                datasetrole.definition = row['description']
                 datasetrole.download_date= row['download_date']
                 datasetrole.in_gcmd = settings.DEFAULT_IN_GCMD
 
