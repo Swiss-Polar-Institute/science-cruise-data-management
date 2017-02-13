@@ -375,6 +375,7 @@ class CoordinatesConversion(TemplateView):
 
         return render(request, "coordinates_conversion_exec.html", template_information)
 
+
 class PositionFromDateTime(TemplateView):
     def get(self, request, *args, **kwargs):
         form = InputShipDateTime(initial={'ship_date_time': timezone.now})
@@ -392,12 +393,14 @@ class PositionFromDateTime(TemplateView):
 
         return render(request, "position_from_date_time_exec.html", template_information)
 
+
 class MailState(TemplateView):
     def get(self, request, *args, **kwargs):
         s = subprocess.Popen("mailq", stdout=subprocess.PIPE)
         mails = s.stdout.read()
 
         return render(request, "mail_state.html", {'mails': mails})
+
 
 def latest_ship_speed():
     try:

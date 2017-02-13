@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Metadata entry{% endblock %}
+{% load static %}
+
+{% block content %}
+<h1>Metadata entry</h1>
+Title: {{ entry_title }}
+Projects: {{ projects }}
+
+<table class="table table-bordered">
+    <thead> <th>Field</th><th>Value</th> </thead>
+    {% for row in rows %}
+    <tr>
+        <td>{{ row.0 }}</td> <td>{{ row.1 }}</td>
+    <tr>
+    {% endfor %}
+</table>
+{% endblock %}
