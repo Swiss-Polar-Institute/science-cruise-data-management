@@ -26,5 +26,6 @@ class Command(BaseCommand):
                 idnnode.revision_date = row['REVISION_DATE']
                 idnnode.keyword_status = row['KEYWORD_STATUS']
                 idnnode.download_date = row['DOWNLOAD_DATE']
+                idnnode.in_gcmd = settings.DEFAULT_IN_GCMD
 
                 idnnode.save()

@@ -328,15 +328,15 @@ class DistributionFormat(models.Model):
         return "{}".format(self.distribution_format)
 
 
-    class IdnNode(models.Model):
-        idn_node_short_name = models.CharField(max_length=255, null=True, blank=True)
-        idn_node_use_description = models.CharField(max_length=255, null=True, blank=True)
-        idn_node_long_name = models.TextField(null=True, blank=True)
-        keyword_version = models.CharField(max_length=255, null=True,blank=True)
-        revision_date = models.DateTimeField(null=True, blank=True)
-        keyword_status = models.CharField(max_length=255, null=True, blank=True)
-        download_date = models.DateTimeField(null=True, blank=True)
-        in_gcmd= models.BooleanField()
+class IdnNode(models.Model):
+    idn_node_short_name = models.CharField(max_length=255, null=True, blank=True)
+    idn_node_use_description = models.CharField(max_length=255, null=True, blank=True)
+    idn_node_long_name = models.TextField(null=True, blank=True)
+    keyword_version = models.CharField(max_length=255, null=True,blank=True)
+    revision_date = models.DateTimeField(null=True, blank=True)
+    keyword_status = models.CharField(max_length=255, null=True, blank=True)
+    download_date = models.DateTimeField(null=True, blank=True)
+    in_gcmd = models.BooleanField()
 
     def __str__(self):
         return "{}".format(self.idn_node_short_name)
