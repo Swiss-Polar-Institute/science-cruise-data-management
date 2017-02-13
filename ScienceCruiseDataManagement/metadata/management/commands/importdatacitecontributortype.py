@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from metadata.models import DataciteContributorType
+from django.conf import settings
 import csv
 
 class Command(BaseCommand):
@@ -20,5 +21,6 @@ class Command(BaseCommand):
                 datacitecontributortype = DataciteContributorType()
                 datacitecontributortype.contributor_type = row['CONTRIBUTOR_TYPE']
                 datacitecontributortype.datacite_schema_version = row['DATACITE_SCHEMA_VERSION']
+                datacitecontributortype.in_datacite = settings.DEFAULT_IN_DATACITE
 
                 datacitecontributortype.save()

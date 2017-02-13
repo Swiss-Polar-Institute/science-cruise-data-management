@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from metadata.models import DistributionFormat
+from django.conf import settings
 import csv
 
 
@@ -22,5 +23,6 @@ class Command(BaseCommand):
                 distributionformat.distribution_format = row['distribution_format']
                 distributionformat.description= row['description']
                 distributionformat.download_date = row['download_date']
+                distributionformat.in_gcmd = settings.DEFAULT_IN_GCMD
 
                 distributionformat.save()

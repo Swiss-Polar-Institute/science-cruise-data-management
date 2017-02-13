@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from metadata.models import TemporalResolutionRange
+from django.conf import settings
 import csv
 
 class Command(BaseCommand):
@@ -23,5 +24,6 @@ class Command(BaseCommand):
                 temporalresolutionrange.keyword_version = row['keyword_version']
                 temporalresolutionrange.keyword_revision_date = row['keyword_revision_date']
                 temporalresolutionrange.download_date= row['download_date']
+                temporalresolutionrange.in_gcmd = settings.DEFAULT_IN_GCMD
 
                 temporalresolutionrange.save()

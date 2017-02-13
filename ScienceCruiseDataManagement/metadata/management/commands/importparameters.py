@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from metadata.models import Parameter
+from django.conf import settings
 import csv
 
 class Command(BaseCommand):
@@ -29,5 +30,6 @@ class Command(BaseCommand):
                 parameter.keyword_version = row['keyword_version']
                 parameter.keyword_revision_date = row['keyword_revision_date']
                 parameter.download_date= row['download_date']
+                parameter.in_gcmd = settings.DEFAULT_IN_GCMD
 
                 parameter.save()

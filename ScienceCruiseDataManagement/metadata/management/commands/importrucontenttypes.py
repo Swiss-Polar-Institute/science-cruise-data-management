@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from metadata.models import RUContentType
+from django.conf import settings
 import csv
 
 class Command(BaseCommand):
@@ -24,5 +25,6 @@ class Command(BaseCommand):
                 rucontenttype.keyword_version = row['keyword_version']
                 rucontenttype.keyword_revision_date = row['keyword_revision_date']
                 rucontenttype.download_date = row['download_date']
+                rucontenttype.in_gcmd = settings.DEFAULT_IN_GCMD
 
                 rucontenttype.save()

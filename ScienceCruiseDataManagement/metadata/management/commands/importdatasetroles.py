@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from metadata.models import DatasetRole
+from django.conf import settings
 import csv
 
 class Command(BaseCommand):
@@ -21,5 +22,7 @@ class Command(BaseCommand):
                 datasetrole.role = row['Role']
                 datasetrole.definition = row['Definition']
                 datasetrole.download_date= row['download_date']
+                datasetrole.in_gcmd = settings.DEFAULT_IN_GCMD
+
 
                 datasetrole.save()

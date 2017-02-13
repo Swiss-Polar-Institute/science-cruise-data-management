@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from metadata.models import Project
+from django.conf import settings
 import csv
 
 class Command(BaseCommand):
@@ -25,5 +26,6 @@ class Command(BaseCommand):
                 project.keyword_version =row['keyword_version']
                 project.keyword_revision_date = row['keyword_revision_date']
                 project.download_date = row['download_date']
+                project.in_gcmd = settings.DEFAULT_IN_GCMD
 
                 project.save()

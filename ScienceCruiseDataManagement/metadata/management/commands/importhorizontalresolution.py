@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from metadata.models import HorizontalResolutionRange
 from main import utils
+from django.conf import settings
 import csv
 import datetime
 
@@ -24,6 +25,7 @@ class Command(BaseCommand):
                 horizontal_resolution_range.keyword_version = row['keyword_version']
                 horizontal_resolution_range.keyword_revision_date = utils.rfc3339_to_datetime(row['keyword_revision_date'])
                 horizontal_resolution_range.download_date = utils.rfc3339_to_datetime(row['download_date'])
+                horizontal_resolution_range.in_gcmd = settings.DEFAULT_IN_GCMD
 
                 horizontal_resolution_range.save()
 

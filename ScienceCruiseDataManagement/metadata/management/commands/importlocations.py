@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from metadata.models import Location
+from django.conf import settings
 import csv
 
 class Command(BaseCommand):
@@ -27,5 +28,6 @@ class Command(BaseCommand):
                 location.keyword_version = row['keyword_version']
                 location.keyword_revision_date = row['keyword_revision_date']
                 location.download_date = row['download_date']
+                location.in_gcmd = settings.DEFAULT_IN_GCMD
 
                 location.save()

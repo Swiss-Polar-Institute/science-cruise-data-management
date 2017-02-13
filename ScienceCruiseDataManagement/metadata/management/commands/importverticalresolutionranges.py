@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from metadata.models import VerticalResolutionRange
+from django.conf import settings
 import csv
 
 class Command(BaseCommand):
@@ -23,5 +24,6 @@ class Command(BaseCommand):
                 verticalresolutionrange.keyword_version = row['keyword_version']
                 verticalresolutionrange.keyword_revision_date = row['keyword_revision_date']
                 verticalresolutionrange.download_date= row['download_date']
+                verticalresolutionrange.in_gcmd = settings.DEFAULT_IN_GCMD
 
                 verticalresolutionrange.save()

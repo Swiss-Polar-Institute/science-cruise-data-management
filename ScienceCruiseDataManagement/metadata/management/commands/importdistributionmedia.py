@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from metadata.models import DistributionMedia
+from django.conf import settings
 import csv
 
 class Command(BaseCommand):
@@ -21,5 +22,6 @@ class Command(BaseCommand):
                 distributionmedia.media_type= row['media_type']
                 distributionmedia.distribution_media= row['distribution_media']
                 distributionmedia.download_date = row['download_date']
+                distributionmedia.in_gcmd = settings.DEFAULT_IN_GCMD
 
                 distributionmedia.save()

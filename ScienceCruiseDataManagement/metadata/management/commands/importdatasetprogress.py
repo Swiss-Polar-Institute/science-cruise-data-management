@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from metadata.models import DatasetProgress
+from django.conf import settings
 import csv
 
 class Command(BaseCommand):
@@ -21,5 +22,6 @@ class Command(BaseCommand):
                 datasetprogress.type = row['Type']
                 datasetprogress.definition = row['Definition']
                 datasetprogress.download_date= row['download_date']
+                datasetprogress.in_gcmd = settings.DEFAULT_IN_GCMD
 
                 datasetprogress.save()

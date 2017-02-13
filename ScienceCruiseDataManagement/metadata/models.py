@@ -203,7 +203,7 @@ class Platform(models.Model):
         return "{}".format(self.short_name)
 
     class Meta:
-        unique_together = ('category', 'series_entity', 'short_name', 'long_name')
+        unique_together = (('category', 'series_entity', 'short_name', 'long_name'))
 
 
 class Project(models.Model):
@@ -218,6 +218,9 @@ class Project(models.Model):
 
     def __str__(self):
         return "{}".format(self.short_name)
+
+    class Meta:
+        unique_together = (('bucket', 'short_name', 'long_name'))
 
 
 class Provider(models.Model):
@@ -237,6 +240,9 @@ class Provider(models.Model):
     def __str__(self):
         return "{}".format(self.short_name)
 
+    class Meta:
+        unique_together = (('bucket_Level0', 'bucket_Level1', 'bucket_Level2', 'bucket_Level3', 'short_name', 'long_name'))
+
 
 class RUContentType(models.Model):
     type = models.CharField(max_length=255, null=True, blank=True)
@@ -250,9 +256,12 @@ class RUContentType(models.Model):
     def __str__(self):
         return "{}".format(self.type)
 
+    class Meta:
+        unique_together = (('type', 'subtype'))
+
 
 class TemporalResolutionRange(models.Model):
-    temporal_resolution_range = models.CharField(max_length=255, null=True, blank=True)
+    temporal_resolution_range = models.CharField(max_length=255, unique=True)
     uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date = models.DateTimeField(null=True, blank=True)
@@ -264,7 +273,7 @@ class TemporalResolutionRange(models.Model):
 
 
 class VerticalResolutionRange(models.Model):
-    vertical_resolution_range = models.CharField(max_length=255, null=True, blank=True)
+    vertical_resolution_range = models.CharField(max_length=255, unique=True)
     uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date = models.DateTimeField(null=True, blank=True)
@@ -279,7 +288,7 @@ class VerticalResolutionRange(models.Model):
 # Note that the tables that follow are not strictly controlled vocabularies but the possible choices are listed in the DIF Writer's Guide.
 
 class DatasetRole(models.Model):
-    role = models.CharField(max_length=255)
+    role = models.CharField(max_length=255, unique=True)
     description = models.CharField(max_length=255)
     in_gcmd = models.BooleanField()
 
@@ -288,8 +297,8 @@ class DatasetRole(models.Model):
 
 
 class DatasetProgress(models.Model):
-    type = models.CharField(max_length=31, null=True, blank=True)
-    description = models.CharField(max_length=255, null=True, blank=True)
+    type = models.CharField(max_length=31, unique=True)
+    description = models.CharField(max_length=255)
     download_date = models.DateTimeField()
     in_gcmd = models.BooleanField()
 
@@ -309,10 +318,13 @@ class DistributionMedia(models.Model):
     def __str__(self):
         return "{}".format(self.distribution_media)
 
+    class Meta:
+        unique_together = (('media_type', 'distribution_media'))
+
 
 class DistributionFormat(models.Model):
-    distribution_format = models.CharField(max_length=80)
-    description = models.CharField(max_length=80, null=True, blank=True)
+    distribution_format = models.CharField(max_length=80, unique=True)
+    description = models.CharField(max_length=80)
     download_date = models.DateTimeField()
     in_gcmd = models.BooleanField()
 
@@ -326,12 +338,15 @@ class DistributionFormat(models.Model):
 # the cruise to avoid having to contact PIs post cruise.
 
 class DataciteContributorType(models.Model):
-    contributor_type = models.CharField(max_length=50)
+    contributor_type = models.CharField(max_length=50, unique=True)
     datacite_schema_version = models.CharField(max_length=10)
     in_datacite = models.BooleanField()
 
     def __str__(self):
         return "{}".format(self.contributor_type)
+
+
+##### Full metadata entry ######
 
 class MetadataEntry(models.Model):
     entry_id = models.CharField(max_length=255, unique=True, help_text="Unique document identifier of the metadata record. The identifier is case insensitive. The <Entry_ID> consists of 1 to 80 alphanumeric characters of the UTF-8 set, including underbar (_), hyphen (-) and period (.).")
