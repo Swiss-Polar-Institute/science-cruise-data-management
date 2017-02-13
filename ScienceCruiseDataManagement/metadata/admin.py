@@ -3,13 +3,78 @@ import metadata.models
 
 
 class MetadataEntryAdmin(admin.ModelAdmin):
-    list_display = ('entry_id', 'entry_title', 'data_set_citation', 'personnel', 'parameters', 'sensor_name',
-                    'source_name', 'temporal_coverage', 'data_set_progress', 'spatial_coverage', 'location',
-                    'data_resolution', 'project', 'quality', 'access_constraints', 'use_constraints',
-                    'data_set_language', 'originating_center', 'data_center', 'distribution', 'summary',
-                    'parent_dif', 'idn_node', 'metadata_name', 'metadata_version', 'dif_creation_date',
+    list_display = ('entry_id', 'entry_title', 'data_set_citation_list', 'personnel_list', 'parameters_list', 'sensor_name_list',
+                    'source_name_list', 'temporal_coverage_list', 'data_set_progress', 'spatial_coverage_list', 'location_list',
+                    'data_resolution_list', 'project_list', 'quality', 'access_constraints', 'use_constraints',
+                    'data_set_language', 'originating_center', 'data_center_list', 'distribution_list', 'summary',
+                    'parent_dif', 'idn_node_list', 'metadata_name', 'metadata_version', 'dif_creation_date',
                     'last_dif_revision_date', 'dif_revision_history', 'future_dif_review_date', 'private')
     ordering = ['entry_id']
+
+    def data_set_citation_list(self, obj):
+        citations = obj.data_set_citation.all()
+
+        return ",".join([str(citation) for citation in citations])
+
+    def personnel_list(self, obj):
+        people = obj.project.all()
+
+        return ",".join([str(person) for person in people])
+
+    def parameters_list(self, obj):
+        parameters = obj.parameters.all()
+
+        return ",".join([str(parameter) for parameter in parameters])
+
+    def sensor_name_list(self, obj):
+        sensor_names = obj.sensor_name.all()
+
+        return ",".join([str(sensor_name) for sensor_name in sensor_names])
+
+    def source_name_list(self, obj):
+        source_names = obj.source_name.all()
+
+        return ",".join([str(source_name) for source_name in source_names])
+
+    def temporal_coverage_list(self, obj):
+         temporal_coverages = obj.temporal_coverage.all()
+
+         return ",".join([str(temporal_coverage) for temporal_coverage in temporal_coverages])
+
+    def spatial_coverage_list(self, obj):
+        spatial_coverages = obj.spatial_coverage.all()
+
+        return ",".join([str(spatial_coverage) for spatial_coverage in spatial_coverages])
+
+    def location_list(self, obj):
+        locations = obj.location.all()
+
+        return ",".join([str(location) for location in locations])
+
+    def data_resolution_list(self, obj):
+        data_resolutions = obj.data_resolution.all()
+
+        return ",".join([str(data_resolution for data_resolution in data_resolutions)])
+
+    def project_list(self, obj):
+        projects = obj.project.all()
+
+        return ",".join([str(project) for project in projects])
+
+    def data_center_list(self, obj):
+        data_centers = obj.data_center.all()
+
+        return ",".join([str(data_center) for data_center in data_centers])
+
+    def distribution_list(self, obj):
+        distributions = obj.distribution_list.all()
+
+        return ",".join([str(distribution) for distribution in distributions])
+
+    def idn_node_list(self, obj):
+        idn_nodes = obj.idn_node.all()
+
+        return ",".join([str(idn_node) for idn_node in idn_nodes])
 
 
 class DataSetCitationAdmin(admin.ModelAdmin):
@@ -18,7 +83,18 @@ class DataSetCitationAdmin(admin.ModelAdmin):
 
 
 class PersonnelAdmin(admin.ModelAdmin):
-    list_display = ('dataset_role', 'datacite_contributor_type', 'first_name', 'last_name', 'email', 'contact_address')
+    list_display = ('dataset_role_list', 'datacite_contributor_type_list',
+                    'first_name', 'last_name', 'email', 'contact_address')
+
+    def dataset_role_list(self, obj):
+        dataset_roles = obj.dataset_role.all()
+
+        return ",".join([str(dataset_role) for dataset_role in dataset_roles])
+
+    def datacite_contributor_type_list(self, obj):
+        datacite_contributor_types = obj.datacite_contributor_type.all()
+
+        return ",".join([str(datacite_contributor_type) for datacite_contributor_type in datacite_contributor_types])
 
 
 class ParameterAdmin(admin.ModelAdmin):
@@ -49,7 +125,12 @@ class DataResolutionAdmin(admin.ModelAdmin):
 
 
 class DataCenterAdmin(admin.ModelAdmin):
-    list_display = ('data_center_name', 'data_set_id', 'personnel')
+    list_display = ('data_center_name', 'data_set_id', 'personnel_list')
+
+    def personnel_list(self, obj):
+        people = obj.project.all()
+
+        return ",".join([str(person) for person in people])
 
 
 class DistributionAdmin(admin.ModelAdmin):
@@ -117,7 +198,7 @@ class DistributionMediaAdmin(admin.ModelAdmin):
 
 
 class DistributionFormatAdmin(admin.ModelAdmin):
-    list_display = ('distribution_media', 'distribution_size', 'distribution_format', 'fees')
+    list_display = ('distribution_format', 'description', 'download_date', 'in_gcmd')
 
 
 class DataciteContributorTypeAdmin(admin.ModelAdmin):
