@@ -20,7 +20,7 @@ class Command(BaseCommand):
             for row in reader:
                 print(row)
                 horizontal_resolution_range = HorizontalResolutionRange()
-                horizontal_resolution_range.horizontal_resolution_name = row['Horizontal_Resolution_Range']
+                horizontal_resolution_range.horizontal_resolution_range = row['Horizontal_Resolution_Range']
                 horizontal_resolution_range.UUID = row['UUID']
                 horizontal_resolution_range.keyword_version = row['keyword_version']
                 horizontal_resolution_range.keyword_revision_date = utils.rfc3339_to_datetime(row['keyword_revision_date'])

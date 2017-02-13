@@ -24,6 +24,7 @@ class Command(BaseCommand):
                 location.location_subregion1= row['Location_Subregion1']
                 location.location_subregion2 = row['Location_Subregion2']
                 location.location_subregion3= row['Location_Subregion3']
+                location.detailed_location = row['Detailed_Location']
                 location.uuid = row['UUID']
                 location.keyword_version = row['keyword_version']
                 location.keyword_revision_date = row['keyword_revision_date']

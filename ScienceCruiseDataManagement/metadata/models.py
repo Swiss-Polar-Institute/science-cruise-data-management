@@ -84,6 +84,7 @@ class Location(models.Model):
     location_subregion1 = models.CharField(max_length=255, null=True, blank=True)
     location_subregion2 = models.CharField(max_length=255, null=True, blank=True)
     location_subregion3 = models.CharField(max_length=255, null=True, blank=True)
+    detailed_location = models.CharField(max_length=255, null=True, blank=True)
     uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date = models.DateTimeField(null=True, blank=True)
@@ -95,7 +96,7 @@ class Location(models.Model):
                                           self.location_subregion2)
 
     class Meta:
-        unique_together = (('location_category', 'location_type', 'location_subregion1', 'location_subregion2', 'location_subregion3'))
+        unique_together = (('location_category', 'location_type', 'location_subregion1', 'location_subregion2', 'location_subregion3', 'detailed_location'))
 
 
 class DataResolution(models.Model):

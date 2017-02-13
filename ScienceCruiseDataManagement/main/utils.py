@@ -294,4 +294,4 @@ def remove_accents(input_str):
 
 
 def rfc3339_to_datetime(rfc3339):
-    return datetime.datetime.strptime(rfc3339, "%Y-%m-%d %H:%M:%S")
+    return set_utc(datetime.datetime.strptime(rfc3339, "%Y-%m-%d %H:%M:%S"))

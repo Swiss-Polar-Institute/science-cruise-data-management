@@ -114,7 +114,7 @@ class SpatialCoverageAdmin(admin.ModelAdmin):
 
 class LocationAdmin(admin.ModelAdmin):
     list_display = ('location_category', 'location_type', 'location_subregion1',
-                    'location_subregion2', 'location_subregion3', 'uuid',
+                    'location_subregion2', 'location_subregion3', 'detailed_location', 'uuid',
                     'keyword_version', 'keyword_revision_date', 'download_date', 'in_gcmd')
 
 
