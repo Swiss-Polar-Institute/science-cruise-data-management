@@ -1,5 +1,6 @@
 from django.db import models
 from main.models import Person, Organisation, Platform
+from django.conf import settings
 
 ############## MAIN DIF METADATA MODELS ###############
 
@@ -341,6 +342,9 @@ class IdnNode(models.Model):
     def __str__(self):
         return "{}".format(self.idn_node_short_name)
 
+    class Meta:
+        unique_together = (('idn_node_short_name', 'idn_node_use_description', 'idn_node_long_name'))
+
 
 ###### Datacite controlled vocabularies
 
@@ -383,8 +387,8 @@ class MetadataEntry(models.Model):
     summary = models.ForeignKey(Summary, help_text="This field provides a brief description of the data set along with the purpose of the data. This allows potential users to determine if the data set is useful for their needs.")
     parent_dif = models.CharField(max_length=255, null=True, blank=True)
     idn_node = models.ManyToManyField(IdnNode)
-    metadata_name= models.CharField(max_length=255, help_text="DEFAULT=CEOS IDN DIF")
-    metadata_version = models.CharField(max_length=80, default="TEST", help_text="DEFAULT=VERSION 9.9")
+    metadata_name= models.CharField(max_length=255, default=settings.DEFAULT_METADATA_NAME, help_text="DEFAULT=CEOS IDN DIF")
+    metadata_version = models.CharField(max_length=80, default=settings.DEFAULT_METADATA_VERSION, help_text="DEFAULT=VERSION 9.9")
     dif_creation_date = models.DateField(null=True, blank=True)
     last_dif_revision_date = models.DateField(null=True, blank=True)
     dif_revision_history = models.TextField(null=True, blank=True)
