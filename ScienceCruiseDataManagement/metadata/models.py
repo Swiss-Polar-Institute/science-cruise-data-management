@@ -30,7 +30,7 @@ class Instrument(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{}".format(self.short_name)
+        return "{} - {} - {} - {} - {} - {}".format(self.category, self.instrument_class, self.type, self.subtype, self.short_name, self.long_name)
 
     class Meta:
         unique_together = (('category','instrument_class','type', 'subtype', 'short_name', 'long_name'))
@@ -49,7 +49,7 @@ class Platform(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{}".format(self.short_name)
+        return "{} - {} - {} - {} - {}".format(self.category, self.series_entity, self.short_name, self.long_name, self.detailed_platform)
 
     class Meta:
         unique_together = (('category', 'series_entity', 'short_name', 'long_name', 'detailed_platform', 'uuid'))
@@ -87,7 +87,7 @@ class Provider(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{}".format(self.short_name)
+        return "{} - {}".format(self.short_name, self.long_name)
 
     class Meta:
         unique_together = (('bucket_Level0', 'bucket_Level1', 'bucket_Level2', 'bucket_Level3', 'short_name', 'long_name'))
@@ -165,7 +165,7 @@ class DistributionMedia(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{}".format(self.distribution_media)
+        return "{} - {}".format(self.media_type, self.distribution_media)
 
     class Meta:
         unique_together = (('media_type', 'distribution_media'))
@@ -178,7 +178,7 @@ class DistributionFormat(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{}".format(self.distribution_format)
+        return "{} - {}".format(self.distribution_format, self.description)
 
 
 class IdnNode(models.Model):
@@ -192,7 +192,7 @@ class IdnNode(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{}".format(self.idn_node_short_name)
+        return "{} - {} - {}".format(self.idn_node_short_name, self.idn_node_long_name, self.idn_node_use_description)
 
     class Meta:
         unique_together = (('idn_node_short_name', 'idn_node_use_description', 'idn_node_long_name'))
@@ -217,11 +217,11 @@ class DataciteContributorType(models.Model):
 
 class DataSetCitation(models.Model):
     dataset_creator = models.ForeignKey(Person, null=True, blank=True)
-    dataset_title = models.CharField(max_length=255, null=True, blank=True)
+    dataset_title = models.CharField(max_length=220, null=True, blank=True)
     dataset_release_date = models.DateField(null=True,blank=True)
     dataset_publisher = models.ForeignKey(Provider, null=True, blank=True)
     version = models.CharField(max_length=10, null=True, blank=True)
-    other_citation_details = models.CharField(max_length=255, null=True, blank=True)
+    other_citation_details = models.CharField(max_length=255, null=True, blank=True,help_text='Additional free-text citation information.')
 
     def __str__(self):
         return "{}".format(self.dataset_title)
@@ -240,7 +240,9 @@ class Personnel(models.Model):
     def __str__(self):
         dataset_roles = self.dataset_role.all()
         dataset_role_str = ",".join([dataset_role.role for dataset_role in dataset_roles])
-        return "{} - {}".format(str(self.person), dataset_role_str)
+        datacite_contributor_types = self.datacite_contributor_type.all()
+        datacite_contributor_type_str = ",".join([datacite_contributor_type.contributor_type for datacite_contributor_type in datacite_contributor_types ])
+        return "{} - {} - {} - {}".format(str(self.person), dataset_role_str, datacite_contributor_type_str, self.contact_address)
 
     class Meta:
         verbose_name_plural = "Personnel"
@@ -261,7 +263,7 @@ class Parameter(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{} - {} - {}".format(self.category, self.topic, self.term)
+        return "{} - {} - {} - {} - {} - {} - {}".format(self.category, self.topic, self.term, self.variable_level_1, self.variable_level_2, self.variable_level_3, self.detailed_variable)
 
     class Meta:
         unique_together = (('category', 'topic', 'term', 'variable_level_1', 'variable_level_2', 'variable_level_3', 'detailed_variable'))
@@ -303,21 +305,21 @@ class Location(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{} - {} - {} - {}".format(self.location_category, self.location_type, self.location_subregion1,
-                                          self.location_subregion2)
+        return "{} - {} - {} - {} - {} - {}".format(self.location_category, self.location_type, self.location_subregion1,
+                                          self.location_subregion2, self.location_subregion3, self.detailed_location)
 
     class Meta:
         unique_together = (('location_category', 'location_type', 'location_subregion1', 'location_subregion2', 'location_subregion3', 'detailed_location'))
 
 
 class DataResolution(models.Model):
-    latitude_resolution = models.CharField(max_length=20, null=True, blank=True)
-    longitude_resolution = models.CharField(max_length=20, null=True, blank=True)
-    horizontal_resolution_range = models.ForeignKey('HorizontalResolutionRange', null=True, blank=True)
-    vertical_resolution = models.CharField(max_length=20, null=True, blank=True)
-    vertical_resolution_range = models.ForeignKey('VerticalResolutionRange', null=True, blank=True)
-    temporal_resolution = models.CharField(max_length=20, null=True, blank=True)
-    temporal_resolution_range = models.ForeignKey('TemporalResolutionRange', null=True, blank=True)
+    latitude_resolution = models.CharField(max_length=20, null=True, blank=True, help_text='The minimum difference between two adjacent latitude values.')
+    longitude_resolution = models.CharField(max_length=20, null=True, blank=True, help_text='The minimum difference between two adjacent longitude values.')
+    horizontal_resolution_range = models.ForeignKey('HorizontalResolutionRange', null=True, blank=True, help_text='The range should be selected based on the <Latitude_Resolution> and <Longitude_Resolution>.')
+    vertical_resolution = models.CharField(max_length=20, null=True, blank=True, help_text='The minimum difference possible between two adjacent vertical values.')
+    vertical_resolution_range = models.ForeignKey('VerticalResolutionRange', null=True, blank=True, help_text='The range should be selected based on the specified <Vertical_Resolution>.')
+    temporal_resolution = models.CharField(max_length=20, null=True, blank=True, help_text='the frequency of data sampled.')
+    temporal_resolution_range = models.ForeignKey('TemporalResolutionRange', null=True, blank=True, help_text='The range should be selected based on the specified <Temporal_Resolution>.')
 
     def __str__(self):
         return "{} {} {} {}".format(self.latitude_resolution, self.longitude_resolution, self.vertical_resolution, self.temporal_resolution)
@@ -329,7 +331,7 @@ class DataCenter(models.Model):
     personnel = models.ManyToManyField(Personnel, help_text="Contact information for the data.")
 
     def __str__(self):
-        return "{}".format(self.data_center_name)
+        return "{} - {}".format(self.data_center_name, self.personnel)
 
 
 class DataCenterName(models.Model):
@@ -337,7 +339,7 @@ class DataCenterName(models.Model):
     long_name = models.CharField(max_length=240, null=True, blank=True)
 
     def __str__(self):
-        return "{}".format(self.short_name)
+        return "{} - {}".format(self.short_name, self.long_name)
 
 
 class Distribution(models.Model):
@@ -347,7 +349,7 @@ class Distribution(models.Model):
     fees = models.CharField(max_length=80, null=True, blank=True, help_text="Cost of <Distribution_Media> or distribution costs if any. Specify if there are no costs.")
 
     def __str__(self):
-        return "{} {} {}".format(self.distribution_media, self.distribution_format, self.distribution_size)
+        return "{} - {} - {}".format(self.distribution_media, self.distribution_format, self.distribution_size)
 
 
 class Summary(models.Model):
