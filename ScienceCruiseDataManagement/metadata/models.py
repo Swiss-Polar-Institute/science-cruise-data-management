@@ -1,5 +1,7 @@
 from django.db import models
 from main.models import Person, Organisation, Platform
+from main.models import Project as AceProject
+from data_storage_management.models import Item
 from django.conf import settings
 
 ############### DIF CONTROLLED VOCABULARY TABLES #################
@@ -386,8 +388,8 @@ class MetadataEntry(models.Model):
     access_constraints = models.TextField(null=True, blank=True, help_text="This field allows the author to provide information about any constraints for accessing the data set. This includes any special restrictions, legal prerequisites, limitations and/or warnings on obtaining the data set.")
     use_constraints = models.TextField(null=True, blank=True, help_text="This field allows the author to describe how the data may or may not be used after access is granted to assure the protection of privacy or intellectual property.  This includes any special restrictions, legal prerequisites, terms and conditions, and/or limitations on using the data set.  Data providers may request acknowledgement of the data from users and claim no responsibility for quality and completeness of data.")
     data_set_language = models.CharField(max_length=255, default=settings.DEFAULT_DATA_SET_LANGUAGE, null=True, blank=True, help_text="DEFAULT=English")
-    originating_center = models.ForeignKey(Provider, null=True, blank=True, help_text="The data center or data producer who originally generated the dataset.")
-    data_center = models.ManyToManyField(Provider, help_text="The <Data Center> is the data center, organization, or institution responsible for distributing the data.")
+    originating_center = models.ForeignKey(Provider, related_name='originating_centre_provider', null=True, blank=True, help_text="The data center or data producer who originally generated the dataset.")
+    data_center = models.ManyToManyField(Provider, related_name='data_center_provider', help_text="The <Data Center> is the data center, organization, or institution responsible for distributing the data.")
     distribution = models.ManyToManyField(Distribution)
     summary = models.ForeignKey(Summary, help_text="This field provides a brief description of the data set along with the purpose of the data. This allows potential users to determine if the data set is useful for their needs.")
     parent_dif = models.CharField(max_length=255, null=True, blank=True)
@@ -399,6 +401,8 @@ class MetadataEntry(models.Model):
     dif_revision_history = models.TextField(null=True, blank=True)
     future_dif_review_date = models.DateField(null=True, blank=True)
     private = models.BooleanField()
+    ace_project = models.ManyToManyField(AceProject)
+    directory = models.ManyToManyField(Item)
 
     def __str__(self):
         return "{}-{}".format(self.entry_id, self.entry_title)
