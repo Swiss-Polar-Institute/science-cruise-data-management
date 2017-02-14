@@ -1,5 +1,23 @@
 from django.contrib import admin
+from django.forms import ModelForm, ModelMultipleChoiceField
 import metadata.models
+
+
+class TextWithId(ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return "{}-{}".format(obj.id, str(obj))
+
+
+class MetadataEntryForm(ModelForm):
+    parameters = TextWithId(queryset=metadata.models.Parameter.objects.all())
+    sensor_name = TextWithId(queryset=metadata.models.Instrument.objects.all())
+    source_name = TextWithId(queryset=metadata.models.Platform.objects.all())
+    location = TextWithId(queryset=metadata.models.Location.objects.all())
+    originating_data_center = TextWithId(queryset=metadata.models.Provider.objects.all())
+
+    class Meta:
+        model = metadata.models.MetadataEntry
+        fields = '__all__'
 
 
 class MetadataEntryAdmin(admin.ModelAdmin):
@@ -10,6 +28,8 @@ class MetadataEntryAdmin(admin.ModelAdmin):
                     'parent_dif', 'idn_node_list', 'metadata_name', 'metadata_version', 'dif_creation_date',
                     'last_dif_revision_date', 'dif_revision_history', 'future_dif_review_date', 'private')
     ordering = ['entry_id']
+
+    form = MetadataEntryForm
 
     def data_set_citation_list(self, obj):
         citations = obj.data_set_citation.all()
