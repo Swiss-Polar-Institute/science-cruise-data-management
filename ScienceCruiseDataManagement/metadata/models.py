@@ -82,7 +82,7 @@ class Provider(models.Model):
     short_name = models.CharField(max_length=255, null=True, blank=True)
     long_name = models.CharField(max_length=255, null=True, blank=True)
     data_center_url = models.CharField(max_length=255, null=True, blank=True)
-    uuid = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    uuid = models.CharField(max_length=255, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
     keyword_revision_date = models.DateTimeField(null=True, blank=True)
     download_date = models.DateTimeField(null=True, blank=True)
