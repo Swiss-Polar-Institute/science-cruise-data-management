@@ -361,7 +361,7 @@ class Distribution(models.Model):
 
 
 class Summary(models.Model):
-    abstract = models.TextField()
+    abstract = models.TextField(help_text="Lineage statement.")
     purpose = models.TextField(null=True, blank=True)
 
     def __str__(self):
@@ -424,6 +424,7 @@ class MetadataEntry(models.Model):
     private = models.BooleanField()
     ace_project = models.ManyToManyField(ExpeditionProject)
     directory = models.ManyToManyField(Item)
+    comments = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return "{}-{}".format(self.entry_id, self.entry_title)

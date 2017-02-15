@@ -41,7 +41,7 @@ class MetadataEntryAdmin(admin.ModelAdmin):
                     'data_resolution_list', 'project_list', 'quality', 'access_constraints', 'use_constraints',
                     'data_set_language', 'originating_center', 'data_center_list', 'distribution_list', 'summary',
                     'parent_dif', 'idn_node_list', 'metadata_name', 'metadata_version', 'dif_creation_date',
-                    'last_dif_revision_date', 'dif_revision_history', 'future_dif_review_date', 'private')
+                    'last_dif_revision_date', 'dif_revision_history', 'future_dif_review_date', 'private', 'comments')
     ordering = ['entry_id']
     filter_horizontal = ('parameters', 'sensor_name', 'source_name', 'location', 'project', 'data_center', 'idn_node',
                          'directory', )
