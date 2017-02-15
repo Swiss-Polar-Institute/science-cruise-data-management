@@ -110,7 +110,7 @@ class MessageDownloader:
         try:
             email_object = Email.objects.get(email_address=email_address)
         except ObjectDoesNotExist:
-            print("No password for user: {}".format(email_object))
+            print("No password for user: {}".format(self.username))
             return
 
         config = {}
