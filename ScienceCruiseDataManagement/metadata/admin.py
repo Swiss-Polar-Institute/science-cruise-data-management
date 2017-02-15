@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.forms import ModelForm, ModelMultipleChoiceField
 import metadata.models
 
+from metadata.admin_filters import ParameterFilter
 
 class TextWithId(ModelMultipleChoiceField):
     def label_from_instance(self, obj):
@@ -124,6 +125,7 @@ class ParameterAdmin(admin.ModelAdmin):
                     'keyword_version', 'keyword_revision_date', 'in_gcmd')
     search_fields = ('category', 'topic', 'term', 'variable_level_1', 'variable_level_2',
                     'variable_level_3', 'detailed_variable')
+    list_filter = (ParameterFilter,)
 
 
 class TemporalCoverageAdmin(admin.ModelAdmin):
