@@ -1,6 +1,7 @@
 from django.db import models
 from main.models import Person, Organisation, Platform
-from main.models import Project as AceProject
+from main.models import Project as ExpeditionProject
+from main.models import SpecificDevice as ExpeditionSpecificDevice
 from data_storage_management.models import Item
 from django.conf import settings
 
@@ -174,13 +175,16 @@ class DistributionMedia(models.Model):
 
 
 class DistributionFormat(models.Model):
-    distribution_format = models.CharField(max_length=80, unique=True)
+    distribution_format = models.CharField(max_length=80, null=True, blank=True)
     description = models.CharField(max_length=80)
     download_date = models.DateTimeField()
     in_gcmd = models.BooleanField()
 
     def __str__(self):
         return "{} - {}".format(self.distribution_format, self.description)
+
+    class Meta:
+        unique_together = (('distribution_format', 'description'))
 
 
 class IdnNode(models.Model):
@@ -365,9 +369,6 @@ class Summary(models.Model):
         verbose_name_plural = "Summaries"
 
 
-
-
-
 ##### Full metadata entry ######
 
 class MetadataEntry(models.Model):
@@ -377,6 +378,7 @@ class MetadataEntry(models.Model):
     personnel = models.ManyToManyField(Personnel, help_text="The point of contact for more information about the data set or the metadata.")
     parameters = models.ManyToManyField(Parameter)
     sensor_name = models.ManyToManyField(Instrument, blank=True)
+    expedition_specific_device = models.ManyToManyField(ExpeditionSpecificDevice, blank=True)
     source_name = models.ManyToManyField(Platform, blank=True)
     temporal_coverage = models.ManyToManyField(TemporalCoverage, blank=True)
     data_set_progress = models.ForeignKey(DatasetProgress, null=True, blank=True)
@@ -401,7 +403,7 @@ class MetadataEntry(models.Model):
     dif_revision_history = models.TextField(null=True, blank=True)
     future_dif_review_date = models.DateField(null=True, blank=True)
     private = models.BooleanField()
-    ace_project = models.ManyToManyField(AceProject)
+    ace_project = models.ManyToManyField(ExpeditionProject)
     directory = models.ManyToManyField(Item)
 
     def __str__(self):

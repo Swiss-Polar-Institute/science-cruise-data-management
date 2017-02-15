@@ -23,7 +23,7 @@ class MetadataEntryForm(ModelForm):
 
 class MetadataEntryAdmin(admin.ModelAdmin):
     list_display = ('entry_id', 'entry_title', 'data_set_citation_list', 'personnel_list', 'parameters_list', 'sensor_name_list',
-                    'source_name_list', 'temporal_coverage_list', 'data_set_progress', 'spatial_coverage_list', 'location_list',
+                    'expedition_specific_device_list', 'source_name_list', 'temporal_coverage_list', 'data_set_progress', 'spatial_coverage_list', 'location_list',
                     'data_resolution_list', 'project_list', 'quality', 'access_constraints', 'use_constraints',
                     'data_set_language', 'originating_center', 'data_center_list', 'distribution_list', 'summary',
                     'parent_dif', 'idn_node_list', 'metadata_name', 'metadata_version', 'dif_creation_date',
@@ -51,6 +51,11 @@ class MetadataEntryAdmin(admin.ModelAdmin):
         sensor_names = obj.sensor_name.all()
 
         return ",".join([str(sensor_name) for sensor_name in sensor_names])
+
+    def expedition_specific_device_list(self, obj):
+        expedition_specific_devices = obj.expedition_specific_device.all()
+
+        return ",".join([str(expedition_specific_devices) for expedition_specific_device in expedition_specific_devices])
 
     def source_name_list(self, obj):
         source_names = obj.source_name.all()
