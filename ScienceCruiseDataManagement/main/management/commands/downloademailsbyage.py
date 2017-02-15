@@ -1,11 +1,11 @@
 from django.core.management.base import BaseCommand, CommandError
-from django.core.exceptions import ObjectDoesNotExist
 import datetime
 from main.models import Email
 from django.conf import settings
 import os
 import shutil
 import time
+from django.core.exceptions import ObjectDoesNotExist
 
 TEMP_DIRECTORY = os.path.join(os.getenv("HOME"), "downloademailsbyage")
 
@@ -94,6 +94,13 @@ class MessageDownloader:
 
 
     def fetchmail(self):
+        try:
+            email_address = "{}@ace-expedition.net".format(self.username)
+            Email.objects.get(email_address=email_address)
+        except ObjectDoesNotExist:
+            print("No password for user {}, not fetching emails".format(self.username))
+            return
+
         file_name = os.path.join(self.temporary_directory, "fetchmailrc-downloader")
         fetchmailrc = open(file_name, "w")
         fetchmailrc.write(self.fetchmailrc())
@@ -106,12 +113,6 @@ class MessageDownloader:
 
     def fetchmailrc(self):
         email_address = "{}@ace-expedition.net".format(self.username)
-
-        try:
-            email_object = Email.objects.get(email_address=email_address)
-        except ObjectDoesNotExist:
-            print("No password for user: {}".format(self.username))
-            return
 
         config = {}
         config['username'] = self.username
