@@ -4,6 +4,8 @@ from main.models import Project as ExpeditionProject
 from main.models import SpecificDevice as ExpeditionSpecificDevice
 from data_storage_management.models import Item
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 ############### DIF CONTROLLED VOCABULARY TABLES #################
 
@@ -369,6 +371,23 @@ class Summary(models.Model):
         verbose_name_plural = "Summaries"
 
 
+def text_to_ids(parameters, model, field):
+    output = []
+
+    for parameter in parameters:
+        try:
+            id = Parameter.objects.get(Q(field=parameter))
+            output.append(id)
+
+        except ObjectDoesNotExist:
+            pass
+
+    return output
+
+
+def source_name_defaults():
+    return text_to_ids(settings.METADATA_DEFAULT_SHORT_NAME_DATASET_CITATIONS, DataSetCitation, 'dataset_title')
+
 ##### Full metadata entry ######
 
 class MetadataEntry(models.Model):
@@ -379,7 +398,7 @@ class MetadataEntry(models.Model):
     parameters = models.ManyToManyField(Parameter)
     sensor_name = models.ManyToManyField(Instrument, blank=True)
     expedition_specific_device = models.ManyToManyField(ExpeditionSpecificDevice, blank=True)
-    source_name = models.ManyToManyField(Platform, blank=True)
+    source_name = models.ManyToManyField(Platform, blank=True, default=source_name_defaults)
     temporal_coverage = models.ManyToManyField(TemporalCoverage, blank=True)
     data_set_progress = models.ForeignKey(DatasetProgress, null=True, blank=True)
     spatial_coverage = models.ManyToManyField(SpatialCoverage, blank=True)
