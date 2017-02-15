@@ -48,17 +48,29 @@ def convert_to_decimal_degrees(coordinate):
 
     elif type_of_coordinate == "decimal_degrees_minutes_seconds":
         m = re.match("^([0-9]+) ([0-9]+) ([0-9]+\.[0-9]+) ([NS]) ([0-9]+) ([0-9]+) ([0-9]+\.[0-9]+) ([EW])$", coordinate)
+
         latitude = float(m.group(1))
         latitude = latitude + float(m.group(2))/60
         latitude = latitude + float(m.group(3)) / 3600
+
         if m.group(4) == "S":
             latitude = latitude * -1
+        elif m.group(4) == "N":
+            pass
+        else:
+            assert False
 
         longitude = float(m.group(5))
         longitude = longitude + float(m.group(6)) / 60
         longitude = longitude + float(m.group(7)) / 3600
-        if m.group(6) == "W":
+
+        if m.group(8) == "W":
             longitude = longitude * -1
+        elif m.group(8) == "E":
+            pass
+        else:
+            assert False
+
 
         return (latitude, longitude)
 
