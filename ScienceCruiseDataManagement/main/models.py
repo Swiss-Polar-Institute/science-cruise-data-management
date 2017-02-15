@@ -290,7 +290,15 @@ class Person(models.Model):
     leg = models.ManyToManyField(Leg, blank=True)
 
     def __str__(self):
-        return "{} {} - {}".format(self.name_first, self.name_last, self.organisation)
+        organisations = self.organisation.all()
+        organisation_names = []
+
+        for organisation in organisations:
+            organisation_names.append(organisation.name)
+
+        organisation_str = ";".join(organisation_names)
+
+        return "{} {} - {}".format(self.name_first, self.name_last, organisation_str)
 
     class Meta:
         verbose_name_plural="People"

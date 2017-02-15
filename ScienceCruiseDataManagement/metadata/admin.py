@@ -125,8 +125,7 @@ class DataSetCitationAdmin(admin.ModelAdmin):
 
 
 class PersonnelAdmin(admin.ModelAdmin):
-    list_display = ('dataset_role_list', 'datacite_contributor_type_list',
-                    'person', 'email', 'contact_address_list')
+    list_display = ('dataset_role_list', 'datacite_contributor_type_list', 'person')
     search_fields =('dataset_role_list', 'person')
 
     def dataset_role_list(self, obj):
@@ -138,11 +137,6 @@ class PersonnelAdmin(admin.ModelAdmin):
         datacite_contributor_types = obj.datacite_contributor_type.all()
 
         return ",".join([str(datacite_contributor_type) for datacite_contributor_type in datacite_contributor_types])
-
-    def contact_address_list(self, obj):
-        addresses = obj.contact_address.all()
-
-        return ",".join([str(contact_address) for contact_address in addresses])
 
 
 class ParameterAdmin(admin.ModelAdmin):

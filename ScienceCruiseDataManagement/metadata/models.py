@@ -245,15 +245,13 @@ class Personnel(models.Model):
     dataset_role = models.ManyToManyField('DatasetRole')
     datacite_contributor_type = models.ManyToManyField('DataciteContributorType')
     person = models.OneToOneField(Person, null=True, blank=True)
-    email = models.CharField(max_length=80, null=True, blank=True)
-    contact_address = models.ManyToManyField(Organisation, blank=True)
 
     def __str__(self):
         dataset_roles = self.dataset_role.all()
         dataset_role_str = ",".join([dataset_role.role for dataset_role in dataset_roles])
         datacite_contributor_types = self.datacite_contributor_type.all()
         datacite_contributor_type_str = ",".join([datacite_contributor_type.contributor_type for datacite_contributor_type in datacite_contributor_types ])
-        return "{} - {} - {} - {}".format(str(self.person), dataset_role_str, datacite_contributor_type_str, self.contact_address)
+        return "{} - {} - {}".format(str(self.person), dataset_role_str, datacite_contributor_type_str)
 
     class Meta:
         verbose_name_plural = "Personnel"
