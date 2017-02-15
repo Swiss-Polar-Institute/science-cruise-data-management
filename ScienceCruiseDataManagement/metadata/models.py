@@ -244,7 +244,7 @@ class DataSetCitation(models.Model):
 class Personnel(models.Model):
     dataset_role = models.ManyToManyField('DatasetRole')
     datacite_contributor_type = models.ManyToManyField('DataciteContributorType')
-    person = models.OneToOneField(Person, null=True, blank=True)
+    person = models.ForeignKey(Person, null=True, blank=True)
 
     def __str__(self):
         dataset_roles = self.dataset_role.all()
