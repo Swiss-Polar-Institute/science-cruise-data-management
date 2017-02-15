@@ -85,7 +85,7 @@ class DeviceType(models.Model):
 
 class SamplingMethod(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    definition = models.CharField(max_length=255, null=True, blank=True)
+    definition = models.CharField(max_length=1000, null=True, blank=True)
     validity = models.CharField(max_length=255, choices=settings.VALIDITY_OPTIONS)
     date_validity_changed = models.DateField(null=True, blank=True)
 
