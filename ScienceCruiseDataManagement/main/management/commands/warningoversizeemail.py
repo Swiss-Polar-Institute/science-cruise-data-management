@@ -200,7 +200,9 @@ Data team
             sys.exit(1)
 
         print("Select INBOX")
-        rv, data = self._imap.select("INBOX")
+        # the readonly=True is to avoid that the FETCH command
+        # to check the sizes marks the messages as read
+        rv, data = self._imap.select("INBOX", readonly=True)
 
         if rv == 'OK':
             print("Processing mailbox...")
