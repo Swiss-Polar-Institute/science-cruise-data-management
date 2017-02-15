@@ -229,7 +229,7 @@ class DataSetCitation(models.Model):
     dataset_release_date = models.DateField(null=True,blank=True)
     dataset_publisher = models.ForeignKey(Provider, null=True, blank=True)
     version = models.CharField(max_length=10, null=True, blank=True)
-    other_citation_details = models.CharField(max_length=255, null=True, blank=True,help_text='Additional free-text citation information.')
+    other_citation_details = models.CharField(max_length=255, null=True, blank=True,help_text='Additional free-text citation information. Put here about other grants and acknowledgements.')
 
     def __str__(self):
         return "{}".format(self.dataset_title)
