@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
+from django.core.exceptions import ObjectDoesNotExist
 import datetime
 from main.models import Email
 from django.conf import settings
@@ -105,6 +106,12 @@ class MessageDownloader:
 
     def fetchmailrc(self):
         email_address = "{}@ace-expedition.net".format(self.username)
+
+        try:
+            email_object = Email.objects.get(email_address=email_address)
+        except ObjectDoesNotExist:
+            print("No password for user: {}".format(email_object))
+            return
 
         config = {}
         config['username'] = self.username

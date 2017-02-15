@@ -43,7 +43,7 @@ class MetadataEntryAdmin(admin.ModelAdmin):
                     'parent_dif', 'idn_node_list', 'metadata_name', 'metadata_version', 'dif_creation_date',
                     'last_dif_revision_date', 'dif_revision_history', 'future_dif_review_date', 'private', 'comments')
     ordering = ['entry_id']
-    filter_horizontal = ('parameters', 'sensor_name', 'source_name', 'location', 'project', 'data_center', 'idn_node',
+    filter_vertical   = ('parameters', 'sensor_name', 'source_name', 'location', 'project', 'data_center', 'idn_node',
                          'directory', )
 
     # form = MetadataEntryForm
