@@ -221,14 +221,17 @@ class DataciteContributorType(models.Model):
         return "{}".format(self.contributor_type)
 
 
+def data_set_citation_publisher_default():
+    return text_to_ids([settings.METADATA_DEFAULT_CITATION_PUBLISHER], Provider, 'short_name')[0]
+
 ############## MAIN DIF METADATA MODELS ###############
 
 class DataSetCitation(models.Model):
     dataset_creator = models.ForeignKey(Person, null=True, blank=True)
     dataset_title = models.CharField(max_length=220, null=True, blank=True)
     dataset_release_date = models.DateField(null=True,blank=True)
-    dataset_publisher = models.ForeignKey(Provider, null=True, blank=True)
-    version = models.CharField(max_length=10, null=True, blank=True)
+    dataset_publisher = models.ForeignKey(Provider, default=data_set_citation_publisher_default, null=True, blank=True)
+    version = models.CharField(max_length=10, default="1.0", null=True, blank=True)
     other_citation_details = models.CharField(max_length=255, null=True, blank=True,help_text='Additional free-text citation information. Put here about other grants and acknowledgements.')
 
     def __str__(self):
@@ -354,7 +357,7 @@ class Distribution(models.Model):
     distribution_media = models.ForeignKey('DistributionMedia', null=True, blank=True, help_text="The media options for the user receiving the data.")
     distribution_size = models.CharField(max_length=80, null=True, blank=True, help_text = "An approximate size (in KB, MB or GB) for the entire data set. Specify if data are compressed and the method of compression.")
     distribution_format = models.ForeignKey('DistributionFormat', null=True, blank=True, help_text="The data format used to distribute the data.")
-    fees = models.CharField(max_length=80, null=True, blank=True, help_text="Cost of <Distribution_Media> or distribution costs if any. Specify if there are no costs.")
+    fees = models.CharField(max_length=80, default="No cost", null=True, blank=True, help_text="Cost of <Distribution_Media> or distribution costs if any. Specify if there are no costs.")
 
     def __str__(self):
         return "{} - {} - {}".format(self.distribution_media, self.distribution_format, self.distribution_size)
