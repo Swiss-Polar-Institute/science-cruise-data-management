@@ -380,7 +380,7 @@ def text_to_ids(parameters, model, field):
     for parameter in parameters:
         try:
             id = model.objects.get(**{field: parameter})
-            output.append(id)
+            output.append(getattr(id, "id"))
 
         except ObjectDoesNotExist:
             pass
