@@ -11,6 +11,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('command', type=str, help="Command can be generatepasswords or generatefetchmailrc")
+        parser.add_argument('--leg', type=int, help="Specifies the leg for the commands that accepts it, e.g. printemails")
 
     def handle(self, *args, **options):
         if options['command'] == "generateemails":
@@ -25,6 +26,17 @@ class Command(BaseCommand):
             self.generate_webmail_users()
         elif options['command'] == "invalidateusersotherlegs":
             self.invalidate_users_from_other_legs()
+        elif options['command'] == "printemails":
+            self.print_emails(options['leg'])
+
+    def print_emails(self, leg):
+        wanted_leg = Leg.objects.get(number=leg)
+
+        for person in Person.objects.order_by("name_first"):
+            legs = person.leg.all()
+            if wanted_leg in legs:
+                print("{} {}:{}".format(person.name_first, person.name_last, self.generate_email(person)))
+
 
     def print_passwords(self):
         for email in Email.objects.all().order_by("email_address"):
