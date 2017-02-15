@@ -1,24 +1,38 @@
 from django.contrib import admin
-from django.forms import ModelForm, ModelMultipleChoiceField
+from django.forms import ModelMultipleChoiceField
 import metadata.models
-
 from metadata.admin_filters import ParameterFilter
+
 
 class TextWithId(ModelMultipleChoiceField):
     def label_from_instance(self, obj):
         return "{}-{}".format(obj.id, str(obj))
 
-
-class MetadataEntryForm(ModelForm):
-    parameters = TextWithId(queryset=metadata.models.Parameter.objects.all())
-    sensor_name = TextWithId(queryset=metadata.models.Instrument.objects.all())
-    source_name = TextWithId(queryset=metadata.models.Platform.objects.all())
-    location = TextWithId(queryset=metadata.models.Location.objects.all())
-    originating_data_center = TextWithId(queryset=metadata.models.Provider.objects.all())
-
-    class Meta:
-        model = metadata.models.MetadataEntry
-        fields = '__all__'
+# This code would allow to have a Many to Many with a different text than the default one
+# class TextWithId(ModelMultipleChoiceField):
+#     def label_from_instance(self, obj):
+#         return "{}-{}".format(obj.id, str(obj))
+#
+#
+# def filtered_widget(model):
+#     return FilteredSelectMultiple(model._meta.verbose_name, is_stacked=False)
+#
+# This is to have the splitter with fields named differently
+# def id_and_splitter(model):
+#     return TextWithId(queryset=model.objects.all(),
+#                       widget=filtered_widget(model))
+#
+# class MetadataEntryForm(ModelForm):
+#     parameters = id_and_splitter(metadata.models.Parameter)
+#     sensor_name = id_and_splitter(metadata.models.Instrument)
+#     source_name = id_and_splitter(metadata.models.Platform)
+#     location = id_and_splitter(metadata.models.Location)
+#     data_center = id_and_splitter(metadata.models.Provider)
+#     distribution = id_and_splitter(metadata.models.Distribution)
+#
+#     class Meta:
+#         model = metadata.models.MetadataEntry
+#         fields = '__all__'
 
 
 class MetadataEntryAdmin(admin.ModelAdmin):
@@ -29,9 +43,10 @@ class MetadataEntryAdmin(admin.ModelAdmin):
                     'parent_dif', 'idn_node_list', 'metadata_name', 'metadata_version', 'dif_creation_date',
                     'last_dif_revision_date', 'dif_revision_history', 'future_dif_review_date', 'private')
     ordering = ['entry_id']
-    filter_horizontal = ('parameters',)
+    filter_horizontal = ('parameters', 'sensor_name', 'source_name', 'location', 'project', 'data_center', 'idn_node',
+                         'directory', )
 
-    form = MetadataEntryForm
+    # form = MetadataEntryForm
 
     def data_set_citation_list(self, obj):
         citations = obj.data_set_citation.all()
