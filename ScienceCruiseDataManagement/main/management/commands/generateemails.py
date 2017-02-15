@@ -31,11 +31,11 @@ class Command(BaseCommand):
 
     def print_emails(self, leg):
         wanted_leg = Leg.objects.get(number=leg)
-
+        print("name, email")
         for person in Person.objects.order_by("name_first"):
             legs = person.leg.all()
             if wanted_leg in legs:
-                print("{} {}:{}".format(person.name_first, person.name_last, self.generate_email(person)))
+                print("{} {},{}".format(person.name_first, person.name_last, self.generate_email(person)))
 
 
     def print_passwords(self):
