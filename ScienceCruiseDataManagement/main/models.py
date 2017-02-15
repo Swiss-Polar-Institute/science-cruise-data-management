@@ -285,6 +285,7 @@ class Person(models.Model):
     project = models.ForeignKey('Project', null=True, blank=True)
     onboard_role = models.ForeignKey(OnboardRole, null=True, blank=True)
     organisation = models.ManyToManyField(Organisation)
+    email_address = models.CharField(max_length=255, null=True, blank=True)
     principal_investigator = models.BooleanField()
     leg = models.ManyToManyField(Leg, blank=True)
 
