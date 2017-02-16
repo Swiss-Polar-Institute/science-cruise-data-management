@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from main.models import Project
-from metadata.models import MetadataEntry
+from metadata.models import *
 from django.views.generic import TemplateView, ListView
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
@@ -39,10 +39,10 @@ class MetadataEntryView(TemplateView):
         rows.append(('ID', metadata_entry.entry_id))
         rows.append(('Title', metadata_entry.entry_title))
 
-        data_set_citation = concatenate_entries(metadata_entry.data_set_citation)
-        rows.append(('Data set citation', data_set_citation))
+        #data_set_citation = concatenate_entries(metadata_entry.data_set_citation)
+        rows.append(('Data set citation', render_object(metadata_entry.data_set_citation)))
 
-        people = concatenate_entries(metadata_entry.personnel, ['person'])
+        people = concatenate_entries(metadata_entry.personnel, ['person.__renderer__'])
         rows.append(('Personnel', people))
 
         parameters = concatenate_entries(metadata_entry.parameters)
@@ -124,8 +124,34 @@ def get_attribute_from_field(object, field):
         return get_attribute_from_field(field2, ".".join(field_in_parts[1:]))
     elif field == '__str__':
         return str(object)
+    elif field == '__renderer__':
+        return render_object(object)
     else:
         return str(getattr(object, field))
+
+
+def render_object(object):
+    if isinstance(object, Personnel):
+        html = "TEST"
+    elif isinstance(object, Person):
+        html = object.name_first
+    elif isinstance(object, DataSetCitation):
+        html = ""
+        if object.dataset_creator is not None:
+            html += "Creator: " + str(object.dataset_creator) + "<br>"
+        html += "Title: " + object.dataset_title + "<br>"
+
+        if object.dataset_publisher is not None:
+            html += "Publisher: " + object.dataset_publisher + "<br>"
+        html += "Other citation details: " + object.other_citation_details + "<br>"
+
+        if object.dataset_release_date is not None:
+            html += "Release date: " + object.dataset_release_date.strftime("%Y-%m-%d") + "<br>"
+        html += "Version: " + object.version
+    else:
+        assert False
+
+    return html
 
 
 def concatenate_entries(objects, fields='__str__'):
@@ -146,4 +172,4 @@ def concatenate_entries(objects, fields='__str__'):
 
         list_of_strings.append(" ".join(fields_data))
 
-    return ", ".join(list_of_strings)
+    return "<p>".join(list_of_strings)

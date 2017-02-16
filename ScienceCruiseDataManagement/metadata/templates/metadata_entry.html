@@ -9,7 +9,7 @@
     <thead> <th>Field</th><th>Value</th> </thead>
     {% for row in rows %}
     <tr>
-        <td>{{ row.0 }}</td> <td>{{ row.1 }}</td>
+        <td>{{ row.0 }}</td> <td>{{ row.1 | safe}}</td>
     <tr>
     {% endfor %}
 </table>
