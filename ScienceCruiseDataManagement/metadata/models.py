@@ -406,7 +406,7 @@ def metadata_entry_idn_node_defaults():
 class MetadataEntry(models.Model):
     entry_id = models.CharField(max_length=255, unique=True, help_text="Unique document identifier of the metadata record. The identifier is case insensitive. The <Entry_ID> consists of 1 to 80 alphanumeric characters of the UTF-8 set, including underbar (_), hyphen (-) and period (.).")
     entry_title = models.CharField(max_length=220, help_text="Title of the data set described by the metadata. For example, <Entry_Title>Aerosol characterization and snow chemistry at Terra Nova Bay 2001-2003 </Entry_Title> provides an adequate amount of information to guide the user.")
-    data_set_citation = models.ManyToManyField(DataSetCitation, blank=True)
+    data_set_citation = models.ForeignKey(DataSetCitation, null=True, blank=True)
     personnel = models.ManyToManyField(Personnel, help_text="The point of contact for more information about the data set or the metadata.")
     parameters = models.ManyToManyField(Parameter)
     sensor_name = models.ManyToManyField(Instrument, blank=True)
