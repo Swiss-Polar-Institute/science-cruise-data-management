@@ -358,7 +358,11 @@ class Distribution(models.Model):
     fees = models.CharField(max_length=80, default="No cost", null=True, blank=True, help_text="Cost of <Distribution_Media> or distribution costs if any. Specify if there are no costs.")
 
     def __str__(self):
-        return "{} - {} - {}".format(self.distribution_media, self.distribution_format, self.distribution_size)
+        formats = self.distribution_format.all()
+
+        formats_str = ", ".join([str(format) for format in formats])
+
+        return "{} - {} - {}".format(self.distribution_media, formats_str, self.distribution_size)
 
 
 class Summary(models.Model):
