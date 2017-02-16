@@ -15,10 +15,12 @@ class Command(BaseCommand):
 class MetadataGenerator:
     def __init__(self):
         print("metadata generator created")
-
+        # TODO
         pass
 
     def create_all_records(self):
+        # TODO
+        pass
 
     def create_record(self, output_file, information):
         print(information)
