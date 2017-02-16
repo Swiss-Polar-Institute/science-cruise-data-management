@@ -36,7 +36,7 @@ class TextWithId(ModelMultipleChoiceField):
 
 
 class MetadataEntryAdmin(admin.ModelAdmin):
-    list_display = ('entry_id', 'entry_title', 'data_set_citation_list', 'personnel_list', 'parameters_list', 'sensor_name_list',
+    list_display = ('entry_id', 'entry_title', 'personnel_list', 'parameters_list', 'sensor_name_list',
                     'expedition_specific_device_list', 'source_name_list', 'temporal_coverage_list', 'data_set_progress', 'spatial_coverage_list', 'location_list',
                     'data_resolution_list', 'project_list', 'quality', 'access_constraints', 'use_constraints',
                     'data_set_language', 'originating_center', 'data_center_list', 'distribution_list', 'summary',
@@ -47,11 +47,6 @@ class MetadataEntryAdmin(admin.ModelAdmin):
                          'directory', )
 
     # form = MetadataEntryForm
-
-    def data_set_citation_list(self, obj):
-        citations = obj.data_set_citation.all()
-
-        return ",".join([str(citation) for citation in citations])
 
     def personnel_list(self, obj):
         people = obj.project.all()
