@@ -68,7 +68,7 @@ class MetadataEntryAdmin(admin.ModelAdmin):
     def expedition_specific_device_list(self, obj):
         expedition_specific_devices = obj.expedition_specific_device.all()
 
-        return ",".join([str(expedition_specific_devices) for expedition_specific_device in expedition_specific_devices])
+        return ",".join([str(expedition_specific_device) for expedition_specific_device in expedition_specific_devices])
 
     def source_name_list(self, obj):
         source_names = obj.source_name.all()
