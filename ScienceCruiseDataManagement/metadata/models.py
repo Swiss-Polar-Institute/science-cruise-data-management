@@ -435,7 +435,7 @@ class MetadataEntry(models.Model):
     dif_revision_history = models.TextField(null=True, blank=True)
     future_dif_review_date = models.DateField(null=True, blank=True)
     private = models.BooleanField()
-    ace_project = models.ManyToManyField(ExpeditionProject)
+    expedition_project = models.ManyToManyField(ExpeditionProject)
     directory = models.ManyToManyField(Item, blank=True)
     comments = models.TextField(null=True, blank=True)
 

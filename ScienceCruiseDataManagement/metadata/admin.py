@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.forms import ModelMultipleChoiceField
 import metadata.models
-from metadata.admin_filters import ParameterFilter
+from metadata.admin_filters import ParameterFilter, ProjectFilter
 
 
 class TextWithId(ModelMultipleChoiceField):
@@ -45,6 +45,8 @@ class MetadataEntryAdmin(admin.ModelAdmin):
     ordering = ['entry_id']
     filter_vertical   = ('parameters', 'sensor_name', 'source_name', 'location', 'project', 'data_center', 'idn_node',
                          'directory', )
+
+    list_filter = (ProjectFilter, )
 
     # form = MetadataEntryForm
 
