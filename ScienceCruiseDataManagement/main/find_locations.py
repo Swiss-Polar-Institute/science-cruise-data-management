@@ -1,4 +1,5 @@
 from main import utils
+from main import utils_coordinates
 
 
 def find_locations(ship_date_time, ship_date_times):
@@ -7,15 +8,29 @@ def find_locations(ship_date_time, ship_date_times):
     # The single location
     single_location = ship_location(ship_date_time)
 
-    latitude = single_location['latitude']
-    longitude = single_location['longitude']
+    latitude_decimal_degrees_single_location = single_location['latitude']
+    longitude_decimal_degrees_single_location = single_location['longitude']
     date_time = single_location['date_time']
 
-    if latitude is None or longitude is None or date_time is None:
-        latitude = longitude = "Unknown"
+    if latitude_decimal_degrees_single_location is None or longitude_decimal_degrees_single_location is None or date_time is None:
+        latitude_decimal_degrees_single_location = longitude_decimal_degrees_single_location = "Unknown"
+        latitude_degrees_decimal_minutes_single_location = longitude_degrees_decimal_minutes_single_location = "Unknown"
+        latitude_degrees_minutes_decimal_seconds_single_location = longitude_degrees_minutes_decimal_seconds_single_location = "Unknown"
+
+    try:
+        decimal_degrees_single_location = (float(latitude_decimal_degrees_single_location), float(longitude_decimal_degrees_single_location))
+        (latitude_degrees_decimal_minutes_single_location,
+         longitude_degrees_decimal_minutes_single_location) = utils_coordinates.convert_decimal_degrees_to(decimal_degrees_single_location,
+                                                                                           "decimal_degrees_minutes")
+        (latitude_degrees_minutes_decimal_seconds_single_location,
+         longitude_degrees_minutes_decimal_seconds_single_location) = utils_coordinates.convert_decimal_degrees_to(decimal_degrees_single_location,
+                                                                                                   "decimal_degrees_minutes_seconds")
+    except ValueError:
+        # Sadly the ship_location() can return strings - in the try code it tries to convert them to float,
+        # if it fails we return this to the next level.
+        pass
 
     message = single_location['message']
-
 
     # List of locations
     list_of_locations = []
@@ -31,16 +46,38 @@ def find_locations(ship_date_time, ship_date_times):
             if ship_date_time != "":
                 location['date_time'] = ship_date_time
 
+            (latitude_decimal_degrees, longitude_decimal_degrees) = (location['latitude'], location['longitude'])
+            (latitude_degrees_decimal_minutes, longitude_degrees_decimal_minutes) = (latitude_decimal_degrees, longitude_decimal_degrees)
+            (latitude_degrees_minutes_decimal_seconds, longitude_degrees_minutes_decimal_seconds) = (latitude_decimal_degrees, longitude_decimal_degrees)
+
+            try:
+                decimal_degrees = (float(latitude_decimal_degrees), float(longitude_decimal_degrees))
+                (latitude_degrees_decimal_minutes, longitude_degrees_decimal_minutes) = utils_coordinates.convert_decimal_degrees_to(decimal_degrees, "decimal_degrees_minutes")
+                (latitude_degrees_minutes_decimal_seconds, longitude_degrees_minutes_decimal_seconds) = utils_coordinates.convert_decimal_degrees_to(decimal_degrees, "decimal_degrees_minutes_seconds")
+            except ValueError:
+                # Sadly the ship_location() can return strings - in the try code it tries to convert them to float,
+                # if it fails we return this to the next level.
+                pass
+
             information = {'date_time': location['date_time'],
-                           'latitude': location['latitude'],
-                           'longitude': location['longitude']
+                           'latitude_decimal_degrees': latitude_decimal_degrees,
+                           'longitude_decimal_degrees': longitude_decimal_degrees,
+                           'latitude_degrees_decimal_minutes': latitude_degrees_decimal_minutes,
+                           'longitude_degrees_decimal_minutes': longitude_degrees_decimal_minutes,
+                           'latitude_degrees_minutes_decimal_seconds': latitude_degrees_minutes_decimal_seconds,
+                           'longitude_degrees_minutes_decimal_seconds': longitude_degrees_minutes_decimal_seconds
                            }
             list_of_locations.append(information)
 
     template_information = {
         'ship_date_time': date_time,
-        'latitude': latitude,
-        'longitude': longitude,
+        'latitude_decimal_degrees_single_location': latitude_decimal_degrees_single_location,
+        'longitude_decimal_degrees_single_location': longitude_decimal_degrees_single_location,
+        'longitude_decimal_degrees_single_location': longitude_decimal_degrees_single_location,
+        'latitude_degrees_decimal_minutes_single_location': latitude_degrees_decimal_minutes_single_location,
+        'longitude_degrees_decimal_minutes_single_location': longitude_degrees_decimal_minutes_single_location,
+        'latitude_degrees_minutes_decimal_seconds_single_location': latitude_degrees_minutes_decimal_seconds_single_location,
+        'longitude_degrees_minutes_decimal_seconds_single_location': longitude_degrees_minutes_decimal_seconds_single_location,
         'list_of_locations': list_of_locations,
         'message': message
     }

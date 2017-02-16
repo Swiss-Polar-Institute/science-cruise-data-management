@@ -77,7 +77,7 @@ def convert_to_decimal_degrees(coordinate):
 
 def convert_decimal_degrees_to(coordinate, type_of_coordinates):
     if type_of_coordinates == "decimal_degrees":
-        return ("{:.3f} {:.3f}".format(coordinate[0], coordinate[1]))
+        return ("{:.3f}".format(coordinate[0]), "{:.3f}".format(coordinate[1]))
 
     elif type_of_coordinates == "decimal_degrees_minutes":
         (latitude_degree, latitude_minute, latitude_decimal_minute,
@@ -100,7 +100,7 @@ def convert_decimal_degrees_to(coordinate, type_of_coordinates):
         latitude_string = "{:.0f} {:.3f} {}".format(latitude_degree, latitude_decimal_minute, hemisphere)
         longitude_string = "{:.0f} {:.3f} {}".format(longitude_degree, longitude_decimal_minute, side)
 
-        return "{} {}".format(latitude_string, longitude_string)
+        return ((latitude_string, longitude_string))
 
     elif type_of_coordinates == "decimal_degrees_minutes_seconds":
         (latitude_degree, latitude_minute, latitude_decimal_minute,
@@ -122,7 +122,7 @@ def convert_decimal_degrees_to(coordinate, type_of_coordinates):
         latitude_string = "{:.0f} {:.0f} {:.3f} {}".format(latitude_degree, latitude_minute, latitude_second, hemisphere)
         longitude_string = "{:.0f} {:.0f} {:.3f} {}".format(longitude_degree, longitude_minute, latitude_second, side)
 
-        return "{} {}".format(latitude_string, longitude_string)
+        return ((latitude_string, longitude_string))
 
     else:
         assert False
@@ -175,7 +175,7 @@ def process(coordinates, template_information):
     print("Coordinates:", coordinates)
 
 
-def cmp(a,b):
+def cmp(a, b):
     return (a > b) - (a < b)
 
 

@@ -5,18 +5,54 @@
 {% block content %}
 <b>{{message}}</b><p>
 At {{ship_date_time}} UTC the ship was at:<p>
-Latitude: {{latitude}}<br>
-Longitude: {{longitude}}<br>
+<b>Decimal degrees<br></b>
+Latitude: {{latitude_decimal_degrees_single_location}}<br>
+Longitude: {{longitude_decimal_degrees_single_location}}
+<p>
+<b>Degrees and decimal minutes<br></b>
+Latitude: {{latitude_degrees_decimal_minutes_single_location}}<br>
+Longitude: {{longitude_degrees_decimal_minutes_single_location}}
+<p>
+<b>Degrees, minutes and decimal seconds<br></b>
+Latitude: {{latitude_degrees_minutes_decimal_seconds_single_location}}<br>
+Longitude: {{longitude_degrees_minutes_decimal_seconds_single_location}}
+
 <hr>
 
 {% if list_of_locations %}
-<table border="1">
-    <thead> <th>Date time</th><th>Latitude</th><th>Longitude</th> </thead>
-    {% for location in list_of_locations %}
+<table border="0">
     <tr>
-        <td>{{location.date_time}}</td> <td>{{ location.latitude }}</td> <td>{{ location.longitude }}</td>
-    <tr>
-    {% endfor %}
+        <td>
+            <table border="1">
+                <thead> <th>Date time</th><th>Latitude</th><th>Longitude</th> </thead>
+                {% for location in list_of_locations %}
+                <tr>
+                    <td>{{location.date_time}}</td> <td>{{ location.latitude_degrees_minutes_decimal_seconds }}</td> <td>{{ location.longitude_degrees_minutes_decimal_seconds }}</td>
+                <tr>
+                {% endfor %}
+            </table>
+        </td>
+        <td>
+            <table border="1">
+                <thead> <th>Date time</th><th>Latitude</th><th>Longitude</th> </thead>
+                {% for location in list_of_locations %}
+                <tr>
+                    <td>{{location.date_time}}</td> <td>{{ location.latitude_decimal_degrees }}</td> <td>{{ location.longitude_decimal_degrees }}</td>
+                <tr>
+                {% endfor %}
+            </table>
+        </td>
+        <td>
+            <table border="1">
+                <thead> <th>Date time</th><th>Latitude</th><th>Longitude</th> </thead>
+                {% for location in list_of_locations %}
+                <tr>
+                    <td>{{location.date_time}}</td> <td>{{ location.latitude_degrees_decimal_minutes }}</td> <td>{{ location.longitude_degrees_decimal_minutes }}</td>
+                <tr>
+                {% endfor %}
+            </table>
+        </td>
+    </tr>
 </table>
 {% endif %}
 
