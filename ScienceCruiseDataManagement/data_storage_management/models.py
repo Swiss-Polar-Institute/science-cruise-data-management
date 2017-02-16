@@ -67,9 +67,6 @@ class Item(models.Model):
             return ""
 
     def clean(self):
-        if self.hard_disk is None and self.shared_resource is None and self.nas_resource is None:
-            raise ValidationError("Please select where to copy this directory/file form: hard disk, shared resource or NAS")
-
         directories_errors = {}
         if self.destination_directory.startswith("/"):
             directories_errors['destination_directory'] = "Destination directory cannot start with /"
