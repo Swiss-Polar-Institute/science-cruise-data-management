@@ -20,20 +20,10 @@ Longitude: {{longitude_degrees_minutes_decimal_seconds_single_location}}
 <hr>
 
 {% if list_of_locations %}
-<table border="0">
+<table border="1">
     <tr>
         <td>
-            <table border="1">
-                <thead> <th>Date time</th><th>Latitude</th><th>Longitude</th> </thead>
-                {% for location in list_of_locations %}
-                <tr>
-                    <td>{{location.date_time}}</td> <td>{{ location.latitude_degrees_minutes_decimal_seconds }}</td> <td>{{ location.longitude_degrees_minutes_decimal_seconds }}</td>
-                <tr>
-                {% endfor %}
-            </table>
-        </td>
-        <td>
-            <table border="1">
+            <table class="table table-bordered">
                 <thead> <th>Date time</th><th>Latitude</th><th>Longitude</th> </thead>
                 {% for location in list_of_locations %}
                 <tr>
@@ -43,7 +33,17 @@ Longitude: {{longitude_degrees_minutes_decimal_seconds_single_location}}
             </table>
         </td>
         <td>
-            <table border="1">
+            <table class="table table-bordered">
+                <thead> <th>Date time</th><th>Latitude</th><th>Longitude</th> </thead>
+                {% for location in list_of_locations %}
+                <tr>
+                    <td>{{location.date_time}}</td> <td>{{ location.latitude_degrees_minutes_decimal_seconds }}</td> <td>{{ location.longitude_degrees_minutes_decimal_seconds }}</td>
+                <tr>
+                {% endfor %}
+            </table>
+        </td>
+        <td>
+            <table class="table table-bordered">
                 <thead> <th>Date time</th><th>Latitude</th><th>Longitude</th> </thead>
                 {% for location in list_of_locations %}
                 <tr>
