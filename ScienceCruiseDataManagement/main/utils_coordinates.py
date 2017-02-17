@@ -168,8 +168,8 @@ def process(coordinates, template_information):
         template_information['output_format_name2'] = pretty_name(formats[1])
 
         template_information['list_of_coordinates'].append({"input": coordinate,
-                                                            "output1": convert_to(coordinate, formats[0]),
-                                                            "output2": convert_to(coordinate, formats[1])
+                                                            "output1": " ".join(convert_to(coordinate, formats[0])),
+                                                            "output2": " ".join(convert_to(coordinate, formats[1]))
                                                             })
 
     print("Coordinates:", coordinates)
