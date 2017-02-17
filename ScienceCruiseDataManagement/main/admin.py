@@ -298,9 +298,8 @@ class EventReportResource(import_export.resources.ModelResource):
 
     outcome = import_export.fields.Field(column_name ='outcome', attribute='outcome')
 
-    event_comments = import_export.fields.Field(column_name='comments',
-                                                attribute='comments',
-                                                widget=import_export.widgets.ForeignKeyWidget(main.models.Event, 'comments'))
+    event_comments = import_export.fields.Field(column_name='event_comments',
+                                                attribute='comments')
 
     # dehydrate_ is an import_eport.resources.ModelResource special prefix
     def dehydrate_start_time(self, event):
