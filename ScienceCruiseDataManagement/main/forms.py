@@ -13,6 +13,14 @@ class InputShipDateTime(forms.Form):
                                       widget=forms.Textarea(attrs={'cols': "20", 'rows': "10", }))
 
 
+class InputShipTimes(forms.Form):
+    ship_date_times = forms.CharField(help_text="""List of date times that could be copied from a spreadsheet and the results copied back<br>
+                                                Must be in format YYYY-MM-DD HH:MM:SS.""",
+                                      required=True,
+                                      label='List of date times (ship time)',
+                                      widget=forms.Textarea(attrs={'cols': "20", 'rows': "10", }))
+
+
 class InputCoordinates(forms.Form):
     coordinates = forms.CharField(help_text="""List of coordinates to convert. Must be in one of the formats:<br>
 24 53 42.300 S 24 53 42.300 E<br>

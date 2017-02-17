@@ -1,5 +1,6 @@
 import glob
 import json
+import datetime
 
 import geojson
 import os
@@ -14,7 +15,7 @@ from django.core.exceptions import ObjectDoesNotExist
 import main.import_gpx_to_stations
 import main.models
 from main import import_gpx_to_stations
-from main.forms import InputShipDateTime, InputCoordinates
+from main.forms import InputShipDateTime, InputCoordinates, InputShipTimes
 from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station,\
     Message, SamplingMethod, ProposedStation
 from main import utils
@@ -22,6 +23,7 @@ from ship_data.models import GpggaGpsFix, GpvtgVelocity
 import main.find_locations as find_locations
 import subprocess
 import main.utils_coordinates as utils_coordinates
+
 
 class MainMenuView(TemplateView):
     template_name = "main_menu.html"
@@ -394,6 +396,23 @@ class PositionFromDateTime(TemplateView):
         return render(request, "position_from_date_time_exec.html", template_information)
 
 
+class ShipTimeToUtc(TemplateView):
+    def get(self, request, *args, **kwargs):
+        form = InputShipTimes(initial={'ship_date_times': "2017-01-15 15:16:17"})
+        return render(request, "ship_time_to_utc.html", {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        ship_date_times = request.POST['ship_date_times']
+
+        form = InputShipTimes(initial={'ship_date_times': ship_date_times})
+
+        template_information = {}
+        template_information['times'] = ship_date_times_to_utc(ship_date_times)
+        template_information['form'] = form
+
+        return render(request, "ship_time_to_utc_exec.html", template_information)
+
+
 class MailState(TemplateView):
     def get(self, request, *args, **kwargs):
         s = subprocess.Popen("mailq", stdout=subprocess.PIPE)
@@ -415,3 +434,29 @@ def latest_ship_speed():
         return speed.ground_speed_kts
     else:
         return None
+
+
+def ship_date_times_to_utc(ship_date_times):
+    output = []
+    for ship_date_time in ship_date_times.split("\n"):
+        ship_date_time = ship_date_time.strip()
+        try:
+            date_time = datetime.datetime.strptime(ship_date_time, "%Y-%m-%d %H:%M:%S")
+            ship_ahead_of_utc = main.models.TimeChange.objects.filter(Q(date_changed_utc__lt=date_time)).order_by('date_changed_utc')
+            if len(ship_ahead_of_utc) > 0:
+                ship_ahead_of_utc_hours = int(ship_ahead_of_utc[0].difference_to_utc_after_change)
+
+                ahead_of_utc = datetime.timedelta(hours=ship_ahead_of_utc_hours)
+
+                date_time_utc = date_time - ahead_of_utc
+            else:
+                date_time_utc = "Unknown"
+
+        except ValueError:
+            date_time_utc = "Invalid"
+
+        output.append({'ship_date_time': ship_date_time,
+                       'utc_date_time': date_time_utc
+                       })
+
+    return output

@@ -18,7 +18,7 @@ from django.contrib import admin
 from data_storage_management.views import HardDiskJson
 from main.views import MainMenuView, MainMapView, PositionsJson, LatestShipPosition, CountryListView, FileStorageView,\
     InteractiveMapView, EventListView, ImportPortsFromGpx, DocumentsView, AccessingDataView, PositionFromDateTime,\
-    CoordinatesConversion, TrackJson, MailState
+    CoordinatesConversion, TrackJson, MailState, ShipTimeToUtc
 from metadata.views import ProjectListView, MetadataEntryListView, MetadataEntryView
 from ship_data.views import FerryboxView
 from data_storage_management.views import HardDiskJson, DirectoryUpdateJson
@@ -45,6 +45,7 @@ urlpatterns = [
     url(r'^documents/', DocumentsView.as_view()),
     url(r'^accessing_data/', AccessingDataView.as_view()),
     url(r'^position_from_date_time/', PositionFromDateTime.as_view()),
+    url(r'^ship_time_to_utc/', ShipTimeToUtc.as_view()),
     url(r'^coordinates_conversion/', CoordinatesConversion.as_view()),
     url(r'^mail_state/', MailState.as_view()),
     url(r'^ferrybox/', FerryboxView.as_view()),

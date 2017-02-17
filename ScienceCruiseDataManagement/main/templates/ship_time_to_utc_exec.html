@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Ship time to UTC{% endblock %}
+{% load static %}
+
+{% block content %}
+<b>{{message}}</b><p>
+
+{% if times %}
+<table class="table table-bordered">
+    <thead> <th>Ship date time</th><th>UTC date time</th> </thead>
+    {% for time in times %}
+    <tr>
+        <td>{{time.ship_date_time}}</td> <td>{{time.utc_date_time}}</td>
+    <tr>
+    {% endfor %}
+</table>
+{% endif %}
+
+Enter more ship times:<p>
+<form action="/ship_time_to_utc/" method="post">
+    {% csrf_token %}
+    <table>
+    {{ form }}
+    </table>
+    <input type="submit" value="Submit" />
+</form>
+
+{% endblock %}
