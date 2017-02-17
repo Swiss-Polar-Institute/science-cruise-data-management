@@ -48,6 +48,8 @@ class MetadataEntryAdmin(admin.ModelAdmin):
 
     list_filter = (ProjectFilter, )
 
+    save_as = True
+
     # form = MetadataEntryForm
 
     def personnel_list(self, obj):

@@ -108,9 +108,6 @@ class MetadataEntryView(TemplateView):
 
         rows.append(('Private', metadata_entry.private))
 
-
-
-
         return render(request, "metadata_entry.html", {'rows': rows})
 
 
@@ -129,6 +126,9 @@ def get_attribute_from_field(object, field):
     else:
         return str(getattr(object, field))
 
+def object_to_html(object, specification):
+    # specification: a dictionary with {text: field, force_empty: True/False}p
+    pass
 
 def render_object(object):
     if isinstance(object, Personnel):
