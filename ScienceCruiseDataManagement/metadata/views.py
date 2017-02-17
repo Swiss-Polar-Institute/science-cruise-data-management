@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import datetime
 from main.models import Project
 from metadata.models import *
 from django.views.generic import TemplateView, ListView
@@ -126,32 +127,56 @@ def get_attribute_from_field(object, field):
     else:
         return str(getattr(object, field))
 
+
 def object_to_html(object, specification_list):
-    # specification_list: a list of specification
-    # specification example: {'name_last': 'Name Last',
+    # specification list list of specifications
+    # specification example: {'field_name': 'name_last',
+    #                         'output_string': 'Surname',
     #                         'show_if_empty': True
     #                        }
-    pass
+    output = ""
+
+    for field in specification_list:
+        line_output = field['output_string'] + ": "
+        output_text = getattr(object, field['field_name'])
+
+        is_empty = (output_text == "" or output_text is None)
+
+        if is_empty and (field['show_if_empty'] is False):
+            continue
+
+        if is_empty and field['show_if_empty']:
+            output_text = "-"
+
+        output += line_output + render_object(output_text) + "<br>"
+
+    return output
 
 def render_object(object):
-    if isinstance(object, Personnel):
-        html = "TEST"
-    elif isinstance(object, Person):
-        html = object.name_first
+    if isinstance(object, Person):
+        html = "{} {}".format(object.name_first, object.name_last)
+    elif isinstance(object, datetime.date):
+        html = object.strftime("%Y-%m-%d")
+    elif isinstance(object, str):
+        html = object
     elif isinstance(object, DataSetCitation):
-        html = ""
-        if object.dataset_creator is not None:
-            html += "Creator: " + str(object.dataset_creator) + "<br>"
-        html += "Title: " + object.dataset_title + "<br>"
+        specification_list = []
 
-        if object.dataset_publisher is not None:
-            html += "Publisher: " + object.dataset_publisher + "<br>"
-        html += "Other citation details: " + object.other_citation_details + "<br>"
-
-        if object.dataset_release_date is not None:
-            html += "Release date: " + object.dataset_release_date.strftime("%Y-%m-%d") + "<br>"
-        html += "Version: " + object.version
+        specification_list.append({'field_name': 'dataset_creator',
+                                   'output_string': 'Dataset Creator',
+                                   'show_if_empty': True
+                                   })
+        specification_list.append({'field_name': 'dataset_publisher',
+                                   'output_string': 'Publisher',
+                                   'show_if_empty': True
+                                   })
+        specification_list.append({'field_name': 'dataset_release_date',
+                                   'output_string': "Release date",
+                                   'show_if_empty': True
+                                   })
+        html = object_to_html(object, specification_list)
     else:
+        print("Had object:", object)
         assert False
 
     return html
