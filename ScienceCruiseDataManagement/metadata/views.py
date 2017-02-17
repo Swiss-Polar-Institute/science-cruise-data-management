@@ -126,8 +126,11 @@ def get_attribute_from_field(object, field):
     else:
         return str(getattr(object, field))
 
-def object_to_html(object, specification):
-    # specification: a dictionary with {text: field, force_empty: True/False}p
+def object_to_html(object, specification_list):
+    # specification_list: a list of specification
+    # specification example: {'name_last': 'Name Last',
+    #                         'show_if_empty': True
+    #                        }
     pass
 
 def render_object(object):

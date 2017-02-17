@@ -726,7 +726,17 @@ class EventAction(models.Model):
             assert False
 
     def delete(self, using=None, keep_parents=False):
+        type = self.type
+        event_id = self.event_id
+
         super(EventAction, self).delete(using=using, keep_parents=keep_parents)
+
+        if type == self.tends() or type == self.tinstant():
+            open_events = OpenEvent.objects.filter(number=self.event_id)
+            if not open_events.exists():
+                open_event = OpenEvent()
+                open_event.number = event_id
+                open_event.save()
 
     def __str__(self):
         return "{}".format(self.event.number)
