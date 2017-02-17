@@ -7,10 +7,10 @@
 
 {% if times %}
 <table class="table table-bordered">
-    <thead> <th>Ship date time</th><th>UTC date time</th> </thead>
+    <thead> <th>Ship date time</th><th>UTC date time</th><th>UTC Julian day</th> </thead>
     {% for time in times %}
     <tr>
-        <td>{{time.ship_date_time}}</td> <td>{{time.utc_date_time}}</td>
+        <td>{{time.ship_date_time}}</td> <td>{{time.utc_date_time}}</td> <td>{{time.utc_julian_day}}</td>
     <tr>
     {% endfor %}
 </table>
