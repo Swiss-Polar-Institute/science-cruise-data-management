@@ -37,8 +37,8 @@ class MetadataEntryView(TemplateView):
 
         rows = []
 
-        rows.append(('ID', metadata_entry.entry_id))
-        rows.append(('Title', metadata_entry.entry_title))
+        rows.append(('ID', render_object(metadata_entry.entry_id)))
+        rows.append(('Title', render_object(metadata_entry.entry_title)))
 
         #data_set_citation = concatenate_entries(metadata_entry.data_set_citation)
         rows.append(('Data set citation', render_object(metadata_entry.data_set_citation)))
@@ -85,8 +85,7 @@ class MetadataEntryView(TemplateView):
         data_centers = concatenate_entries(metadata_entry.data_center)
         rows.append(('Data center', data_centers))
 
-        distributions = concatenate_entries(metadata_entry.distribution)
-        rows.append(('Distribution', distributions))
+        rows.append(('Distribution', render_object(metadata_entry.distribution.all())))
 
         rows.append(('Summary', metadata_entry.summary))
 
@@ -130,7 +129,6 @@ def get_attribute_from_field(object, field):
 
 def object_to_html(object, specification_list):
     # specification list list of specifications
-    # specification example: {'field_name': 'name_last',
     #                         'output_string': 'Surname',
     #                         'show_if_empty': True
     #                        }
@@ -152,22 +150,45 @@ def object_to_html(object, specification_list):
 
     return output
 
-def render_queryset(qs):
+def render_queryset(qs, separator):
     output = []
 
     for object in qs:
         output.append(render_object(object))
 
-    return "<br>".join(output)
+    return separator.join(output)
 
 
-def render_object(object):
+def render_object(object, separator="<br>"):
     if isinstance(object, Person):
         html = "{} {}".format(object.name_first, object.name_last)
+    elif isinstance(object, Distribution):
+        specification_list = []
+
+        specification_list.append({'field_name': 'distribution_format',
+                                   'output_string': 'Format',
+                                   'show_if_empty': True})
+
+        specification_list.append({'field_name': 'distribution_size',
+                                   'output_string': 'Size',
+                                   'show_if_empty': True})
+
+        specification_list.append({'field_name': 'distribution_media',
+                                   'output_string': 'Media',
+                                   'show_if_empty': True})
+
+        specification_list.append({'field_name': 'fees',
+                                   'output_string': 'Fees',
+                                   'show_if_empty': True})
+
+        html = object_to_html(object, specification_list)
+
     elif isinstance(object, models.QuerySet):
-        html = render_queryset(object)
+        html = render_queryset(object, separator)
+    elif isinstance(object, DatasetRole):
+        html = str(object)
     elif isinstance(object, Personnel):
-        html = "Name: " + object.person.name_first + " " + object.person.name_last
+        html = "Name: " + object.person.name_first + " " + object.person.name_last + " (DIF: " + render_object(object.dataset_role.all(), separator=", ") + "; Datacite: " + render_object(object.datacite_contributor_type.all(), separator=", ") + ")"
     elif isinstance(object, datetime.date):
         html = object.strftime("%Y-%m-%d")
     elif isinstance(object, str):
@@ -185,6 +206,10 @@ def render_object(object):
                                    })
         specification_list.append({'field_name': 'dataset_release_date',
                                    'output_string': "Release date",
+                                   'show_if_empty': True
+                                   })
+        specification_list.append({'field_name': 'other_citation_details',
+                                   'output_string': "Other citation details",
                                    'show_if_empty': True
                                    })
         html = object_to_html(object, specification_list)
