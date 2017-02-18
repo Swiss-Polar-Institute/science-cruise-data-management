@@ -11,17 +11,19 @@ class Command(BaseCommand):
         self._dry_run = True
         self._position_source_object = None
         self._position_uncertainty_object = None
+        self._force_update = False
 
     def add_arguments(self, parser):
-        parser.add_argument('action', help="[update|dry-run]", type=str)
+        parser.add_argument('action', help="[update|dry-run|force-update]", type=str)
 
     def handle(self, *args, **options):
         if options['action'] == "dry-run":
             self._dry_run = True
-        elif options['action'] == "update":
+        elif options['action'] == "update" or options['action'] == "force-update":
             self._dry_run = False
+            self._force_update = (options['action'] == "force-update")
         else:
-            print("Unknown action, should be dry-run or update")
+            print("Unknown action, should be dry-run, update or force-update")
             exit(1)
 
         self._update_locations()
@@ -34,7 +36,9 @@ class Command(BaseCommand):
                 event_action.event.sampling_method.name in settings.UPDATE_LOCATION_POSITION_EXCEPTION_EVENT_ACTION_TYPE_ENDS_EXCEPTIONS:
                 continue
 
-            if event_action.latitude is None and event_action.longitude is None:
+            to_be_updated = (event_action.latitude is None and event_action.longitude is None) or self._force_update==True
+
+            if to_be_updated:
                 if event_action.event.station is None or \
                                 event_action.event.station.type.type in settings.UPDATE_LOCATION_STATIONS_TYPES:
                     self._update(event_action)
