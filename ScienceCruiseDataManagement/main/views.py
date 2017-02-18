@@ -17,7 +17,7 @@ import main.models
 from main import import_gpx_to_stations
 from main.forms import InputShipDateTime, InputCoordinates, InputShipTimes
 from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station,\
-    Message, SamplingMethod, ProposedStation
+    Message, SamplingMethod, ProposedStation, Leg
 from main import utils
 from ship_data.models import GpggaGpsFix, GpvtgVelocity
 import main.find_locations as find_locations
@@ -441,6 +441,24 @@ def ship_date_times_to_utc(ship_date_times):
         ship_date_time = ship_date_time.strip()
         try:
             date_time = datetime.datetime.strptime(ship_date_time, "%Y-%m-%d %H:%M:%S")
+
+            message = ""
+            if date_time.date() == settings.DATE_TWO_DAYS.date():
+                message = "We had two days with the same date, unknown UTC"
+
+            elif date_time > datetime.datetime.now() + datetime.timedelta(days=1):
+                message = "Don't ask about the future..."
+
+            elif utils.set_utc(date_time) < Leg.objects.all().order_by("start_time")[0].start_time:
+                # This is an approximation - due to the timezones
+                message = "Don't ask about before the beginning of the voyage"
+
+            if message != "":
+                output.append({'ship_date_time': ship_date_time,
+                               'utc_date_time': message,
+                               'utc_julian_day': message
+                               })
+                continue
             ship_ahead_of_utc = main.models.TimeChange.objects.filter(Q(date_changed_utc__lte=date_time)).order_by('-date_changed_utc')
             if len(ship_ahead_of_utc) > 0:
                 ship_ahead_of_utc_hours = int(ship_ahead_of_utc[0].difference_to_utc_after_change)

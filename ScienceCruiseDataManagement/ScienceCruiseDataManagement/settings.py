@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -242,3 +243,5 @@ METADATA_DEFAULT_PROJECT_SHORT_NAME = ["SPI-ACE"]
 METADATA_DEFAULT_DATA_CENTER = ["SPI"]
 METADATA_DEFAULT_IDN_NODE = ["AMD", "SOOS"]
 METADATA_DEFAULT_CITATION_PUBLISHER = "SPI"
+
+DATE_TWO_DAYS = datetime.datetime(2017, 2, 5)
