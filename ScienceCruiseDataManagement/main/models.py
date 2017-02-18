@@ -668,12 +668,16 @@ class EventAction(models.Model):
         check_type = True
         if self.id is not None:
             # We are changing an existing event action...
-            old_event_action = EventAction.objects.get(id=self.id)
 
-            # ...if the type hasn't changed we don't need to check it.
-            # This simplifies the logic of the checks to not need to check for ourselves.
-            if self.type == old_event_action.type:
-                check_type = False
+            # Do not check the type. It allows invalid states (e.g. events with two begins, etc.)
+            # because
+            check_type = False
+            # old_event_action = EventAction.objects.get(id=self.id)
+            #
+            # # ...if the type hasn't changed we don't need to check it.
+            # # This simplifies the logic of the checks to not need to check for ourselves.
+            # if self.type != old_event_action.type:
+            #     check_type = False
 
         if check_type:
             if len(EventAction.objects.filter

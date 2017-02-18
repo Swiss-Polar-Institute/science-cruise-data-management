@@ -125,7 +125,7 @@ class DataSetCitationAdmin(admin.ModelAdmin):
 
 class PersonnelAdmin(admin.ModelAdmin):
     list_display = ('dataset_role_list', 'datacite_contributor_type_list', 'person')
-    search_fields =('dataset_role_list', 'person')
+    search_fields = ('dataset_role_list', 'person')
 
     def dataset_role_list(self, obj):
         dataset_roles = obj.dataset_role.all()

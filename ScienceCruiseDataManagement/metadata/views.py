@@ -43,8 +43,8 @@ class MetadataEntryView(TemplateView):
         #data_set_citation = concatenate_entries(metadata_entry.data_set_citation)
         rows.append(('Data set citation', render_object(metadata_entry.data_set_citation)))
 
-        people = concatenate_entries(metadata_entry.personnel, ['person.__renderer__'])
-        rows.append(('Personnel', people))
+        #people = concatenate_entries(metadata_entry.personnel, ['person.__renderer__'])
+        rows.append(('Personnel', render_object(metadata_entry.personnel.all())))
 
         parameters = concatenate_entries(metadata_entry.parameters)
         rows.append(('Parameters', parameters))
@@ -152,9 +152,22 @@ def object_to_html(object, specification_list):
 
     return output
 
+def render_queryset(qs):
+    output = []
+
+    for object in qs:
+        output.append(render_object(object))
+
+    return "<br>".join(output)
+
+
 def render_object(object):
     if isinstance(object, Person):
         html = "{} {}".format(object.name_first, object.name_last)
+    elif isinstance(object, models.QuerySet):
+        html = render_queryset(object)
+    elif isinstance(object, Personnel):
+        html = "Name: " + object.person.name_first + " " + object.person.name_last
     elif isinstance(object, datetime.date):
         html = object.strftime("%Y-%m-%d")
     elif isinstance(object, str):
@@ -176,8 +189,10 @@ def render_object(object):
                                    })
         html = object_to_html(object, specification_list)
     else:
-        print("Had object:", object)
-        assert False
+        print("Warning, calling str() to render an object")
+        print("Object:", object)
+        print("type(object):", type(object))
+        html = str(object)
 
     return html
 
