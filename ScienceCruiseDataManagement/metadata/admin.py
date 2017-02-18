@@ -119,9 +119,13 @@ class MetadataEntryAdmin(admin.ModelAdmin):
 
 
 class DataSetCitationAdmin(admin.ModelAdmin):
-    list_display = ('dataset_creator', 'dataset_title', 'dataset_release_date', 'dataset_publisher',
+    list_display = ('dataset_creator_list', 'dataset_title', 'dataset_release_date', 'dataset_publisher',
                     'version', 'other_citation_details')
 
+    def dataset_creator_list(self, obj):
+        dataset_creators = obj.dataset_creator.all()
+
+        return ",".join([str(dataset_creator) for dataset_creator in dataset_creators])
 
 class PersonnelAdmin(admin.ModelAdmin):
     list_display = ('dataset_role_list', 'datacite_contributor_type_list', 'person')

@@ -227,7 +227,7 @@ def data_set_citation_publisher_default():
 ############## MAIN DIF METADATA MODELS ###############
 
 class DataSetCitation(models.Model):
-    dataset_creator = models.ForeignKey(Person, null=True, blank=True)
+    dataset_creator = models.ManyToManyField(Person, blank=True)
     dataset_title = models.CharField(max_length=220, null=True, blank=True)
     dataset_release_date = models.DateField(null=True,blank=True)
     dataset_publisher = models.ForeignKey(Provider, default=data_set_citation_publisher_default, null=True, blank=True)
@@ -236,9 +236,6 @@ class DataSetCitation(models.Model):
 
     def __str__(self):
         return "{}".format(self.dataset_title)
-
-    class Meta:
-        unique_together = (('dataset_creator', 'dataset_title'))
 
 
 class Personnel(models.Model):

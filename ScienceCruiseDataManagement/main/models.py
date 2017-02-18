@@ -797,7 +797,7 @@ class NetworkHost(models.Model):
 
 
 class TimeChange(models.Model):
-    date_changed_utc = models.DateField()
+    date_changed_utc = models.DateField(unique=True)
     difference_to_utc_after_change = models.CharField(max_length=255)
 
     def __str__(self):
