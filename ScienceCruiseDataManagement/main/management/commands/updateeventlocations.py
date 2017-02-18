@@ -30,6 +30,10 @@ class Command(BaseCommand):
         event_actions = EventAction.objects.order_by('time')
 
         for event_action in event_actions:
+            if event_action.type == EventAction.tends() and \
+                event_action.event.sampling_method.name in settings.UPDATE_LOCATION_POSITION_EXCEPTION_EVENT_ACTION_TYPE_ENDS_EXCEPTIONS:
+                continue
+
             if event_action.latitude is None and event_action.longitude is None:
                 if event_action.event.station is None or \
                                 event_action.event.station.type.type in settings.UPDATE_LOCATION_STATIONS_TYPES:
