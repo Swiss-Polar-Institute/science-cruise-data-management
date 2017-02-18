@@ -398,7 +398,7 @@ class PositionFromDateTime(TemplateView):
 
 class ShipTimeToUtc(TemplateView):
     def get(self, request, *args, **kwargs):
-        form = InputShipTimes(initial={'ship_date_times': datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S)")})
+        form = InputShipTimes(initial={'ship_date_times': datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")})
         return render(request, "ship_time_to_utc.html", {'form': form})
 
     def post(self, request, *args, **kwargs):
@@ -441,7 +441,7 @@ def ship_date_times_to_utc(ship_date_times):
         ship_date_time = ship_date_time.strip()
         try:
             date_time = datetime.datetime.strptime(ship_date_time, "%Y-%m-%d %H:%M:%S")
-            ship_ahead_of_utc = main.models.TimeChange.objects.filter(Q(date_changed_utc__lt=date_time)).order_by('-date_changed_utc')
+            ship_ahead_of_utc = main.models.TimeChange.objects.filter(Q(date_changed_utc__lte=date_time)).order_by('-date_changed_utc')
             if len(ship_ahead_of_utc) > 0:
                 ship_ahead_of_utc_hours = int(ship_ahead_of_utc[0].difference_to_utc_after_change)
 

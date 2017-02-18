@@ -32,24 +32,22 @@ class Command(BaseCommand):
         event_actions = EventAction.objects.order_by('time')
 
         for event_action in event_actions:
-            if event_action.type == EventAction.tends() and \
-                event_action.event.sampling_method.name in settings.UPDATE_LOCATION_POSITION_EXCEPTION_EVENT_ACTION_TYPE_ENDS_EXCEPTIONS:
-                continue
-
-            to_be_updated = (event_action.latitude is None and event_action.longitude is None) or self._force_update==True
-
-            if to_be_updated:
-                if event_action.event.station is None or \
-                                event_action.event.station.type.type in settings.UPDATE_LOCATION_STATIONS_TYPES:
-                    self._update(event_action)
+            if event_action.position_depends_on_time(self._force_update):
+                self._update(event_action)
 
     def _update(self, event_action):
         ship_location = utils.ship_location(event_action.time)
+        action_text_before=""
 
         if ship_location.latitude is not None and ship_location.longitude is not None:
             if self._dry_run:
                 action_text = "Should update"
             else:
+                action_text_before = "(Previously: Latitude: {} Longitude: {})".format(event_action.latitude, event_action.longitude)
+                if event_action.latitude == float("{:.4f}".format(ship_location.latitude)) and event_action.longitude == float("{:.4f}".format(ship_location.longitude)):
+                    print("Was going to update {} but it's the same than before, skips".format(event_action))
+                    return
+
                 event_action.latitude = "{:.4f}".format(ship_location.latitude)
                 event_action.longitude = "{:.4f}".format(ship_location.longitude)
                 event_action.position_source = self._position_source()
@@ -58,8 +56,8 @@ class Command(BaseCommand):
                 action_text = "Updated"
                 event_action.save()
 
-            print("{} event_action: {}\t{} {:.4f} {:.4f}".format(action_text, event_action.id, event_action.time,
-                                                                 ship_location.latitude, ship_location.longitude))
+            print("{} event_action: {}\t{} {:.4f} {:.4f} {}".format(action_text, event_action.id, event_action.time,
+                                                                 ship_location.latitude, ship_location.longitude, action_text_before))
 
         else:
             print("Missing information for event action ID: {} Time: {}".format(event_action.id, event_action.time))

@@ -665,6 +665,13 @@ class EventAction(models.Model):
         tends_text = EventAction.tends_text()
         tinstant_text = EventAction.tinstant_text()
 
+        if self.id is not None:
+            old_time = EventAction.objects.get(id=self.id).time
+            if self.position_depends_on_time(force_update=True) and old_time != self.time:
+                # It will get updated by the script updateeventlocations.py
+                self.latitude = None
+                self.longitude = None
+
         check_type = True
         if self.id is not None:
             # We are changing an existing event action...
@@ -747,6 +754,19 @@ class EventAction(models.Model):
 
     class Meta:
         permissions = cannot_change
+
+    def position_depends_on_time(self, force_update=False):
+        if self.type == EventAction.tends() and self.event.sampling_method.name in settings.UPDATE_LOCATION_POSITION_EXCEPTION_EVENT_ACTION_TYPE_ENDS_EXCEPTIONS:
+            return False
+
+        to_be_updated = (self.latitude is None and self.longitude is None) or force_update == True
+
+        if to_be_updated:
+            if self.event.station is None or \
+                            self.event.station.type.type in settings.UPDATE_LOCATION_STATIONS_TYPES:
+                return True
+
+        return False
 
 
 @receiver(post_delete, sender=EventAction)
