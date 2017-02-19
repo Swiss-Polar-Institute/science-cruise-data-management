@@ -104,14 +104,16 @@ class Command(BaseCommand):
             leg_string = original_sample_code.split('/')[2]
             project_number_string = original_sample_code.split('/')[3]
             julian_day = "{0:03d}".format(int(original_sample_code.split('/')[4]))
+            event_number_string = original_sample_code.split('/')[5]
             pi_initials_string = original_sample_code.split('/')[6]
-            event_number_string = int(original_sample_code.split('/')[5])
+            project_id_string = original_sample_code.split('/')[7]
 
             sample_code_string = "/".join((code_string, mission_acronym_string, leg_string,
-                                           project_number_string, julian_day, pi_initials_string,
-                                           event_number_string))
+                                           project_number_string, julian_day, event_number_string,
+                                           pi_initials_string, project_id_string))
 
-            assert original_sample_code == sample_code_string
+            # Julian day can be different otherwise we could have:
+            # assert original_sample_code == sample_code_string
 
             sample = Sample()
 
@@ -131,7 +133,7 @@ class Command(BaseCommand):
             project_number_string = sample.expedition_sample_code.split('/')[3]
             julian_day = "{0:03d}".format(int(sample.expedition_sample_code.split('/')[4]))
             pi_initials_string = sample.expedition_sample_code.split('/')[6]
-            event_number_string = int(sample.expedition_sample_code.split('/')[5])
+            event_number_string = sample.expedition_sample_code.split('/')[5]
 
             if 'preservation' in row:
                 preservation = row['preservation']
