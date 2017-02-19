@@ -114,17 +114,7 @@ def get_attribute_from_field(object, field):
         return render_object(object)
     else:
         return str(getattr(object, field))
-#
-# def is_field_many_to_many(object, field):
-#     m2m = [
-#         (f.model if f.model != object else None)
-#         for f in object._meta.get_fields()
-#         if f.many_to_many and not f.auto_created
-#     ]
-#
-#     print("Field:", field)
-#     print("m2m:", m2m)
-#     return field in m2m
+
 
 def object_to_html(object, specification_list, separator):
     # specification list list of specifications
@@ -226,24 +216,3 @@ def render_object(object, separator="<br>"):
         html = str(object)
 
     return html
-
-
-def concatenate_entries(objects, fields='__str__'):
-    if isinstance(fields, str):
-        fields = [fields]
-    elif isinstance(fields, list):
-        pass
-    else:
-        # Should be a string or a list
-        assert False
-
-    list_of_strings = []
-
-    for object in objects.all():
-        fields_data = []
-        for field in fields:
-            fields_data.append(get_attribute_from_field(object, field))
-
-        list_of_strings.append(" ".join(fields_data))
-
-    return "<p>".join(list_of_strings)
