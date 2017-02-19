@@ -1,3 +1,4 @@
+from django.db import models
 from django.shortcuts import render
 import datetime
 from main.models import Project
@@ -40,73 +41,61 @@ class MetadataEntryView(TemplateView):
         rows.append(('ID', render_object(metadata_entry.entry_id)))
         rows.append(('Title', render_object(metadata_entry.entry_title)))
 
-        #data_set_citation = concatenate_entries(metadata_entry.data_set_citation)
-        rows.append(('Data set citation', render_object(metadata_entry.data_set_citation)))
+        rows.append(('Data set citation', render_object(metadata_entry.data_set_citation, "<br>")))
 
-        #people = concatenate_entries(metadata_entry.personnel, ['person.__renderer__'])
-        rows.append(('Personnel', render_object(metadata_entry.personnel.all())))
+        rows.append(('Personnel', render_object(metadata_entry.personnel)))
 
-        parameters = concatenate_entries(metadata_entry.parameters)
-        rows.append(('Parameters', parameters))
+        rows.append(('Parameters', render_object(metadata_entry.parameters)))
 
-        sensor_names = concatenate_entries(metadata_entry.sensor_name)
-        rows.append(('Sensor names', sensor_names))
+        rows.append(('Sensor names', render_object(metadata_entry.sensor_name)))
 
-        source_names = concatenate_entries(metadata_entry.source_name)
-        rows.append(('Source names', source_names))
+        rows.append(('Source names', render_object(metadata_entry.source_name)))
 
-        temporal_coverages = concatenate_entries(metadata_entry.temporal_coverage)
-        rows.append(('Temporal coverage', temporal_coverages))
+        rows.append(('Temporal coverage', render_object(metadata_entry.temporal_coverage)))
 
-        rows.append(('Data set progress', metadata_entry.data_set_progress))
+        rows.append(('Data set progress', render_object(metadata_entry.data_set_progress)))
 
-        spatial_coverages = concatenate_entries(metadata_entry.spatial_coverage)
-        rows.append(('Spatial coverage', spatial_coverages))
+        rows.append(('Spatial coverage', render_object(metadata_entry.spatial_coverage)))
 
-        locations = concatenate_entries(metadata_entry.location)
-        rows.append(('Location', locations))
+        rows.append(('Location', render_object(metadata_entry.location)))
 
-        data_resolutions = concatenate_entries(metadata_entry.data_resolution)
-        rows.append(('Data resolution', data_resolutions))
+        rows.append(('Data resolution', render_object(metadata_entry.data_resolution)))
 
-        projects = concatenate_entries(metadata_entry.project)
-        rows.append(('Projects', projects))
+        rows.append(('Projects', render_object(metadata_entry.project)))
 
-        rows.append(('Quality', metadata_entry.quality))
+        rows.append(('Quality', render_object(metadata_entry.quality, "<br>")))
 
-        rows.append(('Access constraints', metadata_entry.access_constraints))
+        rows.append(('Access constraints', render_object(metadata_entry.access_constraints)))
 
-        rows.append(('Use constraints', metadata_entry.use_constraints))
+        rows.append(('Use constraints', render_object(metadata_entry.use_constraints)))
 
-        rows.append(('Data set language', metadata_entry.data_set_language))
+        rows.append(('Data set language', render_object(metadata_entry.data_set_language)))
 
-        rows.append(('Originating center', metadata_entry.originating_center))
+        rows.append(('Originating center', render_object(metadata_entry.originating_center)))
 
-        data_centers = concatenate_entries(metadata_entry.data_center)
-        rows.append(('Data center', data_centers))
+        rows.append(('Data center', render_object(metadata_entry.data_center)))
 
         rows.append(('Distribution', render_object(metadata_entry.distribution.all())))
 
-        rows.append(('Summary', metadata_entry.summary))
+        rows.append(('Summary', render_object(metadata_entry.summary)))
 
-        rows.append(('Parent DIF', metadata_entry.parent_dif))
+        rows.append(('Parent DIF', render_object(metadata_entry.parent_dif)))
 
-        idn_nodes = concatenate_entries(metadata_entry.idn_node)
-        rows.append(('IDN node', idn_nodes))
+        rows.append(('IDN node', render_object(metadata_entry.idn_node)))
 
-        rows.append(('Metadata name', metadata_entry.metadata_name))
+        rows.append(('Metadata name', render_object(metadata_entry.metadata_name)))
 
-        rows.append(('Metadata version', metadata_entry.metadata_version))
+        rows.append(('Metadata version', render_object(metadata_entry.metadata_version)))
 
-        rows.append(('DIF creation date', metadata_entry.dif_creation_date))
+        rows.append(('DIF creation date', render_object(metadata_entry.dif_creation_date)))
 
-        rows.append(('Last DIF revision date', metadata_entry.last_dif_revision_date))
+        rows.append(('Last DIF revision date', render_object(metadata_entry.last_dif_revision_date)))
 
-        rows.append(('DIF revision history', metadata_entry.dif_revision_history))
+        rows.append(('DIF revision history', render_object(metadata_entry.dif_revision_history)))
 
-        rows.append(('Future DIF review date', metadata_entry.future_dif_review_date))
+        rows.append(('Future DIF review date', render_object(metadata_entry.future_dif_review_date)))
 
-        rows.append(('Private', metadata_entry.private))
+        rows.append(('Private', render_object(metadata_entry.private)))
 
         return render(request, "metadata_entry.html", {'rows': rows})
 
@@ -125,9 +114,19 @@ def get_attribute_from_field(object, field):
         return render_object(object)
     else:
         return str(getattr(object, field))
+#
+# def is_field_many_to_many(object, field):
+#     m2m = [
+#         (f.model if f.model != object else None)
+#         for f in object._meta.get_fields()
+#         if f.many_to_many and not f.auto_created
+#     ]
+#
+#     print("Field:", field)
+#     print("m2m:", m2m)
+#     return field in m2m
 
-
-def object_to_html(object, specification_list):
+def object_to_html(object, specification_list, separator):
     # specification list list of specifications
     #                         'output_string': 'Surname',
     #                         'show_if_empty': True
@@ -146,7 +145,7 @@ def object_to_html(object, specification_list):
         if is_empty and field['show_if_empty']:
             output_text = "-"
 
-        output += line_output + render_object(output_text) + "<br>"
+        output += line_output + render_object(output_text) + separator
 
     return output
 
@@ -160,11 +159,21 @@ def render_queryset(qs, separator):
 
 
 def render_object(object, separator="<br>"):
+    is_many_to_many = True
+    try:
+        object.all()
+    except AttributeError:
+        is_many_to_many = False
+
     if isinstance(object, Person):
         html = "{} {}".format(object.name_first, object.name_last)
+    elif isinstance(object, models.QuerySet):
+        html = render_queryset(object, separator)
+    elif is_many_to_many:
+        objects = object.all()
+        html = render_object(objects)
     elif isinstance(object, Distribution):
         specification_list = []
-
         specification_list.append({'field_name': 'distribution_format',
                                    'output_string': 'Format',
                                    'show_if_empty': True})
@@ -181,10 +190,9 @@ def render_object(object, separator="<br>"):
                                    'output_string': 'Fees',
                                    'show_if_empty': True})
 
-        html = object_to_html(object, specification_list)
-
-    elif isinstance(object, models.QuerySet):
-        html = render_queryset(object, separator)
+        html = object_to_html(object, specification_list, separator)
+    elif isinstance(object, DistributionMedia):
+        html = object.media_type
     elif isinstance(object, DatasetRole):
         html = str(object)
     elif isinstance(object, Personnel):
@@ -195,7 +203,6 @@ def render_object(object, separator="<br>"):
         html = object
     elif isinstance(object, DataSetCitation):
         specification_list = []
-
         specification_list.append({'field_name': 'dataset_creator',
                                    'output_string': 'Dataset Creator',
                                    'show_if_empty': True
@@ -212,11 +219,10 @@ def render_object(object, separator="<br>"):
                                    'output_string': "Other citation details",
                                    'show_if_empty': True
                                    })
-        html = object_to_html(object, specification_list)
+
+        html = object_to_html(object, specification_list, separator)
     else:
-        print("Warning, calling str() to render an object")
-        print("Object:", object)
-        print("type(object):", type(object))
+        print("Warning, calling str() to render an object. Type:",type(object),"object:",object)
         html = str(object)
 
     return html
