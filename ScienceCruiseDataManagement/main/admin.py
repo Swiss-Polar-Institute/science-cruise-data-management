@@ -585,7 +585,7 @@ class SampleAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, adm
     fields = list_display
     ordering = ['expedition_sample_code']
     readonly_fields = ('expedition_sample_code', )
-    list_filter = (ProjectFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter, OffloadingPortFilter, EventFilter)
+    list_filter = (ProjectFilter, LegFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter, OffloadingPortFilter, EventFilter)
     search_fields = ('expedition_sample_code', 'project_sample_number', 'contents', 'crate_number', 'storage_type', 'storage_location', 'offloading_port', 'destination', 'julian_day', 'event__number', 'pi_initials__initials', 'preservation__name', 'file', 'specific_contents')
     form = SampleForm
 
