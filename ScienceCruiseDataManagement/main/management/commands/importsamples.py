@@ -97,8 +97,25 @@ class Command(BaseCommand):
         for row in reader:
             print("Processing row from file: ", filepath)
             print("Row:", row)
+            original_sample_code = row['ace_sample_number']
+
+            code_string = original_sample_code.split('/')[0]
+            mission_acronym_string = original_sample_code.split('/')[1]
+            leg_string = original_sample_code.split('/')[2]
+            project_number_string = original_sample_code.split('/')[3]
+            julian_day = "{0:03d}".format(int(original_sample_code.split('/')[4]))
+            pi_initials_string = original_sample_code.split('/')[6]
+            event_number_string = int(original_sample_code.split('/')[5])
+
+            sample_code_string = "/".join((code_string, mission_acronym_string, leg_string,
+                                           project_number_string, julian_day, pi_initials_string,
+                                           event_number_string))
+
+            assert original_sample_code == sample_code_string
+
             sample = Sample()
-            sample.expedition_sample_code = row['ace_sample_number']
+
+            sample.expedition_sample_code = sample_code_string
             sample.project_sample_number = row['project_sample_number']
             sample.contents = row['contents']
             sample.crate_number = row['crate_number']
@@ -112,7 +129,7 @@ class Command(BaseCommand):
             mission_acronym_string = sample.expedition_sample_code.split('/')[1]
             leg_string = sample.expedition_sample_code.split('/')[2]
             project_number_string = sample.expedition_sample_code.split('/')[3]
-            julian_day = int(sample.expedition_sample_code.split('/')[4])
+            julian_day = "{0:03d}".format(int(sample.expedition_sample_code.split('/')[4]))
             pi_initials_string = sample.expedition_sample_code.split('/')[6]
             event_number_string = int(sample.expedition_sample_code.split('/')[5])
 
