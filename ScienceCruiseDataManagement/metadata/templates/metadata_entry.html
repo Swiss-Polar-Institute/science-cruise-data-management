@@ -14,6 +14,9 @@
     {% endfor %}
 </table>
 
-Back to <a href="/metadata">list of metadata</a>
+{% if perms.metadata.can_change_metadata_entry %}
+<a href="/admin/metadata/metadataentry/{{ metadata_entry_id }}/change/">Edit entry</a><br>
+{% endif %}
 
+Back to <a href="/metadata">list of metadata</a>
 {% endblock %}

@@ -97,7 +97,7 @@ class MetadataEntryView(TemplateView):
 
         rows.append(('Private', render_object(metadata_entry.private)))
 
-        return render(request, "metadata_entry.html", {'rows': rows})
+        return render(request, "metadata_entry.html", {'rows': rows, 'metadata_entry_id': id})
 
 
 def get_attribute_from_field(object, field):
