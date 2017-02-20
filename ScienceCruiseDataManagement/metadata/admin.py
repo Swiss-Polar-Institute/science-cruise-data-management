@@ -40,7 +40,7 @@ class MetadataEntryAdmin(admin.ModelAdmin):
                     'expedition_specific_device_list', 'source_name_list', 'temporal_coverage_list', 'data_set_progress', 'spatial_coverage_list', 'location_list',
                     'data_resolution_list', 'project_list', 'quality', 'access_constraints', 'use_constraints',
                     'data_set_language', 'originating_center', 'data_center_list', 'distribution_list', 'summary',
-                    'parent_dif', 'idn_node_list', 'metadata_name', 'metadata_version', 'dif_creation_date',
+                    'parent_difs', 'related_difs', 'idn_node_list', 'metadata_name', 'metadata_version', 'dif_creation_date',
                     'last_dif_revision_date', 'dif_revision_history', 'future_dif_review_date', 'private', 'comments')
     ordering = ['entry_id']
     filter_vertical = ('parameters', 'sensor_name', 'source_name', 'location', 'project', 'data_center', 'idn_node',
@@ -116,6 +116,16 @@ class MetadataEntryAdmin(admin.ModelAdmin):
         idn_nodes = obj.idn_node.all()
 
         return ",".join([str(idn_node) for idn_node in idn_nodes])
+
+    def parent_difs(self, obj):
+        parent_difs = obj.parent_difs.all()
+
+        return ",".join([str(parent_dif) for parent_dif in parent_difs])
+
+    def related_difs(self, obj):
+        related_difs = obj.related_difs.all()
+
+        return ",".join([str(related_dif) for related_dif in related_difs])
 
 
 class DataSetCitationAdmin(admin.ModelAdmin):
