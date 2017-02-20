@@ -76,6 +76,10 @@ class FindDataGapsGps:
         shutil.move(file_path_tmp, file_path)
         print("Will delete these files")
         print(files_to_delete)
+
+        for file_to_delete in files_to_delete:
+            os.remove(file_to_delete)
+
         print("Output results with the gps saved in: {}".format(file_path))
 
     def find_gps_missings(self):
