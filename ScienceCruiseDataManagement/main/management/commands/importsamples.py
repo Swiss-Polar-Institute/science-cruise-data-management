@@ -163,7 +163,7 @@ class Command(BaseCommand):
             sample.mission = mission
             sample.leg = leg
             sample.project = project
-            sample.julian_day = julian_day
+            sample.julian_day = int(julian_day) # So when we compare is the same as what it comes from the database
             sample.event = event
             sample.pi_initials = pi_initials
 
