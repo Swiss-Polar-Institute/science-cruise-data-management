@@ -125,6 +125,7 @@ class Command(BaseCommand):
             sample.storage_location = row['storage_location']
             sample.offloading_port = row['offloading_port']
             sample.destination = row['destination']
+            sample.specific_contents = row['specific_contents']
             sample.file = basename
 
             code_string = sample.expedition_sample_code.split('/')[0]
@@ -152,6 +153,7 @@ class Command(BaseCommand):
                                             project_number_string, pi_initials_string, event_number_string,
                                             preservation)
 
+            # Here it updates foreign keys only
             event = qs['event'][0]
             ship = qs['ship'][0]
             mission = qs['mission'][0]
@@ -230,12 +232,20 @@ class Command(BaseCommand):
                 else:
                     return "skipped"
 
+    def _normalize(self, value):
+        if value is None:
+            return ""
+        else:
+            return value
+
     def compare_samples(self, sample1, sample2):
         same_objects = True
         for field in sample1.__dict__.keys():
             if field != '_state' and field != 'id' and field != 'file':
-                if sample1.__dict__[field] != sample2.__dict__[field]:
-                    print("Field: {} in database: {}; in spreadsheet: {}: ".format(field, sample1.__dict__[field], sample2.__dict__[field]))
+                sample1_normalize = self._normalize(sample1.__dict__[field])
+                sample2_normalize = self._normalize(sample2.__dict__[field])
+                if sample1_normalize != sample2_normalize:
+                    print("Field: {} in database: {}; in spreadsheet: {}".format(field, sample1.__dict__[field], sample2.__dict__[field]))
                     same_objects = False
 
         return same_objects
