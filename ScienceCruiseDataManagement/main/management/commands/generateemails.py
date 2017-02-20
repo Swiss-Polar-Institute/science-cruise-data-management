@@ -19,11 +19,11 @@ class Command(BaseCommand):
         elif options['command'] == "generatefetchmailrc":
             self.generate_fetchmailrc()
         elif options['command'] == "generateusersserver":
-            self.generate_users_server()
+            self.generate_users_server(options['leg'])
         elif options['command'] == "printpasswords":
             self.print_passwords(options['leg'])
         elif options['command'] == "generatewebmailusers":
-            self.generate_webmail_users()
+            self.generate_webmail_users(options['leg'])
         elif options['command'] == "invalidateusersotherlegs":
             self.invalidate_users_from_other_legs()
         elif options['command'] == "printemails":
@@ -37,14 +37,20 @@ class Command(BaseCommand):
             if wanted_leg in legs:
                 print("{} {},{}".format(person.name_first, person.name_last, self.generate_email(person)))
 
+    def new_email_this_leg(self, email):
+        leg2 = Leg.objects.get(number=2)
 
-    def print_passwords(self, leg):
+        if leg2 in email.person.leg.all():
+            return False
+        else:
+            return True
+
+    def print_passwords(self, leg_number):
         added = 0
         skipped = 0
-        leg2 = Leg.objects.filter(number=2)
 
-        for email in Email.objects.filter(person__leg__number=leg).order_by("email_address"):
-            if leg2[0] in email.person.leg.all():
+        for email in Email.objects.filter(person__leg__number=leg_number).order_by("email_address"):
+            if not self.new_email_this_leg(leg_number):
                 skipped += 1
                 continue
 
@@ -69,10 +75,6 @@ class Command(BaseCommand):
         print("Skipped (leg3 and leg2): {}".format(skipped))
 
     def generate_email(self, person):
-        firstname = remove_accents(person.name_first.replace(" ", "")).decode("ascii")
-        surname = remove_accents(person.name_last.replace(" ", "")).decode("ascii")
-
-        # email = str(firstname) + '.' + str(surname) + '@ace-expedition.net'
         email = "{}@ace-expedition.net".format(self.username(person))
 
         return email
@@ -119,13 +121,14 @@ class Command(BaseCommand):
         print("Created:", created)
         print("Skipped:", skipped)
 
-    def generate_users_server(self):
-        for email in Email.objects.all().order_by("email_address"):
-            print("useradd --create-home {}".format(self.username(email.person)))
-            print("echo {}:{} | chpasswd".format(self.username(email.person), email.server_password))
+    def generate_users_server(self, leg_number):
+        for email in Email.objects.all(person__leg__number=leg_number).order_by("email_address"):
+            if self.new_email_this_leg(email):
+                print("useradd --create-home {}".format(self.username(email.person)))
+                print("echo {}:{} | chpasswd".format(self.username(email.person), email.server_password))
 
-    def generate_webmail_users(self):
-        for email in Email.objects.all().order_by("email_address"):
+    def generate_webmail_users(self, leg_number):
+        for email in Email.objects.filter(person__leg__number=leg_number).order_by("email_address"):
             print("useradd --shell /bin/false --create-home {}".format(self.username(email.person)))
             print("echo {}:{} | chpasswd".format(self.username(email.person), email.webmail_password))
             print("echo {} | saslpasswd2 -u ace-expedition.net {}".format(email.webmail_password, self.username(email.person)))
