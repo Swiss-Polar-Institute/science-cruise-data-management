@@ -65,7 +65,7 @@ class OptionFilter(admin.SimpleListFilter):
         return tuple(filter_lookup)
 
 
-class OutcomeReportFilter(OptionFilter):
+class OutcomeFilter(OptionFilter):
     title = "Outcome"
     parameter_name = "outcome"
     template = "admin/options_filter_outcome.html"

@@ -8,7 +8,7 @@ from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 import main.lookups
 import main.models
 import main.utils
-from main.admin_filters import OutcomeReportFilter, StationReportFilter,\
+from main.admin_filters import OutcomeFilter, StationReportFilter,\
     SamplingMethodFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter,\
     OffloadingPortFilter, EventFilter, LegFilter, DeviceTypeFilter, ContactFilter, ProjectFilter, UsedLegFilter,\
     LegNumberFilter, StationTypeFilter, PrincipalInvestigatorFilter, PersonLegFilter
@@ -235,7 +235,7 @@ class TmrCastAdmin(admin.ModelAdmin):
 class StationAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'type', 'latitude', 'longitude', 'leg', 'arrival_time', 'departure_time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'outcome', 'comment')
     ordering = ['-name']
-    list_filter = (StationTypeFilter, LegFilter)
+    list_filter = (StationTypeFilter, LegFilter, OutcomeFilter)
 
 
 class ProposedStationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
@@ -327,7 +327,7 @@ class EventReportResource(import_export.resources.ModelResource):
 
 class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome', 'comments')
-    list_filter = (SamplingMethodFilter, OutcomeReportFilter, StationReportFilter)
+    list_filter = (SamplingMethodFilter, OutcomeFilter, StationReportFilter)
     search_fields = ('number',)
 
     resource_class = EventReportResource
