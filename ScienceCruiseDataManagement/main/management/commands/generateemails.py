@@ -15,13 +15,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options['command'] == "generateemails":
-            self.generate_emails()
+            self.generate_emails(options['leg'])
         elif options['command'] == "generatefetchmailrc":
             self.generate_fetchmailrc()
         elif options['command'] == "generateusersserver":
             self.generate_users_server()
         elif options['command'] == "printpasswords":
-            self.print_passwords()
+            self.print_passwords(options['leg'])
         elif options['command'] == "generatewebmailusers":
             self.generate_webmail_users()
         elif options['command'] == "invalidateusersotherlegs":
@@ -38,22 +38,27 @@ class Command(BaseCommand):
                 print("{} {},{}".format(person.name_first, person.name_last, self.generate_email(person)))
 
 
-    def print_passwords(self):
-        for email in Email.objects.all().order_by("email_address"):
+    def print_passwords(self, leg):
+        total = 0
+        for email in Email.objects.filter(person__leg__number=leg).order_by("email_address"):
+            total += 1
             print("***** Welcome to ACE mail! *****")
             print()
-            print("Email address: {}   Password: {}".format(email.email_address, email.webmail_password))
+            print("Email address: {}".format(email.email_address))
+            print("Username: {}".format(self.username(email.person)))
+            print("Password: {}".format(email.webmail_password))
             print()
             print("A FEW TIPS:")
-            print("- Set up your out of office to this address but please DO NOT set up any email forwarding. Ask contacts not to send you attachments and to check their junk folders for replies. Emails are limited to a size of 100 KB.")
+            print("- Set up your out reply and mention this this address but please DO NOT set up any email forwarding. Ask contacts not to send you attachments and to check their junk folders for replies.")
+            print("- Emails are limited to a size of 200 KB. If a bigger email is sent you will receive a notification. If you need to send a bigger email come and speak with the data team.")
             print("- Please note that this email address and all messages will not be usable or accessible when you leave the ship, so please save anything you may need whilst still on board.")
             print()
-            print("- Access your email here: http://ace-mail.lan (you will need to connect to the ship's network with an ethernet cable)")
-            print()
-            print("**Keep an eye on the whiteboard in the office to find out when the email system is up and running.**")
+            print("- To access your email: connect to the expedition network (cable in the cabins and labs, or WiFi on the coffee room next to the mess) and go to http://ace-mail.lan (or http://192.168.20.40 for Macs)")
             print()
             print("----------------------------------------------------------------------------------------------------")
             print()
+
+        print("total: {}".format(total))
 
     def generate_email(self, person):
         firstname = remove_accents(person.name_first.replace(" ", "")).decode("ascii")
@@ -76,21 +81,35 @@ class Command(BaseCommand):
 
         return password
 
-    def generate_emails(self):
-        query_set = Person.objects.all()
+    def generate_emails(self, leg):
+        query_set = Person.objects.all().filter(leg__number=leg)
 
+        created = 0
+        skipped = 0
         for person in query_set:
             email_address = self.generate_email(person)
             webmail_password = self.generate_password(6)
             server_password = self.generate_password(20)
 
-            email = Email()
-            email.person = person
-            email.email_address = email_address
-            email.webmail_password = webmail_password
-            email.server_password = server_password
+            email_existed = Email.objects.filter(email_address=email_address)
 
-            email.save()
+            if not email_existed:
+                email = Email()
+                email.person = person
+                email.email_address = email_address
+                email.webmail_password = webmail_password
+                email.server_password = server_password
+
+                email.save()
+
+                print("created:", person)
+
+                created += 1
+            else:
+                skipped += 1
+
+        print("Created:", created)
+        print("Skipped:", skipped)
 
     def generate_users_server(self):
         for email in Email.objects.all().order_by("email_address"):
