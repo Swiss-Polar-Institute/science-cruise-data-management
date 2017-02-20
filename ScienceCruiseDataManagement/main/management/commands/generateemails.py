@@ -39,9 +39,15 @@ class Command(BaseCommand):
 
 
     def print_passwords(self, leg):
-        total = 0
+        added = 0
+        skipped = 0
+        leg2 = Leg.objects.filter(number=2)
+
         for email in Email.objects.filter(person__leg__number=leg).order_by("email_address"):
-            total += 1
+            if leg2[0] in email.person.leg.all():
+                skipped += 1
+                continue
+
             print("***** Welcome to ACE mail! *****")
             print()
             print("Email address: {}".format(email.email_address))
@@ -57,8 +63,10 @@ class Command(BaseCommand):
             print()
             print("----------------------------------------------------------------------------------------------------")
             print()
+            added += 1
 
-        print("total: {}".format(total))
+        print("Added: {}".format(added))
+        print("Skipped (leg3 and leg2): {}".format(skipped))
 
     def generate_email(self, person):
         firstname = remove_accents(person.name_first.replace(" ", "")).decode("ascii")
