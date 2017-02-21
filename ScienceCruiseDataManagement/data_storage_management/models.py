@@ -70,8 +70,10 @@ class Item(models.Model):
         directories_errors = {}
         if self.destination_directory.startswith("/"):
             directories_errors['destination_directory'] = "Destination directory cannot start with /"
-        if not self.source_directory.startswith("/"):
-            directories_errors['source_directory'] = "Source directory has to start with /"
+
+        # This condition was true for shared folders but not for folders in a HDD
+        #if not self.source_directory.startswith("/"):
+        #    directories_errors['source_directory'] = "Source directory has to start with /"
 
         if len(directories_errors) > 0:
             raise ValidationError(directories_errors)
