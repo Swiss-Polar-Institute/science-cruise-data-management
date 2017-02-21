@@ -268,7 +268,7 @@ class EventResource(import_export.resources.ModelResource):
 
 
 class EventReportResource(import_export.resources.ModelResource):
-    number = import_export.fields.Field(column_name = 'number', attribute='number')
+    number = import_export.fields.Field(column_name='number', attribute='number')
 
     station = import_export.fields.Field(column_name='station',
                                          attribute='station',
@@ -326,9 +326,9 @@ class EventReportResource(import_export.resources.ModelResource):
 
 
 class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome', 'comments')
+    list_display = ('number', 'event_actions', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome', 'comments')
     list_filter = (SamplingMethodFilter, OutcomeFilter, StationReportFilter)
-    search_fields = ('number',)
+    search_fields = ('number_',)
 
     resource_class = EventReportResource
 
@@ -369,9 +369,14 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
     def _get_event_action_end(cls, event_id, field):
         return EventReportAdmin._get_event_action('end', event_id, field)
 
-    @classmethod
-    def start_time(cls, obj):
-        return EventReportAdmin._get_event_action_start(obj.number, 'time')
+    def start_time(self, obj):
+        event_action_id = EventReportAdmin._get_event_action_start(obj.number, 'id')
+        if event_action_id is None:
+            return "-"
+        else:
+            url = "/admin/main/eventaction/{}".format(event_action_id)
+            return '<a href="{}">{}</a>'.format(url, EventReportAdmin._get_event_action_start(obj.number, 'time').strftime("%Y-%m-%d&nbsp;%H:%M:%S"))
+    start_time.allow_tags = True
 
     @classmethod
     def start_latitude(cls, obj):
@@ -381,9 +386,16 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
     def start_longitude(cls, obj):
         return EventReportAdmin._get_event_action_start(obj.number, 'longitude')
 
-    @classmethod
     def end_time(self, obj):
-        return EventReportAdmin._get_event_action_end(obj.number, 'time')
+        event_action_id = EventReportAdmin._get_event_action_start(obj.number, 'id')
+        if event_action_id is None:
+            return "-"
+        else:
+            url = "/admin/main/eventaction/{}".format(event_action_id)
+            return '<a href="{}">{}</a>'.format(url,
+                                                EventReportAdmin._get_event_action_end(obj.number, 'time').strftime(
+                                                    "%Y-%m-%d&nbsp;%H:%M:%S"))
+    end_time.allow_tags = True
 
     @classmethod
     def end_latitude(self, obj):
@@ -392,6 +404,10 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
     @classmethod
     def end_longitude(self, obj):
         return EventReportAdmin._get_event_action_end(obj.number, 'longitude')
+
+    def event_actions(self, obj):
+        return "<a href='/admin/main/eventaction/?q={}'>Click</a>".format(obj.number)
+    event_actions.allow_tags = True
 
 
 class EventAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
