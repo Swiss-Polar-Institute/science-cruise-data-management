@@ -32,7 +32,10 @@ class Command(BaseCommand):
                 station_number = sample.event.station.name
                 latitude = sample.event.station.latitude
                 longitude = sample.event.station.longitude
-                date_time = sample.event.station.arrival_time.strftime("%Y-%m-%d %H:%M:%S")
+                if sample.event.station.arrival_time is not None:
+                    date_time = sample.event.station.arrival_time.strftime("%Y-%m-%d %H:%M:%S")
+                else:
+                    date_time = ""
             else:
                 latitude = longitude = date_time = station_number = ""
 
