@@ -23,7 +23,7 @@ class Command(BaseCommand):
         print("Saving in {}".format("chilean-border.csv"))
         f = open("/home/data/chilean-border.csv", "w")
         csv_writer = csv.writer(f)
-        csv_writer.writerow(["event_number", "date_time (UTC)", "latitude", "longitude"])
+        csv_writer.writerow(["event_number", "description", "date_time (UTC)", "latitude", "longitude"])
 
         for event_action in event_actions:
             if event_action.type == EventAction.tends():
@@ -38,8 +38,7 @@ class Command(BaseCommand):
             date_time = event_action.time
             latitude = event_action.latitude
             longitude = event_action.longitude
-            outcome = event_action.event.outcome
 
-            csv_writer.writerow([event_number, sampling_method, date_time, latitude, longitude, outcome])
+            csv_writer.writerow([event_number, sampling_method, date_time, latitude, longitude])
 
         f.close()
