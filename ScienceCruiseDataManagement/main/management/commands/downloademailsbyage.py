@@ -211,7 +211,7 @@ class DownloadMailsByAge:
     def username_in_email_active_legs(self, username):
         email_active_legs = Leg.objects.filter(Q(number=2) | Q(number=3))
 
-        email = Email.objects.filter(username)
+        email = Email.objects.filter(username=username)
 
         for email_active_leg in email_active_legs:
             if email_active_leg in email.person.legs:
