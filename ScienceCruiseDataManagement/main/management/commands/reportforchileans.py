@@ -18,7 +18,7 @@ class Command(BaseCommand):
     def list(self):
         # project = Project.objects.filter(number=16)
         # samples = Sample.objects.filter(project=project).order_by('julian_day')
-        event_actions = EventAction.objects.filter(latitude__gte=-68.6)
+        event_actions = EventAction.objects.filter(latitude__gte=-68.6).filter(time__gte="2017-02-15").order_by('time')
 
         print("Saving in {}".format("chilean-border.csv"))
         f = open("/home/data/chilean-border", "w")
