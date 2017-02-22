@@ -197,7 +197,7 @@ Data team
             rv, data = self._imap.login(username, password)
         except imaplib.IMAP4.error:
             print("Login failed for:", username)
-            sys.exit(1)
+            return
 
         print("Select INBOX")
         # the readonly=True is to avoid that the FETCH command
