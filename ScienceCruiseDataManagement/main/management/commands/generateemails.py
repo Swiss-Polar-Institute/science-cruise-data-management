@@ -130,11 +130,24 @@ class Command(BaseCommand):
                 print("echo {}:{} | chpasswd".format(email.username, email.server_password))
 
     def generate_webmail_users(self, leg_number):
+        leg2 = Leg.objects.get(number=2)
+
+        skipped = 0
+        added = 0
+
         for email in Email.objects.filter(person__leg__number=leg_number).order_by("email_address"):
+            if leg2 in email.person.leg.all():
+                skipped += 1
+                continue
             print("useradd --shell /bin/false --create-home {}".format(email.username))
             print("echo {}:{} | chpasswd".format(email.username, email.webmail_password))
             print("echo {} | saslpasswd2 -u ace-expedition.net {}".format(email.webmail_password, email.username))
             print("##############")
+
+            added += 1
+
+        print("# Skipped:", skipped)
+        print("# Added:", added)
 
     def generate_fetchmailrc(self):
         print("defaults")
