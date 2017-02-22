@@ -21,17 +21,25 @@ class Command(BaseCommand):
         event_actions = EventAction.objects.filter(latitude__gte=-68.6).filter(time__gte="2017-02-15").order_by('time')
 
         print("Saving in {}".format("chilean-border.csv"))
-        f = open("/home/data/chilean-border", "w")
+        f = open("/home/carles/chilean-border.csv", "w")
         csv_writer = csv.writer(f)
         csv_writer.writerow(["event_number", "date_time (UTC)", "latitude", "longitude"])
 
         for event_action in event_actions:
+            if event_action.type == EventAction.tends():
+                print("Skipping line, it's an ending event")
+                continue
+            if event_action.event.outcome == "Failure":
+                print("skipping failure")
+                continue
+
             event_number = event_action.event.number
             sampling_method = event_action.event.sampling_method
             date_time = event_action.time
             latitude = event_action.latitude
             longitude = event_action.longitude
+            outcome = event_action.event.outcome
 
-            csv_writer.writerow([event_number, sampling_method, date_time, latitude, longitude])
+            csv_writer.writerow([event_number, sampling_method, date_time, latitude, longitude, outcome])
 
         f.close()
