@@ -1,11 +1,12 @@
 from django.core.management.base import BaseCommand, CommandError
 import datetime
-from main.models import Email
+from main.models import Email, Leg
 from django.conf import settings
 import os
 import shutil
 import time
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 TEMP_DIRECTORY = os.path.join(os.getenv("HOME"), "downloademailsbyage")
 
@@ -197,10 +198,27 @@ class DownloadMailsByAge:
         for line in fp.readlines():
             line = line.rstrip()
             message = Message(line)
-            messages.append(message)
+
+            if self.username_in_email_active_legs(message.username):
+                messages.append(message)
+            else:
+                print("Skipping {}".format(message.username))
 
         fp.close()
         return messages
+
+
+    def usernames_in_email_active_legs(self, username):
+        email_active_legs = Leg.objects.filter(Q(number=2) | Q(number=3))
+
+        email = Email.objects.filter(username)
+
+        for email_active_leg in email_active_legs:
+            if email_active_leg in email.person.legs:
+                return True
+
+        return False
+
 
     def print_stats(self):
         print("")

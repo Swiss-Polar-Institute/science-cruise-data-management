@@ -57,7 +57,7 @@ class Command(BaseCommand):
             print("***** Welcome to ACE mail! *****")
             print()
             print("Email address: {}".format(email.email_address))
-            print("Username: {}".format(self.username(email.person)))
+            print("Username: {}".format(self.email.username))
             print("Password: {}".format(email.webmail_password))
             print()
             print("A FEW TIPS:")
@@ -97,6 +97,7 @@ class Command(BaseCommand):
         created = 0
         skipped = 0
         for person in query_set:
+            username = self.username(person)
             email_address = self.generate_email(person)
             webmail_password = self.generate_password(6)
             server_password = self.generate_password(20)
@@ -107,6 +108,7 @@ class Command(BaseCommand):
                 email = Email()
                 email.person = person
                 email.email_address = email_address
+                email.username = username
                 email.webmail_password = webmail_password
                 email.server_password = server_password
 
@@ -124,14 +126,14 @@ class Command(BaseCommand):
     def generate_users_server(self, leg_number):
         for email in Email.objects.all(person__leg__number=leg_number).order_by("email_address"):
             if self.new_email_this_leg(email):
-                print("useradd --create-home {}".format(self.username(email.person)))
-                print("echo {}:{} | chpasswd".format(self.username(email.person), email.server_password))
+                print("useradd --create-home {}".format(email.username))
+                print("echo {}:{} | chpasswd".format(email.username, email.server_password))
 
     def generate_webmail_users(self, leg_number):
         for email in Email.objects.filter(person__leg__number=leg_number).order_by("email_address"):
-            print("useradd --shell /bin/false --create-home {}".format(self.username(email.person)))
-            print("echo {}:{} | chpasswd".format(self.username(email.person), email.webmail_password))
-            print("echo {} | saslpasswd2 -u ace-expedition.net {}".format(email.webmail_password, self.username(email.person)))
+            print("useradd --shell /bin/false --create-home {}".format(email.username))
+            print("echo {}:{} | chpasswd".format(email.username, email.webmail_password))
+            print("echo {} | saslpasswd2 -u ace-expedition.net {}".format(email.webmail_password, email.username))
             print("##############")
 
     def generate_fetchmailrc(self):
@@ -150,11 +152,11 @@ class Command(BaseCommand):
             # print(person.leg)
             print("poll 46.226.111.64")
             print("  proto imap")
-            print("  user {}".format(self.username(email.person)))
+            print("  user {}".format(email.username))
             print("  pass \"{}\"".format(email.server_password))
             print("  ssl")
             print("  sslfingerprint \"DA:3A:8A:41:09:33:DF:0D:83:85:61:AE:CF:E4:B6:DA\"")
-            print("  to {}".format(self.username(email.person)))
+            print("  to {}".format(email.username))
             print("")
 
     def invalidate_users_from_other_legs(self):

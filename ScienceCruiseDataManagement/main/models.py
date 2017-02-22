@@ -307,7 +307,8 @@ class Person(models.Model):
 
 class Email(models.Model):
     person = models.ForeignKey(Person)
-    email_address = models.CharField(max_length=255)
+    email_address = models.CharField(max_length=255, unique=True)
+    username = models.CharField(max_length=255, unique=True)
     webmail_password = models.CharField(max_length=6)
     server_password = models.CharField(max_length=20)
 
