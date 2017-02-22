@@ -213,7 +213,7 @@ class DownloadMailsByAge:
 
         email = Email.objects.get(username=username)
 
-        for user_in_leg in email.legs.all():
+        for user_in_leg in email.person.legs.all():
             if user_in_leg in email_active_legs:
                 return True
 
