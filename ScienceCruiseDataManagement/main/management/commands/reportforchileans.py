@@ -21,7 +21,7 @@ class Command(BaseCommand):
         event_actions = EventAction.objects.filter(latitude__gte=-68.6).filter(time__gte="2017-02-15").order_by('time')
 
         print("Saving in {}".format("chilean-border.csv"))
-        f = open("/home/carles/chilean-border.csv", "w")
+        f = open("/home/data/chilean-border.csv", "w")
         csv_writer = csv.writer(f)
         csv_writer.writerow(["event_number", "date_time (UTC)", "latitude", "longitude"])
 
