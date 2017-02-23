@@ -124,7 +124,7 @@ class Command(BaseCommand):
         print("Skipped:", skipped)
 
     def generate_users_server(self, leg_number):
-        for email in Email.objects.all(person__leg__number=leg_number).order_by("email_address"):
+        for email in Email.objects.filter(person__leg__number=leg_number).order_by("email_address"):
             if self.new_email_this_leg(email):
                 print("useradd --create-home {}".format(email.username))
                 print("echo {}:{} | chpasswd".format(email.username, email.server_password))
