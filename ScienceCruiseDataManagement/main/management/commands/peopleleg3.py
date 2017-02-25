@@ -18,7 +18,7 @@ class Command(BaseCommand):
     def list(self):
         # project = Project.objects.filter(number=16)
         # samples = Sample.objects.filter(project=project).order_by('julian_day')
-        people = Person.objects.all().order_by('')
+        people = Person.objects.all()
 
         print("Saving in {}".format("people-leg3.csv"))
         # f = open("/home/carles/people-leg-3.csv", "w")

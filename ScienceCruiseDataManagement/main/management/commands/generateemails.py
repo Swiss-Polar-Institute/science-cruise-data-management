@@ -32,10 +32,9 @@ class Command(BaseCommand):
     def print_emails(self, leg):
         wanted_leg = Leg.objects.get(number=leg)
         print("name, email")
-        for person in Person.objects.order_by("name_first"):
-            legs = person.leg.all()
-            if wanted_leg in legs:
-                print("{} {},{}".format(person.name_first, person.name_last, self.generate_email(person)))
+
+        for email in Email.objects.filter(person__leg__number=int(leg)).order_by("email_address"):
+                print("{} {},{}".format(email.person.name_first, email.person.name_last, email.email_address))
 
     def new_email_this_leg(self, email):
         leg2 = Leg.objects.get(number=2)

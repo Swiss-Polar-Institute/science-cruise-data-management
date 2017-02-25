@@ -82,7 +82,7 @@ class EventActionResource(import_export.resources.ModelResource):
 
     time = import_export.fields.Field(column_name='time', attribute='type')
 
-    time_source =  import_export.fields.Field(
+    time_source = import_export.fields.Field(
         column_name='time_source',
         attribute='time_source',
         widget=import_export.widgets.ForeignKeyWidget(main.models.TimeSource, 'name')
