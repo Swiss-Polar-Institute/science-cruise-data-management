@@ -30,11 +30,10 @@ class Command(BaseCommand):
             self.print_emails(options['leg'])
 
     def print_emails(self, leg):
-        wanted_leg = Leg.objects.get(number=leg)
-        print("name, email")
+        print("name, surname, email")
 
         for email in Email.objects.filter(person__leg__number=int(leg)).order_by("email_address"):
-                print("{} {},{}".format(email.person.name_first, email.person.name_last, email.email_address))
+                print("{},{},{}".format(email.person.name_first, email.person.name_last, email.email_address))
 
     def new_email_this_leg(self, email):
         leg2 = Leg.objects.get(number=2)
