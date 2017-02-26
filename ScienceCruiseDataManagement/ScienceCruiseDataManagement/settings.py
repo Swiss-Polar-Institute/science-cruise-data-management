@@ -199,6 +199,7 @@ UPDATE_LOCATION_POSITION_EXCEPTION_EVENT_ACTION_TYPE_ENDS_EXCEPTIONS = ["Sonobuo
 MAP_RESOLUTION_SECONDS = 1800
 
 TRACK_MAP_FILEPATH = "/mnt/data_admin/geojson_track/geojson.track"
+IMAGE_RELOAD_FILEPATH = "/mnt/data_admin/latest_image/latest_image.jpg"
 
 # For default options
 DEFAULT_PLATFORM_NAME = "Akademik Treshnikov"

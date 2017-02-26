@@ -1,0 +1,26 @@
+{% load static %}
+<html>
+<head>
+        <title>Office Window</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta http-equiv="cache-control" content="no-cache">
+        <meta http-equiv="pragma" content="no-cache" />
+
+        <script src="{% static '/js/external/jquery-1.7.2.min.js' %}"></script>
+        <script src="{% static '/js/external/jquery.backstretch.js' %}"></script>
+
+<script type="text/javascript">
+function refresh()
+{
+        var myCam='/latest_image.jpg';
+        $.backstretch(myCam, {centeredX:false, centeredY:false});
+}
+
+$(document).ready(function()
+{
+        refresh();
+        setInterval(refresh, 60*1000);
+});
+</script>
+</head>
+</html>

@@ -23,6 +23,7 @@ from ship_data.models import GpggaGpsFix, GpvtgVelocity
 import main.find_locations as find_locations
 import subprocess
 import main.utils_coordinates as utils_coordinates
+from django.views.static import serve
 
 
 class MainMenuView(TemplateView):
@@ -419,6 +420,17 @@ class MailState(TemplateView):
         mails = s.stdout.read()
 
         return render(request, "mail_state.html", {'mails': mails})
+
+
+class LatestImage(View):
+    def get(self, request):
+        filepath = settings.IMAGE_RELOAD_FILEPATH
+        return serve(request, os.path.basename(filepath), os.path.dirname(filepath))
+
+
+class ImageReloaderView(TemplateView):
+    def get(self, request, *args, **kwargs):
+        return render(request, "image_reloader.html")
 
 
 def latest_ship_speed():
