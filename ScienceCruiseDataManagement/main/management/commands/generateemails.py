@@ -28,12 +28,23 @@ class Command(BaseCommand):
             self.invalidate_users_from_other_legs()
         elif options['command'] == "printemails":
             self.print_emails(options['leg'])
+        elif options['command'] == "deleteusersserver":
+            self.delete_users_server()
+
+    def delete_users_server(self):
+        wanted_leg = Leg.objects.get(number=3)
+
+        for email in Email.objects.all().order_by("email_address"):
+            if wanted_leg not in email.person.leg.all():
+                print("userdel {}".format(email.username))
+
 
     def print_emails(self, leg):
         print("name, surname, email")
 
         for email in Email.objects.filter(person__leg__number=int(leg)).order_by("email_address"):
                 print("{},{},{}".format(email.person.name_first, email.person.name_last, email.email_address))
+
 
     def new_email_this_leg(self, email):
         leg2 = Leg.objects.get(number=2)
