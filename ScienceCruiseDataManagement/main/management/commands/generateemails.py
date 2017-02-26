@@ -36,7 +36,7 @@ class Command(BaseCommand):
 
         for email in Email.objects.all().order_by("email_address"):
             if wanted_leg not in email.person.leg.all():
-                print("userdel {}".format(email.username))
+                print("userdel -r {}".format(email.username))
 
 
     def print_emails(self, leg):
