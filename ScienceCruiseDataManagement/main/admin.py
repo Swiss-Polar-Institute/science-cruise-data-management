@@ -380,7 +380,8 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
     def start_time(self, obj):
         event_action_id = EventReportAdmin._get_event_action_start(obj.number, 'id')
         if event_action_id is None:
-            url = "/admin/main/eventaction/add/?event={}".format(obj.number)
+            url = "/admin/main/eventaction/add/?event={}&type={}".format(obj.number,
+                                                                         main.models.EventAction.tbegin())
             return '<a href="{}">Add start time</a>'.format(url)
         else:
             time = EventReportAdmin._get_event_action_start(obj.number, 'time')
@@ -405,7 +406,8 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
     def end_time(self, obj):
         event_action_id = EventReportAdmin._get_event_action_end(obj.number, 'id')
         if event_action_id is None:
-            url = "/admin/main/eventaction/add/?event={}".format(obj.number)
+            url = "/admin/main/eventaction/add/?event={}&type={}".format(obj.number,
+                                                                         main.models.EventAction.tends())
             return '<a href="{}">Add end time</a>'.format(url)
         else:
             time = EventReportAdmin._get_event_action_end(obj.number, 'time')
