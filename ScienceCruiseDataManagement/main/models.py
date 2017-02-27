@@ -794,6 +794,9 @@ class Depth(models.Model):
     date_time = models.DateTimeField(default=timezone.now)
     depth = models.FloatField()
 
+    class Meta:
+        get_latest_by = "date_time"
+
     def __str__(self):
         return "{}-{}".format(self.date_time, self.depth)
 

@@ -17,7 +17,7 @@ import main.models
 from main import import_gpx_to_stations
 from main.forms import InputShipDateTime, InputCoordinates, InputShipTimes
 from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station,\
-    Message, SamplingMethod, ProposedStation, Leg
+    Message, SamplingMethod, ProposedStation, Leg, Depth
 from main import utils
 from ship_data.models import GpggaGpsFix, GpvtgVelocity
 import main.find_locations as find_locations
@@ -72,6 +72,15 @@ class MainMenuView(TemplateView):
             context['speed_kts'] = speed
         else:
             context['speed_kts'] = "Unknown"
+
+        depth = Depth.objects.latest()
+
+        if depth is not None:
+            depth = depth.depth
+        else:
+            depth = "Unknown"
+
+        context['depth'] = depth
 
         return context
 
