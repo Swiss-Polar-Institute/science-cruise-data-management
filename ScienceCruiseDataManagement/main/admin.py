@@ -186,11 +186,6 @@ class EventActionForm(ModelForm):
 
 
 class EventActionAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
-    #def description_2(self, obj):
-    #    return obj.event_action_type.description
-
-    #description_2.short_description = "Description"
-
     list_display = ('event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
     ordering = ['-event_id', '-id']
 

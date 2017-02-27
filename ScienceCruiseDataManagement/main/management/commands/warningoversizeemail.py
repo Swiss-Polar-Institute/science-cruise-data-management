@@ -67,8 +67,8 @@ class Notify:
         email_object = Email.objects.get(email_address=email_address)
 
         # encodes as ascii to avoid problems with an old Mysql
-        subject=headers['Subject'].encode('ascii', 'ignore')
-        from_email=headers['From'].encode('ascii', 'ignore')
+        subject = headers['Subject'].encode('ascii', 'ignore')
+        from_email = headers['From'].encode('ascii', 'ignore')
 
         email_oversized_notified = EmailOversizeNotified.objects.filter(date_string=headers['Date'],
                                                                         size=headers['_size_in_bytes'],
@@ -108,6 +108,7 @@ class Notify:
 
         information = ""
         for headers in headers_list:
+            headers['_To_Email'] = email_to_notify
             already_notified = self._notified_for_email(headers, email_to_notify)
 
             if already_notified:
@@ -115,10 +116,11 @@ class Notify:
                 continue
 
             information += """From: {From}
+To: {_To_Email}
 Date: {Date}
 Size: {Size}
 Subject: {Subject}
-UUID: {Uuid}
+UUID: {_To_Email} {Uuid}
 
 """.format(**headers)
 
