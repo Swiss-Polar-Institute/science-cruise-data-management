@@ -73,14 +73,19 @@ class MainMenuView(TemplateView):
         else:
             context['speed_kts'] = "Unknown"
 
-        depth = Depth.objects.latest()
+        depths = Depth.objects.filter(depth__gt=0).order_by('-date_time')
 
-        if depth is not None:
-            depth = depth.depth
+        if depths.exists():
+            depth = depths[0].depth
+            time1 = utils.set_utc(datetime.datetime.now())
+            time2 = utils.set_utc(depths[0].date_time)
+            depth_updated_seconds_ago = (time1-time2).seconds
         else:
             depth = "Unknown"
+            depth_updated_seconds_ago = "Unknown"
 
         context['depth'] = depth
+        context['depth_updated_seconds_ago'] = depth_updated_seconds_ago
 
         return context
 
