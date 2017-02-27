@@ -170,21 +170,18 @@ class ProcessNMEAFile:
 
     def _import_dbt(self, line):
         try:
-            (nmea_reference, depth_in_feet, f, depth_in_meters, m, depth_in_fathoms, F) = line.split(",")
+            (nmea_reference, depth_in_feet, feet_units, depth_in_meters, meter_units, depth_in_fathoms, F) = line.split(",")
         except ValueError as e:
             print("Exception: {}".format(e))
             print("Error unpacking: {}".format(line))
             traceback.print_exc()
             return
 
-        if f != "f":
+        if feet_units != "f":
             print("Feet unit not f?")
 
-        if m != "m":
-            print("Meters unit not in m?")
-
-        if m != "F":
-            print("Fathoms unit not in F?")
+        if meter_units != "M":
+            print("Meters unit not in M?")
 
         depth = Depth()
 
