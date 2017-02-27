@@ -11,7 +11,7 @@ import main.utils
 from main.admin_filters import OutcomeFilter, StationReportFilter,\
     SamplingMethodFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter,\
     OffloadingPortFilter, EventFilter, LegFilter, DeviceTypeFilter, ContactFilter, ProjectFilter, UsedLegFilter,\
-    LegNumberFilter, StationTypeFilter, PrincipalInvestigatorFilter, PersonLegFilter
+    LegNumberFilter, StationTypeFilter, PrincipalInvestigatorFilter, PersonLegFilter, OnBoardRoleFilter
 import main.utils_event
 
 
@@ -640,7 +640,7 @@ class PersonAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, adm
     list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'project', 'onboard_role', 'organisation_list', 'email_address', 'principal_investigator','leg_list')
     ordering = ['name_last']
     search_fields = ('name_first', 'name_middle', 'name_last')
-    list_filter = (LegFilter, ProjectFilter, PrincipalInvestigatorFilter, )
+    list_filter = (LegFilter, ProjectFilter, PrincipalInvestigatorFilter, OnBoardRoleFilter)
 
     def organisation_list(self, obj):
         organisations = obj.organisation.all()

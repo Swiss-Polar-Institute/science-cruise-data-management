@@ -77,6 +77,18 @@ class OutcomeFilter(OptionFilter):
         return queryset.filter(outcome=self.value())
 
 
+class OnBoardRoleFilter(OptionFilter):
+    title = "Onboard role"
+    parameter_name = "onboard_role"
+    template = "admin/options_filter_onboard_role.html"
+
+    def filter(self, request, queryset):
+        return queryset.filter(onboard_role_id=self.value())
+
+    def lookups(self, request, model_admin):
+        return self._prepare_filter_lookups(main.models.OnboardRole, 'role', query_by_id=True)
+
+
 class LegFilter(OptionFilter):
     title = "Leg"
     parameter_name = "leg"
@@ -267,7 +279,7 @@ class StationTypeFilter(OptionFilter):
 
 
 class PrincipalInvestigatorFilter(OptionFilter):
-    title = "Principal Investigation true/false"
+    title = "Principal Investigator"
     parameter_name = "principal_investigator_true_false"
     template = "admin/options_filter_principal_investigator_true_false.html"
 
