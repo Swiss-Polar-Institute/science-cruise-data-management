@@ -188,7 +188,7 @@ class ProcessNMEAFile:
 
         depth = Depth()
 
-        depth.meters = float(depth_in_meters)
+        depth.depth = float(depth_in_meters)
         depth.save()
 
     def _import_gpvtg(self, line):
