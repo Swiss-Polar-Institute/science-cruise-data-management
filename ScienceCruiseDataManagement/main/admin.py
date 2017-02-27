@@ -382,7 +382,10 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
         if event_action_id is None:
             url = "/admin/main/eventaction/add/?event={}&type={}".format(obj.number,
                                                                          main.models.EventAction.tbegin())
-            return '<a href="{}">Add start time</a>'.format(url)
+            url_instantaneous = "/admin/main/eventaction/add/?event={}&type={}".format(obj.number,
+                                                                         main.models.EventAction.tinstant())
+
+            return '<a href="{}">Add start time</a> / <a href="{}">Instantaneous</a>'.format(url, url_instantaneous)
         else:
             time = EventReportAdmin._get_event_action_start(obj.number, 'time')
             if time is not None:
