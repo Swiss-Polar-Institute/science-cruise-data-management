@@ -765,7 +765,7 @@ class TimeChangeAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin,
 
 class DepthAdmin(admin.ModelAdmin):
     list_display = ('date_time', 'depth')
-    ordering = ['date_time']
+    ordering = ['-date_time']
 
 admin.site.register(main.models.Depth, DepthAdmin)
 admin.site.register(main.models.Mission, MissionAdmin)
