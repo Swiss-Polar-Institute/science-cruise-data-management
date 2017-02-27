@@ -5,7 +5,7 @@
 {% block content %}
 <h1>List of Metadata entries</h1>
 {% for metadata_entry in metadataentry_list %}
-    <li><a href="/metadata/{{metadata_entry.id}}">{{ metadata_entry.entry_title }}</a></li>
+    <li><a href="/metadata/{{metadata_entry.id}}">{{ metadata_entry.entry_id }} {{ metadata_entry.entry_title }}</a></li>
 {% empty %}
     <li>No metadata entries yet.</li>
 {% endfor %}
