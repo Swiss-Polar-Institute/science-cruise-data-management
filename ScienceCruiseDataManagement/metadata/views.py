@@ -79,7 +79,7 @@ class MetadataEntryView(TemplateView):
 
         rows.append(('Summary', render_object(metadata_entry.summary)))
 
-        rows.append(('Parent DIF', render_object(metadata_entry.parent_dif)))
+        rows.append(('Parent DIF', render_object(metadata_entry.parent_difs)))
 
         rows.append(('IDN node', render_object(metadata_entry.idn_node)))
 
