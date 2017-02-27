@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from ship_data.models import GpzdaDateTime, GpggaGpsFix, GpvtgVelocity
+from main.models import Depth
 from main.models import SamplingMethod
 import time
 from ship_data import utilities
@@ -55,6 +56,8 @@ class ProcessNMEAFile:
             self._import_gpgga(line)
         elif line.startswith("$GPVTG,"):
             self._import_gpvtg(line)
+        elif line.startswith("$DBT,"):
+            self._import_dbt(line)
         else:
             pass
 
@@ -164,6 +167,29 @@ class ProcessNMEAFile:
 
         if not GpggaGpsFix.objects.filter(date_time=current_date_time, device=self.device).exists():
             gps_fix.save()
+
+    def _import_dbt(self, line):
+        try:
+            (nmea_reference, depth_in_feet, f, depth_in_meters, m, depth_in_fathoms, F) = line.split(",")
+        except ValueError as e:
+            print("Exception: {}".format(e))
+            print("Error unpacking: {}".format(line))
+            traceback.print_exc()
+            return
+
+        if f != "f":
+            print("Feet unit not f?")
+
+        if m != "m":
+            print("Meters unit not in m?")
+
+        if m != "F":
+            print("Fathoms unit not in F?")
+
+        depth = Depth()
+
+        depth.meters = float(depth_in_meters)
+        depth.save()
 
     def _import_gpvtg(self, line):
         if self.last_datetime is None:

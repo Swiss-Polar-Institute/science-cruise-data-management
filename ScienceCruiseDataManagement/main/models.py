@@ -790,6 +790,14 @@ class Message(models.Model):
         return "{}".format(self.subject)
 
 
+class Depth(models.Model):
+    date_time = models.DateTimeField(default=timezone.now)
+    depth = models.FloatField()
+
+    def __str__(self):
+        return "{}-{}".format(self.date_time, self.depth)
+
+
 class NetworkHost(models.Model):
     ip = models.GenericIPAddressField()
     hostname = models.CharField(max_length=255)

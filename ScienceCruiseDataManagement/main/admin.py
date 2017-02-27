@@ -763,7 +763,11 @@ class TimeChangeAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin,
     list_display = ('date_changed_utc', 'difference_to_utc_after_change')
     ordering = ['date_changed_utc']
 
+class DepthAdmin(admin.ModelAdmin):
+    list_display = ('date_time', 'depth')
+    ordering = ['date_time']
 
+admin.site.register(main.models.Depth, DepthAdmin)
 admin.site.register(main.models.Mission, MissionAdmin)
 admin.site.register(main.models.Ship, ShipAdmin)
 admin.site.register(main.models.StationType, StationTypeAdmin)
