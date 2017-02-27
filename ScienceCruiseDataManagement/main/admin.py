@@ -640,7 +640,7 @@ class PersonAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, adm
     list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'project', 'onboard_role', 'organisation_list', 'email_address', 'principal_investigator','leg_list')
     ordering = ['name_last']
     search_fields = ('name_first', 'name_middle', 'name_last')
-    list_filter = (LegFilter, ProjectFilter, PrincipalInvestigatorFilter, OnBoardRoleFilter)
+    list_filter = (LegFilter, ProjectFilter, OnBoardRoleFilter, PrincipalInvestigatorFilter, )
 
     def organisation_list(self, obj):
         organisations = obj.organisation.all()
