@@ -319,7 +319,7 @@ class Email(models.Model):
 class EmailOversizeNotified(models.Model):
     from_email = models.CharField(max_length=1024)
     to_email = models.ForeignKey(Email)
-    date_string = models.CharField(max_length=255, help_text="Date as it comes from the IMAP header")
+    date_string = models.CharField(max_length=255, help_text="Date as it comes from the IMAP header", null=True)
     size = models.IntegerField()
     subject = models.CharField(max_length=1024)
     imap_uuid = models.CharField(max_length=50)
