@@ -428,14 +428,18 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
     def end_time(self, obj):
         event_action_id = EventReportAdmin._get_event_action_end(obj.number, 'id')
         can_add_event_action = self.can_add_event_action(obj)
-        if event_action_id is None and can_add_event_action:
+
+        time = EventReportAdmin._get_event_action_end(obj.number, 'time')
+
+        if time is None and "Add start time" in self.start_time(obj):
+            return "-"
+        elif event_action_id is None and can_add_event_action:
             url = "/admin/main/eventaction/add/?event={}&type={}".format(obj.number,
                                                                          main.models.EventAction.tends())
             return '<a href="{}">Add end time</a>'.format(url)
         elif event_action_id is None and not can_add_event_action:
             return "Change Event outcome to add a time"
         else:
-            time = EventReportAdmin._get_event_action_end(obj.number, 'time')
             if time is not None:
                 formatted_time = time.strftime("%Y-%m-%d&nbsp;%H:%M:%S")
             else:
