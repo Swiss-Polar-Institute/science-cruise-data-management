@@ -24,6 +24,7 @@
     {% endblock %}
 </head>
 <body>
+{% if not exporting %}
     <!-- Fixed navbar -->
     <nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
@@ -67,8 +68,8 @@
             </div>
         </div>
     </nav>
-
-    <div class="container theme-showcase" role="main">
+{% endif %}
+<div class="container theme-showcase" role="main">
         {% block content %}
         {% endblock %}
     </div>

@@ -3,10 +3,15 @@
 {% load static %}
 
 {% block content %}
+
+{% if not exporting %}
 <h1>Metadata entry</h1>
+{% endif %}
 
 <table class="table table-bordered">
-    <thead> <th>Field</th><th>Value</th> </thead>
+    {% if not exporting %}
+        <thead> <th>Field</th><th>Value</th> </thead>
+    {% endif %}
     {% for row in rows %}
     <tr>
         <td><b>{{ row.0 }}</b></td> <td>{{ row.1 | safe}}</td>
@@ -14,9 +19,11 @@
     {% endfor %}
 </table>
 
-{% if perms.metadata.can_change_metadata_entry %}
-<a href="/admin/metadata/metadataentry/{{ metadata_entry_id }}/change/">Edit entry</a><br>
+{% if not exporting %}
+    {% if perms.metadata.can_change_metadata_entry %}
+        <a href="/admin/metadata/metadataentry/{{ metadata_entry_id }}/change/">Edit entry</a><br>
+    {% endif %}
+    Back to <a href="/metadata">list of metadata</a><br>
+    <a href="/metadata/export/word/{{ metadata_entry_id }}">Export as Microsoft Word</a>
 {% endif %}
-
-Back to <a href="/metadata">list of metadata</a>
 {% endblock %}
