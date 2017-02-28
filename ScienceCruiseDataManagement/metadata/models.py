@@ -359,7 +359,10 @@ class Distribution(models.Model):
 
         formats_str = ", ".join([str(format) for format in formats])
 
-        return "{} - {} - {}".format(self.distribution_media, self.distribution_format, self.distribution_size)
+        to_be_shown = "{} - {} - {}".format(self.distribution_media, formats_str, self.distribution_size)
+        print("xxxxxxxxxxxxxx")
+        print(to_be_shown)
+        return to_be_shown
 
 
 class Summary(models.Model):

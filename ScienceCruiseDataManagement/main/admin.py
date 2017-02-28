@@ -1,4 +1,5 @@
 import import_export
+import time
 from django.conf import settings
 from django.contrib import admin
 from django.db.models import Q
@@ -142,11 +143,7 @@ class EventActionForm(ModelForm):
 
         if self._adding_new_event_action():
             # This is to only show the open events when adding a new EventAction
-            # filter_open_events = self._filter_open_events()
-            filter_open_events = self._filter_open_events()
-            filter_success_failure = self._filter_events_success_or_failure()
-            open_events = main.models.Event.objects.filter(filter_open_events).filter(filter_success_failure).order_by('-number')
-
+            open_events = EventActionForm.open_events_queryset()
             event_number_and_sampling_method = EventNumberAndSamplingMethod(queryset=open_events)
             self.fields['event'] = event_number_and_sampling_method
         else:
@@ -158,6 +155,14 @@ class EventActionForm(ModelForm):
         self.fields['event'].widget = RelatedFieldWidgetWrapper(self.fields['event'].widget, rel, admin.site,
                                                                 can_add_related=True, can_change_related=True)
 
+    @staticmethod
+    def open_events_queryset():
+        filter_open_events = EventActionForm._filter_open_events()
+        filter_success_failure = EventActionForm._filter_events_success_or_failure()
+        open_events = main.models.Event.objects.filter(filter_open_events).filter(filter_success_failure).order_by('-number')
+
+        return open_events
+
     def _adding_new_event_action(self):
         # Returns True if the user is adding an event (instead of modifying it)
         # The reason is that we want to show all the events (and not only the open ones) if
@@ -166,7 +171,8 @@ class EventActionForm(ModelForm):
         #return len(self.fields) == 0
         return not self.instance.id
 
-    def _filter_open_events(self):
+    @staticmethod
+    def _filter_open_events():
         filter_query = Q(number=0)  # Impossible with OR will be the rest
 
         for open_event in main.models.OpenEvent.objects.all():
@@ -175,7 +181,8 @@ class EventActionForm(ModelForm):
         return filter_query
 
 
-    def _filter_events_success_or_failure(self):
+    @staticmethod
+    def _filter_events_success_or_failure():
         filter_query = Q(outcome='Success') | Q(outcome='Failure')
 
         return filter_query
@@ -295,7 +302,6 @@ class EventReportResource(import_export.resources.ModelResource):
 
     event_comments = import_export.fields.Field(column_name='event_comments',
                                                 attribute='comments')
-
     # dehydrate_ is an import_eport.resources.ModelResource special prefix
     def dehydrate_start_time(self, event):
         return EventReportAdmin.start_time_(event)
@@ -321,11 +327,16 @@ class EventReportResource(import_export.resources.ModelResource):
 
 
 class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('number', 'event_actions', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome', 'comments')
+    list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome', 'comments')
     list_filter = (SamplingMethodFilter, OutcomeFilter, StationReportFilter)
     search_fields = ('number',)
 
     resource_class = EventReportResource
+
+    def __init__(self, *args, **kwargs):
+        super(EventReportAdmin, self).__init__(*args, **kwargs)
+        self._last_open_queryset = None
+        self._last_open_queryset_time = 0
 
     @classmethod
     def station_name(cls, obj):
@@ -372,15 +383,28 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
     def end_time_(cls, obj):
         return EventReportAdmin._get_event_action_end(obj.number, 'time')
 
+    def can_add_event_action(self, event):
+        # Keeps results for one second to speed up the Report easily
+        if time.time() - self._last_open_queryset_time > 1:
+            self._last_open_queryset_time = time.time()
+            self._last_open_queryset = EventActionForm.open_events_queryset()
+
+        return event in self._last_open_queryset
+
     def start_time(self, obj):
         event_action_id = EventReportAdmin._get_event_action_start(obj.number, 'id')
-        if event_action_id is None:
+
+        can_add_event_action = self.can_add_event_action(obj)
+
+        if event_action_id is None and can_add_event_action:
             url = "/admin/main/eventaction/add/?event={}&type={}".format(obj.number,
                                                                          main.models.EventAction.tbegin())
             url_instantaneous = "/admin/main/eventaction/add/?event={}&type={}".format(obj.number,
                                                                          main.models.EventAction.tinstant())
 
             return '<a href="{}">Add start time</a> / <a href="{}">Instantaneous</a>'.format(url, url_instantaneous)
+        elif event_action_id is None and not can_add_event_action:
+            return "Change Event outcome to add a time"
         else:
             time = EventReportAdmin._get_event_action_start(obj.number, 'time')
             if time is not None:
@@ -403,10 +427,13 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
 
     def end_time(self, obj):
         event_action_id = EventReportAdmin._get_event_action_end(obj.number, 'id')
-        if event_action_id is None:
+        can_add_event_action = self.can_add_event_action(obj)
+        if event_action_id is None and can_add_event_action:
             url = "/admin/main/eventaction/add/?event={}&type={}".format(obj.number,
                                                                          main.models.EventAction.tends())
             return '<a href="{}">Add end time</a>'.format(url)
+        elif event_action_id is None and not can_add_event_action:
+            return "Change Event outcome to add a time"
         else:
             time = EventReportAdmin._get_event_action_end(obj.number, 'time')
             if time is not None:
@@ -426,11 +453,6 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
     @classmethod
     def end_longitude(self, obj):
         return EventReportAdmin._get_event_action_end(obj.number, 'longitude')
-
-    def event_actions(self, obj):
-        return "<a href='/admin/main/eventaction/?q={}'>Click</a>".format(obj.number)
-
-    event_actions.allow_tags = True
 
 
 class EventAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
