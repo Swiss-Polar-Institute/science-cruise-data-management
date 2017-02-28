@@ -207,10 +207,10 @@ class EventActionAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
         return obj.event.sampling_method
 
     def response_add(self, request, obj, post_url_continue=None):
-        if "from_eventreport" in request.GET:
+        if request.GET is not None and "from_eventreport" in request.GET:
             return redirect("/admin/main/eventreport")
         else:
-            super(EventActionAdmin, self).response_add(request, obj, post_url_continue)
+            return super(EventActionAdmin, self).response_add(request, obj, post_url_continue)
 
     sampling_method.admin_order_field = "event__sampling_method"
     resource_class = EventActionResource
@@ -406,7 +406,7 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
         if event_action_id is None and can_add_event_action:
             url = "/admin/main/eventaction/add/?event={}&type={}&from_eventreport=1".format(obj.number,
                                                                          main.models.EventAction.tbegin())
-            url_instantaneous = "/admin/main/eventaction/add/?event={}&type={}".format(obj.number,
+            url_instantaneous = "/admin/main/eventaction/add/?event={}&type={}&from_eventreport=1".format(obj.number,
                                                                          main.models.EventAction.tinstant())
 
             return '<a href="{}">Add start time</a> / <a href="{}">Instantaneous</a>'.format(url, url_instantaneous)
