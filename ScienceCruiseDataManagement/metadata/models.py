@@ -183,7 +183,7 @@ class DistributionFormat(models.Model):
     in_gcmd = models.BooleanField()
 
     def __str__(self):
-        return "{} - {}".format(self.distribution_format, self.description)
+        return "{} ({})".format(self.distribution_format, self.description)
 
     class Meta:
         unique_together = (('distribution_format', 'description'))
@@ -357,10 +357,22 @@ class Distribution(models.Model):
     def __str__(self):
         formats = self.distribution_format.all()
 
-        formats_str = ", ".join([str(format) for format in formats])
+        if len(formats) == 0:
+            formats_str = "Unknown format"
+        else:
+            formats_str = ", ".join([str(format) for format in formats])
 
-        to_be_shown = "{} - {} - {}".format(self.distribution_media, formats_str, self.distribution_size)
-        print("xxxxxxxxxxxxxx")
+        if self.distribution_media is None:
+            distribution_media = "Unknown media"
+        else:
+            distribution_media = self.distribution_media
+
+        if self.distribution_size is None or self.distribution_size == "":
+            distribution_size = "Unknown size"
+        else:
+            distribution_size = self.distribution_size
+
+        to_be_shown = "{} - {} - {}".format(distribution_media, formats_str, distribution_size)
         print(to_be_shown)
         return to_be_shown
 
