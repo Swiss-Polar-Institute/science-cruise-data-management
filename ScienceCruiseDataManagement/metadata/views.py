@@ -212,6 +212,8 @@ def render_object(object, separator="<br>"):
                                    })
 
         html = object_to_html(object, specification_list, separator)
+    elif object is None:
+        html = "-"
     else:
         print("Warning, calling str() to render an object. Type:",type(object),"object:",object)
         html = str(object)
