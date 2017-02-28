@@ -108,7 +108,7 @@ class Notify:
 
         information = ""
         for headers in headers_list:
-            headers['_To_Email'] = email_to_notify
+            headers['_To_User'] = email_to_notify.split("@")[0]
             already_notified = self._notified_for_email(headers, email_to_notify)
 
             if already_notified:
@@ -120,7 +120,7 @@ To: {_To_Email}
 Date: {Date}
 Size: {Size}
 Subject: {Subject}
-UUID: {_To_Email} {Uuid}
+UUID: {_To_User} {Uuid}
 
 """.format(**headers)
 

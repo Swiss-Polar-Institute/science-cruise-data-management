@@ -35,6 +35,11 @@ class TextWithId(ModelMultipleChoiceField):
 #         fields = '__all__'
 
 
+class DistributionInline(admin.TabularInline):
+    model = metadata.models.Distribution
+    extra = 0
+
+
 class MetadataEntryAdmin(admin.ModelAdmin):
     list_display = ('entry_id', 'entry_title', 'personnel_list', 'parameters_list', 'sensor_name_list',
                     'expedition_specific_device_list', 'source_name_list', 'temporal_coverage_list', 'data_set_progress', 'spatial_coverage_list', 'location_list',
@@ -126,6 +131,8 @@ class MetadataEntryAdmin(admin.ModelAdmin):
         related_difs = obj.related_difs.all()
 
         return ",".join([str(related_dif) for related_dif in related_difs])
+
+    inlines = [DistributionInline]
 
 
 class DataSetCitationAdmin(admin.ModelAdmin):

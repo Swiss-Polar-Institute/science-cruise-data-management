@@ -349,6 +349,7 @@ class DataCenterName(models.Model):
 
 
 class Distribution(models.Model):
+    metadata_entry = models.ForeignKey('MetadataEntry', null=True)
     distribution_media = models.ForeignKey('DistributionMedia', null=True, blank=True, help_text="The media options for the user receiving the data.")
     distribution_size = models.CharField(max_length=80, null=True, blank=True, help_text = "An approximate size (in KB, MB or GB) for the entire data set. Specify if data are compressed and the method of compression.")
     distribution_format = models.ManyToManyField('DistributionFormat', blank=True, help_text="The data format used to distribute the data.")
@@ -440,7 +441,6 @@ class MetadataEntry(models.Model):
     data_set_language = models.CharField(max_length=255, default=settings.DEFAULT_DATA_SET_LANGUAGE, null=True, blank=True, help_text="DEFAULT=English")
     originating_center = models.ForeignKey(Provider, related_name='originating_centre_provider', null=True, blank=True, help_text="The data center or data producer who originally generated the dataset.")
     data_center = models.ManyToManyField(Provider, default=metadata_entry_data_center_defaults, related_name='data_center_provider', help_text="The <Data Center> is the data center, organization, or institution responsible for distributing the data.")
-    distribution = models.ManyToManyField(Distribution)
     summary = models.ForeignKey(Summary, help_text="This field provides a brief description of the data set along with the purpose of the data. This allows potential users to determine if the data set is useful for their needs.")
     parent_difs = models.ManyToManyField('MetadataEntry', blank=True, related_name='parent_difs_accessor')
     related_difs = models.ManyToManyField('MetadataEntry', blank=True, related_name='related_difs_accessor')
