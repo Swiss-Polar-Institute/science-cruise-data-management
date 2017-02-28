@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.db.models import Q
 from django.forms import ModelForm, ModelChoiceField
 from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
+from django.shortcuts import redirect
 
 import main.lookups
 import main.models
@@ -205,6 +206,12 @@ class EventActionAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
     def sampling_method(self, obj):
         return obj.event.sampling_method
 
+    def response_add(self, request, obj, post_url_continue=None):
+        if "from_eventreport" in request.GET:
+            return redirect("/admin/main/eventreport")
+        else:
+            super(EventActionAdmin, self).response_add(request, obj, post_url_continue)
+
     sampling_method.admin_order_field = "event__sampling_method"
     resource_class = EventActionResource
 
@@ -397,7 +404,7 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
         can_add_event_action = self.can_add_event_action(obj)
 
         if event_action_id is None and can_add_event_action:
-            url = "/admin/main/eventaction/add/?event={}&type={}".format(obj.number,
+            url = "/admin/main/eventaction/add/?event={}&type={}&from_eventreport=1".format(obj.number,
                                                                          main.models.EventAction.tbegin())
             url_instantaneous = "/admin/main/eventaction/add/?event={}&type={}".format(obj.number,
                                                                          main.models.EventAction.tinstant())
@@ -434,7 +441,7 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
         if time is None and "Add start time" in self.start_time(obj):
             return "-"
         elif event_action_id is None and can_add_event_action:
-            url = "/admin/main/eventaction/add/?event={}&type={}".format(obj.number,
+            url = "/admin/main/eventaction/add/?event={}&type={}&from_eventreport=1".format(obj.number,
                                                                          main.models.EventAction.tends())
             return '<a href="{}">Add end time</a>'.format(url)
         elif event_action_id is None and not can_add_event_action:
