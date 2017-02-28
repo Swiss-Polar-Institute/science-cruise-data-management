@@ -44,7 +44,7 @@ class MetadataEntryAdmin(admin.ModelAdmin):
     list_display = ('entry_id', 'entry_title', 'personnel_list', 'parameters_list', 'sensor_name_list',
                     'expedition_specific_device_list', 'source_name_list', 'temporal_coverage_list', 'data_set_progress', 'spatial_coverage_list', 'location_list',
                     'data_resolution_list', 'project_list', 'quality', 'access_constraints', 'use_constraints',
-                    'data_set_language', 'originating_center', 'data_center_list', 'distribution_list', 'summary',
+                    'data_set_language', 'originating_center', 'data_center_list', 'summary',
                     'parent_difs', 'related_difs', 'idn_node_list', 'metadata_name', 'metadata_version', 'dif_creation_date',
                     'last_dif_revision_date', 'dif_revision_history', 'future_dif_review_date', 'private', 'comments')
     ordering = ['entry_id']
@@ -111,11 +111,6 @@ class MetadataEntryAdmin(admin.ModelAdmin):
         data_centers = obj.data_center.all()
 
         return ",".join([str(data_center) for data_center in data_centers])
-
-    def distribution_list(self, obj):
-        distributions = obj.distribution.all()
-
-        return ",".join([str(distribution) for distribution in distributions])
 
     def idn_node_list(self, obj):
         idn_nodes = obj.idn_node.all()
