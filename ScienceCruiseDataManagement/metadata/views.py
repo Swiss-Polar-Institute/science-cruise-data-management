@@ -75,7 +75,8 @@ class MetadataEntryView(TemplateView):
 
         rows.append(('Data center', render_object(metadata_entry.data_center)))
 
-        rows.append(('Distribution', render_object(metadata_entry.distribution.all())))
+        # rows.append(('Distribution', render_object(metadata_entry.distribution.all())))
+        rows.append(('Distribution', "TODO view"))
 
         rows.append(('Summary', render_object(metadata_entry.summary)))
 
