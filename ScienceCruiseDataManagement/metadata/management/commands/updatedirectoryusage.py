@@ -31,6 +31,8 @@ class DistributionSizeUpdater:
         files = self._files_for_metadata_entry(self.metadata_entry)
         size = self.calculate_size(files)
 
+        print("Total size: {:.2f} GB".format(size/1024/1024/1024))
+
         for distribution in Distribution.objects.filter(metadata_entry=self.metadata_entry):
             distribution.distribution_size = size
             distribution.save()
@@ -54,10 +56,7 @@ class DistributionSizeUpdater:
         if directory.source_directory.endswith("/"):
             return os.path.join(data_root, directory.destination_directory)
         else:
-            if directory.source_directory.startswith("/"):
-                source = directory.source_directory[1:]
-            else:
-                source = directory.source_directory
+            source = directory.source_directory.split("/")[-1]
             return os.path.join(data_root, directory.destination_directory, source)
 
     def _files_for_metadata_entry(self, metadata_entry):
