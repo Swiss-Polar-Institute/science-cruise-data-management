@@ -49,7 +49,7 @@ class MetadataEntryAdmin(admin.ModelAdmin):
                     'last_dif_revision_date', 'dif_revision_history', 'future_dif_review_date', 'private', 'comments')
     ordering = ['entry_id']
     filter_vertical = ('parameters', 'sensor_name', 'source_name', 'location', 'project', 'data_center', 'idn_node',
-                       'directory', )
+                       'directory', 'personnel', )
 
     list_filter = (ProjectFilter, )
 

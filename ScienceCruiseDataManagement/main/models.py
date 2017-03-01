@@ -382,6 +382,7 @@ class SpecificDevice(models.Model):
     calibration_comments = models.CharField(max_length=255, null=True, blank=True)
     device_comments = models.CharField(max_length=255, null=True, blank=True)
 
+
     def __str__(self):
         return "{} - {}".format(self.type_of_device.full_name, self.identifying_mark)
 

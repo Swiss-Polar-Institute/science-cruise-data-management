@@ -52,9 +52,11 @@ class Item(models.Model):
     shared_resource = models.ForeignKey(SharedResource, null=True, blank=True)
     nas_resource = models.ForeignKey(NASResource, null=True, blank=True)
 
-    added_date_time  = models.DateTimeField(default=django.utils.timezone.now)
+    added_date_time = models.DateTimeField(default=django.utils.timezone.now)
 
     source_instrument = models.ManyToManyField(SpecificDevice, blank=True, help_text="Select the instrument(s) which produced the data in this folder.")
+
+    path_storage = models.CharField(max_length=255, null=True, blank=True, help_text="If the file/directory are saved in a specific place instead of the standard place")
 
     def __str__(self):
         if self.hard_disk is not None:

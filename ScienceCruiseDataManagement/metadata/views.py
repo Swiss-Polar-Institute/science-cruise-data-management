@@ -37,6 +37,7 @@ def metadata_entry_context(id):
         return "No metadata found"
 
     rows = []
+    rows.append(('Distribution', render_object(Distribution.objects.filter(metadata_entry=id))))
 
     rows.append(('ID', render_object(metadata_entry.entry_id)))
 
@@ -77,7 +78,7 @@ def metadata_entry_context(id):
     rows.append(('Data center', render_object(metadata_entry.data_center)))
 
     # rows.append(('Distribution', render_object(metadata_entry.distribution.all())))
-    rows.append(('Distribution', "TODO view"))
+    rows.append(('Distribution', render_object(Distribution.objects.filter(metadata_entry=id))))
 
     rows.append(('Summary', render_object(metadata_entry.summary)))
 
