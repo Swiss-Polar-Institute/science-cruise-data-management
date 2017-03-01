@@ -31,7 +31,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
         return ", ".join([sampling_method.name for sampling_method in sampling_methods])
 
-
+    filter_vertical = ('sampling_methods', )
 
 
 class ReadOnlyIfUserCantChange:
