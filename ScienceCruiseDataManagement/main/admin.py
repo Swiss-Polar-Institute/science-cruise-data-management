@@ -23,8 +23,15 @@ class MissionAdmin(admin.ModelAdmin):
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('number', 'title', 'alternative_title', 'principal_investigator', 'abstract')
+    list_display = ('number', 'title', 'alternative_title', 'principal_investigator', 'abstract', 'sampling_methods_list')
     ordering = ['number']
+
+    def sampling_methods_list(self, obj):
+        sampling_methods = obj.sampling_methods.all()
+
+        return ", ".join([sampling_method.name for sampling_method in sampling_methods])
+
+
 
 
 class ReadOnlyIfUserCantChange:
@@ -551,12 +558,12 @@ class SpecificDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     def project_list(self, obj):
         projects = obj.project.all()
 
-        return ",".join([project.title for project in projects])
+        return ", ".join([project.title for project in projects])
 
     def leg_used_list(self, obj):
         legs = obj.leg_used.all()
 
-        return ",".join([str(leg.number) for leg in legs])
+        return ", ".join([str(leg.number) for leg in legs])
 
 
     #device_type_name.admin_order_field = 'device_type_name__name'
@@ -676,12 +683,12 @@ class PersonAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, adm
     def organisation_list(self, obj):
         organisations = obj.organisation.all()
 
-        return ",".join([organisation.name for organisation in organisations])
+        return ", ".join([organisation.name for organisation in organisations])
 
     def leg_list(self, obj):
         legs = obj.leg.all()
 
-        return ",".join([str(leg.number) for leg in legs])
+        return ", ".join([str(leg.number) for leg in legs])
 
 
 # This is for the import_export

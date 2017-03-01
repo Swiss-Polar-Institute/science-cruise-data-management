@@ -342,6 +342,7 @@ class Project(models.Model):
     alternative_title = models.CharField(null=True, blank=True, max_length=255)
     principal_investigator = models.ForeignKey(Person, related_name="Principal_investigator", null=True, blank=True)
     abstract = models.TextField(null=True, blank=True)
+    sampling_methods = models.ManyToManyField(SamplingMethod)
 
     def __str__(self):
         return "{} - {}".format(self.number, self.title)
