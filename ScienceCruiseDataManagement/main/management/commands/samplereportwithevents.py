@@ -55,10 +55,11 @@ class Command(BaseCommand):
     def list_project(self, output_directory, project):
         samples = Sample.objects.filter(project=project).order_by('julian_day')
         filename = "{}/project-{}-samples-report.csv".format(output_directory, str(project.number).zfill(2))
+        temporary_filename = filename + ".tmp"
 
-        print("Saving in {}".format(filename))
+        print("Saving in {}".format(temporary_filename))
 
-        f = open(filename, "w")
+        f = open(temporary_filename, "w")
         csv_writer = csv.writer(f)
         csv_writer.writerow(["ace_sample_number", "project_sample_number", "station_number", "event_number", "sampling_method",
                             "start_time (UTC)", "start_latitude", "start_longitude",
@@ -101,3 +102,4 @@ class Command(BaseCommand):
                                  offloading_port, destination])
 
         f.close()
+        os.replace(temporary_filename, filename)
