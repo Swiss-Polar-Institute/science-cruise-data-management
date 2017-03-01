@@ -27,6 +27,7 @@ class DistributionSizeUpdater:
         self.metadata_entry = metadata_entry
 
     def do(self):
+        print("Will start processing:", self.metadata_entry.entry_id)
         files = self._files_for_metadata_entry(self.metadata_entry)
         size = self.calculate_size(files)
 
@@ -67,8 +68,8 @@ class DistributionSizeUpdater:
             print("Processing: {} (DirectoryID: {})".format(absolute_path,
                                                             directory.id))
             if not os.path.exists(absolute_path):
-                print("Path: {} doesn't exist. Aborting".format(absolute_path))
-                exit(1)
+                print("** Path: {} doesn't exist. Skipping".format(absolute_path))
+                continue
 
             for (dirpath, dirnames, filenames) in os.walk(self.absolute_directory(directory)):
                 for filename in filenames:
