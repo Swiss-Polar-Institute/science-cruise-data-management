@@ -108,7 +108,13 @@ class ProcessNMEAFile:
         gpzda.local_zone_minutes = int(local_zone_minutes)
 
         if not GpzdaDateTime.objects.filter(date_time=date_time, device=self.device).exists():
-            gpzda.save()
+            try:
+                gpzda.save()
+            except ValueError as e:
+                print("Exception: {}".format(e))
+                print("Error unpacking: {}".format(line))
+                traceback.print_exc()
+                return
 
     def _current_date_time_smaller_than_before(self, time_string):
         return self._current_date_time(time_string) < self.last_datetime
@@ -166,7 +172,13 @@ class ProcessNMEAFile:
             gps_fix.geoid_height_units = geoid_height_units
 
         if not GpggaGpsFix.objects.filter(date_time=current_date_time, device=self.device).exists():
-            gps_fix.save()
+            try:
+                gps_fix.save()
+            except ValueError as e:
+                print("Exception: {}".format(e))
+                print("Error in line: {}".format(line))
+                traceback.print_exc()
+                return
 
     def _import_dbt(self, line):
         try:
@@ -186,7 +198,13 @@ class ProcessNMEAFile:
         depth = Depth()
 
         depth.depth = float(depth_in_meters)
-        depth.save()
+        try:
+            depth.save()
+        except ValueError as e:
+            print("Exception: {}".format(e))
+            print("Error in line: {}".format(line))
+            traceback.print_exc()
+            return
 
     def _import_gpvtg(self, line):
         if self.last_datetime is None:
@@ -227,8 +245,13 @@ class ProcessNMEAFile:
         velocity.ground_speed_kts = ground_speed_kts
 
         if not GpvtgVelocity.objects.filter(date_time=date_time, device=self.device):
-            velocity.save()
-
+            try:
+                velocity.save()
+            except ValueError as e:
+                print("Exception: {}".format(e))
+                print("Error unpacking: {}".format(line))
+                traceback.print_exc()
+                return
 
 class TailDirectory:
     def __init__(self, directory, start_file, callback):
