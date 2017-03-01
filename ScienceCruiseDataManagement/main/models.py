@@ -80,7 +80,7 @@ class DeviceType(models.Model):
     source = models.CharField(choices = settings.VOCAB_SOURCES, default = settings.DEVICE_SOURCE_DEFAULT, max_length=255, help_text = "Use the default or speak to the data management team if generated for ACE does not apply.")
 
     def __str__(self):
-        return "{}".format(self.name)
+        return "{} - {}".format(self.name, self.source)
 
 
 class SamplingMethod(models.Model):
