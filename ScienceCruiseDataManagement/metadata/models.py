@@ -455,6 +455,7 @@ class MetadataEntry(models.Model):
     expedition_project = models.ManyToManyField(ExpeditionProject)
     directory = models.ManyToManyField(Item, blank=True)
     comments = models.TextField(null=True, blank=True)
+    skip_update_distribution_size = models.BooleanField(default=False)
 
     def __str__(self):
         return "{}-{}".format(self.entry_id, self.entry_title)

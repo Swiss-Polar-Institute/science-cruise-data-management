@@ -35,6 +35,10 @@ class DistributionSizeUpdater:
 
     def do(self):
         print("Will start processing:", self._metadata_entry.entry_id)
+        if self._metadata_entry.skip_update_distribution_size:
+            print("Skips {} - see skip_update_distribution_size")
+            return
+        
         files = self._files_for_metadata_entry(self._metadata_entry)
         size = self.calculate_size(files)
 
