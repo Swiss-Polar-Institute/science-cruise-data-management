@@ -570,6 +570,7 @@ class SpecificDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
         return ", ".join([str(leg.number) for leg in legs])
 
+    filter_vertical = ('directory',)
 
     #device_type_name.admin_order_field = 'device_type_name__name'
     form = SpecificDeviceForm
