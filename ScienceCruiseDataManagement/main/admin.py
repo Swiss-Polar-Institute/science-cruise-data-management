@@ -513,7 +513,7 @@ class StationTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class SpecificDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('type_of_device', 'full_name',  'shortened_name', 'description', 'sampling_method', 'type_of_identifying_mark', 'identifying_mark', 'make', 'model', 'parent_list', 'platform_list', 'device_contact_list', 'leg_used_list', 'project_list', 'calibration_required', 'calibration_documents', 'calibration_comments', 'device_comments')
+    list_display = ('type_of_device', 'full_name',  'shortened_name', 'description', 'sampling_method', 'directory_list', 'type_of_identifying_mark', 'identifying_mark', 'make', 'model', 'parent_list', 'platform_list', 'device_contact_list', 'leg_used_list', 'project_list', 'calibration_required', 'calibration_documents', 'calibration_comments', 'device_comments')
     list_filter = (DeviceTypeFilter, ContactFilter, ProjectFilter, UsedLegFilter,)
 
     #def device_type_name(self, obj):
@@ -521,6 +521,11 @@ class SpecificDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
     # TODO: doesn't work here, check it again
     # ordering = ['device_type_name__name']
+
+    def directory_list(self, obj):
+        directories = obj.directory.all()
+
+        return ", ".join([directory.destination_directory for directory in directories])
 
     def parent_list(self, obj):
         parents = obj.parent.all()
