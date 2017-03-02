@@ -95,6 +95,19 @@ class File(Item):
     pass
 
 
+class ShipData(Item):
+    def clean(self):
+        """ This one is not used to copy data from places but only to document the instruments. So
+        this avoids any validation that happens with other directories. """
+        pass
+
+    def __str__(self):
+        return "{}".format(self.id)
+
+    class Meta:
+        verbose_name_plural = "Ship data"
+
+
 class DirectoryImportLog(models.Model):
     directory = models.ForeignKey(Directory)
     updated_time = models.DateTimeField(default=django.utils.timezone.now)
