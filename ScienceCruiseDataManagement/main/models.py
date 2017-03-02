@@ -107,7 +107,7 @@ class PositionUncertainty(models.Model):
 
 
 class TimeUncertainty(models.Model):
-    table_code = models.CharField(max_length=255)
+    table_code = models.CharField(max_length=255, blank=True)
     code = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255, unique=True)
     source = models.CharField(choices=settings.VOCAB_SOURCES, default=settings.UNCERTAINTY_DEFAULT, max_length=255)
