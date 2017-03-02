@@ -794,8 +794,15 @@ class ShipAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class SamplingMethodAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name', 'definition', 'validity', 'date_validity_changed')
+    list_display = ('name', 'definition', 'directory_list', 'validity', 'date_validity_changed')
     ordering = ['name', 'validity']
+
+    filter_vertical = ('directory',)
+
+    def directory_list(self, obj):
+        directories = obj.directory.all()
+
+        return ", ".join([directory.destination_directory for directory in directories])
 
 
 class MessageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
