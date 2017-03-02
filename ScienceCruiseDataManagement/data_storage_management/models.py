@@ -59,7 +59,9 @@ class Item(models.Model):
     path_storage = models.CharField(max_length=255, null=True, blank=True, help_text="If the file/directory are saved in a specific place instead of the standard place")
 
     def __str__(self):
-        if self.hard_disk is not None:
+        if self.source_directory=="null":
+            return "Data directory: {}".format(self.destination_directory)
+        elif self.hard_disk is not None:
             return "HDD {} From: {} To: {}".format(self.hard_disk.uuid, self.source_directory, self.destination_directory)
         elif self.shared_resource is not None:
             return "\\{}\\{} From: {} To: {}".format(self.shared_resource.ip, self.shared_resource.shared_resource, self.source_directory, self.destination_directory)
