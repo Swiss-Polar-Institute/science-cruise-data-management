@@ -134,6 +134,24 @@ class StationReportFilter(OptionFilter):
         return tuple(filter_lookup)
 
 
+class ProjectReportFilter(OptionFilter):
+    title = "Project"
+    parameter_name = "project"
+    template = "admin/options_filter_event_report_project.html"
+
+    def filter(self, request, queryset):
+        return queryset.filter(sampling_method__project__id=self.value())
+
+    def lookups(self, request, model_admin):
+        projects = main.models.Project.objects.all().order_by('number')
+
+        filter_lookup = []
+        for project in projects:
+            filter_lookup.append((project.id, "{}.- {}".format(project.number, project.title)))
+
+        return filter_lookup
+
+
 class SamplingMethodFilter(OptionFilter):
     title = "Sampling method"
     parameter_name = "sampling_method"
