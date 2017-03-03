@@ -339,7 +339,7 @@ class Mission(models.Model):
 
 
 class Project(models.Model):
-    number = models.CharField(max_length=3, unique=True)
+    number = models.IntegerField(unique=True)
     title = models.CharField(max_length=255, unique=True)
     alternative_title = models.CharField(null=True, blank=True, max_length=255)
     principal_investigator = models.ForeignKey(Person, related_name="Principal_investigator", null=True, blank=True)
