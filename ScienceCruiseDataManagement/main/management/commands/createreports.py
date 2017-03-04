@@ -15,12 +15,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         output_directory = options['output_directory']
 
-        reportSampleWithEvents = ReportSampleWithEvents()
-        reportSampleWithEvents.do(output_directory)
-
         reportProject = ReportProject(output_directory)
         reportProject.do()
 
+        reportSampleWithEvents = ReportSampleWithEvents()
+        reportSampleWithEvents.do(output_directory)
 
 class ReportProject():
     def __init__(self, output_directory):
