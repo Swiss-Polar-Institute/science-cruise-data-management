@@ -477,10 +477,7 @@ class MetadataEntry(models.Model):
     class Meta:
         verbose_name_plural = "Metadata entries"
 
-    def sensor_names(self):
-        # sensor_name comes from metadata -> sampling method -> specific device -> type of device
-        # (if source is gcmd, etc.)
-        # sensor_name = models.ManyToManyField(Instrument, blank=True)
+    def _specific_devices(self):
         sampling_methods = self.sampling_methods.all()
 
         specific_devices = []
@@ -489,9 +486,15 @@ class MetadataEntry(models.Model):
 
             specific_devices += list(query)
 
+        return specific_devices
+
+    def sensor_names(self):
+        # sensor_name comes from metadata -> sampling method -> specific device -> type of device
+        # (if source is gcmd, etc.)
+        # sensor_name = models.ManyToManyField(Instrument, blank=True)
 
         gcmd = []
-        for specific_device in specific_devices:
+        for specific_device in self._specific_devices():
             query = Device.objects.filter(specificdevice=specific_device)
 
             for device in query:
@@ -500,3 +503,15 @@ class MetadataEntry(models.Model):
                         gcmd.append(device_type)
 
         return gcmd
+
+    def source_names(self):
+        # source_name comes from metadata -> sampling method -> specific device -> platform
+
+        platforms = []
+        for specific_device in self._specific_devices():
+            query = specific_device.platform.all()
+
+            if query.exists():
+                platforms+= list(query)
+
+        return platforms

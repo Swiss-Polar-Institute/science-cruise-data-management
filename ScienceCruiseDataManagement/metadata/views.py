@@ -51,7 +51,7 @@ def metadata_entry_context(id):
 
     rows.append(('Sensor names', render_object(metadata_entry.sensor_names())))
 
-#    rows.append(('Source names', render_object(metadata_entry.source_name)))
+    rows.append(('Source names', render_object(metadata_entry.source_names())))
 
     rows.append(('Temporal coverage', render_object(metadata_entry.temporal_coverage)))
 
