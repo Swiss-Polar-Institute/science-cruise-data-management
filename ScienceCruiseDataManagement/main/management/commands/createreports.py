@@ -54,7 +54,7 @@ class ReportProject():
         filename = "{}/unasigned-sampling-method.csv".format(self._output_directory)
 
         information = []
-        for sampling_method in SamplingMethod.objects.all():
+        for sampling_method in SamplingMethod.objects.all().order_by('name'):
             linked_to_project = sampling_method.project_set.exists()
 
             if not linked_to_project:
