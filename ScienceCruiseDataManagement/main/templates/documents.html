@@ -12,12 +12,21 @@ and visit us in the office.</p>
     <li>Mac OS X: Go to Finder (on the Mac toolbar usually the left icon). Open the menu "Go" and then "Connect to server. Type smb://storage.lan</li></l>
 </ul>
 
-{% for topic, files in documents.items %}
-<h2>{{ topic }}</h2>
-    <ul>
-    {% for file in files %}
-        <li><a href="{{file.link}}">{{ file.title }}</a></li>
-    {% endfor %}
-    </ul>
+<h1>Table of contents:</h1>
+{% for topic in topics %}
+<ul>
+    <li><a href="#{{topic}}">{{topic}}
+</ul>
 {% endfor %}
+
+{% regroup documents|dictsort:"topic_anchor_link" by topic_anchor_link as documents_list %}
+{% for document in documents_list%}
+<h1>{{ document.grouper | safe }}</h1>
+<ul>
+    {% for doc in document.list %}
+      <li><a href="{{ doc.link }}">{{ doc.title }}</a></li>
+    {% endfor %}
+</ul>
+{% endfor %}
+
 {% endblock %}

@@ -326,29 +326,29 @@ class DocumentsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(DocumentsView, self).get_context_data(**kwargs)
-        documents = {}   # key: directory, values: files
-                         # the key is a topic
+        documents = []
+        directories = []
 
         # Prepares a dictionary with the directory names as keys
         for file in glob.glob(os.path.join(settings.DOCUMENTS_DIRECTORY, "*")):
             if os.path.isdir(file):
-                documents[os.path.basename(file)] = []
+                directories.append(os.path.basename(file))
 
-        directories = list(documents.keys())
-        directories.sort()
 
-        # Adds a list of dictionary into each dictionary key with the title of the document and the link
-        for topic in directories:
-            for file in glob.glob(os.path.join(settings.DOCUMENTS_DIRECTORY, os.path.join(settings.DOCUMENTS_DIRECTORY), topic, "*")):
+        for directory in directories:
+            for file in glob.glob(os.path.join(settings.DOCUMENTS_DIRECTORY, os.path.join(settings.DOCUMENTS_DIRECTORY), directory, "*")):
                 if os.path.isfile(file):
                     file_name = os.path.basename(file)
-                    documents[topic].append(
-                        {'title': file_name.split(".")[0],
-                         'link': os.path.join('/documents_storage/{}/{}'.format(topic, file_name))
-                         }
-                    )
+                    document = {}
+                    document['title'] = file_name.split(".")[0]
+                    document['link'] = os.path.join('/documents_storage/{}/{}'.format(directory, file_name))
+                    document['topic'] = directory
+                    document['topic_anchor_link'] = '<a name="{}"></a>{}'.format(directory, directory)
+
+                    documents.append(document)
 
         context['documents'] = documents
+        context['topics'] = sorted(directories)
 
         return context
 

@@ -50,7 +50,7 @@ class Command(BaseCommand):
             query_set = model.objects.filter(**{field: value})
             if len(query_set) == 0:
                 print("Processing row: ", row)
-                print("Wanted a '{}' with field: '{}' and value: '' but not found".format(model, field, value))
+                print("Wanted a '{}' with field: '{}' and value: '{}' but not found".format(model, field, value))
                 print("Please change the database to have it and press ENTER. Or cancel the import of this spreadsheet (Ctl+C)")
                 input()
             elif len(query_set) > 1:
@@ -114,12 +114,16 @@ class Command(BaseCommand):
                 event_action_begin.type = EventAction.tbegin()
                 event_action_begin.time_source = time_source
                 event_action_begin.time_uncertainty = time_uncertainty
+                event_action_begin.latitude = row.get('start_latitude', None)
+                event_action_begin.longitude = row.get('start_longitude', None)
 
                 # Save event action end
                 event_action_end = EventAction()
                 event_action_end.time = utils.string_to_date_time(row['end_time'])
                 event_action_end.description = description_end
                 event_action_end.type = EventAction.tends()
+                event_action_end.latitude = row.get('start_latitude', None)
+                event_action_end.longitude = row.get('start_longitude', None)
 
                 if event_action_begin.time is None:
                     print("Row", row)
