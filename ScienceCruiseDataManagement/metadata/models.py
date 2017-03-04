@@ -1,6 +1,6 @@
 from django.db import models
 from main.models import Person, Organisation, Platform
-from main.models import Project as ExpeditionProject, SamplingMethod
+from main.models import Project as ExpeditionProject, SamplingMethod, SpecificDevice, DeviceType, Device
 from data_storage_management.models import Item
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -476,3 +476,27 @@ class MetadataEntry(models.Model):
 
     class Meta:
         verbose_name_plural = "Metadata entries"
+
+    def sensor_names(self):
+        # sensor_name comes from metadata -> sampling method -> specific device -> type of device
+        # (if source is gcmd, etc.)
+        # sensor_name = models.ManyToManyField(Instrument, blank=True)
+        sampling_methods = self.sampling_methods.all()
+
+        specific_devices = []
+        for sampling_method in sampling_methods:
+            query = SpecificDevice.objects.filter(sampling_method=sampling_method)
+
+            specific_devices += list(query)
+
+
+        gcmd = []
+        for specific_device in specific_devices:
+            query = Device.objects.filter(specificdevice=specific_device)
+
+            for device in query:
+                for device_type in device.main_device_type.all():
+                    if device_type.source == "globalchangemasterdirectory":
+                        gcmd.append(device_type)
+
+        return gcmd

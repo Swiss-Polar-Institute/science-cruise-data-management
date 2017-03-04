@@ -49,9 +49,9 @@ def metadata_entry_context(id):
 
     rows.append(('Parameters', render_object(metadata_entry.parameters)))
 
-    rows.append(('Sensor names', render_object(metadata_entry.sensor_name)))
+    rows.append(('Sensor names', render_object(metadata_entry.sensor_names())))
 
-    rows.append(('Source names', render_object(metadata_entry.source_name)))
+#    rows.append(('Source names', render_object(metadata_entry.source_name)))
 
     rows.append(('Temporal coverage', render_object(metadata_entry.temporal_coverage)))
 
@@ -137,7 +137,6 @@ class MetadataEntryView(TemplateView):
 
         return render(request, "metadata_entry.html", metadata_entry_context(id))
 
-
 def get_attribute_from_field(object, field):
     # here field is a string and can contain ".": it will get resolved recursively
     assert isinstance(field, str)
@@ -177,7 +176,7 @@ def object_to_html(object, specification_list, separator):
 
     return output
 
-def render_queryset(qs, separator):
+def render_iterable(qs, separator):
     output = []
 
     for object in qs:
@@ -195,8 +194,8 @@ def render_object(object, separator="<br>"):
 
     if isinstance(object, Person):
         html = "{} {}".format(object.name_first, object.name_last)
-    elif isinstance(object, models.QuerySet):
-        html = render_queryset(object, separator)
+    elif isinstance(object, models.QuerySet) or isinstance(object, list):
+        html = render_iterable(object, separator)
     elif is_many_to_many:
         objects = object.all()
         html = render_object(objects)
@@ -249,6 +248,8 @@ def render_object(object, separator="<br>"):
                                    })
 
         html = object_to_html(object, specification_list, separator)
+    elif isinstance(object, DeviceType):
+        html = object.name
     elif object is None:
         html = "-"
     else:
