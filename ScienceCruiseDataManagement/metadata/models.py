@@ -1,11 +1,9 @@
 from django.db import models
 from main.models import Person, Organisation, Platform
-from main.models import Project as ExpeditionProject
-from main.models import SpecificDevice as ExpeditionSpecificDevice
+from main.models import Project as ExpeditionProject, SamplingMethod
 from data_storage_management.models import Item
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Q
 
 ############### DIF CONTROLLED VOCABULARY TABLES #################
 
@@ -426,9 +424,18 @@ class MetadataEntry(models.Model):
     data_set_citation = models.ForeignKey(DataSetCitation, null=True, blank=True)
     personnel = models.ManyToManyField(Personnel, help_text="The point of contact for more information about the data set or the metadata.")
     parameters = models.ManyToManyField(Parameter)
-    sensor_name = models.ManyToManyField(Instrument, blank=True)
-    expedition_specific_device = models.ManyToManyField(ExpeditionSpecificDevice, blank=True)
-    source_name = models.ManyToManyField(Platform, blank=True, default=metadata_entry_platform_defaults)
+
+    # sensor_name comes from metadata -> sampling method -> specific device -> type of device
+    # (if source is gcmd, etc.)
+    # sensor_name = models.ManyToManyField(Instrument, blank=True)
+
+    # expedition_specific_device comes metadata -> sampling method -> specific device
+    # expedition_specific_device = models.ManyToManyField(ExpeditionSpecificDevice, blank=True)
+
+    # source_name comes from metadata -> sampling method -> specific device -> platform
+    # source_name = models.ManyToManyField(Platform, blank=True, default=metadata_entry_platform_defaults)
+
+    sampling_method = models.ManyToManyField(SamplingMethod, blank=True)
     temporal_coverage = models.ManyToManyField(TemporalCoverage, blank=True)
     data_set_progress = models.ForeignKey(DatasetProgress, null=True, blank=True)
     spatial_coverage = models.ManyToManyField(SpatialCoverage, blank=True)
@@ -453,8 +460,15 @@ class MetadataEntry(models.Model):
     future_dif_review_date = models.DateField(null=True, blank=True)
     private = models.BooleanField()
     expedition_project = models.ManyToManyField(ExpeditionProject)
-    directory = models.ManyToManyField(Item, blank=True)
+
+    # directory comes from both of this places:
+    #   metadata -> sampling method -> directory
+    #   metadata -> sampling method -> specific devices -> directory
+    # directory = models.ManyToManyField(Item, blank=True)
     comments = models.TextField(null=True, blank=True)
+
+    # if True the command updatedirectoryusage will not update this metadadata entry
+    # (specially when it's directories of many files)
     skip_update_distribution_size = models.BooleanField(default=False)
 
     def __str__(self):
