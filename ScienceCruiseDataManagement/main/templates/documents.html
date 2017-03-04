@@ -19,14 +19,16 @@ and visit us in the office.</p>
 {% endfor %}
 </ul>
 
-{% regroup documents|dictsort:"topic_anchor_link" by topic_anchor_link as documents_list %}
+{% regroup documents|dictsort:"topic" by topic as documents_list %}
 {% for document in documents_list%}
-<h1>{{ document.grouper | safe }}</h1>
+<section id="{{document.grouper}}">
+<h1>{{ document.grouper }}</h1>
 <ul>
     {% for doc in document.list %}
       <li><a href="{{ doc.link }}">{{ doc.title }}</a></li>
     {% endfor %}
 </ul>
+</section>
 {% endfor %}
 
 {% endblock %}

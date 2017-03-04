@@ -343,7 +343,6 @@ class DocumentsView(TemplateView):
                     document['title'] = file_name.split(".")[0]
                     document['link'] = os.path.join('/documents_storage/{}/{}'.format(directory, file_name))
                     document['topic'] = directory
-                    document['topic_anchor_link'] = '<a name="{}"></a>{}'.format(directory, directory)
 
                     documents.append(document)
 
