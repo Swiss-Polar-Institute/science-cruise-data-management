@@ -161,7 +161,7 @@ class SamplingMethodFilter(OptionFilter):
         return queryset.filter(sampling_method__id=self.value())
 
     def lookups(self, request, model_admin):
-        sampling_methods = main.models.SamplingMethod.objects.all().order_by('name')
+        sampling_methods = main.models.SamplingMethod.objects.all().exclude(validity="redundant").order_by('name')
 
         filter_lookup = []
         for sampling_method in sampling_methods:
