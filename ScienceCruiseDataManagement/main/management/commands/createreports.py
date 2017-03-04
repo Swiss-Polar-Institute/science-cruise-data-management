@@ -2,7 +2,6 @@ from django.core.management.base import BaseCommand, CommandError
 from main.models import Sample, Project, EventAction, SamplingMethod, SpecificDevice
 from data_storage_management.models import Directory
 import csv
-import datetime
 import os
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -25,6 +24,7 @@ class Command(BaseCommand):
 class ReportProject():
     def __init__(self, output_directory):
         self._output_directory = output_directory
+        os.makedirs("{}/for_data_team".format(output_directory))
 
     def do(self):
         for project in Project.objects.all().order_by('number'):
@@ -57,7 +57,7 @@ class ReportProject():
         ReportProject.save_into_file(filename, ["id", "name"], information)
 
     def unasigned_sampling_methods(self):
-        filename = "{}/unasigned-sampling-method.csv".format(self._output_directory)
+        filename = "{}/for_data_team/unasigned-sampling-method.csv".format(self._output_directory)
 
         information = []
         for sampling_method in SamplingMethod.objects.all().order_by('id'):
@@ -70,7 +70,7 @@ class ReportProject():
         ReportProject.save_into_file(filename, ["id", "name"], information)
 
     def sampling_methods_without_directories(self):
-        filename = "{}/sampling-methods-without-directories.csv".format(self._output_directory)
+        filename = "{}/for_data_team/sampling-methods-without-directories.csv".format(self._output_directory)
 
         information = []
 
@@ -84,7 +84,7 @@ class ReportProject():
         ReportProject.save_into_file(filename, ["id", "sampling_method"], information)
 
     def directories_not_linked(self):
-        filename = "{}/directories-not-linnked-specific-device-or-sampling-method.csv".format(self._output_directory)
+        filename = "{}/for_data_team/directories-not-linnked-specific-device-or-sampling-method.csv".format(self._output_directory)
 
         information = []
 
@@ -99,7 +99,7 @@ class ReportProject():
         ReportProject.save_into_file(filename, ["id", "directory"], information)
 
     def devices_without_directories(self):
-        filename = "{}/specific-devices-without-directories.csv".format(self._output_directory)
+        filename = "{}/for_data_team/specific-devices-without-directories.csv".format(self._output_directory)
 
         information = []
 
