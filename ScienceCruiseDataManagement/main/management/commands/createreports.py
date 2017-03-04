@@ -24,7 +24,7 @@ class Command(BaseCommand):
 class ReportProject():
     def __init__(self, output_directory):
         self._output_directory = output_directory
-        os.makedirs("{}/for_data_team".format(output_directory))
+        os.makedirs("{}/for_data_team".format(output_directory), exist_ok=True)
 
     def do(self):
         for project in Project.objects.all().order_by('number'):
