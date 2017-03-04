@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Sample, Project, EventAction
+from main.models import Sample, Project, EventAction, SamplingMethod
 import csv
 import datetime
 import os
@@ -13,9 +13,64 @@ class Command(BaseCommand):
         parser.add_argument('output_directory', type=str)
 
     def handle(self, *args, **options):
-        self.list(options['output_directory'])
+        output_directory = options['output_directory']
 
-    def list(self, output_directory):
+        reportSampleWithEvents = ReportSampleWithEvents()
+        reportSampleWithEvents.do(output_directory)
+
+        reportProject = ReportProject(output_directory)
+        reportProject.do()
+
+
+class ReportProject():
+    def __init__(self, output_directory):
+        self._output_directory = output_directory
+
+    def do(self):
+        for project in Project.objects.all().order_by('number'):
+            self.list_sampling_methods(project)
+
+        self.unasigned_sampling_methods()
+
+    @staticmethod
+    def save_into_file(filepath, header, data):
+        f = open(filepath, "w")
+        csv_writer = csv.DictWriter(f, header)
+        csv_writer.writeheader()
+
+        csv_writer.writerows(data)
+
+        f.close()
+
+    def list_sampling_methods(self, project):
+        filename = "{}/project-{}-sampling-methods.csv".format(self._output_directory, str(project.number).zfill(2))
+
+        information = []
+        for sampling_method in project.sampling_methods.all().order_by('name'):
+            information.append({'name': sampling_method.name})
+
+        ReportProject.save_into_file(filename, ["name"], information)
+
+    def unasigned_sampling_methods(self):
+        filename = "{}/unasigned-sampling-method.csv".format(self._output_directory)
+
+        information = []
+        for sampling_method in SamplingMethod.objects.all():
+            linked_to_project = sampling_method.project_set.exists()
+
+            if not linked_to_project:
+                information.append({'name': sampling_method.name})
+
+        ReportProject.save_into_file(filename, ["name"], information)
+
+
+    def list_devices(self, output_directory, project):
+        # Not possible yet
+        pass
+
+
+class ReportSampleWithEvents():
+    def do(self, output_directory):
         for project in Project.objects.all().order_by('number'):
             self.list_project(output_directory, project)
 

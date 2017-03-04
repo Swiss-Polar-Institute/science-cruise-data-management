@@ -78,7 +78,7 @@ class DeviceType(models.Model):
     version = models.CharField(max_length=255, null=True, blank=True, help_text = "If adding a new device leave this field blank.")
     deprecated = models.CharField(max_length=255, null=True, blank=True, help_text = "If adding a new device leave this field blank.")
     date = models.DateTimeField(null=True, blank=True, help_text = "If adding a new device leave this field blank.")
-    source = models.CharField(choices = settings.VOCAB_SOURCES, default = settings.DEVICE_SOURCE_DEFAULT, max_length=255, help_text = "Use the default or speak to the data management team if generated for ACE does not apply.")
+    source = models.CharField(choices=settings.VOCAB_SOURCES, default = settings.DEVICE_SOURCE_DEFAULT, max_length=255, help_text = "Use the default or speak to the data management team if generated for ACE does not apply.")
 
     def __str__(self):
         return "{} - {}".format(self.name, self.source)
