@@ -435,7 +435,7 @@ class MetadataEntry(models.Model):
     # source_name comes from metadata -> sampling method -> specific device -> platform
     # source_name = models.ManyToManyField(Platform, blank=True, default=metadata_entry_platform_defaults)
 
-    sampling_method = models.ManyToManyField(SamplingMethod, blank=True)
+    sampling_methods = models.ManyToManyField(SamplingMethod, blank=True)
     temporal_coverage = models.ManyToManyField(TemporalCoverage, blank=True)
     data_set_progress = models.ForeignKey(DatasetProgress, null=True, blank=True)
     spatial_coverage = models.ManyToManyField(SpatialCoverage, blank=True)

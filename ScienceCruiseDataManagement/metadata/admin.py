@@ -41,14 +41,14 @@ class DistributionInline(admin.TabularInline):
 
 
 class MetadataEntryAdmin(admin.ModelAdmin):
-    list_display = ('entry_id', 'entry_title', 'personnel_list', 'parameters_list', 'sensor_name_list',
-                    'expedition_specific_device_list', 'source_name_list', 'temporal_coverage_list', 'data_set_progress', 'spatial_coverage_list', 'location_list',
+    list_display = ('entry_id', 'entry_title', 'personnel_list', 'parameters_list',
+                    'sampling_methods_list', 'temporal_coverage_list', 'data_set_progress', 'spatial_coverage_list', 'location_list',
                     'data_resolution_list', 'project_list', 'quality', 'access_constraints', 'use_constraints',
                     'data_set_language', 'originating_center', 'data_center_list', 'summary',
                     'parent_difs', 'related_difs', 'idn_node_list', 'metadata_name', 'metadata_version', 'dif_creation_date',
                     'last_dif_revision_date', 'dif_revision_history', 'future_dif_review_date', 'private', 'comments')
     ordering = ['entry_id']
-    filter_vertical = ('parameters', 'location', 'project', 'data_center', 'idn_node', 'personnel', )
+    filter_vertical = ('parameters', 'location', 'project', 'data_center', 'idn_node', 'personnel', 'sampling_methods', )
 
     list_filter = (ProjectFilter, )
 
@@ -65,21 +65,6 @@ class MetadataEntryAdmin(admin.ModelAdmin):
         parameters = obj.parameters.all()
 
         return ",".join([str(parameter) for parameter in parameters])
-
-    def sensor_name_list(self, obj):
-        sensor_names = obj.sensor_name.all()
-
-        return ",".join([str(sensor_name) for sensor_name in sensor_names])
-
-    def expedition_specific_device_list(self, obj):
-        expedition_specific_devices = obj.expedition_specific_device.all()
-
-        return ",".join([str(expedition_specific_device) for expedition_specific_device in expedition_specific_devices])
-
-    def source_name_list(self, obj):
-        source_names = obj.source_name.all()
-
-        return ",".join([str(source_name) for source_name in source_names])
 
     def temporal_coverage_list(self, obj):
          temporal_coverages = obj.temporal_coverage.all()
@@ -125,6 +110,11 @@ class MetadataEntryAdmin(admin.ModelAdmin):
         related_difs = obj.related_difs.all()
 
         return ",".join([str(related_dif) for related_dif in related_difs])
+
+    def sampling_methods_list(self, obj):
+        sampling_methods = obj.sampling_methods.all()
+
+        return ",".join([str(sampling_method) for sampling_method in sampling_methods])
 
     inlines = [DistributionInline]
 
