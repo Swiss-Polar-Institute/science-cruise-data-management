@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Sample, Project, EventAction, SamplingMethod
+from main.models import Sample, Project, EventAction, SamplingMethod, SpecificDevice
 import csv
 import datetime
 import os
@@ -30,9 +30,12 @@ class ReportProject():
             self.list_sampling_methods(project)
 
         self.unasigned_sampling_methods()
+        self.devices_without_directories()
+        self.sampling_methods_without_directories()
 
     @staticmethod
     def save_into_file(filepath, header, data):
+        print("Saving in", filepath)
         f = open(filepath, "w")
         csv_writer = csv.DictWriter(f, header)
         csv_writer.writeheader()
@@ -45,22 +48,52 @@ class ReportProject():
         filename = "{}/project-{}-sampling-methods.csv".format(self._output_directory, str(project.number).zfill(2))
 
         information = []
-        for sampling_method in project.sampling_methods.all().order_by('name'):
-            information.append({'name': sampling_method.name})
+        for sampling_method in project.sampling_methods.all().order_by('id'):
+            information.append({'id': sampling_method.id,
+                                'name': sampling_method.name})
 
-        ReportProject.save_into_file(filename, ["name"], information)
+        ReportProject.save_into_file(filename, ["id", "name"], information)
 
     def unasigned_sampling_methods(self):
         filename = "{}/unasigned-sampling-method.csv".format(self._output_directory)
 
         information = []
-        for sampling_method in SamplingMethod.objects.all().order_by('name'):
+        for sampling_method in SamplingMethod.objects.all().order_by('id'):
             linked_to_project = sampling_method.project_set.exists()
 
             if not linked_to_project:
-                information.append({'name': sampling_method.name})
+                information.append({'id': sampling_method.id,
+                                    'name': sampling_method.name})
 
-        ReportProject.save_into_file(filename, ["name"], information)
+        ReportProject.save_into_file(filename, ["id", "name"], information)
+
+    def sampling_methods_without_directories(self):
+        filename = "{}/sampling-methods-without-directories.csv".format(self._output_directory)
+
+        information = []
+
+        for sampling_method in SamplingMethod.objects.all().order_by('id'):
+            linked_to_directory = sampling_method.directory.exists()
+
+            if not linked_to_directory:
+                information.append({'id': sampling_method.id,
+                                    'sampling_method': str(sampling_method)})
+
+        ReportProject.save_into_file(filename, ["id", "sampling_method"], information)
+
+    def devices_without_directories(self):
+        filename = "{}/specific-devices-without-directories.csv".format(self._output_directory)
+
+        information = []
+
+        for specific_device in SpecificDevice.objects.all().order_by('id'):
+            linked_to_directory = specific_device.directory.exists()
+
+            if not linked_to_directory:
+                information.append({'id': specific_device.id,
+                                    'specific_device': str(specific_device)})
+
+        ReportProject.save_into_file(filename, ["id", "specific_device"], information)
 
 
     def list_devices(self, output_directory, project):
