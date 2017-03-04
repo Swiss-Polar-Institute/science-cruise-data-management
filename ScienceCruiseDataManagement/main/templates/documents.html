@@ -13,11 +13,11 @@ and visit us in the office.</p>
 </ul>
 
 <h1>Table of contents:</h1>
-{% for topic in topics %}
 <ul>
-    <li><a href="#{{topic}}">{{topic}}</a>
-</ul>
+{% for topic in topics %}
+    <li><a href="#{{topic}}">{{topic}}</a></li>
 {% endfor %}
+</ul>
 
 {% regroup documents|dictsort:"topic_anchor_link" by topic_anchor_link as documents_list %}
 {% for document in documents_list%}
