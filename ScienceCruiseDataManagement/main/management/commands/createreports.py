@@ -74,7 +74,7 @@ class ReportProject():
 
         information = []
 
-        for sampling_method in SamplingMethod.objects.all().order_by('id'):
+        for sampling_method in SamplingMethod.objects.all().exclude(validity='redundant').order_by('name'):
             linked_to_directory = sampling_method.directory.exists()
 
             if not linked_to_directory:
