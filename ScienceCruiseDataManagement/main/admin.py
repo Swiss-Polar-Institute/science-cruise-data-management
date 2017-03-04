@@ -488,6 +488,8 @@ class EventAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admi
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "leg":
             kwargs["queryset"] = main.models.Leg.objects.filter(name="Leg 1")
+        elif db_field.name == "sampling_method":
+            kwargs["queryset"] = main.models.SamplingMethod.objects.exclude(validity="redundant").order_by("name")
         return super(EventAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
