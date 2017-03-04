@@ -88,7 +88,7 @@ def write_tracks(output_filename, tracks):
                                 ['sampling_method', 'data', 'samples', 'start_time', 'type', 'what_happened_start',
                                  'end_time', 'type', 'what_happened_end', 'time_source', 'time_uncertainty',
                                  'general_comments', 'start_latitude', 'start_longitude', 'end_latitude',
-                                 'end_longitude'])
+                                 'end_longitude', 'position_source', 'position_uncertainty'])
 
     csv_writer.writeheader()
 
@@ -114,6 +114,8 @@ def write_tracks(output_filename, tracks):
         d['start_longitude'] = track.start_longitude
         d['end_latitude'] = track.end_latitude
         d['end_longitude'] = track.end_longitude
+        d['position_source'] = 'Spider track instrument'
+        d['position_uncertainty'] = '0.0 to 0.01 n.miles'
 
         csv_writer.writerow(d)
 

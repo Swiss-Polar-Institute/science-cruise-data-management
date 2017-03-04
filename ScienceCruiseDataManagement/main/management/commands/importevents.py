@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Event, EventAction, SamplingMethod, TimeSource, TimeUncertainty, EventActionDescription, ImportedFile
+from main.models import Event, EventAction, SamplingMethod, TimeSource, TimeUncertainty,\
+    PositionSource, PositionUncertainty, EventActionDescription, ImportedFile
 from main import utils
 
 import csv
@@ -103,6 +104,16 @@ class Command(BaseCommand):
                                                                row,
                                                                EventActionDescription,
                                                                'name')
+
+                position_source = self.find_foreign_key_object(['position_source'],
+                                                               row,
+                                                               PositionSource,
+                                                               'name')
+                position_uncertainty = self.find_foreign_key_object(['position_uncertainty'],
+                                                                    row,
+                                                                    PositionUncertainty,
+                                                                    'name')
+
                 # Save event action begin
                 event_action_begin = EventAction()
                 event_action_begin.time = utils.string_to_date_time(row['start_time'])
@@ -116,20 +127,24 @@ class Command(BaseCommand):
                 event_action_begin.time_uncertainty = time_uncertainty
                 event_action_begin.latitude = row.get('start_latitude', None)
                 event_action_begin.longitude = row.get('start_longitude', None)
+                event_action_begin.position_source = position_source
+                event_action_begin.position_uncertainty = position_uncertainty
 
                 # Save event action end
                 event_action_end = EventAction()
                 event_action_end.time = utils.string_to_date_time(row['end_time'])
                 event_action_end.description = description_end
                 event_action_end.type = EventAction.tends()
-                event_action_end.latitude = row.get('start_latitude', None)
-                event_action_end.longitude = row.get('start_longitude', None)
+                event_action_end.latitude = row.get('end_latitude', None)
+                event_action_end.longitude = row.get('end_longitude', None)
 
                 if event_action_begin.time is None:
                     print("Row", row)
 
                 event_action_end.time_source = time_source
                 event_action_end.time_uncertainty = time_uncertainty
+                event_action_end.position_source = position_source
+                event_action_end.position_uncertainty = position_uncertainty
 
                 ask_confirmation |= self.report_event_exists(event)
                 ask_confirmation |= self.report_event_action_exists(event_action_begin)
