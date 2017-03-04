@@ -339,9 +339,9 @@ class DocumentsView(TemplateView):
             for file in glob.glob(os.path.join(settings.DOCUMENTS_DIRECTORY, os.path.join(settings.DOCUMENTS_DIRECTORY), directory, "*")):
                 if os.path.isfile(file):
                     file_name = os.path.basename(file)
-                    if file_name == "Thumbs":
+                    if file_name == "Thumbs.db":
                         continue
-                        
+
                     document = {}
                     document['title'] = file_name.split(".")[0]
                     document['link'] = os.path.join('/documents_storage/{}/{}'.format(directory, file_name))
