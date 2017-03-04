@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from main.models import Sample, Project, EventAction, SamplingMethod, SpecificDevice
+from data_storage_management.models import Directory
 import csv
 import datetime
 import os
@@ -32,6 +33,7 @@ class ReportProject():
         self.unasigned_sampling_methods()
         self.devices_without_directories()
         self.sampling_methods_without_directories()
+        self.directories_not_linked()
 
     @staticmethod
     def save_into_file(filepath, header, data):
@@ -80,6 +82,21 @@ class ReportProject():
                                     'sampling_method': str(sampling_method)})
 
         ReportProject.save_into_file(filename, ["id", "sampling_method"], information)
+
+    def directories_not_linked(self):
+        filename = "{}/directories-not-linnked-specific-device-or-sampling-method.csv".format(self._output_directory)
+
+        information = []
+
+        for directory in Directory.objects.all().order_by('id'):
+            linked_to_specific_device = SpecificDevice.objects.filter(directory=directory).exists()
+            linked_to_sampling_method = SamplingMethod.objects.filter(directory=directory).exists()
+
+            if linked_to_sampling_method==False and linked_to_specific_device==False:
+                information.append({'id': directory.id,
+                                    'directory': str(directory)})
+
+        ReportProject.save_into_file(filename, ["id", "directory"], information)
 
     def devices_without_directories(self):
         filename = "{}/specific-devices-without-directories.csv".format(self._output_directory)
