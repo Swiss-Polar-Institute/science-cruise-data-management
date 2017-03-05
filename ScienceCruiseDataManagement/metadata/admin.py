@@ -48,7 +48,7 @@ class MetadataEntryAdmin(admin.ModelAdmin):
                     'parent_difs', 'related_difs', 'idn_node_list', 'metadata_name', 'metadata_version', 'dif_creation_date',
                     'last_dif_revision_date', 'dif_revision_history', 'future_dif_review_date', 'private', 'comments')
     ordering = ['entry_id']
-    filter_vertical = ('parameters', 'location', 'project', 'data_center', 'idn_node', 'personnel', 'sampling_methods', )
+    filter_vertical = ('parameters', 'location', 'project', 'data_centers', 'idn_node', 'personnel', 'sampling_methods', )
 
     list_filter = (ProjectFilter, )
 
@@ -59,52 +59,52 @@ class MetadataEntryAdmin(admin.ModelAdmin):
     def personnel_list(self, obj):
         people = obj.project.all()
 
-        return ",".join([str(person) for person in people])
+        return ", ".join([str(person) for person in people])
 
     def parameters_list(self, obj):
         parameters = obj.parameters.all()
 
-        return ",".join([str(parameter) for parameter in parameters])
+        return ", ".join([str(parameter) for parameter in parameters])
 
     def temporal_coverage_list(self, obj):
          temporal_coverages = obj.temporal_coverage.all()
 
-         return ",".join([str(temporal_coverage) for temporal_coverage in temporal_coverages])
+         return ", ".join([str(temporal_coverage) for temporal_coverage in temporal_coverages])
 
     def spatial_coverage_list(self, obj):
         spatial_coverages = obj.spatial_coverage.all()
 
-        return ",".join([str(spatial_coverage) for spatial_coverage in spatial_coverages])
+        return ", ".join([str(spatial_coverage) for spatial_coverage in spatial_coverages])
 
     def location_list(self, obj):
         locations = obj.location.all()
 
-        return ",".join([str(location) for location in locations])
+        return ", ".join([str(location) for location in locations])
 
     def data_resolution_list(self, obj):
         data_resolutions = obj.data_resolution.all()
 
-        return ",".join([str(data_resolution) for data_resolution in data_resolutions])
+        return ", ".join([str(data_resolution) for data_resolution in data_resolutions])
 
     def project_list(self, obj):
         projects = obj.project.all()
 
-        return ",".join([str(project) for project in projects])
+        return ", ".join([str(project) for project in projects])
 
     def data_center_list(self, obj):
-        data_centers = obj.data_center.all()
+        data_centers = obj.data_centers.all()
 
-        return ",".join([str(data_center) for data_center in data_centers])
+        return ", ".join([str(data_center) for data_center in data_centers])
 
     def idn_node_list(self, obj):
         idn_nodes = obj.idn_node.all()
 
-        return ",".join([str(idn_node) for idn_node in idn_nodes])
+        return ", ".join([str(idn_node) for idn_node in idn_nodes])
 
     def parent_difs(self, obj):
         parent_difs = obj.parent_difs.all()
 
-        return ",".join([str(parent_dif) for parent_dif in parent_difs])
+        return ", ".join([str(parent_dif) for parent_dif in parent_difs])
 
     def related_difs(self, obj):
         related_difs = obj.related_difs.all()
@@ -114,7 +114,7 @@ class MetadataEntryAdmin(admin.ModelAdmin):
     def sampling_methods_list(self, obj):
         sampling_methods = obj.sampling_methods.all()
 
-        return ",".join([str(sampling_method) for sampling_method in sampling_methods])
+        return ", ".join([str(sampling_method) for sampling_method in sampling_methods])
 
     inlines = [DistributionInline]
 
@@ -180,9 +180,9 @@ class DataCenterAdmin(admin.ModelAdmin):
     search_fields = ('data_center_name',)
 
     def personnel_list(self, obj):
-        people = obj.project.all()
+        people = obj.personnel.all()
 
-        return ",".join([str(person) for person in people])
+        return ", ".join([str(person) for person in people])
 
 
 class DataCenterNameAdmin(admin.ModelAdmin):

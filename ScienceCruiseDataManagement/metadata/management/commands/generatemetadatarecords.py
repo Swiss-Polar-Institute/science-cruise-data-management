@@ -216,7 +216,7 @@ class MetadataRecordGenerator:
         MetadataRecordGenerator.add_location(xml_root, 'Location', self.metadata_entry.location)
         MetadataRecordGenerator.add_data_resolution(xml_root, 'Data_Resolution', self.metadata_entry.data_resolution)
         MetadataRecordGenerator.add_project(xml_root, 'Project', self.metadata_entry.project)
-        MetadataRecordGenerator.add_data_center(xml_root, 'Data_Center', self.metadata_entry.data_center)
+        MetadataRecordGenerator.add_data_center(xml_root, 'Data_Center', self.metadata_entry.data_centers)
         MetadataRecordGenerator.add_char_element(xml_root, 'Quality', self.metadata_entry.quality)
         MetadataRecordGenerator.add_char_element(xml_root, 'Access_Constraints', self.metadata_entry.access_constraints)
         MetadataRecordGenerator.add_char_element(xml_root, 'Use_Constraints', self.metadata_entry.use_constraints)
