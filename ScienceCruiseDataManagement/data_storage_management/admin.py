@@ -16,14 +16,8 @@ class HardDiskAdmin(admin.ModelAdmin):
 
 
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('source_directory', 'destination_directory', 'added_date_time', 'hard_disk', 'shared_resource', 'nas_resource', 'source_instrument_list')
+    list_display = ('source_directory', 'destination_directory', 'added_date_time', 'hard_disk', 'shared_resource', 'nas_resource', )
 
-    def source_instrument_list(self, obj):
-        result = []
-        for instrument in obj.source_instrument.all():
-            result.append("{} - {}".format(instrument.type_of_device.full_name, instrument.identifying_mark))
-
-        return ", ".join(result)
 
 class DirectoryImportLog(admin.ModelAdmin):
     list_display = ('directory', 'updated_time', 'success')

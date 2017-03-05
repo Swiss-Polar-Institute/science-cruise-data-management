@@ -54,8 +54,6 @@ class Item(models.Model):
 
     added_date_time = models.DateTimeField(default=django.utils.timezone.now)
 
-    source_instrument = models.ManyToManyField(SpecificDevice, blank=True, help_text="Select the instrument(s) which produced the data in this folder.")
-
     path_storage = models.CharField(max_length=255, null=True, blank=True, help_text="If the file/directory are saved in a specific place instead of the standard place")
 
     def __str__(self):
