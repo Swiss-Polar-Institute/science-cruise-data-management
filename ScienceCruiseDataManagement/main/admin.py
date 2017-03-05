@@ -611,6 +611,7 @@ class IslandLandingsAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMi
     list_display = ('island', 'person', 'date')
     ordering = ['island']
     search_fields = ('island__name', 'person__name_first', 'person__name_last')
+    save_as = True
 
 
 class StorageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):

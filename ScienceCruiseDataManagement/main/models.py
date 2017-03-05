@@ -70,8 +70,6 @@ class IslandLandings(models.Model):
     class Meta:
         verbose_name_plural = "Island Landings"
 
-    save_as = True
-
 
 class DeviceType(models.Model):
     url = models.CharField(max_length=255, null=True, blank=True, help_text = "If adding a new device leave this field blank.")
