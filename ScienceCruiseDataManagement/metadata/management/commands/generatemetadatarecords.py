@@ -110,6 +110,49 @@ class MetadataRecordGenerator:
             MetadataRecordGenerator.add_date_element(temporal_coverage_xml, 'Stop_Date', temporal_coverage.stop_date)
 
     @staticmethod
+    def add_location(parent, tag, locations):
+        for location in locations.all():
+            location_xml = etree.SubElement(parent, tag, {'uuid': location.uuid})
+            MetadataRecordGenerator.add_char_element(location_xml, 'Location_Category', location.location_category)
+            MetadataRecordGenerator.add_char_element(location_xml, 'Location_Type', location.location_type)
+            MetadataRecordGenerator.add_char_element(location_xml, 'Location_Subregion1', location.location_subregion1)
+            MetadataRecordGenerator.add_char_element(location_xml, 'Location_Subregion2', location.location_subregion2)
+            MetadataRecordGenerator.add_char_element(location_xml, 'Location_Subregion3', location.location_subregion3)
+            MetadataRecordGenerator.add_char_element(location_xml, 'detailed_location', location.detailed_location)
+
+
+    @staticmethod
+    def add_data_resolution(parent, tag, data_resolutions):
+        for data_resolution in data_resolutions.all():
+            data_resolution_xml = etree.SubElement(parent, tag)
+            MetadataRecordGenerator.add_char_element(data_resolution_xml, 'Latitude_Resolution',
+                                                     data_resolution.latitude_resolution)
+
+            MetadataRecordGenerator.add_char_element(data_resolution_xml, 'Longitude_Resolution',
+                                                     data_resolution.longitude_resolution)
+
+            if data_resolution.horizontal_resolution_range is not None:
+                MetadataRecordGenerator.add_char_element(data_resolution_xml, 'Horizontal_Resolution_Range',
+                                                         data_resolution.horizontal_resolution_range.horizontal_resolution_range)
+
+            if data_resolution.vertical_resolution_range is not None:
+                MetadataRecordGenerator.add_char_element(data_resolution_xml, 'Vertical_Resolution_Range',
+                                                         data_resolution.vertical_resolution_range.vertical_resolution_range)
+
+            if data_resolution.temporal_resolution_range is not None:
+                MetadataRecordGenerator.add_char_element(data_resolution_xml, 'Temporal_Resolution_Range',
+                                                         data_resolution.temporal_resolution_range.temporal_resolution_range)
+
+    @staticmethod
+    def add_project(parent, tag, projects):
+        for project in projects.all():
+            project_xml = etree.SubElement(parent, tag, {'uuid': project.uuid})
+            MetadataRecordGenerator.add_char_element(project_xml, 'Short_Name',
+                                                     project.short_name)
+            MetadataRecordGenerator.add_char_element(project_xml, 'Long_Name',
+                                                     project.long_name)
+
+    @staticmethod
     def add_spatial_coverage(parent, tag, spatial_coverages):
         for spatial_coverage in spatial_coverages.all():
             spatial_coverage_xml = etree.SubElement(parent, tag)
@@ -158,6 +201,9 @@ class MetadataRecordGenerator:
         MetadataRecordGenerator.add_temporal_coverage(xml_root, 'Temporal_Coverage', self.metadata_entry.temporal_coverage)
         MetadataRecordGenerator.add_char_element(xml_root, 'Data_Set_Progress', self.metadata_entry.data_set_progress.type)
         MetadataRecordGenerator.add_spatial_coverage(xml_root, 'Spatial_Coverage', self.metadata_entry.spatial_coverage)
+        MetadataRecordGenerator.add_location(xml_root, 'Location', self.metadata_entry.location)
+        MetadataRecordGenerator.add_data_resolution(xml_root, 'Data_Resolution', self.metadata_entry.data_resolution)
+        MetadataRecordGenerator.add_project(xml_root, 'Project', self.metadata_entry.project)
         MetadataRecordGenerator.add_char_element(xml_root, 'Quality', self.metadata_entry.quality)
         MetadataRecordGenerator.add_char_element(xml_root, 'Access_Constraints', self.metadata_entry.access_constraints)
         MetadataRecordGenerator.add_char_element(xml_root, 'Use_Constraints', self.metadata_entry.use_constraints)
