@@ -219,6 +219,12 @@ class EventActionAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
         else:
             return super(EventActionAdmin, self).response_add(request, obj, post_url_continue)
 
+    def response_change(self, request, obj):
+        if request.GET is not None and "from_eventreport" in request.GET:
+            return redirect("/admin/main/eventreport")
+        else:
+            return super(EventActionAdmin, self).response_add(request, obj)
+
     sampling_method.admin_order_field = "event__sampling_method"
     resource_class = EventActionResource
 
@@ -425,8 +431,7 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
                 formatted_time = time.strftime("%Y-%m-%d&nbsp;%H:%M:%S")
             else:
                 formatted_time = "-"
-
-            url = "/admin/main/eventaction/{}".format(event_action_id)
+            url = "/admin/main/eventaction/{}/change/?from_eventreport=1".format(event_action_id)
             return '<a href="{}">{}</a>'.format(url, formatted_time)
 
     start_time.allow_tags = True
@@ -459,7 +464,7 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
             else:
                 formatted_time = "-"
 
-            url = "/admin/main/eventaction/{}".format(event_action_id)
+            url = "/admin/main/eventaction/{}/change/?from_eventreport=1".format(event_action_id)
             return '<a href="{}">{}</a>'.format(url, formatted_time)
 
     end_time.allow_tags = True
