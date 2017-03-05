@@ -38,6 +38,24 @@ class MetadataRecordGenerator:
             element.text = date.strftime("%F")
 
     @staticmethod
+    def add_data_set_personnel(parent, tag, personnel):
+        for person in personnel.all():
+            personnel_xml = etree.SubElement(parent, tag)
+
+            for dataset_role in person.dataset_role.all():
+                MetadataRecordGenerator.add_char_element(personnel_xml, "Role",
+                                                         dataset_role.role)
+
+            MetadataRecordGenerator.add_char_element(personnel_xml, "First_Name",
+                                                     person.person.name_first)
+
+            MetadataRecordGenerator.add_char_element(personnel_xml, "Middle_Name",
+                                                     person.person.name_middle)
+
+            MetadataRecordGenerator.add_char_element(personnel_xml, "Last_Name",
+                                                     person.person.name_last)
+
+    @staticmethod
     def add_data_set_citation(parent, tag, data_set_citation):
         data_set_citation_xml = etree.SubElement(parent, tag)
 
@@ -74,6 +92,7 @@ class MetadataRecordGenerator:
         MetadataRecordGenerator.add_char_element(xml_root, 'Entry_ID', self.metadata_entry.entry_id)
         MetadataRecordGenerator.add_char_element(xml_root, 'Entry_Title', self.metadata_entry.entry_title)
         MetadataRecordGenerator.add_data_set_citation(xml_root, 'Data_Set_Citation', self.metadata_entry.data_set_citation)
+        MetadataRecordGenerator.add_data_set_personnel(xml_root, 'Personnel', self.metadata_entry.personnel)
         MetadataRecordGenerator.add_char_element(xml_root, 'Quality', self.metadata_entry.quality)
         MetadataRecordGenerator.add_char_element(xml_root, 'Access_Constraints', self.metadata_entry.access_constraints)
         MetadataRecordGenerator.add_char_element(xml_root, 'Use_Constraints', self.metadata_entry.use_constraints)
