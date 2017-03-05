@@ -34,12 +34,15 @@ class Command(BaseCommand):
             assert False
 
 
-    def find_foreign_key_object(self, possible_column_names, row, model, field):
+    def find_foreign_key_object(self, possible_column_names, row, model, field, missing_ok=False):
         column_name = None
 
         for possible_column_name in possible_column_names:
             if possible_column_name in row:
                 column_name = possible_column_name
+
+        if column_name is None and missing_ok==True:
+            return None
 
         if column_name is None:
             print("Wanted to find a column name like one of:",possible_column_names,"but not found. Aborting")
@@ -108,11 +111,11 @@ class Command(BaseCommand):
                 position_source = self.find_foreign_key_object(['position_source'],
                                                                row,
                                                                PositionSource,
-                                                               'name')
+                                                               'name', missing_ok=True)
                 position_uncertainty = self.find_foreign_key_object(['position_uncertainty'],
                                                                     row,
                                                                     PositionUncertainty,
-                                                                    'name')
+                                                                    'name', mission_ok=True
 
                 # Save event action begin
                 event_action_begin = EventAction()
