@@ -115,7 +115,7 @@ class Command(BaseCommand):
                 position_uncertainty = self.find_foreign_key_object(['position_uncertainty'],
                                                                     row,
                                                                     PositionUncertainty,
-                                                                    'name', mission_ok=True
+                                                                    'name', mission_ok=True)
 
                 # Save event action begin
                 event_action_begin = EventAction()
