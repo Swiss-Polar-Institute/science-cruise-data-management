@@ -792,7 +792,7 @@ class DeviceTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class PlatformAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name', 'platform_type')
+    list_display = ('name', 'code', 'short_name', 'uuid', 'country', 'platform_type', 'source', )
     ordering = ['name']
 
 
