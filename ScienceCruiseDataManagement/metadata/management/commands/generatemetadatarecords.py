@@ -182,6 +182,18 @@ class MetadataRecordGenerator:
                                                      'Maximum_Depth',
                                                      "{} meters".format(spatial_coverage.maximum_depth))
 
+    @staticmethod
+    def add_data_center(parent, tag, data_centers):
+        for data_center in data_centers.all():
+            data_center_xml = etree.SubElement(parent, tag)
+
+            data_center_name_xml = etree.SubElement(data_center_xml, 'Data_Center_Name')
+            MetadataRecordGenerator.add_char_element(data_center_name_xml, 'Short_Name', data_center.short_name)
+            MetadataRecordGenerator.add_char_element(data_center_name_xml, 'Long_Name', data_center.long_name)
+
+
+
+
     def do(self):
         fp = open("/tmp/test_dif.xml", "wb")
 
@@ -204,6 +216,7 @@ class MetadataRecordGenerator:
         MetadataRecordGenerator.add_location(xml_root, 'Location', self.metadata_entry.location)
         MetadataRecordGenerator.add_data_resolution(xml_root, 'Data_Resolution', self.metadata_entry.data_resolution)
         MetadataRecordGenerator.add_project(xml_root, 'Project', self.metadata_entry.project)
+        MetadataRecordGenerator.add_data_center(xml_root, 'Data_Center', self.metadata_entry.data_center)
         MetadataRecordGenerator.add_char_element(xml_root, 'Quality', self.metadata_entry.quality)
         MetadataRecordGenerator.add_char_element(xml_root, 'Access_Constraints', self.metadata_entry.access_constraints)
         MetadataRecordGenerator.add_char_element(xml_root, 'Use_Constraints', self.metadata_entry.use_constraints)
