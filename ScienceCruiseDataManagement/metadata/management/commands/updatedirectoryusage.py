@@ -74,7 +74,7 @@ class DistributionSizeUpdater:
     def _files_for_metadata_entry(self, metadata_entry):
         files = set()
 
-        for directory in metadata_entry.directory.all():
+        for directory in metadata_entry.directories():
             absolute_path = self.absolute_directory(directory)
             print("Processing: {} (DirectoryID: {})".format(absolute_path,
                                                             directory.id))
