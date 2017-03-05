@@ -511,7 +511,22 @@ class MetadataEntry(models.Model):
         for specific_device in self._specific_devices():
             query = specific_device.platform.all()
 
-            if query.exists():
-                platforms+= list(query)
+            platforms+= list(query)
 
         return platforms
+
+    def directories(self):
+        # directories comes from SamplingMethod directories and specificDevices directories
+
+        directories = []
+        for specific_device in self._specific_devices():
+            query = specific_device.directory.all()
+
+            directories += list(query)
+
+        for sampling_method in self.sampling_methods.all():
+            query = sampling_method.directory.all()
+
+            directories += list(query)
+
+        return directories

@@ -100,6 +100,8 @@ def metadata_entry_context(id):
 
     rows.append(('Private', render_object(metadata_entry.private)))
 
+    rows.append(('Directories', render_object(metadata_entry.directories())))
+
     context = {}
     context['rows'] = rows
     context['metadata_entry_id'] = id
@@ -250,6 +252,8 @@ def render_object(object, separator="<br>"):
         html = object_to_html(object, specification_list, separator)
     elif isinstance(object, DeviceType):
         html = object.name
+    elif isinstance(object, Item):
+        html = object.destination_directory
     elif object is None:
         html = "-"
     else:
