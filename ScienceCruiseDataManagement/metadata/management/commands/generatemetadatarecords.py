@@ -188,11 +188,42 @@ class MetadataRecordGenerator:
             data_center_xml = etree.SubElement(parent, tag)
 
             data_center_name_xml = etree.SubElement(data_center_xml, 'Data_Center_Name')
-            MetadataRecordGenerator.add_char_element(data_center_name_xml, 'Short_Name', data_center.short_name)
-            MetadataRecordGenerator.add_char_element(data_center_name_xml, 'Long_Name', data_center.long_name)
+            MetadataRecordGenerator.add_char_element(data_center_name_xml, 'Short_Name', data_center.data_center_name.short_name)
+            MetadataRecordGenerator.add_char_element(data_center_name_xml, 'Long_Name', data_center.data_center_name.long_name)
+            MetadataRecordGenerator.add_char_element(data_center_xml, 'Data_Set_Id', data_center.data_set_id)
 
+            MetadataRecordGenerator.add_personnel(data_center_xml, 'Personnel', data_center.personnel)
 
+    @staticmethod
+    def add_summary(parent, tag, summary):
+        summary_xml = etree.SubElement(parent, tag)
+        MetadataRecordGenerator.add_char_element(summary_xml, 'Abstract', summary.abstract)
+        MetadataRecordGenerator.add_char_element(summary_xml, 'Purpose', summary.purpose)
 
+    @staticmethod
+    def add_distribution(parent, tag, distributions):
+        for distribution in distributions.all():
+            distribution_xml = etree.SubElement(parent, tag)
+
+            MetadataRecordGenerator.add_char_element(distribution_xml, 'Distribution_Media', distribution.distribution_media.distribution_media)
+            MetadataRecordGenerator.add_char_element(distribution_xml, 'Distribution_Size', distribution.distribution_size)
+
+            for distribution_format in distribution.distribution_format.all():
+                MetadataRecordGenerator.add_char_element(distribution_xml, 'Distribution_Format', distribution_format.distribution_format)
+
+            MetadataRecordGenerator.add_char_element(distribution_xml, 'Fees', distribution.fees)
+
+    @staticmethod
+    def add_parent_difs(parent, tag, parent_difs):
+        for parent_dif in parent_difs.all():
+            MetadataRecordGenerator.add_char_element(parent, tag, parent_dif.entry_id)
+
+    @staticmethod
+    def add_idn_nodes(parent, tag, idn_nodes):
+        for idn_node in idn_nodes.all():
+            idn_node_xml = etree.SubElement(parent, tag)
+            MetadataRecordGenerator.add_char_element(idn_node_xml, 'Short_Name', idn_node.idn_node_short_name)
+            MetadataRecordGenerator.add_char_element(idn_node_xml, 'Long_Name', idn_node.idn_node_long_name)
 
     def do(self):
         fp = open("/tmp/test_dif.xml", "wb")
@@ -217,15 +248,22 @@ class MetadataRecordGenerator:
         MetadataRecordGenerator.add_data_resolution(xml_root, 'Data_Resolution', self.metadata_entry.data_resolution)
         MetadataRecordGenerator.add_project(xml_root, 'Project', self.metadata_entry.project)
         MetadataRecordGenerator.add_data_center(xml_root, 'Data_Center', self.metadata_entry.data_centers)
+        MetadataRecordGenerator.add_distribution(xml_root, 'Distribution', self.metadata_entry.distribution_set)
+        MetadataRecordGenerator.add_summary(xml_root, 'Summary', self.metadata_entry.summary)
+
         MetadataRecordGenerator.add_char_element(xml_root, 'Quality', self.metadata_entry.quality)
         MetadataRecordGenerator.add_char_element(xml_root, 'Access_Constraints', self.metadata_entry.access_constraints)
         MetadataRecordGenerator.add_char_element(xml_root, 'Use_Constraints', self.metadata_entry.use_constraints)
         MetadataRecordGenerator.add_char_element(xml_root, 'Data_Set_Language', self.metadata_entry.data_set_language)
 #        MetadataRecordGenerator.add_char_element(xml_root, 'Originating_Center', self.metadata_entry.originating_center)
-#        MetadataRecordGenerator.add_char_element(xml_root, 'Parent_DIF', self.metadata_entry.parent_dif)
+        MetadataRecordGenerator.add_parent_difs(xml_root, 'Parent_DIF', self.metadata_entry.parent_difs)
+        MetadataRecordGenerator.add_idn_nodes(xml_root, 'IDN_Node', self.metadata_entry.idn_node)
         MetadataRecordGenerator.add_char_element(xml_root, 'Metadata_Name', self.metadata_entry.metadata_name)
         MetadataRecordGenerator.add_char_element(xml_root, 'Metadata_Version', self.metadata_entry.metadata_version)
+        MetadataRecordGenerator.add_date_element(xml_root, 'DIF_Creation_Date', self.metadata_entry.dif_creation_date)
+        MetadataRecordGenerator.add_date_element(xml_root, 'Last_DIF_Revision_Date', self.metadata_entry.last_dif_revision_date)
         MetadataRecordGenerator.add_char_element(xml_root, 'Dif_Revision_History', self.metadata_entry.dif_revision_history)
+        MetadataRecordGenerator.add_date_element(xml_root, 'Future_DIF_Review_Date', self.metadata_entry.future_dif_review_date)
 #        MetadataRecordGenerator.add_data_set_citation(xml_root, 'Data_Set_Citation', self.metadata_entry.data_set_citation)
 #        MetadataRecordGenerator.add_sensor_names(xml_root, 'Sensor_Name', self.metadata_entry.sensor_name)
 
