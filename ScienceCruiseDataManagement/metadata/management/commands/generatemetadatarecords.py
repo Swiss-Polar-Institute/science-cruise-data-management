@@ -38,7 +38,7 @@ class MetadataRecordGenerator:
             element.text = date.strftime("%F")
 
     @staticmethod
-    def add_data_set_personnel(parent, tag, personnel):
+    def add_personnel(parent, tag, personnel):
         for person in personnel.all():
             personnel_xml = etree.SubElement(parent, tag)
 
@@ -56,6 +56,25 @@ class MetadataRecordGenerator:
                                                      person.person.name_last)
 
     @staticmethod
+    def add_parameters(parent, tag, parameters):
+        for parameter in parameters.all():
+            parameter_xml = etree.SubElement(parent, tag, attrib={'uuid': parameter.uuid})
+            MetadataRecordGenerator.add_char_element(parameter_xml, 'Category', parameter.category)
+            MetadataRecordGenerator.add_char_element(parameter_xml, 'Topic', parameter.topic)
+            MetadataRecordGenerator.add_char_element(parameter_xml, 'Term', parameter.term)
+            MetadataRecordGenerator.add_char_element(parameter_xml, 'Variable_Level_1', parameter.variable_level_1)
+            MetadataRecordGenerator.add_char_element(parameter_xml, 'Variable_Level_2', parameter.variable_level_2)
+            MetadataRecordGenerator.add_char_element(parameter_xml, 'Variable_Level_3', parameter.variable_level_3)
+
+    @staticmethod
+    def add_sensor_names(parent, tag, sensor_names):
+        for sensor_name in sensor_names:
+            sensor_name_xml = etree.SubElement(parent, tag) # , attrib={'uuid': sensor_name.uuid})
+            MetadataRecordGenerator.add_char_element(sensor_name_xml, 'Short_Name', sensor_name.short_name)
+            MetadataRecordGenerator.add_char_element(sensor_name_xml, 'Long_Name', sensor_name.long_name)
+
+
+    @staticmethod
     def add_data_set_citation(parent, tag, data_set_citation):
         data_set_citation_xml = etree.SubElement(parent, tag)
 
@@ -68,17 +87,57 @@ class MetadataRecordGenerator:
 #                              "{} {}".format(data_set_citation.dataset_creator.name_first, data_set_citation.dataset_creator.name_last))
         MetadataRecordGenerator.add_char_element(data_set_citation_xml, "Dataset_Title", data_set_citation.dataset_title)
         MetadataRecordGenerator.add_date_element(data_set_citation_xml, "Dataset_Release_Date", data_set_citation.dataset_release_date)
-        MetadataRecordGenerator.add_char_element(data_set_citation_xml, "Dataset_Publisher", data_set_citation.dataset_publisher.long_name)
+
+        if data_set_citation.dataset_publisher is not None:
+            MetadataRecordGenerator.add_char_element(data_set_citation_xml, "Dataset_Publisher", data_set_citation.dataset_publisher.long_name)
+
         MetadataRecordGenerator.add_char_element(data_set_citation_xml, "Version", data_set_citation.version)
         MetadataRecordGenerator.add_char_element(data_set_citation_xml, "Other_Citation_Details", data_set_citation.other_citation_details)
 
     @staticmethod
     def add_sensor_names(parent, tag, sensor_names):
-        for sensor_name in sensor_names.all():
+        for sensor_name in sensor_names:
             print(sensor_name.uuid)
             sensor_name_xml = etree.SubElement(parent, tag, {'uuid': sensor_name.uuid})
             MetadataRecordGenerator.add_char_element(sensor_name_xml, 'Short_Name', sensor_name.short_name)
             MetadataRecordGenerator.add_char_element(sensor_name_xml, 'Long_Name', sensor_name.long_name)
+
+    @staticmethod
+    def add_temporal_coverage(parent, tag, temporal_coverages):
+        for temporal_coverage in temporal_coverages.all():
+            temporal_coverage_xml = etree.SubElement(parent, tag)
+            MetadataRecordGenerator.add_date_element(temporal_coverage_xml, 'Start_Date', temporal_coverage.start_date)
+            MetadataRecordGenerator.add_date_element(temporal_coverage_xml, 'Stop_Date', temporal_coverage.stop_date)
+
+    @staticmethod
+    def add_spatial_coverage(parent, tag, spatial_coverages):
+        for spatial_coverage in spatial_coverages.all():
+            spatial_coverage_xml = etree.SubElement(parent, tag)
+            MetadataRecordGenerator.add_char_element(spatial_coverage_xml,
+                                                     'Southernmost_Latitude',
+                                                     str(spatial_coverage.southernmost_latitude))
+            MetadataRecordGenerator.add_char_element(spatial_coverage_xml,
+                                                     'Northernmost_Latitude',
+                                                     str(spatial_coverage.northernmost_latitude))
+            MetadataRecordGenerator.add_char_element(spatial_coverage_xml,
+                                                     'Westernmost_Longiutde',
+                                                     str(spatial_coverage.westernmost_longitude))
+            MetadataRecordGenerator.add_char_element(spatial_coverage_xml,
+                                                     'Easternmost_Longitude',
+                                                     str(spatial_coverage.easternmost_longitude))
+
+            MetadataRecordGenerator.add_char_element(spatial_coverage_xml,
+                                                     'Minimum_Altitude',
+                                                     "{} meters".format(spatial_coverage.minimum_altitude))
+            MetadataRecordGenerator.add_char_element(spatial_coverage_xml,
+                                                     'Maximum_Altitude',
+                                                     "{} meters".format(spatial_coverage.maximum_altitude))
+            MetadataRecordGenerator.add_char_element(spatial_coverage_xml,
+                                                     'Minimum_Depth',
+                                                     "{} meters".format(spatial_coverage.minimum_depth))
+            MetadataRecordGenerator.add_char_element(spatial_coverage_xml,
+                                                     'Maximum_Depth',
+                                                     "{} meters".format(spatial_coverage.maximum_depth))
 
     def do(self):
         fp = open("/tmp/test_dif.xml", "wb")
@@ -92,7 +151,13 @@ class MetadataRecordGenerator:
         MetadataRecordGenerator.add_char_element(xml_root, 'Entry_ID', self.metadata_entry.entry_id)
         MetadataRecordGenerator.add_char_element(xml_root, 'Entry_Title', self.metadata_entry.entry_title)
         MetadataRecordGenerator.add_data_set_citation(xml_root, 'Data_Set_Citation', self.metadata_entry.data_set_citation)
-        MetadataRecordGenerator.add_data_set_personnel(xml_root, 'Personnel', self.metadata_entry.personnel)
+        MetadataRecordGenerator.add_personnel(xml_root, 'Personnel', self.metadata_entry.personnel)
+        MetadataRecordGenerator.add_parameters(xml_root, 'Parameters', self.metadata_entry.parameters)
+        MetadataRecordGenerator.add_sensor_names(xml_root, 'Sensor_Name', self.metadata_entry.sensor_names())
+        # TODO: Source Name
+        MetadataRecordGenerator.add_temporal_coverage(xml_root, 'Temporal_Coverage', self.metadata_entry.temporal_coverage)
+        MetadataRecordGenerator.add_char_element(xml_root, 'Data_Set_Progress', self.metadata_entry.data_set_progress.type)
+        MetadataRecordGenerator.add_spatial_coverage(xml_root, 'Spatial_Coverage', self.metadata_entry.spatial_coverage)
         MetadataRecordGenerator.add_char_element(xml_root, 'Quality', self.metadata_entry.quality)
         MetadataRecordGenerator.add_char_element(xml_root, 'Access_Constraints', self.metadata_entry.access_constraints)
         MetadataRecordGenerator.add_char_element(xml_root, 'Use_Constraints', self.metadata_entry.use_constraints)

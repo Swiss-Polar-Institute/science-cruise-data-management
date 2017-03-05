@@ -238,6 +238,9 @@ class Platform(models.Model):
     url = models.CharField(max_length=255, null=True, blank=True)
     code = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255, unique=True)
+    short_name = models.CharField(max_length=255, null=True)    # TODO: make short_name unique after migration
+    uuid = models.CharField(max_length=255, default=None,       # TODO: make uuid unique after migration
+                            help_text="Used for the Metadata Record")
     country = models.ForeignKey(Country, null=True, blank=True)
     platform_type = models.ForeignKey(PlatformType)
     source = models.CharField(max_length=255, choices=settings.VOCAB_SOURCES)
@@ -357,6 +360,8 @@ class Device(models.Model):
     shortened_name = models.CharField(max_length=255, null=True, blank=True, help_text="A brief name by which the device is often known, eg. CTD.")
     description = models.TextField(help_text="Give a full description of the device which includes some information about what it is used for, how it can be used and any specific details that separate it from similar instruments. If you have a URL about the device, please include it here.")
     main_device_type = models.ManyToManyField(DeviceType, related_name='device_type', blank=True, help_text="Select one or more options of available, from this list of controlled vocabulary devices. If there is nothing suitable, do not select anything. Note that there are some very specific devices and other more general categories, all of which should be selected if they are correct.")
+    instruments = models.ManyToManyField('metadata.Instrument', blank=True, help_text="Used to link with GCMD instruments.")
+
 
     def __str__(self):
         return "{}".format(self.full_name)

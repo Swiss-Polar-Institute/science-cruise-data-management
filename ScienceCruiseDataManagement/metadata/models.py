@@ -286,10 +286,10 @@ class SpatialCoverage(models.Model):
     northernmost_latitude = models.FloatField(null=True, blank=True, help_text='Decimal degrees. A minus sign, "-", placed immediately before the latitude value indicates a latitude south of the Equator (defined as 0 degrees latitude)')
     westernmost_longitude = models.FloatField(null=True, blank=True, help_text='Decimal degrees. A minus sign, "-", placed immediately before the longitude value indicates a longitude west of the Prime Meridian (defined as 0 degrees).')
     easternmost_longitude = models.FloatField(null=True, blank=True, help_text='Decimal degrees. A minus sign, "-", placed immediately before the longitude value indicates a longitude west of the Prime Meridian (defined as 0 degrees).')
-    minimum_altitude = models.FloatField(null=True, blank=True, help_text='Units must be specified.')
-    maximum_altitude = models.FloatField(null=True, blank=True, help_text='Units must be specified.')
-    minimum_depth = models.FloatField(null=True, blank=True, help_text='Units must be specified.')
-    maximum_depth = models.FloatField(null=True, blank=True, help_text='Units must be specified.')
+    minimum_altitude = models.FloatField(null=True, blank=True, help_text='In meters.')
+    maximum_altitude = models.FloatField(null=True, blank=True, help_text='In meters.')
+    minimum_depth = models.FloatField(null=True, blank=True, help_text='In meters.')
+    maximum_depth = models.FloatField(null=True, blank=True, help_text='In meters.')
 
     def __str__(self):
         return "{} {} {} {}".format(self.southernmost_latitude, self.northernmost_latitude, self.westernmost_longitude, self.easternmost_longitude)
