@@ -10,6 +10,8 @@ from django.template import loader
 import types
 from django.views.static import serve
 import subprocess
+from django.http import HttpResponse
+from metadata.metadataentry_to_dif import MetadataRecordGenerator
 
 
 class ProjectListView(ListView):
@@ -75,7 +77,7 @@ def metadata_entry_context(id):
 
     rows.append(('Originating center', render_object(metadata_entry.originating_center)))
 
-    rows.append(('Data center', render_object(metadata_entry.data_center)))
+    rows.append(('Data center', render_object(metadata_entry.data_centers)))
 
     # rows.append(('Distribution', render_object(metadata_entry.distribution.all())))
     rows.append(('Distribution', render_object(Distribution.objects.filter(metadata_entry=id))))
@@ -106,6 +108,24 @@ def metadata_entry_context(id):
     context['rows'] = rows
     context['metadata_entry_id'] = id
     return context
+
+
+class MetadataEntryAsDif(TemplateView):
+    def get(self, request, *args, **kwargs):
+        id = args[0]
+
+        metadata_entry = MetadataEntry.objects.get(id=id)
+        record_generator = MetadataRecordGenerator(metadata_entry)
+        result = record_generator.do()
+
+        response = HttpResponse(result, content_type="application/xml")
+
+        filename = "metadata-record-{}.xml".format(metadata_entry.entry_id)
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+
+        return response
+
+    # s._headers['content-disposition'] = (('Content-Disposition', 'attachment; filename="{}"'.format(filename)))
 
 
 class MetadataEntryAsWord(TemplateView):
