@@ -511,7 +511,7 @@ class MetadataEntry(models.Model):
         for specific_device in self._specific_devices():
             query = specific_device.platform.all()
 
-            platforms+= list(query)
+            platforms += list(query)
 
         return platforms
 

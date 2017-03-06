@@ -6,30 +6,35 @@ class Command(BaseCommand):
     help = 'Generate metadata records'
 
     def add_arguments(self, parser):
+        parser.add_argument('output_directory', type=str)
         parser.add_argument('metadata_id', type=str)
 
     def handle(self, *args, **options):
+        output_directory = options['output_directory']
         record = options['metadata_id']
 
         if record == "all":
-            for metadata_entry in MetadataEntry.objects.all.order_by('entry_id'):
-                export_metadata_file = MetadataRecordGenerator(metadata_entry)
+            for metadata_entry in MetadataEntry.objects.all().order_by('entry_id'):
+                export_metadata_file = MetadataRecordGenerator(metadata_entry, output_directory)
                 export_metadata_file.do()
         else:
             metadata_entry = MetadataEntry.objects.get(entry_id=record)
-            export_metadata_file = MetadataRecordGenerator(metadata_entry)
+            export_metadata_file = MetadataRecordGenerator(metadata_entry, output_directory)
             export_metadata_file.do()
 
 class MetadataRecordGenerator:
-    def __init__(self, metadata_entry):
+    def __init__(self, metadata_entry, output_directory):
         self.metadata_entry = metadata_entry
+        self._output_directory = output_directory
         self.xml_root = None
 
     @staticmethod
-    def add_char_element(parent, tag, text):
+    def add_char_element(parent, tag, text, warning_if_empty=False):
         if text != "" and text is not None:
             element = etree.SubElement(parent, tag)
             element.text = text
+        elif warning_if_empty:
+            print("Warning: {} is empty".format(tag))
 
     @staticmethod
     def add_date_element(parent, tag, date):
@@ -77,6 +82,10 @@ class MetadataRecordGenerator:
     @staticmethod
     def add_data_set_citation(parent, tag, data_set_citation):
         data_set_citation_xml = etree.SubElement(parent, tag)
+
+        if data_set_citation is None:
+            print("Warning: no dataset citation")
+            return
 
         for creator in data_set_citation.dataset_creator.all():
             MetadataRecordGenerator.add_char_element(data_set_citation_xml, "Dataset_Creator",
@@ -184,15 +193,20 @@ class MetadataRecordGenerator:
 
     @staticmethod
     def add_data_center(parent, tag, data_centers):
+        some_data_center = False
         for data_center in data_centers.all():
+            some_data_center = True
             data_center_xml = etree.SubElement(parent, tag)
 
             data_center_name_xml = etree.SubElement(data_center_xml, 'Data_Center_Name')
             MetadataRecordGenerator.add_char_element(data_center_name_xml, 'Short_Name', data_center.data_center_name.short_name)
             MetadataRecordGenerator.add_char_element(data_center_name_xml, 'Long_Name', data_center.data_center_name.long_name)
-            MetadataRecordGenerator.add_char_element(data_center_xml, 'Data_Set_Id', data_center.data_set_id)
+            MetadataRecordGenerator.add_char_element(data_center_xml, 'Data_Set_ID', data_center.data_set_id)
 
             MetadataRecordGenerator.add_personnel(data_center_xml, 'Personnel', data_center.personnel)
+
+        if some_data_center == False:
+            print("Warning: no data center")
 
     @staticmethod
     def add_summary(parent, tag, summary):
@@ -208,8 +222,8 @@ class MetadataRecordGenerator:
             MetadataRecordGenerator.add_char_element(distribution_xml, 'Distribution_Media', distribution.distribution_media.distribution_media)
             MetadataRecordGenerator.add_char_element(distribution_xml, 'Distribution_Size', distribution.distribution_size)
 
-            for distribution_format in distribution.distribution_format.all():
-                MetadataRecordGenerator.add_char_element(distribution_xml, 'Distribution_Format', distribution_format.distribution_format)
+            #for distribution_format in distribution.distribution_format.all():
+            # xsd    MetadataRecordGenerator.add_char_element(distribution_xml, 'Distribution_Format', distribution_format.distribution_format)
 
             MetadataRecordGenerator.add_char_element(distribution_xml, 'Fees', distribution.fees)
 
@@ -225,8 +239,17 @@ class MetadataRecordGenerator:
             MetadataRecordGenerator.add_char_element(idn_node_xml, 'Short_Name', idn_node.idn_node_short_name)
             MetadataRecordGenerator.add_char_element(idn_node_xml, 'Long_Name', idn_node.idn_node_long_name)
 
+    @staticmethod
+    def add_source_names(parent, tag, source_names):
+        for source_name in source_names:
+            source_name_xml = etree.SubElement(parent, tag)
+            MetadataRecordGenerator.add_char_element(source_name_xml, 'Short_Name', source_name.short_name)
+            MetadataRecordGenerator.add_char_element(source_name_xml, 'Long_Name', source_name.long_name)
+
     def do(self):
-        fp = open("/tmp/test_dif.xml", "wb")
+        file_path = "{}/metadata-record-{}.dif".format(self._output_directory, self.metadata_entry.entry_id)
+        print("Generating: {}".format(file_path))
+        fp = open(file_path, "wb")
 
         nsmap = {None: "http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/",
                  "xsi": "http://www.w3.org/2001/XMLSchema-instance",
@@ -240,22 +263,23 @@ class MetadataRecordGenerator:
         MetadataRecordGenerator.add_personnel(xml_root, 'Personnel', self.metadata_entry.personnel)
         MetadataRecordGenerator.add_parameters(xml_root, 'Parameters', self.metadata_entry.parameters)
         MetadataRecordGenerator.add_sensor_names(xml_root, 'Sensor_Name', self.metadata_entry.sensor_names())
-        # TODO: Source Name
+        MetadataRecordGenerator.add_source_names(xml_root, 'Source_Name', self.metadata_entry.source_names())
         MetadataRecordGenerator.add_temporal_coverage(xml_root, 'Temporal_Coverage', self.metadata_entry.temporal_coverage)
         MetadataRecordGenerator.add_char_element(xml_root, 'Data_Set_Progress', self.metadata_entry.data_set_progress.type)
         MetadataRecordGenerator.add_spatial_coverage(xml_root, 'Spatial_Coverage', self.metadata_entry.spatial_coverage)
         MetadataRecordGenerator.add_location(xml_root, 'Location', self.metadata_entry.location)
         MetadataRecordGenerator.add_data_resolution(xml_root, 'Data_Resolution', self.metadata_entry.data_resolution)
         MetadataRecordGenerator.add_project(xml_root, 'Project', self.metadata_entry.project)
+        MetadataRecordGenerator.add_char_element(xml_root, 'Quality', self.metadata_entry.quality)
+        MetadataRecordGenerator.add_char_element(xml_root, 'Access_Constraints', self.metadata_entry.access_constraints)
+        MetadataRecordGenerator.add_char_element(xml_root, 'Use_Constraints', self.metadata_entry.use_constraints)
+        MetadataRecordGenerator.add_char_element(xml_root, 'Data_Set_Language', self.metadata_entry.data_set_language, warning_if_empty=True)
+        # MetadataRecordGenerator.add_char_element(xml_root, 'Originating_Center', self.metadata_entry.originating_center)
         MetadataRecordGenerator.add_data_center(xml_root, 'Data_Center', self.metadata_entry.data_centers)
         MetadataRecordGenerator.add_distribution(xml_root, 'Distribution', self.metadata_entry.distribution_set)
         MetadataRecordGenerator.add_summary(xml_root, 'Summary', self.metadata_entry.summary)
 
-        MetadataRecordGenerator.add_char_element(xml_root, 'Quality', self.metadata_entry.quality)
-        MetadataRecordGenerator.add_char_element(xml_root, 'Access_Constraints', self.metadata_entry.access_constraints)
-        MetadataRecordGenerator.add_char_element(xml_root, 'Use_Constraints', self.metadata_entry.use_constraints)
-        MetadataRecordGenerator.add_char_element(xml_root, 'Data_Set_Language', self.metadata_entry.data_set_language)
-#        MetadataRecordGenerator.add_char_element(xml_root, 'Originating_Center', self.metadata_entry.originating_center)
+
         MetadataRecordGenerator.add_parent_difs(xml_root, 'Parent_DIF', self.metadata_entry.parent_difs)
         MetadataRecordGenerator.add_idn_nodes(xml_root, 'IDN_Node', self.metadata_entry.idn_node)
         MetadataRecordGenerator.add_char_element(xml_root, 'Metadata_Name', self.metadata_entry.metadata_name)
@@ -268,8 +292,7 @@ class MetadataRecordGenerator:
 #        MetadataRecordGenerator.add_sensor_names(xml_root, 'Sensor_Name', self.metadata_entry.sensor_name)
 
 
-
         b = etree.tostring(xml_root, pretty_print=True)
-        print(b.decode('utf-8'))
+        # print(b.decode('utf-8'))
         fp.write(b)
         fp.close()
