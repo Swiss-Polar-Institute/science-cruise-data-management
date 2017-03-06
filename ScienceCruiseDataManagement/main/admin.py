@@ -583,8 +583,10 @@ class SpecificDeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     form = SpecificDeviceForm
 
 class DeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('full_name', 'shortened_name', 'description', 'main_device_type_list')
+    list_display = ('full_name', 'shortened_name', 'description', 'main_device_type_list', 'instruments_list')
     ordering = ['full_name']
+
+    filter_vertical = ('instruments',)
 
     def main_device_type_list(self, obj):
         main_devices = obj.main_device_type.all()
@@ -596,6 +598,11 @@ class DeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
             result = result + main_device.name
 
         return result
+
+    def instruments_list(self, obj):
+        instruments = obj.instruments.all()
+
+        return ", ".join([instrument.long_name for instrument in instruments])
 
 class CountryAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name',) # leave comma here for tuple
