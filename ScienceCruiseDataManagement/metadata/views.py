@@ -11,7 +11,7 @@ import types
 from django.views.static import serve
 import subprocess
 from django.http import HttpResponse
-from metadata.metadataentry_to_dif import MetadataRecordGenerator
+import metadata.metadataentry_to_dif
 
 
 class ProjectListView(ListView):
@@ -115,15 +115,23 @@ class MetadataEntryAsDif(TemplateView):
         id = args[0]
 
         metadata_entry = MetadataEntry.objects.get(id=id)
-        record_generator = MetadataRecordGenerator(metadata_entry)
+        record_generator = metadata.metadataentry_to_dif.MetadataRecordGenerator(metadata_entry)
         result = record_generator.do()
 
-        response = HttpResponse(result, content_type="application/xml")
+        (ok, messages) = metadata.metadataentry_to_dif.validate(result)
 
-        filename = "metadata-record-{}.xml".format(metadata_entry.entry_id)
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+        if ok:
+            response = HttpResponse(result, content_type="application/xml")
 
-        return response
+            filename = "metadata-record-{}.xml".format(metadata_entry.entry_id)
+            response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
+
+            return response
+        else:
+            messages = "ERROR VALIDATING DIF. Output of xmllint:\n" + messages.decode('utf-8')
+            response = HttpResponse(messages, content_type="text/plain")
+
+            return response
 
     # s._headers['content-disposition'] = (('Content-Disposition', 'attachment; filename="{}"'.format(filename)))
 

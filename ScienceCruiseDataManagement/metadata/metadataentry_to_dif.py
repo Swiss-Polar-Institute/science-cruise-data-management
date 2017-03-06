@@ -1,4 +1,7 @@
 from lxml import etree
+from django.conf import settings
+import os
+import subprocess
 
 class MetadataRecordGenerator:
     def __init__(self, metadata_entry):
@@ -224,6 +227,8 @@ class MetadataRecordGenerator:
             MetadataRecordGenerator.add_char_element(source_name_xml, 'Long_Name', source_name.long_name)
 
     def do(self):
+        """ The result is a valid XML but could be a non-valid DIF file.
+        See the function validate to validate the result. """
         nsmap = {None: "http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/",
                  "xsi": "http://www.w3.org/2001/XMLSchema-instance",
                  "schemaLocation": "http://gcmd.nasa.gov/Aboutus/xml/dif/dif_v9.7.1.xsd"
@@ -267,3 +272,22 @@ class MetadataRecordGenerator:
 
         b = etree.tostring(xml_root, pretty_print=True)
         return b
+
+def validate(binary_xml):
+    """ Returns a tuple like (True, '') if all good or (False, error_messages) if
+    a problem has been found.
+    """
+    print(binary_xml)
+    path=os.path.join(settings.PROJECT_DIR, "..", "metadata", "fixtures", "dif.xsd")
+
+    s = subprocess.Popen(["xmllint", "--schema", path, "-"], stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+    (stdout, stderr) = s.communicate(input=binary_xml)
+
+    s.wait(timeout=1000)
+    returncode = s.returncode
+
+    if returncode == 0:
+        return (True, "")
+    else:
+        return (False, stderr)
