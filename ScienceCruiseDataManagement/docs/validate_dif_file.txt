@@ -1,0 +1,1 @@
+xmllint --schema dif_v9.7.1.xsd /tmp/test_dif.xml
