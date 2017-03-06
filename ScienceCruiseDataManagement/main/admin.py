@@ -602,7 +602,7 @@ class DeviceAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     def instruments_list(self, obj):
         instruments = obj.instruments.all()
 
-        return ", ".join([instrument.long_name for instrument in instruments])
+        return ", ".join([str(instrument) for instrument in instruments])
 
 class CountryAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name',) # leave comma here for tuple
