@@ -335,7 +335,11 @@ class DataCenter(models.Model):
     personnel = models.ManyToManyField(Personnel, help_text="Contact information for the data.")
 
     def __str__(self):
-        return "{} - {}".format(self.data_center_name, self.personnel)
+        personnel = self.personnel.all()
+
+        personnel_list = ", ".join([str(person) for person in personnel])
+
+        return "{} ({})".format(self.data_center_name, personnel_list)
 
 
 class DataCenterName(models.Model):
