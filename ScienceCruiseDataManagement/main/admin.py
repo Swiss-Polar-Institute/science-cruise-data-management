@@ -833,6 +833,15 @@ class DepthAdmin(admin.ModelAdmin):
     list_display = ('date_time', 'depth')
     ordering = ['-date_time']
 
+class ProjectCtdToEventAdmin(admin.ModelAdmin):
+    list_display = ('project_ctd_cast_number', 'event', 'project')
+    ordering = ['-project_ctd_cast_number']
+
+class ProjectUnderwayToEventAdmin(admin.ModelAdmin):
+    list_display = ('project_underway_number', 'event', 'project')
+    ordering = ['-project_underway_number']
+
+
 admin.site.register(main.models.Depth, DepthAdmin)
 admin.site.register(main.models.Mission, MissionAdmin)
 admin.site.register(main.models.Ship, ShipAdmin)
@@ -878,6 +887,8 @@ admin.site.register(main.models.Device, DeviceAdmin)
 admin.site.register(main.models.CtdCast, CtdCastAdmin)
 admin.site.register(main.models.TmrCast, TmrCastAdmin)
 admin.site.register(main.models.OnboardRole, OnboardRoleAdmin)
+admin.site.register(main.models.ProjectCtdToEvent, ProjectCtdToEventAdmin)
+admin.site.register(main.models.ProjectUnderwayToEvent, ProjectUnderwayToEventAdmin)
 
 ADMIN_SITE_TITLE = 'Ace Data Admin'
 ADMIN_SITE_HEADER = 'ACE Data Administration'

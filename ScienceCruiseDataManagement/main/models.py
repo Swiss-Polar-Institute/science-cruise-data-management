@@ -574,6 +574,33 @@ class EventActionDescription(models.Model):
         return "{}".format(self.name)
 
 
+class ProjectCtdToEvent(models.Model):
+    project_ctd_cast_number = models.IntegerField()
+    event = models.ForeignKey(Event)
+    project = models.ForeignKey(Project)
+
+    def __str__(self):
+        return "Project CTD number: {} Event: {} Project number: {}".format(self.project_ctd_cast_number,
+                                                                            self.event.number,
+                                                                            self.project.number)
+
+    class Meta:
+        unique_together= (('project_ctd_cast_number', 'event', 'project'),)
+
+
+class ProjectUnderwayToEvent(models.Model):
+    project_underway_number = models.IntegerField()
+    event = models.ForeignKey(Event)
+    project = models.ForeignKey(Project)
+
+    def __str__(self):
+        return "Project Underway number: {} Event: {} Project number: {}".format(self.project_underway_number,
+                                                                            self.event.number,
+                                                                            self.project.number)
+    class Meta:
+        unique_together = (('project_underway_number', 'event', 'project'),)
+
+
 class CtdCast(models.Model):
     ctd_cast_number = models.IntegerField()
     event_number = models.OneToOneField(Event)
