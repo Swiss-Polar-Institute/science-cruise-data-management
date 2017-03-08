@@ -578,6 +578,7 @@ class ProjectCtdToEvent(models.Model):
     project_ctd_cast_number = models.IntegerField()
     event = models.ForeignKey(Event)
     project = models.ForeignKey(Project)
+    samples = models.ManyToManyField(Sample)
 
     def __str__(self):
         return "Project CTD number: {} Event: {} Project number: {}".format(self.project_ctd_cast_number,
@@ -592,6 +593,7 @@ class ProjectUnderwayToEvent(models.Model):
     project_underway_number = models.IntegerField()
     event = models.ForeignKey(Event)
     project = models.ForeignKey(Project)
+    samples = models.ManyToManyField(Sample)
 
     def __str__(self):
         return "Project Underway number: {} Event: {} Project number: {}".format(self.project_underway_number,
