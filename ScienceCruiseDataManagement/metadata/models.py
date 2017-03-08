@@ -521,15 +521,15 @@ class MetadataEntry(models.Model):
     def directories(self):
         # directories comes from SamplingMethod directories and specificDevices directories
 
-        directories = []
+        directories = set()
         for specific_device in self._specific_devices():
             query = specific_device.directory.all()
 
-            directories += list(query)
+            directories.add(query)
 
         for sampling_method in self.sampling_methods.all():
             query = sampling_method.directory.all()
 
-            directories += list(query)
+            directories.add(query)
 
-        return directories
+        return list(directories)

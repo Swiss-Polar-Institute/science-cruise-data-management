@@ -46,9 +46,11 @@ def metadata_entry_context(id):
 
     rows.append(('Data set citation', render_object(metadata_entry.data_set_citation, "<br>")))
 
-    rows.append(('Personnel', render_object(metadata_entry.personnel)))
+    rows.append(('Personnel', render_object(metadata_entry.personnel.all().order_by('person__name_last'))))
 
-    rows.append(('Parameters', render_object(metadata_entry.parameters)))
+    rows.append(('Parameters', render_object(metadata_entry.parameters.all().order_by('category', 'topic', 'term',
+                                                                                      'variable_level_1', 'variable_level_2',
+                                                                                      'variable_level_3', 'detailed_variable'))))
 
     rows.append(('Sensor names', render_object(metadata_entry.sensor_names())))
 
@@ -60,7 +62,12 @@ def metadata_entry_context(id):
 
     rows.append(('Spatial coverage', render_object(metadata_entry.spatial_coverage)))
 
-    rows.append(('Location', render_object(metadata_entry.location)))
+    rows.append(('Location', render_object(metadata_entry.location.all().order_by('location_category',
+                                                                                  'location_type',
+                                                                                  'location_subregion1',
+                                                                                  'location_subregion2',
+                                                                                  'location_subregion3',
+                                                                                  'detailed_location'))))
 
     rows.append(('Data resolution', render_object(metadata_entry.data_resolution)))
 
@@ -206,12 +213,12 @@ def object_to_html(object, specification_list, separator):
     return output
 
 def render_iterable(qs, separator):
-    output = []
+    output = set()
 
     for object in qs:
-        output.append(render_object(object))
+        output.add(render_object(object))
 
-    return separator.join(output)
+    return separator.join(sorted(output))
 
 
 def render_object(object, separator="<br>"):
@@ -285,6 +292,6 @@ def render_object(object, separator="<br>"):
         html = "-"
     else:
         print("Warning, calling str() to render an object. Type:",type(object),"object:",object)
-        html = str(object)
+        html = str(object).replace("\n", "<br>")
 
     return html
