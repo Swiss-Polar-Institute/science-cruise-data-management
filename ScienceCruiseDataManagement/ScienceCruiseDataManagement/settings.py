@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'data_storage_management',
     'main',  # ScienceCruiseManagement main app
     'metadata',
+    'ctd'
 ]
 
 MIDDLEWARE = [

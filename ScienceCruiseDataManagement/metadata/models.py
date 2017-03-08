@@ -502,9 +502,8 @@ class MetadataEntry(models.Model):
             query = Device.objects.filter(specificdevice=specific_device)
 
             for device in query:
-                for device_type in device.main_device_type.all():
-                    if device_type.source == "globalchangemasterdirectory":
-                        gcmd.append(device_type)
+                for instrument in device.instruments.all():
+                    gcmd.append(instrument)
 
         return gcmd
 
