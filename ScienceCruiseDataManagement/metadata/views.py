@@ -39,7 +39,6 @@ def metadata_entry_context(id):
         return "No metadata found"
 
     rows = []
-    rows.append(('Distribution', render_object(Distribution.objects.filter(metadata_entry=id))))
 
     rows.append(('ID', render_object(metadata_entry.entry_id)))
 
