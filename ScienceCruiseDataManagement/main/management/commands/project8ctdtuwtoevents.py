@@ -70,11 +70,14 @@ class Command(BaseCommand):
 
                 for entry in existing_entries_for_this_project_cast:
                     if int(entry.event.number) != int(sample.event.number):
-                        print("Contradictory information for project CTD/UW number {} {}".format(sample.expedition_sample_code, sample.project_sample_number))
-                        print("This was recorded as Event {} but was also recorded as Event {}".format(entry.event, sample.event))
+                        print("Contradictory information for project CTD/UW number: {}{}".format(type_of_information, number))
+                        print("Expedition sample number: {}, project sample number: {}".format(sample.expedition_sample_code, sample.project_sample_number))
 
                         for s in entry.samples.all():
-                            print("{} {}".format(s.expedition_sample_code, s.project_sample_number))
+                            print(
+                                "This was recorded as Event {}: expedition sample number {}, project sample number: {}".format(
+                                    entry.event, s.expedition_sample_code, s.project_sample_number))
+
                         # if isinstance(entry, ProjectCtdToEvent):
                         #     print("Previous project sample number: {} Current sample number: {}".format(entry.project_ctd_cast_number, sample.project_sample_number))
                         # elif isinstance(entry, ProjectUnderwayToEvent):
