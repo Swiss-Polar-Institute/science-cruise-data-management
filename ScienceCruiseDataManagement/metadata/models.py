@@ -337,7 +337,7 @@ class DataCenter(models.Model):
     def __str__(self):
         personnel = self.personnel.all()
 
-        personnel_list = ", ".join([str(person) for person in personnel])
+        personnel_list = ", ".join([str(person) for person in personnel.all().order_by('person__name_last')])
 
         return "{} ({})".format(self.data_center_name, personnel_list)
 
