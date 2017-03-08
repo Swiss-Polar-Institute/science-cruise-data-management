@@ -135,7 +135,7 @@ UUID: {_To_User} {Uuid}
 There are some oversized emails in your mailbox (see the bottom of this email for details).
 
 You will not receive the oversized email and the attachment will not be downloaded.
-We recommend you contact the sender and ask for a smaller version (<200 KB).
+We recommend you contact the sender and ask for a smaller version (<300 KB).
 
 If it's really crucial to download the attachment, forward the details below for the
 relevant email, to data@ace-expedition.net and we will try to download it. When it has

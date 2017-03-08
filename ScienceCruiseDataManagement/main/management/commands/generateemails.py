@@ -71,7 +71,7 @@ class Command(BaseCommand):
             print()
             print("A FEW TIPS:")
             print("- Set up your out reply and mention this this address but please DO NOT set up any email forwarding. Ask contacts not to send you attachments and to check their junk folders for replies.")
-            print("- Emails are limited to a size of 200 KB. If a bigger email is sent you will receive a notification. If you need to send a bigger email come and speak with the data team.")
+            print("- Emails are limited to a size of 300 KB. If a bigger email is sent you will receive a notification. If you need to send a bigger email come and speak with the data team.")
             print("- Please note that this email address and all messages will not be usable or accessible when you leave the ship, so please save anything you may need whilst still on board.")
             print()
             print("- To access your email: connect to the expedition network (cable in the cabins and labs, or WiFi on the coffee room next to the mess) and go to http://ace-mail.lan (or http://192.168.20.40 for Macs)")
