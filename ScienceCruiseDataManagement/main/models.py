@@ -558,7 +558,7 @@ class Event(models.Model):
 class EventReport(Event):
     class Meta:
         proxy = True
-        verbose_name_plural="Event report"
+        verbose_name_plural = "Event report"
 
 
 class OpenEvent(models.Model):
@@ -574,19 +574,24 @@ class EventActionDescription(models.Model):
         return "{}".format(self.name)
 
 
-class ProjectCtdToEvent(models.Model):
-    project_ctd_cast_number = models.IntegerField()
-    event = models.ForeignKey(Event)
+class EventsConsistency(models.Model):
+    choice_types = (("CTD", "CTD"),
+                    ("UW", "UW"))
+
+    type = models.CharField(max_length=255, choices=choice_types)
+    thing = models.CharField(max_length=255)
+    event_from_sample = models.ForeignKey(Event)
     project = models.ForeignKey(Project)
     samples = models.ManyToManyField(Sample)
 
     def __str__(self):
-        return "Project CTD number: {} Event: {} Project number: {}".format(self.project_ctd_cast_number,
-                                                                            self.event.number,
-                                                                            self.project.number)
+        return "Project thing: {} Event: {} Project number: {} Type: {}".format(self.thing,
+                                                                         self.event_from_sample,
+                                                                         self.project.number,
+                                                                         self.type)
 
     class Meta:
-        unique_together= (('project_ctd_cast_number', 'event', 'project'),)
+        unique_together = (('event_from_sample', 'project', 'type', 'thing'),)
 
 
 class ProjectUnderwayToEvent(models.Model):

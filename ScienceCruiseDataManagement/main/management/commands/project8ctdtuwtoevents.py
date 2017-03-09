@@ -1,12 +1,13 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import EventAction, Event, Person, Leg, Project, Sample, ProjectCtdToEvent, ProjectUnderwayToEvent
+from main.models import EventAction, Event, Person, Leg, Project, Sample, EventsConsistency, ProjectUnderwayToEvent
 import re
+from django.db.utils import IntegrityError
 
 def get_information_line(string, project_sample_number):
     if string in project_sample_number:
         m = re.match(".*{}([0-9]+).*".format(string), project_sample_number)
         if m is None:
-            print("sample with CTD but can't be found:", project_sample_number)
+            # print("sample with {} but can't be found: {}".format(string, project_sample_number))
             return None
 
         return m.group(1)
@@ -51,46 +52,42 @@ class Command(BaseCommand):
             # print("Project sample number:", project_sample_number)
             (type_of_information, number) = get_information(project_sample_number)
 
+            project_to_event = EventsConsistency()
+
             if type_of_information == "CTD" or type_of_information == "UW":
-                if type_of_information == "CTD":
-                    project_to_event = ProjectCtdToEvent()
-                    project_to_event.project_ctd_cast_number = number
+                project_to_event.type = type_of_information
+                project_to_event.thing = number
+                project_to_event.event_from_sample = sample.event
+                project_to_event.project = sample.project
 
-                elif type_of_information == "UW":
-                    project_to_event = ProjectUnderwayToEvent()
-                    project_to_event.project_underway_number = number
+                existing_entries_for_this_sample = EventsConsistency.objects.filter(project=project).\
+                                                                             filter(thing=number).\
+                                                                             filter(type=type_of_information)
 
-                project_to_event.event = sample.event
-                project_to_event.project = project
-
-                if type_of_information == "CTD":
-                    existing_entries_for_this_project_cast = ProjectCtdToEvent.objects.filter(project_ctd_cast_number=number).filter(project=project)
-                elif type_of_information == "UW":
-                    existing_entries_for_this_project_cast = ProjectUnderwayToEvent.objects.filter(project_underway_number=number).filter(project=project)
-
-                for entry in existing_entries_for_this_project_cast:
-                    if int(entry.event.number) != int(sample.event.number):
+                for entry in existing_entries_for_this_sample:
+                    if entry.event_from_sample != sample.event:
+                        print("=======================================================================")
                         print("Contradictory information for project CTD/UW number: {}{}".format(type_of_information, number))
                         print("Expedition sample number: {}, project sample number: {}".format(sample.expedition_sample_code, sample.project_sample_number))
+                        print("Now it tries to use event {}".format(sample.event))
 
                         for s in entry.samples.all():
                             print(
                                 "This was recorded as Event {}: expedition sample number {}, project sample number: {}".format(
-                                    entry.event, s.expedition_sample_code, s.project_sample_number))
+                                    entry.event_from_sample, s.expedition_sample_code, s.project_sample_number))
 
-                        # if isinstance(entry, ProjectCtdToEvent):
-                        #     print("Previous project sample number: {} Current sample number: {}".format(entry.project_ctd_cast_number, sample.project_sample_number))
-                        # elif isinstance(entry, ProjectUnderwayToEvent):
-                        #     print("Previous project sample number: {} Current sample number: {}".format(entry.project_underway_number, sample.project_sample_number))
 
-                        #print("Project 2 event: {}".format(project_to_event))
-                        continue
+                project_to_event_query = EventsConsistency.objects.filter(event_from_sample=project_to_event.event_from_sample). \
+                                                                    filter(project=project_to_event.project). \
+                                                                    filter(type=project_to_event.type). \
+                                                                    filter(thing=project_to_event.thing)
 
-                print("=======")
-                project_to_event.save()
-                project_to_event.samples.add(sample)
-                print("From sample: {} {}".format(sample.expedition_sample_code, sample.project_sample_number))
-                print("Saved: {}".format(project_to_event))
-                print("")
-                print("=======")
-                project_to_event.save()
+                if project_to_event_query.exists():
+                    project_to_event = project_to_event_query[0]
+                    project_to_event.samples.add(sample)
+                    project_to_event.save()
+                else:
+                    project_to_event.save()
+                    if sample not in project_to_event.samples.all():
+                        project_to_event.samples.add(sample)
+                        project_to_event.save()

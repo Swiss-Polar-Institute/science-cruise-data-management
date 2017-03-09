@@ -69,7 +69,7 @@ def metadata_entry_context(id):
                                                                                   'location_subregion3',
                                                                                   'detailed_location'))))
 
-    rows.append(('Data resolution', render_object(metadata_entry.data_resolution)))
+    rows.append(('Data resolution', "<ul><li>" + render_object(metadata_entry.data_resolution, separator="<li>") + "</ul>"))
 
     rows.append(('Projects', render_object(metadata_entry.project)))
 
@@ -234,7 +234,7 @@ def render_object(object, separator="<br>"):
         html = render_iterable(object, separator)
     elif is_many_to_many:
         objects = object.all()
-        html = render_object(objects)
+        html = render_object(objects, separator=separator)
     elif isinstance(object, Distribution):
         specification_list = []
         specification_list.append({'field_name': 'distribution_format',
@@ -292,6 +292,6 @@ def render_object(object, separator="<br>"):
         html = "-"
     else:
         print("Warning, calling str() to render an object. Type:",type(object),"object:",object)
-        html = str(object).replace("\n", "<br>")
+        html = str(object).replace("\n", separator)
 
     return html

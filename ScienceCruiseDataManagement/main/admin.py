@@ -829,17 +829,23 @@ class TimeChangeAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin,
     list_display = ('date_changed_utc', 'difference_to_utc_after_change')
     ordering = ['date_changed_utc']
 
+
 class DepthAdmin(admin.ModelAdmin):
     list_display = ('date_time', 'depth')
     ordering = ['-date_time']
 
-class ProjectCtdToEventAdmin(admin.ModelAdmin):
-    list_display = ('project_ctd_cast_number', 'event', 'project')
-    ordering = ['-project_ctd_cast_number']
 
-class ProjectUnderwayToEventAdmin(admin.ModelAdmin):
-    list_display = ('project_underway_number', 'event', 'project')
-    ordering = ['-project_underway_number']
+class EventsConsistencyAdmin(admin.ModelAdmin):
+    list_display = ('type', )
+
+# class EventsConsistencyAdmin(admin.ModelAdmin):
+#     list_display = ('event_from_sample', 'project', 'samples_list', 'type')
+#     ordering = ['-event_from_sample']
+#
+#     def samples_list(self, obj):
+#         samples = obj.samples.all()
+#
+#         return ", ".join([str(sample) for sample in samples])
 
 
 admin.site.register(main.models.Depth, DepthAdmin)
@@ -887,8 +893,7 @@ admin.site.register(main.models.Device, DeviceAdmin)
 admin.site.register(main.models.CtdCast, CtdCastAdmin)
 admin.site.register(main.models.TmrCast, TmrCastAdmin)
 admin.site.register(main.models.OnboardRole, OnboardRoleAdmin)
-admin.site.register(main.models.ProjectCtdToEvent, ProjectCtdToEventAdmin)
-admin.site.register(main.models.ProjectUnderwayToEvent, ProjectUnderwayToEventAdmin)
+admin.site.register(main.models.EventsConsistency, EventsConsistencyAdmin)
 
 ADMIN_SITE_TITLE = 'Ace Data Admin'
 ADMIN_SITE_HEADER = 'ACE Data Administration'

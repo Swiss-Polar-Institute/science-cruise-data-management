@@ -325,8 +325,23 @@ class DataResolution(models.Model):
     temporal_resolution = models.CharField(max_length=20, null=True, blank=True, help_text='the frequency of data sampled.')
     temporal_resolution_range = models.ForeignKey('TemporalResolutionRange', null=True, blank=True, help_text='The range should be selected based on the specified <Temporal_Resolution>.')
 
+    @staticmethod
+    def _append(label, content, data_list):
+        if content is not None and content != "":
+            data_list.append("{}:{}".format(label, content))
+        else:
+            pass
+
     def __str__(self):
-        return "{} {} {} {}".format(self.latitude_resolution, self.longitude_resolution, self.vertical_resolution, self.temporal_resolution)
+        data_result = []
+        DataResolution._append("Latitude Resolution", self.latitude_resolution, data_result)
+        DataResolution._append("Longitude resolution", self.longitude_resolution, data_result)
+        DataResolution._append("Horizontal resolution range", self.horizontal_resolution_range, data_result)
+        DataResolution._append("Vertical resolution", self.vertical_resolution, data_result)
+        DataResolution._append("Temporal resolution", self.temporal_resolution, data_result)
+        DataResolution._append("Temporal resolution range", self.temporal_resolution_range, data_result)
+
+        return " ".join(data_result)
 
 
 class DataCenter(models.Model):
