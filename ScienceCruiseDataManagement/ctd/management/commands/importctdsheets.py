@@ -4,16 +4,23 @@ from main.models import CtdCast, Person, Event, Leg
 import csv
 from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
+import glob
+import os
 
 class Command(BaseCommand):
     help = 'Import CTD sheets'
 
     def add_arguments(self, parser):
-        parser.add_argument('filename', type=str)
+        parser.add_argument('basedirectory', type=str)
 
     def handle(self, *args, **options):
-        filename = options['filename']
-        import_ctd_sheet(filename)
+        basedirectory = options['basedirectory']
+
+        if os.path.isdir(basedirectory):
+            for filename in glob.glob(os.path.join(basedirectory, "*")):
+                import_ctd_sheet(filename)
+        else:
+            import_ctd_sheet(basedirectory)
 
 def read_all(csv_file):
     file = []
@@ -30,20 +37,76 @@ def col_letter_to_index(column):
 
 
 def import_ctd_variables(all_file):
-    for col_index in range(col_letter_to_index('F'), col_letter_to_index('U')):
+    column = first_column_data(all_file)
+    row = row_for_depth(all_file)
+
+    while True:
+        variable_name = str_row_col(all_file, row, column).lower()
+
+        if variable_name == "available vol (l)" or variable_name == "available volume (l)":
+            break
+
         ctd_variable = CtdVariable()
-        ctd_variable.name = all_file[7][col_index]
+        ctd_variable.name = variable_name
+
         try:
             ctd_variable.save()
         except IntegrityError:
             pass
 
+        column = chr(ord(column)+1)
+
+
+def row_for_depth(all_file):
+    row_number = 1
+
+    for row in all_file:
+        text = row[0].replace(" ", "").lower()
+        if text == "depth(m)" or text == "triggerdepth(m)" or text == "actualdepth(m)":
+            return row_number
+        row_number += 1
+
+    assert False
+
+
+def column_for_niskin_number(all_file):
+    headers_row = row_for_depth(all_file)
+
+    row = all_file[headers_row-1]
+
+    column = 'A'
+    for cell in row:
+        if cell == "Niskin #":
+            return column
+
+        column = chr(ord(column)+1)
+
+    return column
+
+def first_column_data(all_file):
+    headers_row = row_for_depth(all_file)
+
+    row = all_file[headers_row-1]
+
+    column = 'A'
+    previous_cell = None
+    for cell in row:
+        if cell != "" and previous_cell == "":
+            return column
+        elif cell == "Bottle Integrity":
+            return chr(ord(column)+1)
+
+        previous_cell = cell
+        column = chr(ord(column) + 1)
+
+    return column
+
 
 def import_ctd_sample_variables(all_file, ctd_cast):
-    niskin = last_int_row_col(all_file, 9, 'C')
+    niskin = last_int_row_col(all_file, row_for_depth(all_file)+1, column_for_niskin_number(all_file))
 
     while True:
-        row = 8 + niskin
+        row = row_for_depth(all_file) + niskin
 
         if row >= len(all_file) or \
             last_str_row_col(all_file, row, 'C') != last_str_row_col(all_file, row, 'C') != str(niskin) or \
@@ -78,9 +141,10 @@ def import_ctd_sample_variables(all_file, ctd_cast):
 
         while True:
             volume = all_file[row][col_index]
-            variable = all_file[7][col_index]
+            variable = all_file[row_for_depth(all_file)-1][col_index]
 
-            if variable == "Available Vol (L)":
+            lowercase_variable = variable.lower()
+            if lowercase_variable == "available vol (l)" or lowercase_variable == "available volume (l)":
                 break
 
             ctd_sample_volume = CtdSampleVolume()
@@ -101,8 +165,6 @@ def import_ctd_sample_variables(all_file, ctd_cast):
                 ctd_sample_volume.ctd_bottle_trigger = ctd_bottle_trigger
                 ctd_sample_volume.save()
 
-                print("CTD sample volume: {}".format(ctd_sample_volume))
-
             col_index += 1
 
         niskin += 1
@@ -118,6 +180,12 @@ def last_str_row_col(all_file, row, col):
 
     return all_file[row-1][col_letter_to_index(col)].split(" ")[-1]
 
+def str_row_col(all_file, row, col):
+    assert row-1 >= 0
+    assert col_letter_to_index(col) >= 0
+
+    return all_file[row-1][col_letter_to_index(col)]
+
 
 def last_int_row_col(all_file, row, col):
     string = last_str_row_col(all_file, row, col)
@@ -125,46 +193,73 @@ def last_int_row_col(all_file, row, col):
     try:
         int(string)
     except ValueError:
-        print("String is not convertible to int:", string)
         assert False
 
     return int(last_str_row_col(all_file, row, col))
 
 
 def name_to_person(name):
+    name = name.replace(" ", "").lower()
     print(name)
-    if name == "Thalia":
+    if "_________" in name:
+        return None
+    elif name == "thalia" or name == "tahlia":
         name_last = "Henry"
-    elif name == "MNH":
+    elif name == "mnh":
         name_last = "Houssais"
+    elif name == "":
+        return None
     else:
+        print("Can't find the name _{}_".format(name))
         assert False
 
     return Person.objects.get(name_last=name_last)
 
+def find_string(all_csv, label, none_if_not_found=False):
+    for row in all_csv:
+        for cell in row:
+            if cell.startswith(label):
+                return cell[len(label):].strip()
+
+    if none_if_not_found:
+        return None
+    else:
+        assert False
+
 def create_ctd_cast(all_file, filename):
     ctd_cast = CtdCast()
 
-    ctd_cast.ctd_cast_number = last_int_row_col(all_file, 2, 'A')
-    ctd_cast.event_number = Event.objects.all().get(number=last_int_row_col(all_file, 4, 'A'))
-    ctd_cast.ctd_operator = name_to_person(last_str_row_col(all_file, 5, 'A'))
+    # ctd_cast.ctd_cast_number = last_int_row_col(all_file, 2, 'A')
+    # ctd_cast.event_number = Event.objects.all().get(number=last_int_row_col(all_file, 4, 'A'))
+    # ctd_cast.ctd_operator = name_to_person(last_str_row_col(all_file, 5, 'A'))
+    #
+    # ctd_cast.ctd_file_name = last_str_row_col(all_file, 6, 'A')
+    # ctd_cast.ice_coverage = last_int_row_col(all_file, 5, 'F')
 
-    ctd_cast.ctd_file_name = last_str_row_col(all_file, 6, 'A')
-    ctd_cast.ice_coverage = last_int_row_col(all_file, 5, 'F')
+    ctd_cast.ctd_cast_number = find_string(all_file, 'Cast #')
+    ctd_cast.event_number = Event.objects.all().get(number=find_string(all_file, "Event #"))
+    ctd_cast.ctd_operator = name_to_person(find_string(all_file, "CTD Operator"))
+
+    ctd_cast.ctd_file_name = find_string(all_file, "CTD file:", none_if_not_found=True)
 
     if "Leg2" in filename:
         ctd_cast.leg_number = Leg.objects.all().get(number=2)
     elif "Leg3" in filename:
-        ctd_cast.leg_number = Leg.objects.all().get(number=2)
+        ctd_cast.leg_number = Leg.objects.all().get(number=3)
     else:
         assert False
 
-    ctd_cast.save()
+    try:
+        ctd_cast.save()
+    except IntegrityError:
+        print("Integrity error:", ctd_cast)
+
 
     return ctd_cast
 
 
 def import_ctd_sheet(filename):
+    print("Filename:", filename)
     fp = open(filename, "r")
     csv_file = csv.reader(fp)
 
@@ -172,9 +267,7 @@ def import_ctd_sheet(filename):
 
     import_ctd_variables(all_file)
 
-    event = all_file[3][col_letter_to_index('A')]
-    assert event.startswith("Event # ")
-    event_number = last_int_row_col(all_file, 4, 'A')
+    event_number = find_string(all_file, "Event #")
 
     try:
         ctd_cast = CtdCast.objects.get(event_number=event_number)
