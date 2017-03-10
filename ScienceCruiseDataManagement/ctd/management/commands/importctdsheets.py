@@ -109,12 +109,12 @@ def import_ctd_sample_variables(all_file, ctd_cast):
 
     while True:
         row = row_for_depth(all_file) + niskin
-        niskin_cell_contents = last_int_row_col(all_file, row, column_niskin_numbers)
+        niskin_cell_contents = str_row_col(all_file, row, column_niskin_numbers)
 
         # some niskin bottles might have comments
         niskin_cell_contents = re.sub("[^0-9]", "", niskin_cell_contents)
 
-        assert niskin == niskin_cell_contents
+        assert str(niskin) == str(niskin_cell_contents)
 
         if row >= len(all_file) or \
             last_str_row_col(all_file, row, 'C') != last_str_row_col(all_file, row, 'C') != str(niskin) or \

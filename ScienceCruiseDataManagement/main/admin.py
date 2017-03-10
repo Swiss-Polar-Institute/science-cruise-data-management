@@ -15,6 +15,8 @@ from main.admin_filters import OutcomeFilter, StationReportFilter, ProjectReport
     OffloadingPortFilter, EventFilter, LegFilter, DeviceTypeFilter, ContactFilter, ProjectFilter, UsedLegFilter,\
     LegNumberFilter, StationTypeFilter, PrincipalInvestigatorFilter, PersonLegFilter, OnBoardRoleFilter
 import main.utils_event
+import ctd.admin
+import ctd.models
 
 
 class MissionAdmin(admin.ModelAdmin):
@@ -247,6 +249,8 @@ class CtdCastAdmin(admin.ModelAdmin):
     ordering = ['ctd_cast_number', 'event_number', 'leg_number']
     search_fields = ['ctd_cast_number']
     list_filter = (LegNumberFilter, )
+
+    inlines = [ctd.admin.CtdBottleTriggerInLine]
 
 
 class TmrCastAdmin(admin.ModelAdmin):
