@@ -20,6 +20,7 @@ class Command(BaseCommand):
     def import_data_from_directory(self, directory_name):
         for file in glob.glob(directory_name+"/MAWS*.txt"):
             basename = os.path.basename(file)
+            print("Now will process:", basename)
             if MetDataFile.objects.filter(file_name=basename).exists():
                 print("File already imported: ", basename)
             else:
@@ -49,16 +50,18 @@ class Command(BaseCommand):
                     if outcome_lat_lon == True and outcome_date_time == True:
                         (d['latitude'], d['longitude']) = utilities.nmea_lat_long_to_normal(LAT, LAT_NS, LONG, LONG_EW)
                         (year, month, day, hour, minute, second, millions_of_sec, utc) = utilities.string_date_time_to_tuple(DATE_TIME)
-                        print(year, month, day, hour, minute, second, millions_of_sec, utc)
+                        # print(year, month, day, hour, minute, second, millions_of_sec, utc)
                         d['date_time'] = datetime.datetime(year, month, day, hour, minute, second, millions_of_sec, utc)
 
                         change_dictionary_contents(d)
 
                         met_data_all, created = MetDataAll.objects.get_or_create(date_time=d['date_time'], defaults = d)
                         if created==False:
-                            print("Row skipped: ", d)
+                            # print("Row skipped: ", d)
+                            pass
                         else:
-                            print("INSERTED: ", d)
+                            # print("INSERTED: ", d)
+                            pass
 
                     else:
                         print("Row skipped, invalid NS or EW, or datetime missing: ", d)
@@ -78,13 +81,16 @@ class Command(BaseCommand):
 
                         met_data_wind, created = MetDataWind.objects.get_or_create(date_time=d['date_time'], defaults=d)
                         if created==False:
-                            print("Row skipped: ",d)
+                            # print("Row skipped: ",d)
+                            pass
 
                         else:
-                            print("INSERTED: ", d)
+                            # print("INSERTED: ", d)
+                            pass
 
                 else:
-                    print("Row skipped: ", row)
+                    # print("Row skipped: ", row)
+                    pass
 
                 line_number = line_number+1
 
@@ -93,6 +99,7 @@ def change_dictionary_contents(d):
     for key in d.keys():
         if d[key] == '///' or d[key] == '' or d[key] == '//'  or d[key] == '/':
             d[key] = None
+
 
 def check_value(variable):
     if variable == '':

@@ -6,6 +6,9 @@ def nmea_degrees_to_decimal_degrees(nmea_degrees):
     minutes = nmea_degrees[decimal_position-2:]
     degrees = nmea_degrees[0:decimal_position-2]
 
+    if degrees == "":
+        degrees = "0"
+        
     return float(degrees) + float(minutes)/60
 
 def nmea_lat_long_to_normal(latitude, north_south,
