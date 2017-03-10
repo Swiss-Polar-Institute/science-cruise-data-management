@@ -161,7 +161,7 @@ def import_ctd_sample_variables(all_file, ctd_cast):
                 ctd_sample_volume.volume = float(volume)
                 ctd_sample_volume_to_be_saved = True
 
-            if ctd_sample_volume_to_be_saved is not None:
+            if ctd_sample_volume_to_be_saved:
                 ctd_sample_volume.ctd_bottle_trigger = ctd_bottle_trigger
                 ctd_sample_volume.save()
 

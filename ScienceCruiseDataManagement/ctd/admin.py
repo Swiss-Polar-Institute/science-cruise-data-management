@@ -2,8 +2,11 @@ from django.contrib import admin
 from ctd.models import CtdBottleTrigger, CtdSampleVolume, CtdVariable
 
 class CtdBottleTriggerAdmin(admin.ModelAdmin):
-    list_display = ('ctd_cast', 'depth', 'niskin')
+    list_display = ('ctd_cast_info', 'depth', 'niskin')
     ordering = ['-ctd_cast']
+
+    def ctd_cast_info(self, obj):
+        return "Event: {} Cast: {} Leg: {}".format(obj.ctd_cast.event_number.number, obj.ctd_cast, obj.ctd_cast.leg_number)
 
 class CtdVariableAdmin(admin.ModelAdmin):
     list_display = ('name', )
