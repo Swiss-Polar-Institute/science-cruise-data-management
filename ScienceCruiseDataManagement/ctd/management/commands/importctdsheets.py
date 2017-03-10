@@ -277,9 +277,8 @@ def import_ctd_sheet(filename):
 
     event_number = find_string(all_file, "Event #")
 
-    try:
-        ctd_cast = CtdCast.objects.get(event_number=event_number)
-    except ObjectDoesNotExist:
+    if not CtdCast.objects.get(event_number=event_number):
         ctd_cast = create_ctd_cast(all_file, filename)
-
-    import_ctd_sample_variables(all_file, ctd_cast)
+        import_ctd_sample_variables(all_file, ctd_cast)
+    else:
+        print("Cast in the filename:", filename, "already existed")
