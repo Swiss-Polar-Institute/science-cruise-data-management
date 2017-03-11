@@ -17,7 +17,7 @@ import main.models
 from main import import_gpx_to_stations
 from main.forms import InputShipDateTime, InputCoordinates, InputShipTimes
 from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station,\
-    Message, SamplingMethod, ProposedStation, Leg, Depth, Sample
+    Message, SamplingMethod, ProposedStation, Leg, Depth, Sample, Person
 from ctd.models import CtdSampleVolume
 from main import utils
 from ship_data.models import GpggaGpsFix, GpvtgVelocity
@@ -43,6 +43,8 @@ def calculate_km_travelled():
 
     return distance
 
+def people_in_leg(number):
+    return Person.objects.filter(leg=Leg.objects.get(number=number)).count()
 
 class StatsView(TemplateView):
     template_name = "stats.html"
@@ -54,6 +56,15 @@ class StatsView(TemplateView):
         context['number_of_events'] = Event.objects.filter(outcome="success").count()
         context['litres_of_ctd_water'] = int(CtdSampleVolume.objects.all().aggregate(Sum('volume'))['volume__sum'])
         context['km_travelled'] = int(calculate_km_travelled())
+        context['people_leg1'] = people_in_leg(1)
+        context['people_leg2'] = people_in_leg(2)
+        context['people_leg3'] = people_in_leg(3)
+        context['people_all_legs'] = Person.objects.\
+            filter(leg=Leg.objects.get(number=1)).\
+            filter(leg=Leg.objects.get(number=2)).\
+            filter(leg=Leg.objects.get(number=3)).count()
+        context['terrestial_sites'] = 13
+        context['most_southerly_point'] = "-74.009 -127.475"
 
         return context
 
