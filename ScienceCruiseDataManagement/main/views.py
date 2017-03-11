@@ -17,14 +17,28 @@ import main.models
 from main import import_gpx_to_stations
 from main.forms import InputShipDateTime, InputCoordinates, InputShipTimes
 from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station,\
-    Message, SamplingMethod, ProposedStation, Leg, Depth
+    Message, SamplingMethod, ProposedStation, Leg, Depth, Sample
+from ctd.models import CtdSampleVolume
 from main import utils
 from ship_data.models import GpggaGpsFix, GpvtgVelocity
 import main.find_locations as find_locations
 import subprocess
 import main.utils_coordinates as utils_coordinates
 from django.views.static import serve
+from django.db.models import Sum
 
+
+class StatsView(TemplateView):
+    template_name = "stats.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(StatsView, self).get_context_data(**kwargs)
+
+        context['number_of_samples'] = Sample.objects.all().count()
+        context['number_of_events'] = Event.objects.filter(outcome="success").count()
+        context['litters_of_ctd_water'] = int(CtdSampleVolume.objects.all().aggregate(Sum('volume'))['volume__sum'])
+
+        return context
 
 class MainMenuView(TemplateView):
     template_name = "main_menu.html"
