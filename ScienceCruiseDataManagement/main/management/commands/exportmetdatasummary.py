@@ -66,8 +66,8 @@ def metdata_export(filepath, first_date, last_date):
             continue
 
         # print(information)
-        information['latitude'] = "{:.2f}".format(information['latitude'])
-        information['longitude'] = "{:.2f}".format(information['longitude'])
+        information['latitude'] = "{:.4f}".format(information['latitude'])
+        information['longitude'] = "{:.4f}".format(information['longitude'])
         information['date_time_start'] = date_time.strftime("%Y-%m-%d %H:%M:%S")
         information['date_time_end'] = final_time.strftime("%Y-%m-%d %H:%M:%S")
         information['wind_speed'] = "{:.2f}".format(information_wind['wind_speed_2t']/2)
