@@ -35,7 +35,7 @@ def delete_files(files):
 
 def metdata_export(filepath, first_date, last_date):
     fp = open(filepath, "w")
-    csv_writer = csv.DictWriter(fp, ["date_time", "latitude", "longitude", "temperature", "rh", "wind_speed"])
+    csv_writer = csv.DictWriter(fp, ["date_time_start", "date_time_end", "latitude", "longitude", "temperature", "rh", "wind_speed"])
     csv_writer.writeheader()
 
     date_time = first_date
@@ -68,7 +68,8 @@ def metdata_export(filepath, first_date, last_date):
         # print(information)
         information['latitude'] = "{:.2f}".format(information['latitude'])
         information['longitude'] = "{:.2f}".format(information['longitude'])
-        information['date_time'] = date_time.strftime("%Y-%m-%d %H:%M:%S")
+        information['date_time_start'] = date_time.strftime("%Y-%m-%d %H:%M:%S")
+        information['date_time_end'] = final_time.strftime("%Y-%m-%d %H:%M:%S")
         information['wind_speed'] = "{:.2f}".format(information_wind['wind_speed_2t']/2)
         information['temperature'] = "{:.2f}".format(information['temperature_2t']/2)
         information['rh'] = "{:.2f}".format(information['rh_2t'] / 2)
