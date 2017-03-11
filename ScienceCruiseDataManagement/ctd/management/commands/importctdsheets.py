@@ -143,9 +143,14 @@ def import_ctd_sample_variables(all_file, ctd_cast):
         if comment != "":
             ctd_bottle_trigger.comment = comment
 
-        ctd_bottle_trigger.save()
+        try:
+            ctd_bottle_trigger.save()
+        except IntegrityError:
+            ctd_bottle_trigger = CtdBottleTrigger.objects.filter(ctd_cast=ctd_cast).filter(depth=depth).filter(niskin=niskin)[0]
+            ctd_bottle_trigger.comment = comment
+            ctd_bottle_trigger.save()
 
-        col_index = col_letter_to_index('F')
+        col_index = col_letter_to_index(first_column_data(all_file))
 
         while True:
             volume = all_file[row][col_index]
@@ -157,21 +162,27 @@ def import_ctd_sample_variables(all_file, ctd_cast):
 
             ctd_sample_volume = CtdSampleVolume()
             ctd_sample_volume.ctd_bottle_trigger = ctd_bottle_trigger
-            ctd_sample_volume.ctd_variable = CtdVariable.objects.get(name=variable)
+            ctd_variable = CtdVariable.objects.get(name=variable)
+            ctd_sample_volume.ctd_variable = ctd_variable
 
             if volume == 'x':
-                ctd_sample_volume.volume = None
+                volume = None
                 ctd_sample_volume_to_be_saved = True
             elif volume == '':
-                ctd_sample_volume.volume = None
+                volume = None
                 ctd_sample_volume_to_be_saved = False
             else:
-                ctd_sample_volume.volume = float(volume)
+                volume = float(volume)
                 ctd_sample_volume_to_be_saved = True
 
+            ctd_sample_volume.volume = volume
             if ctd_sample_volume_to_be_saved:
                 ctd_sample_volume.ctd_bottle_trigger = ctd_bottle_trigger
-                ctd_sample_volume.save()
+                try:
+                    ctd_sample_volume.save()
+                except IntegrityError:
+                    ctd_sample_volume = CtdSampleVolume.objects.filter(ctd_bottle_trigger=ctd_bottle_trigger).filter(ctd_variable=ctd_variable)
+                    ctd_sample_volume.volume = volume
 
             col_index += 1
 
