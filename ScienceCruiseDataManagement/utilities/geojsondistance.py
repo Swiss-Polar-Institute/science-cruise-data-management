@@ -9,7 +9,7 @@ import math
 def calculate_distance(origin, destination):
     lat1, lon1 = origin
     lat2, lon2 = destination
-    radius = 6356.752  # km
+    radius = 6371  # km
     dlat = math.radians(lat2 - lat1)
     dlon = math.radians(lon2 - lon1)
     a = math.sin(dlat / 2) * math.sin(dlat / 2) + math.cos(math.radians(lat1)) \
@@ -20,35 +20,35 @@ def calculate_distance(origin, destination):
 
 g = geojson.load(open("/home/carles/track.geojson"))
 
-previous = None
-distance = 0
-for item in g.get('coordinates'):
-    if previous is not None:
-        distance += calculate_distance(previous, item)
-        print(vincenty(previous, item).kilometers, item)
-
-    previous = item
-
-print(distance)
 
 previous = None
 distance = 0
 for item in g.get('coordinates'):
+    print(item)
     if previous is not None:
-            distance += vincenty(previous, item).kilometers
-            print(vincenty(previous, item).kilometers, item)
+            distance += vincenty((previous[1], previous[0]), (item[1], item[0])).kilometers
 
     previous = item
 
-print(distance)
+print("Vincenty:", distance)
 
 
 previous = None
 distance = 0
 for item in g.get('coordinates'):
     if previous is not None:
-            distance += great_circle(previous, item).kilometers
+        distance += calculate_distance((previous[1], previous[0]), (item[1], item[0]))
 
     previous = item
 
-print(distance)
+print("Harvesine:", distance)
+
+previous = None
+distance = 0
+for item in g.get('coordinates'):
+    if previous is not None:
+            distance += great_circle((previous[1], previous[0]), (item[1], item[0])).kilometers
+
+    previous = item
+
+print("Great circle:", distance)

@@ -26,6 +26,22 @@ import subprocess
 import main.utils_coordinates as utils_coordinates
 from django.views.static import serve
 from django.db.models import Sum
+import geojson
+
+def calculate_km_traveled():
+    fp = open(settings.TRACK_MAP_FILEPATH)
+
+    g = geojson.load(fp)
+
+    previous = None
+    distance = 0
+    for item in g.get('coordinates'):
+        if previous is not None:
+            distance += utils_coordinates.calculate_distance((previous[1], previous[0]), (item[1], item[0]))
+
+        previous = item
+
+    return distance
 
 
 class StatsView(TemplateView):
@@ -37,6 +53,7 @@ class StatsView(TemplateView):
         context['number_of_samples'] = Sample.objects.all().count()
         context['number_of_events'] = Event.objects.filter(outcome="success").count()
         context['litres_of_ctd_water'] = int(CtdSampleVolume.objects.all().aggregate(Sum('volume'))['volume__sum'])
+        context['km_traveled'] = int(calculate_km_traveled())
 
         return context
 
