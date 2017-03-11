@@ -497,12 +497,15 @@ def ship_date_times_to_utc(ship_date_times):
             else:
                 date_time_utc = "Unknown"
 
+            utc_julian_day = date_time_utc.strftime("%j")
+
         except ValueError:
-            date_time_utc = "Invalid"
+            date_time_utc = "Invalid format"
+            utc_julian_day = "Invalid format"
 
         output.append({'ship_date_time': ship_date_time,
                        'utc_date_time': date_time_utc,
-                       'utc_julian_day': date_time_utc.strftime("%j")
+                       'utc_julian_day': utc_julian_day
                        })
 
     return output
