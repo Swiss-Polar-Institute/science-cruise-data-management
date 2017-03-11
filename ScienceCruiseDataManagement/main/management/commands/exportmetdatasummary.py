@@ -46,8 +46,8 @@ def metdata_export(filepath, first_date, last_date):
         initial_time = date_time
         final_time = date_time + datetime.timedelta(minutes=interval)
 
-        print("Initial: ", initial_time)
-        print("Final: ", final_time)
+        # print("Initial: ", initial_time)
+        # print("Final: ", final_time)
 
         query = Q(date_time__gt=initial_time) & Q(date_time__lt=final_time)
 
@@ -65,7 +65,7 @@ def metdata_export(filepath, first_date, last_date):
 
             continue
 
-        print(information)
+        # print(information)
         information['latitude'] = "{:.2f}".format(information['latitude'])
         information['longitude'] = "{:.2f}".format(information['longitude'])
         information['date_time'] = date_time.strftime("%Y-%m-%d %H:%M:%S")
@@ -73,7 +73,7 @@ def metdata_export(filepath, first_date, last_date):
         information['temperature'] = "{:.2f}".format(information['temperature_2t']/2)
         information['rh'] = "{:.2f}".format(information['rh_2t'] / 2)
 
-        print(information)
+        # print(information)
 
         del(information['temperature_2t'])
         del(information['rh_2t'])
