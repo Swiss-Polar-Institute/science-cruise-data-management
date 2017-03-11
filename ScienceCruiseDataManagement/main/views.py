@@ -36,7 +36,7 @@ class StatsView(TemplateView):
 
         context['number_of_samples'] = Sample.objects.all().count()
         context['number_of_events'] = Event.objects.filter(outcome="success").count()
-        context['litters_of_ctd_water'] = int(CtdSampleVolume.objects.all().aggregate(Sum('volume'))['volume__sum'])
+        context['litres_of_ctd_water'] = int(CtdSampleVolume.objects.all().aggregate(Sum('volume'))['volume__sum'])
 
         return context
 
