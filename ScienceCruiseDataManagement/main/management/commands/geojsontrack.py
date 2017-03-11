@@ -35,8 +35,9 @@ class GeoJsonTrack:
 
             if location.latitude is not None and location.longitude is not None:
                 locations.append((location.longitude, location.latitude))
-
-            current_date = current_date + time_delta
+                current_date = locations.date_time + time_delta
+            else:
+                current_date = current_date + time_delta
 
         track = geojson.LineString(locations)
 
