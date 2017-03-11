@@ -28,7 +28,7 @@ from django.views.static import serve
 from django.db.models import Sum
 import geojson
 
-def calculate_km_traveled():
+def calculate_km_travelled():
     fp = open(settings.TRACK_MAP_FILEPATH)
 
     g = geojson.load(fp)
@@ -53,7 +53,7 @@ class StatsView(TemplateView):
         context['number_of_samples'] = Sample.objects.all().count()
         context['number_of_events'] = Event.objects.filter(outcome="success").count()
         context['litres_of_ctd_water'] = int(CtdSampleVolume.objects.all().aggregate(Sum('volume'))['volume__sum'])
-        context['km_traveled'] = int(calculate_km_traveled())
+        context['km_travelled'] = int(calculate_km_travelled())
 
         return context
 

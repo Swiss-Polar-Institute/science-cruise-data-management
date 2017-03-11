@@ -574,6 +574,22 @@ class EventActionDescription(models.Model):
         return "{}".format(self.name)
 
 
+class EventsConsistencyV2(models.Model):
+    choice_types = (("CTD", "CTD"),
+                    ("UW", "UW"))
+
+    type = models.CharField(max_length=255, choices=choice_types)
+    event_from_project_code = models.ForeignKey(Event)
+    event_from_expedition_code = models.ForeignKey(Event, related_name="Event_02")
+    project = models.ForeignKey(Project)
+    sample = models.ForeignKey(Sample)
+
+    def __str__(self):
+        return "Type: {} event from project code: {} event from expedition code: {} project: {} sample: {}".format(
+                        self.type, self.event_from_project_code, self.event_from_expedition_code,
+                        self.project, self.sample)
+
+
 class EventsConsistency(models.Model):
     choice_types = (("CTD", "CTD"),
                     ("UW", "UW"))
@@ -592,20 +608,6 @@ class EventsConsistency(models.Model):
 
     class Meta:
         unique_together = (('event_from_sample', 'project', 'type', 'thing'),)
-
-
-class ProjectUnderwayToEvent(models.Model):
-    project_underway_number = models.IntegerField()
-    event = models.ForeignKey(Event)
-    project = models.ForeignKey(Project)
-    samples = models.ManyToManyField(Sample)
-
-    def __str__(self):
-        return "Project Underway number: {} Event: {} Project number: {}".format(self.project_underway_number,
-                                                                            self.event.number,
-                                                                            self.project.number)
-    class Meta:
-        unique_together = (('project_underway_number', 'event', 'project'),)
 
 
 class CtdCast(models.Model):
