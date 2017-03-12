@@ -56,6 +56,8 @@ class Item(models.Model):
 
     path_storage = models.CharField(max_length=255, null=True, blank=True, help_text="If the file/directory are saved in a specific place instead of the standard place")
 
+    backup_disabled = models.BooleanField(default=False, help_text="To disable backups from this directory")
+
     def __str__(self):
         if self.source_directory=="null":
             return "Data directory: {}".format(self.destination_directory)
