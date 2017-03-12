@@ -3,6 +3,15 @@ import csv
 import datetime
 import os
 
+def string2datetime(string):
+    try:
+        date_time = datetime.datetime.strptime(string, "%d-%b-%Y %H:%M")
+    except ValueError:
+        string = string.replace("Dez", "Dec")
+        string = string.replace("Mrz", "Mar")
+        date_time = datetime.datetime.strptime(string, "%d. %b-%Y %H:%M")
+
+    return date_time
 
 class Command(BaseCommand):
     help = 'Converts an observations spreadsheet to events one (so then it can be imported)'
@@ -15,7 +24,7 @@ class Command(BaseCommand):
         self.convert_spreadsheet(options['filename'])
 
     def convert_spreadsheet(self, input_filename):
-        csv_reader = csv.reader(open(input_filename, encoding = 'utf-8', errors='ignore'))
+        csv_reader = csv.reader(open(input_filename, encoding='utf-8', errors='ignore'), delimiter=";")
 
         new_filename = os.path.basename(input_filename)
 
@@ -35,44 +44,45 @@ class Command(BaseCommand):
         column = column_after_headers(input_spreadsheet)
 
         current_event_start_date_time_formatted = None
-        last_stop_time_formatted = None
-        last_start_time_formatted = None
-        last_stop_time_formatted = None
+        current_start_date = None
+        previous_start_time_formatted = None
+        previous_stop_time_formatted = None
 
         while column < number_of_columns(input_spreadsheet):
-            current_start_time = input_spreadsheet[gmt_start_row()][column]
-            current_stop_time = input_spreadsheet[gmt_stop_row()][column]
-            current_date = input_spreadsheet[date_row()][column]
+            current_start_date = input_spreadsheet[gmt_date_row()][column]
+            current_start_time = input_spreadsheet[gmt_start_time_row()][column]
+            current_stop_time = input_spreadsheet[gmt_stop_time_row()][column]
+            current_date = input_spreadsheet[gmt_date_row()][column]
 
             if current_date == "":
                 break
 
-            if "Dec" in current_date:
+            if "Dec" in current_date or "Dez" in current_date:
                 year = 2016
             else:
                 year = 2017
 
-            formatted_current_start_date_time = datetime.datetime.strptime("{}-{} {}".format(current_date, year, current_start_time), "%d-%b-%Y %H:%M")
-            formatted_current_stop_date_time = datetime.datetime.strptime("{}-{} {}".format(current_date, year, current_stop_time), "%d-%b-%Y %H:%M")
+            formatted_current_start_date_time = string2datetime("{}-{} {}".format(current_date, year, current_start_time))
+            formatted_current_stop_date_time = string2datetime("{}-{} {}".format(current_date, year, current_stop_time))
 
             if current_event_start_date_time_formatted is None:
                 current_event_start_date_time_formatted = formatted_current_start_date_time
 
-            if last_start_time_formatted is not None and last_stop_time_formatted is not None \
-                    and ((formatted_current_start_date_time != last_stop_time_formatted or
+            if previous_start_time_formatted is not None and previous_stop_time_formatted is not None \
+                    and ((formatted_current_start_date_time != previous_stop_time_formatted or
                               (column + 1 == number_of_columns(input_spreadsheet)))): # it's the last one
 
                 if column + 1 == number_of_columns(input_spreadsheet):
-                    last_stop_time_formatted = formatted_current_stop_date_time
+                    previous_stop_time_formatted = formatted_current_stop_date_time
 
-                print("Create new event:", current_event_start_date_time_formatted, last_stop_time_formatted)
+                print("Create new event:", current_event_start_date_time_formatted, previous_stop_time_formatted)
                 csv_writer.writerow(['Predator observing', 'True', 'False', current_event_start_date_time_formatted, 'Begins', 'started',
-                                    last_stop_time_formatted, 'ends', 'stopped', 'personal watch', 'minutes', ''])
+                                    previous_stop_time_formatted, 'ends', 'stopped', 'personal watch', 'minutes', ''])
 
                 current_event_start_date_time_formatted = formatted_current_start_date_time
 
-            last_start_time_formatted = formatted_current_start_date_time
-            last_stop_time_formatted = formatted_current_stop_date_time
+            previous_start_time_formatted = formatted_current_start_date_time
+            previous_stop_time_formatted = formatted_current_stop_date_time
 
             column += 1
 
@@ -85,21 +95,22 @@ def number_of_columns(spreadsheet):
 
 def column_after_headers(spreadsheet):
     """ Returns the column number for 21-Dec (start of the expedition). """
-    for (i, cell) in enumerate(spreadsheet[date_row()]):
-        if cell == "21-Dec":
+    for (i, cell) in enumerate(spreadsheet[gmt_date_row()]):
+        print(cell)
+        if cell == "21-Dec" or cell == "21. Dez":
             return i
 
     # Column not found with 21-Dec
     assert False
 
 
-def gmt_start_row():
+def gmt_start_time_row():
     return 4
 
 
-def gmt_stop_row():
+def gmt_stop_time_row():
     return 5
 
 
-def date_row():
-    return 0
+def gmt_date_row():
+    return 3
