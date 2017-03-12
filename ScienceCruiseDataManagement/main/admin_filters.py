@@ -3,7 +3,8 @@ from django.contrib import admin
 from django.utils.encoding import force_text
 from django.forms.models import model_to_dict
 import main.models
-
+import main.utils
+from django.db.models import Q
 
 class OptionFilter(admin.SimpleListFilter):
     def __init__(self, request, params, model, model_admin):
@@ -311,4 +312,36 @@ class PrincipalInvestigatorFilter(OptionFilter):
         return (
             ('True', 'True'),
             ('False', 'False')
+        )
+
+
+class OtherFilters(OptionFilter):
+    title = "Other filters"
+    parameter_name = "other_filter"
+    template = "admin/options_filter_other.html"
+
+    def filter(self, request, queryset):
+        if self.value() == "no_endtime":
+            filter_open_events = main.utils.filter_open_events()
+            queryset = queryset.filter(filter_open_events).filter(outcome="SUCCESS")
+
+            #Now it has only the open events. But some doesn't have a start time
+
+            extra_filter = Q(number=0)
+            for event in queryset:
+                event_actions = main.models.EventAction.objects.filter(event=event)
+
+                for event_action in event_actions:
+                    if event_action.type != main.models.EventAction.tinstant():
+                        extra_filter = extra_filter | Q(number=event.number)
+                else:
+                    # Events without any associated EventAction yet
+                    extra_filter = extra_filter | Q(number=event.number)
+
+            return queryset.filter(extra_filter)
+        return queryset
+
+    def lookups(self, request, model_admin):
+        return (
+            ("no_endtime", "No endtime"),
         )

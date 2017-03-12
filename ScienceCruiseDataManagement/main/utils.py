@@ -295,3 +295,20 @@ def remove_accents(input_str):
 
 def rfc3339_to_datetime(rfc3339):
     return set_utc(datetime.datetime.strptime(rfc3339, "%Y-%m-%d %H:%M:%S"))
+
+
+def filter_events_success_or_failure():
+    filter_query = Q(outcome='Success') | Q(outcome='Failure')
+
+    return filter_query
+
+
+def filter_open_events():
+    filter_query = Q(number=0)  # Impossible with OR will be the rest
+
+    for open_event in main.models.OpenEvent.objects.all():
+        print("Adding filter for: ", open_event.number)
+        filter_query = filter_query | Q(number=open_event.number)
+
+    return filter_query
+

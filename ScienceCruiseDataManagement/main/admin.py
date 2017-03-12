@@ -13,11 +13,11 @@ import main.utils
 from main.admin_filters import OutcomeFilter, StationReportFilter, ProjectReportFilter, \
     SamplingMethodFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter,\
     OffloadingPortFilter, EventFilter, LegFilter, DeviceTypeFilter, ContactFilter, ProjectFilter, UsedLegFilter,\
-    LegNumberFilter, StationTypeFilter, PrincipalInvestigatorFilter, PersonLegFilter, OnBoardRoleFilter
+    LegNumberFilter, StationTypeFilter, PrincipalInvestigatorFilter, PersonLegFilter, OnBoardRoleFilter,\
+    OtherFilters
 import main.utils_event
 import ctd.admin
 import ctd.models
-
 
 class MissionAdmin(admin.ModelAdmin):
     list_display = ('name', 'acronym', 'institution', 'description')
@@ -167,8 +167,8 @@ class EventActionForm(ModelForm):
 
     @staticmethod
     def open_events_queryset():
-        filter_open_events = EventActionForm._filter_open_events()
-        filter_success_failure = EventActionForm._filter_events_success_or_failure()
+        filter_open_events = main.utils.filter_open_events()
+        filter_success_failure = main.utils.filter_events_success_or_failure()
         open_events = main.models.Event.objects.filter(filter_open_events).filter(filter_success_failure).order_by('-number')
 
         return open_events
@@ -181,21 +181,6 @@ class EventActionForm(ModelForm):
         #return len(self.fields) == 0
         return not self.instance.id
 
-    @staticmethod
-    def _filter_open_events():
-        filter_query = Q(number=0)  # Impossible with OR will be the rest
-
-        for open_event in main.models.OpenEvent.objects.all():
-            filter_query = filter_query | Q(number=open_event.number)
-
-        return filter_query
-
-
-    @staticmethod
-    def _filter_events_success_or_failure():
-        filter_query = Q(outcome='Success') | Q(outcome='Failure')
-
-        return filter_query
 
     class Meta:
         model = main.models.EventAction
@@ -352,7 +337,7 @@ class EventReportResource(import_export.resources.ModelResource):
 
 class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome', 'comments')
-    list_filter = (SamplingMethodFilter, OutcomeFilter, StationReportFilter, ProjectReportFilter, )
+    list_filter = (SamplingMethodFilter, OutcomeFilter, StationReportFilter, ProjectReportFilter, OtherFilters, )
     search_fields = ('number',)
 
     resource_class = EventReportResource
