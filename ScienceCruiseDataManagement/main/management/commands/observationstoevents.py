@@ -65,6 +65,10 @@ class Command(BaseCommand):
             formatted_current_start_date_time = string2datetime("{}-{} {}".format(current_date, year, current_start_time))
             formatted_current_stop_date_time = string2datetime("{}-{} {}".format(current_date, year, current_stop_time))
 
+            if formatted_current_stop_date_time.hour == 0 and formatted_current_stop_date_time.minute == 0:
+                # In the spreadsheet this actually means the day after 00:00, else it would go back in time
+                formatted_current_stop_date_time += datetime.timedelta(days=1)
+
             if current_event_start_date_time_formatted is None:
                 current_event_start_date_time_formatted = formatted_current_start_date_time
 
