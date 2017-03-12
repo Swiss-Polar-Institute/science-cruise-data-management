@@ -99,7 +99,7 @@ class Command(BaseCommand):
             print("Row:", row)
 
             if row['contents'] == '':
-                print("Row without contents")
+                print("Row with 'contents' field empty")
                 print("Do you want to: \n1: Keep processing the row\n2: Skip this row?")
                 print("Type 1 or 2")
                 answer = input()
