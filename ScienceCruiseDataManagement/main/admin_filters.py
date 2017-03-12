@@ -321,7 +321,7 @@ class OtherFilters(OptionFilter):
     template = "admin/options_filter_other.html"
 
     def filter(self, request, queryset):
-        if self.value() == "no_endtime":
+        if self.value() == "missing_times":
             filter_open_events = main.utils.filter_open_events()
             queryset = queryset.filter(filter_open_events).filter(outcome="SUCCESS")
 
@@ -343,5 +343,5 @@ class OtherFilters(OptionFilter):
 
     def lookups(self, request, model_admin):
         return (
-            ("no_endtime", "No endtime"),
+            ("missing_times", "Missing times"),
         )
