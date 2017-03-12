@@ -97,6 +97,22 @@ class Command(BaseCommand):
         for row in reader:
             print("Processing row from file: ", filepath)
             print("Row:", row)
+
+            if row['contents'] == '':
+                print("Row without contents")
+                print("Do you want to: \n1: Keep processing the row\n2: Skip this row?")
+                print("Type 1 or 2")
+                answer = input()
+
+                if answer == "1":
+                    # It will continue processing the rows
+                    pass
+                else:
+                    # Skips to the next row
+                    rows +=1
+                    skipped += 1
+                    continue
+
             original_sample_code = row['ace_sample_number']
 
             code_string = original_sample_code.split('/')[0]
@@ -184,7 +200,7 @@ class Command(BaseCommand):
             else:
                 print("Something else:", outcome)
 
-        print("TOTAL ROWS PROCESSED= ",rows, "; Inserted = ", inserted, "; Identical = ", identical, "; Skipped = ", skipped, "; Replaced = ", replaced)
+        print("TOTAL ROWS PROCESSED= ", rows, "; Inserted = ", inserted, "; Identical = ", identical, "; Skipped = ", skipped, "; Replaced = ", replaced)
 
         return rows_with_errors == 0
 
