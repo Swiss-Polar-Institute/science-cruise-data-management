@@ -16,7 +16,7 @@ class HardDiskAdmin(admin.ModelAdmin):
 
 
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('source_directory', 'destination_directory', 'added_date_time', 'hard_disk', 'shared_resource', 'nas_resource', )
+    list_display = ('source_directory', 'destination_directory', 'added_date_time', 'hard_disk', 'shared_resource', 'nas_resource', 'backup_disabled', )
 
 
 class DirectoryImportLog(admin.ModelAdmin):
