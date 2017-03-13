@@ -77,6 +77,7 @@ class Command(BaseCommand):
                                                     inconsistency.event_from_expedition_code, inconsistency.event_from_project_code))
 
     def link(self):
+        EventsConsistencyV2.objects.all().delete()
         project = Project.objects.get(number=8)
         samples = Sample.objects.filter(project=project).order_by('julian_day')
 
@@ -98,7 +99,7 @@ class Command(BaseCommand):
                     continue
 
                 try:
-                    project_to_event.event_from_project_code = Event.objects.get(number=event_from_project_code)
+                    project_to_event.event_from_project_code = event_from_project_code
                 except ObjectDoesNotExist:
                     print("2 No event for number: {}".format(event_from_project_code))
                     continue

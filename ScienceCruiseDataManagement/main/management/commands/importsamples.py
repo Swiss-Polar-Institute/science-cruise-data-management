@@ -23,7 +23,7 @@ class Command(BaseCommand):
         for file in glob.glob(directory_name + "/*.csv"):
             basename = os.path.basename(file)
             if ImportedFile.objects.filter(file_name=basename).filter(object_type="Samples").exists():
-                print ("File already imported: ", basename)
+                print("File already imported: ", basename)
             else:
                 print("PROCESSING FILES: " + directory_name + "/*.csv")
                 success = self.import_data_from_csv(file)

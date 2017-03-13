@@ -63,6 +63,7 @@ class Command(BaseCommand):
 
             if type_of_information == "CTD" or type_of_information == "UW":
                 project_to_event.type = type_of_information
+                print(type_of_information)
                 project_to_event.event_from_project_code = event_from_project_code
                 project_to_event.event_from_sample = sample.event
                 project_to_event.project = sample.project

@@ -827,6 +827,9 @@ class DepthAdmin(admin.ModelAdmin):
 class EventsConsistencyAdmin(admin.ModelAdmin):
     list_display = ('type', )
 
+class EventsConsistencyAdminV2(admin.ModelAdmin):
+    list_display = ('type', )
+
 # class EventsConsistencyAdmin(admin.ModelAdmin):
 #     list_display = ('event_from_sample', 'project', 'samples_list', 'type')
 #     ordering = ['-event_from_sample']
@@ -883,6 +886,7 @@ admin.site.register(main.models.CtdCast, CtdCastAdmin)
 admin.site.register(main.models.TmrCast, TmrCastAdmin)
 admin.site.register(main.models.OnboardRole, OnboardRoleAdmin)
 admin.site.register(main.models.EventsConsistency, EventsConsistencyAdmin)
+admin.site.register(main.models.EventsConsistencyV2, EventsConsistencyAdminV2)
 
 ADMIN_SITE_TITLE = 'Ace Data Admin'
 ADMIN_SITE_HEADER = 'ACE Data Administration'

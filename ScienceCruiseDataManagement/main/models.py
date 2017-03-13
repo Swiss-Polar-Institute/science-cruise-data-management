@@ -579,7 +579,7 @@ class EventsConsistencyV2(models.Model):
                     ("UW", "UW"))
 
     type = models.CharField(max_length=255, choices=choice_types)
-    event_from_project_code = models.ForeignKey(Event)
+    event_from_project_code = models.IntegerField()
     event_from_expedition_code = models.ForeignKey(Event, related_name="Event_02")
     project = models.ForeignKey(Project)
     sample = models.ForeignKey(Sample)
