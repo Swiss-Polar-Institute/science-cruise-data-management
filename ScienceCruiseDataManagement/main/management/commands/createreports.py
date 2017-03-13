@@ -34,6 +34,7 @@ class ReportProject():
         self.devices_without_directories()
         self.sampling_methods_without_directories()
         self.directories_not_linked()
+        self.underway_samples()
 
     @staticmethod
     def save_into_file(filepath, header, data):
@@ -112,6 +113,23 @@ class ReportProject():
 
         ReportProject.save_into_file(filename, ["id", "specific_device"], information)
 
+
+    def underway_samples(self):
+        filename = "{}/underway_samples.csv".format(self._output_directory)
+
+        information = []
+
+        sampling_method = SamplingMethod.objects.get(name="Underway water sample")
+
+        for sample in Sample.objects.filter(event__sampling_method=sampling_method).order_by('julian_day'):
+            information.append({'event_number': sample.event.number,
+                               'ace_number': sample.expedition_sample_code,
+                               'project_sample': sample.project_sample_number,
+                               'contents': sample.contents,
+                               'specific_contents': sample.specific_contents
+                                })
+
+        ReportProject.save_into_file(filename, ["event_number", "ace_number", "project_sample", "contents", "specific_contents"], information)
 
     def list_devices(self, output_directory, project):
         # Not possible yet
