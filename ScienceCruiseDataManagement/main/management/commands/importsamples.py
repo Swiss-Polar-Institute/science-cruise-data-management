@@ -141,7 +141,12 @@ class Command(BaseCommand):
             sample.storage_location = row['storage_location']
             sample.offloading_port = row['offloading_port']
             sample.destination = row['destination']
-            sample.specific_contents = row['specific_contents']
+
+            if 'specific_contents' in row:
+                # This is an "optional" column: it was ignored until 0b2d3b83cc38d52
+                # now only used if it's there
+                sample.specific_contents = row['specific_contents']
+
             sample.file = basename
 
             code_string = sample.expedition_sample_code.split('/')[0]
