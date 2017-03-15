@@ -25,12 +25,13 @@ class Command(BaseCommand):
             self.process_filename(file)
 
     def convert_to_boolean(self, value):
-        if value == "True":
+        if value.lower() == "true":
             return True
-        elif value == "False":
+        elif value.lower() == "false":
             return False
         else:
             # The boolean wasn't True neither False?
+            print("Unexpected string for boolean:", value.lower())
             assert False
 
 
