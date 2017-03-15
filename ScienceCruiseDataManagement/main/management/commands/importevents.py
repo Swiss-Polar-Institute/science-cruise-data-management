@@ -81,7 +81,19 @@ class Command(BaseCommand):
             # fields as the event that is going to be inserted
             ask_confirmation = False
 
+            previous_event_time = None
+            previous_event = None
+            row_index_to_events = {}
+
+            rows = []
+            row_index = -1
             for row in reader:
+                if row == 10:
+                    break
+
+                rows.append(row)
+                row_index += 1
+
                 # Save event
                 data = self.convert_to_boolean(row['data'])
                 samples = self.convert_to_boolean(row['samples'])
@@ -127,6 +139,18 @@ class Command(BaseCommand):
                 # Save event action begin
                 event_action_begin = EventAction()
                 event_action_begin.time = utils.string_to_date_time(row['start_time'])
+
+                if event_action_begin.time == previous_event_time:
+                    print("This event will be ignored in the creation: it has the same start event time as the previous")
+                    row_index_to_events[row_index] = previous_event
+                    # input()
+                    continue
+
+                previous_event_time = event_action_begin.time
+
+                row_index_to_events[row_index] = event
+
+                previous_event = event
 
                 if event_action_begin.time is None:
                     print("Row", row)
@@ -174,11 +198,11 @@ class Command(BaseCommand):
                 print("Aborting")
                 exit(1)
 
-        # insert_objects actually always return True (or it throws an exception)
-        success = self.insert_objects(events_to_be_inserted)
-        if success:
-            #
-            utils.add_imported(filepath, "Events")
+        # insert_objects actually always the list of inserted objects or throws an exception
+        inserted_objects = self.insert_objects(events_to_be_inserted)
+        utils.add_imported(filepath, "Events")
+
+        self.generate_output_file(rows, row_index_to_events)
 
     def event2str(self, event):
         event_str = """EVENT
@@ -251,12 +275,14 @@ data_source_comments: {data_source_comments}
 
     @transaction.atomic
     def insert_objects(self, events):
+        inserted_events = []
         for complete_event in events:
             event = complete_event[0]
             event_action_begins = complete_event[1]
             event_action_ends = complete_event[2]
 
             event.save()
+            inserted_events.append(complete_event)
             event_action_begins.event = event
 
             if event_action_ends is not None:
@@ -267,4 +293,35 @@ data_source_comments: {data_source_comments}
             if event_action_ends is not None:
                 event_action_ends.save()
 
-        return True
+        return inserted_events
+
+    def generate_output_file(self, rows, row_index_to_events):
+        # This is only used for one of the projects temporary
+        return
+        output_file = open("generated-events.csv", "w")
+        # csv_writer = csv.DictWriter(output_file, ["event_number", "parent_device", "data", "samples", "start_time",
+        #                                           "type", "what_happened_start", "end_time", "type",
+        #                                           "what_happened_end", "time_source", "time_uncertainty",
+        #                                           "general_comments"],
+        #                             extrasaction="ignore")
+
+
+        csv_writer = csv.DictWriter(output_file, ["ace_sample_number", "project_sample_number", "event_number",
+                                                  "julian_day", "leg", "contents", "specific_contents",
+                                                  "crate_number", "storage_type", "storage_location",
+                                                  "preservation", "offloading_port", "destination"],
+                                    extrasaction="ignore")
+
+        csv_writer.writeheader()
+
+        counter = 0
+        for row in rows:
+            row['event_number'] = row_index_to_events[counter]
+            row['project_sample_number'] = row["Sample #"]
+            row['ace_sample_number'] = '="AT/ACE/"&1&"/19/"&D2&"/"&C2&"/PR/"&B2'
+            csv_writer.writerow(row)
+            counter += 1
+
+        output_file.close()
+        print("See file generated events")
+

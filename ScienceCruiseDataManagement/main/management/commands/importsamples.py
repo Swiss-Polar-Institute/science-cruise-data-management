@@ -94,6 +94,8 @@ class Command(BaseCommand):
         replaced = 0
         rows_with_errors = 0
 
+        previous_event_time = None
+
         for row in reader:
             print("Processing row from file: ", filepath)
             print("Row:", row)
