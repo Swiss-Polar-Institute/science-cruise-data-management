@@ -52,7 +52,13 @@ class Command(BaseCommand):
 
         while True:
             query_set = model.objects.filter(**{field: value})
-            if len(query_set) == 0:
+            if value == "":
+                print("Processing row: ", row)
+                print("Wanted a '{}' with field: '{}' and value: '{}' but not found".format(model, field, value))
+                print("Since it's empty, press ENTER to confirm that will be assigned None")
+                input()
+                return None
+            elif len(query_set) == 0:
                 print("Processing row: ", row)
                 print("Wanted a '{}' with field: '{}' and value: '{}' but not found".format(model, field, value))
                 print("Please change the database to have it and press ENTER. Or cancel the import of this spreadsheet (Ctl+C)")
@@ -151,7 +157,11 @@ class Command(BaseCommand):
 
                 ask_confirmation |= self.report_event_exists(event)
                 ask_confirmation |= self.report_event_action_exists(event_action_begin)
-                ask_confirmation |= self.report_event_action_exists(event_action_end)
+
+                if event_action_end.time is None:
+                    event_action_end = None
+                else:
+                    ask_confirmation |= self.report_event_action_exists(event_action_end)
 
                 events_to_be_inserted.append((event, event_action_begin, event_action_end))
 
@@ -247,9 +257,13 @@ data_source_comments: {data_source_comments}
 
             event.save()
             event_action_begins.event = event
-            event_action_ends.event = event
+
+            if event_action_ends is not None:
+                event_action_ends.event = event
 
             event_action_begins.save()
-            event_action_ends.save()
+
+            if event_action_ends is not None:
+                event_action_ends.save()
 
         return True
