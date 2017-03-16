@@ -156,7 +156,7 @@ class Command(BaseCommand):
                     print("Row", row)
 
                 event_action_begin.description = description_begin
-                event_action_begin.type = EventAction.tbegin()
+                event_action_begin.type = EventAction.text_to_type(row.get('start_type', EventAction.tbegin()))
                 event_action_begin.time_source = time_source
                 event_action_begin.time_uncertainty = time_uncertainty
                 event_action_begin.latitude = row.get('start_latitude', None)
@@ -297,7 +297,6 @@ data_source_comments: {data_source_comments}
 
     def generate_output_file(self, rows, row_index_to_events):
         # This is only used for one of the projects temporary
-        return
         output_file = open("generated-events.csv", "w")
         # csv_writer = csv.DictWriter(output_file, ["event_number", "parent_device", "data", "samples", "start_time",
         #                                           "type", "what_happened_start", "end_time", "type",

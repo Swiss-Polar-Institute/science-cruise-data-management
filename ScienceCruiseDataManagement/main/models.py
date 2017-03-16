@@ -687,6 +687,18 @@ class EventAction(models.Model):
     def tinstant_text():
         return EventAction.type_choices[2][1]
 
+    @staticmethod
+    def text_to_type(text):
+        if text == EventAction.tbegin_text():
+            return EventAction.tbegin()
+        elif text == EventAction.tends_text():
+            return EventAction.tends()
+        elif text == EventAction.tinstant_text():
+            return EventAction.tinstant()
+        else:
+            print("Text was:", text)
+            assert False
+
     type = models.CharField(choices=type_choices, max_length=255, help_text="Select the description of the time that you are entering", verbose_name= "Time description")
     description = models.ForeignKey(EventActionDescription, verbose_name="Description of event action", help_text="Select the description that describes the event action")
 
