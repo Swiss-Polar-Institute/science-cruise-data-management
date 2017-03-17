@@ -86,7 +86,7 @@ class Command(BaseCommand):
             row_index_to_events = {}
 
             rows = []
-            row_index = -1
+            row_index = 0
             for row in reader:
                 if row == 10:
                     break
