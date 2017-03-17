@@ -151,9 +151,16 @@ def process_hard_disk(hard_disk):
 
         wall_clock = datetime.datetime.now().timestamp()
 
-        to_exec = ["rsync", "-rtv",
-            os.path.join(read_config("hard_disk_mount_point"),source),
-            os.path.join(read_config("destination_base_directory"),destination)]
+        origin = os.path.join(read_config("hard_disk_mount_point"), source)
+        origin_files = glob.glob(origin)
+
+        if len(origin_files) == 0:
+            print("File not found: ", origin)
+            assert False
+
+        to_exec = ["rsync", "-rtv" ] + \
+                   origin_files + \
+                  [os.path.join(read_config("destination_base_directory"),destination)]
 
         retval = execute(to_exec)
 

@@ -485,6 +485,7 @@ class Sample(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
     file = models.CharField(max_length=255, blank=True, null=True)
     specific_contents = models.CharField(max_length=255, null=True, blank=True)
+    comments = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return "{}".format(self.expedition_sample_code)
