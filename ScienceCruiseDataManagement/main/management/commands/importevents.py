@@ -342,7 +342,7 @@ data_source_comments: {data_source_comments}
             else:
                 leg_number = 3
 
-            row['ace_sample_number'] = '="AT/ACE/{}/19/"&D{}&"/"&C{}&"/PR/"&B{}'.format(leg_number, counter, counter, counter)
+            row['ace_sample_number'] = '="AT/ACE/{}/19/"&D{}&"/"&C{}&"/PR/"&B{}'.format(leg_number, counter+1, counter+1, counter+1)
             csv_writer.writerow(row)
             counter += 1
 
