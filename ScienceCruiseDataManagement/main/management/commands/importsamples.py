@@ -223,14 +223,15 @@ class Command(BaseCommand):
 
     def find_sample(self, key):
         """Find a sample relating to a key"""
-        sample_queryset = Sample.objects.filter(expedition_sample_code=key)
+        sample_queryset = Sample.objects.filter(project_sample_number=key)
         if sample_queryset.exists():
+            assert len(sample_queryset) == 1
             return sample_queryset[0]
         else:
             return None
 
     def update_database(self, spreadsheet_sample):
-        existing_sample = self.find_sample(spreadsheet_sample.expedition_sample_code)
+        existing_sample = self.find_sample(spreadsheet_sample.project_sample_number)
 
         if existing_sample is None:
             spreadsheet_sample.save()
