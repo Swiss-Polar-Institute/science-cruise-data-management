@@ -329,11 +329,20 @@ data_source_comments: {data_source_comments}
 
         csv_writer.writeheader()
 
-        counter = 0
+        counter = 1
         for row in rows:
+
             row['event_number'] = row_index_to_events[counter]
             row['project_sample_number'] = row["Sample #"]
-            row['ace_sample_number'] = '="AT/ACE/"&1&"/19/"&D2&"/"&C2&"/PR/"&B2'
+
+            if counter < 8:
+                leg_number=1
+            elif counter < 48:
+                leg_number = 2
+            else:
+                leg_number = 3
+
+            row['ace_sample_number'] = '="AT/ACE/{}/19/"&D{}&"/"&C{}&"/PR/"&B{}'.format(leg_number, counter, counter, counter)
             csv_writer.writerow(row)
             counter += 1
 
