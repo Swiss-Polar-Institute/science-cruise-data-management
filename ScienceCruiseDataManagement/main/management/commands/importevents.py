@@ -72,7 +72,7 @@ class Command(BaseCommand):
                 return query_set[0]
 
     def process_filename(self, filepath):
-        with codecs.open(filepath, encoding = 'utf-8', errors='ignore') as csvfile:
+        with codecs.open(filepath, encoding='utf-8', errors='ignore') as csvfile:
             reader = csv.DictReader(csvfile)
 
             events_to_be_inserted = []
@@ -99,6 +99,14 @@ class Command(BaseCommand):
                 samples = self.convert_to_boolean(row['samples'])
 
                 event = Event()
+
+                if 'event_number' in row and row['event_number'] != None and row['event_number'] != "":
+                    event = Event.objects.get(number=row['event_number'])
+                    row_index_to_events[row_index] = event
+                    print("skipping row", row_index, "because it already had an event")
+                    # input()
+                    continue
+
                 event.data = data
                 event.samples = samples
                 event.sampling_method = self.find_foreign_key_object(['sampling_method', 'parent_device'],
@@ -199,10 +207,16 @@ class Command(BaseCommand):
                 exit(1)
 
         # insert_objects actually always the list of inserted objects or throws an exception
-        inserted_objects = self.insert_objects(events_to_be_inserted)
+        self.insert_objects(events_to_be_inserted)
         utils.add_imported(filepath, "Events")
 
-        self.generate_output_file(rows, row_index_to_events)
+        sample_sheet_filepath = self.sample_sheet_filepath(filepath)
+        self.generate_output_file(rows, row_index_to_events, sample_sheet_filepath)
+
+    def sample_sheet_filepath(self, filepath):
+        filepath_split = filepath.split("/")
+        filepath_split[-1] = "sample-sheet-"+filepath_split[-1]
+        return "/".join(filepath_split)
 
     def event2str(self, event):
         event_str = """EVENT
@@ -275,14 +289,18 @@ data_source_comments: {data_source_comments}
 
     @transaction.atomic
     def insert_objects(self, events):
-        inserted_events = []
         for complete_event in events:
             event = complete_event[0]
+
+            if event.pk is not None:
+                print("Not inserting event, was already inserted:", event.pk)
+                continue
+
             event_action_begins = complete_event[1]
             event_action_ends = complete_event[2]
 
             event.save()
-            inserted_events.append(complete_event)
+            print("Inserted event:", event)
             event_action_begins.event = event
 
             if event_action_ends is not None:
@@ -293,11 +311,9 @@ data_source_comments: {data_source_comments}
             if event_action_ends is not None:
                 event_action_ends.save()
 
-        return inserted_events
 
-    def generate_output_file(self, rows, row_index_to_events):
-        # This is only used for one of the projects temporary
-        output_file = open("generated-events.csv", "w")
+    def generate_output_file(self, rows, row_index_to_events, filepath):
+        output_file = open(filepath, "w")
         # csv_writer = csv.DictWriter(output_file, ["event_number", "parent_device", "data", "samples", "start_time",
         #                                           "type", "what_happened_start", "end_time", "type",
         #                                           "what_happened_end", "time_source", "time_uncertainty",
@@ -322,5 +338,5 @@ data_source_comments: {data_source_comments}
             counter += 1
 
         output_file.close()
-        print("See file generated events")
+        print("See file {}".format(filepath))
 
