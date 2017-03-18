@@ -211,7 +211,7 @@ class Command(BaseCommand):
         utils.add_imported(filepath, "Events")
 
         sample_sheet_filepath = self.sample_sheet_filepath(filepath)
-        self.generate_output_file(rows, row_index_to_events, sample_sheet_filepath)
+        self.generate_samples_sheet(rows, row_index_to_events, sample_sheet_filepath)
 
     def sample_sheet_filepath(self, filepath):
         filepath_split = filepath.split("/")
@@ -312,7 +312,7 @@ data_source_comments: {data_source_comments}
                 event_action_ends.save()
 
 
-    def generate_output_file(self, rows, row_index_to_events, filepath):
+    def generate_samples_sheet(self, rows, row_index_to_events, filepath):
         output_file = open(filepath, "w")
         # csv_writer = csv.DictWriter(output_file, ["event_number", "parent_device", "data", "samples", "start_time",
         #                                           "type", "what_happened_start", "end_time", "type",
