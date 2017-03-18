@@ -17,7 +17,7 @@ import main.models
 from main import import_gpx_to_stations
 from main.forms import InputShipDateTime, InputCoordinates, InputShipTimes
 from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station,\
-    Message, SamplingMethod, ProposedStation, Leg, Depth, Sample, Person
+    Message, SamplingMethod, ProposedStation, Leg, Depth, Sample, Person, ContactDetails
 from ctd.models import CtdSampleVolume
 from main import utils
 from ship_data.models import GpggaGpsFix, GpvtgVelocity
@@ -551,3 +551,13 @@ def ship_date_times_to_utc(ship_date_times):
                        })
 
     return output
+
+
+class ContactDetailsListView(ListView):
+    model = ContactDetails
+    template_name = "list_of_contacts.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(ContactDetailsListView, self).get_context_data(**kwargs)
+
+        return context

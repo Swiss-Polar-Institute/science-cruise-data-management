@@ -830,6 +830,11 @@ class EventsConsistencyAdmin(admin.ModelAdmin):
 class EventsConsistencyAdminV2(admin.ModelAdmin):
     list_display = ('type', )
 
+class ContactDetailsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'other')
+    ordering = ['name']
+
+
 # class EventsConsistencyAdmin(admin.ModelAdmin):
 #     list_display = ('event_from_sample', 'project', 'samples_list', 'type')
 #     ordering = ['-event_from_sample']
@@ -887,6 +892,7 @@ admin.site.register(main.models.TmrCast, TmrCastAdmin)
 admin.site.register(main.models.OnboardRole, OnboardRoleAdmin)
 admin.site.register(main.models.EventsConsistency, EventsConsistencyAdmin)
 admin.site.register(main.models.EventsConsistencyV2, EventsConsistencyAdminV2)
+admin.site.register(main.models.ContactDetails, ContactDetailsAdmin)
 
 ADMIN_SITE_TITLE = 'Ace Data Admin'
 ADMIN_SITE_HEADER = 'ACE Data Administration'

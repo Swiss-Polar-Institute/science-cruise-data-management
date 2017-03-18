@@ -877,3 +877,12 @@ class TimeChange(models.Model):
 
     def __str__(self):
         return "{}".format(self.date_changed_utc)
+
+
+class ContactDetails(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.CharField(max_length=255, null=True, blank=True)
+    other = models.TextField(null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "Contact details"

@@ -18,8 +18,10 @@ from django.contrib import admin
 from data_storage_management.views import HardDiskJson
 from main.views import MainMenuView, MainMapView, PositionsJson, LatestShipPosition, CountryListView, FileStorageView,\
     InteractiveMapView, EventListView, ImportPortsFromGpx, DocumentsView, AccessingDataView, PositionFromDateTime,\
-    CoordinatesConversion, TrackJson, MailState, ShipTimeToUtc, ImageReloaderView, LatestImage, StatsView
-from metadata.views import ProjectListView, MetadataEntryListView, MetadataEntryView, MetadataEntryAsWord, MetadataEntryAsDif
+    CoordinatesConversion, TrackJson, MailState, ShipTimeToUtc, ImageReloaderView, LatestImage, StatsView,\
+    ContactDetailsListView
+from metadata.views import ProjectListView, MetadataEntryListView, MetadataEntryView, MetadataEntryAsWord,\
+    MetadataEntryAsDif
 from ship_data.views import FerryboxView
 from data_storage_management.views import HardDiskJson, DirectoryUpdateJson
 from django.conf import settings
@@ -56,6 +58,7 @@ urlpatterns = [
     url(r'^window/$', ImageReloaderView.as_view()),
     url(r'^latest_image.jpg$', LatestImage.as_view()),
     url(r'^stats/$', StatsView.as_view()),
+    url(r'^contacts/$', ContactDetailsListView.as_view()),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
   + static("/documents_storage/", document_root=settings.DOCUMENTS_DIRECTORY) \
   + static("/ethz_forecast_data/", document_root=settings.FORECAST_DIRECTORY)
