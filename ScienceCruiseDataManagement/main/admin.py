@@ -835,6 +835,12 @@ class ContactDetailsAdmin(admin.ModelAdmin):
     ordering = ['name']
 
 
+    def response_add(self, request, obj, post_url_continue=None):
+        return redirect("/contacts")
+
+    def response_change(self, request, obj):
+        return redirect("/contacts")
+
 # class EventsConsistencyAdmin(admin.ModelAdmin):
 #     list_display = ('event_from_sample', 'project', 'samples_list', 'type')
 #     ordering = ['-event_from_sample']
