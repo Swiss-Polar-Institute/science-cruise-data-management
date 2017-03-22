@@ -32,7 +32,7 @@ class Command(BaseCommand):
             self.delete_users_server()
 
     def delete_users_server(self):
-        wanted_leg = Leg.objects.get(number=3)
+        wanted_leg = Leg.objects.get(number=4)
 
         for email in Email.objects.all().order_by("email_address"):
             if wanted_leg not in email.person.leg.all():
