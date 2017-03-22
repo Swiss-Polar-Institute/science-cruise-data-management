@@ -214,7 +214,11 @@ class DownloadMailsByAge:
         email = Email.objects.get(username=username)
 
         for user_in_leg in email.person.leg.all():
-            if user_in_leg in email_active_legs:
+            # Sometimes maybe checking emails from different legs is needed,
+            # so there is this commented out code
+            #if user_in_leg in email_active_legs:
+            #    return True
+            if user_in_leg == email_active_legs:
                 return True
 
         return False
