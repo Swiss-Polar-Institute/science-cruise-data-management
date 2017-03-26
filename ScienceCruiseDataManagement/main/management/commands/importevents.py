@@ -164,7 +164,7 @@ class Command(BaseCommand):
                     print("Row", row)
 
                 event_action_begin.description = description_begin
-                event_action_begin.type = EventAction.text_to_type(row.get('start_type', EventAction.tbegin()))
+                event_action_begin.type = EventAction.text_to_type(row.get('start_type', EventAction.tbegin_text()))
                 event_action_begin.time_source = time_source
                 event_action_begin.time_uncertainty = time_uncertainty
                 event_action_begin.latitude = row.get('start_latitude', None)
