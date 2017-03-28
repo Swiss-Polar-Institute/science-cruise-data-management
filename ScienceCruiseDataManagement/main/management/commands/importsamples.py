@@ -83,6 +83,10 @@ class Command(BaseCommand):
 
         return how_many_errors_have_ocurred == 0
 
+    def remove_spaces_columns(self, row):
+        for key in row.keys():
+            row[key] = row[key].strip()
+
     def import_data_from_csv(self, filepath):
         reader = csv.DictReader(io.StringIO(utils.normalised_csv_file(filepath)))
         basename = os.path.basename(filepath)
@@ -97,6 +101,8 @@ class Command(BaseCommand):
         previous_event_time = None
 
         for row in reader:
+            self.remove_spaces_columns(row)
+
             print("Processing row from file: ", filepath)
             print("Row:", row)
 
