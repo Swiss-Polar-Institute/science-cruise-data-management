@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from main.models import Event, EventAction, SamplingMethod, TimeSource, TimeUncertainty,\
-    PositionSource, PositionUncertainty, EventActionDescription, ImportedFile
+    PositionSource, PositionUncertainty, EventActionDescription, ImportedFile, Station
 from main import utils
 
 import csv
@@ -115,6 +115,13 @@ class Command(BaseCommand):
                                                                      'name')
                 event.outcome = "Success"
                 event.comments= row['general_comments']
+                station = self.find_foreign_key_object(['station'],
+                                                       row,
+                                                       Station,
+                                                       'name', missing_ok=True)
+
+                event.station = station
+
 
                 time_uncertainty = self.find_foreign_key_object(['time_uncertainty'],
                                                                 row,
