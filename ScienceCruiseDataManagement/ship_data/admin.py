@@ -37,6 +37,10 @@ class FerryboxAdmin(admin.ModelAdmin):
     list_display = ('date_time', 'salinity', 'conductivity', 'temperature', 'fluorimeter')
     ordering = ['-date_time']
 
+class MultibeamRawFileMetadataAdmin(admin.ModelAdmin):
+    list_display = ('file_path', 'directory', 'swath_data_file', 'file_start_time_iso', 'file_end_time_iso', 'minimum_longitude', 'maximum_longitude', 'minimum_latitude', 'maximum_latitude', 'minimum_sonar_depth', 'maximum_sonar_depth')
+    ordering = ['swath_data_file']
+
 # Register your models here.
 admin.site.register(ship_data.models.GpzdaDateTime, GpzdaDateTimeAdmin)
 admin.site.register(ship_data.models.GpvtgVelocity, GpvtgVelocityAdmin)
@@ -45,3 +49,4 @@ admin.site.register(ship_data.models.MetDataAll, MetDataAllAdmin)
 admin.site.register(ship_data.models.MetDataWind, MetDataWindAdmin)
 admin.site.register(ship_data.models.MetDataFile, MetDataFileAdmin)
 admin.site.register(ship_data.models.Ferrybox, FerryboxAdmin)
+admin.site.register(ship_data.models.MultibeamRawFileMetadata, MultibeamRawFileMetadataAdmin)
