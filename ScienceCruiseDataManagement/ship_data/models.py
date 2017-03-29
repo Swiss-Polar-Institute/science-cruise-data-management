@@ -152,3 +152,20 @@ class MetDataFile(models.Model):
 
     def __str__(self):
         return "{}".format(self.file_name)
+
+
+class MultibeamRawFileMetadata(models.Model):
+    file_path = models.CharField(max_length=300)
+    directory = models.CharField(max_length=30)
+    swath_data_file = models.CharField(max_length=40)
+    file_start_time_iso = models.DateTimeField()
+    file_end_time_iso = models.DateTimeField()
+    minimum_longitude = models.FloatField()
+    maximum_longitude = models.FloatField()
+    minimum_latitude = models.FloatField()
+    maximum_latitude = models.FloatField()
+    minimum_sonar_depth = models.FloatField()
+    maximum_sonar_depth = models.FloatField()
+
+    def __str__(self):
+        return "{}".format(self.swath_data_file)
