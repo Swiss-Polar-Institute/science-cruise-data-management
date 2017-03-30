@@ -38,7 +38,7 @@ class FerryboxAdmin(admin.ModelAdmin):
     ordering = ['-date_time']
 
 class MultibeamRawFileMetadataAdmin(admin.ModelAdmin):
-    list_display = ('file_path', 'directory', 'swath_data_file', 'file_start_time_iso', 'file_end_time_iso', 'minimum_longitude', 'maximum_longitude', 'minimum_latitude', 'maximum_latitude', 'minimum_sonar_depth', 'maximum_sonar_depth')
+    list_display = ('file_path', 'directory', 'swath_data_file', 'file_start_time', 'file_end_time', 'minimum_longitude', 'maximum_longitude', 'minimum_latitude', 'maximum_latitude', 'minimum_sonar_depth', 'maximum_sonar_depth')
     ordering = ['swath_data_file']
 
 # Register your models here.
