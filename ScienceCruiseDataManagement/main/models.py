@@ -46,7 +46,7 @@ class Country(models.Model):
         return "{}".format(self.name)
 
     class Meta:
-        verbose_name_plural="Countries"
+        verbose_name_plural = "Countries"
 
 
 class Island(models.Model):

@@ -12,12 +12,12 @@ class WhenAdmin(admin.ModelAdmin):
 
 class UnderwaySamplingAdmin(admin.ModelAdmin):
     list_display = ('project', 'when_list', 'what_list', )
+    ordering = ('project', )
 
     def when_list(self, obj):
         whens = obj.when.all()
 
         return ", ".join([when.frequency for when in whens])
-
 
     def what_list(self, obj):
         whats = obj.what.all()
