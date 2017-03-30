@@ -9,7 +9,7 @@ class UnderwaySamplingVariable(models.Model):
 
 class When(models.Model):
     frequency = models.CharField(max_length=255)
-    comment = models.TextField()
+    comment = models.TextField(blank=True, null=True)
 
 class UnderwaySampling(models.Model):
     project = models.ForeignKey(Project)
