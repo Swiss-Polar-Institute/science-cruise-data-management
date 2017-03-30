@@ -24,7 +24,7 @@ class Command(BaseCommand):
         self.convert_spreadsheet(options['filename'])
 
     def convert_spreadsheet(self, input_filename):
-        csv_reader = csv.reader(open(input_filename, encoding='utf-8', errors='ignore'), delimiter=";")
+        csv_reader = csv.reader(open(input_filename, encoding='utf-8', errors='ignore'))
 
         new_filename = os.path.basename(input_filename)
 
@@ -100,11 +100,11 @@ def number_of_columns(spreadsheet):
 def column_after_headers(spreadsheet):
     """ Returns the column number for 21-Dec (start of the expedition). """
     for (i, cell) in enumerate(spreadsheet[gmt_date_row()]):
-        print(cell)
-        if cell == "21-Dec" or cell == "21. Dez":
+        print("_"+cell+"_")
+        if cell == "06-Mar": # it used to be 21-Dec but now we import a partial spreadsheet
             return i
 
-    # Column not found with 21-Dec
+    # Column not found with 06-Mar
     assert False
 
 
