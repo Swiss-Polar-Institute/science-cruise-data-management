@@ -7,9 +7,15 @@ import underway_sampling.models
 class UnderwaySamplingVariable(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
+    def __str__(self):
+        return self.name
+
 class When(models.Model):
     frequency = models.CharField(max_length=255)
     comment = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.frequency
 
 class UnderwaySampling(models.Model):
     project = models.ForeignKey(Project)
