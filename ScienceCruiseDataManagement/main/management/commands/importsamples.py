@@ -240,6 +240,7 @@ class Command(BaseCommand):
         existing_sample = self.find_sample(spreadsheet_sample.expedition_sample_code)
 
         if existing_sample is None:
+            validate_sample(spreadsheet_sample)
             spreadsheet_sample.save()
             return "inserted"
         else:
@@ -255,6 +256,7 @@ class Command(BaseCommand):
 
                 if answer == "1":
                     spreadsheet_sample.pk = existing_sample.pk
+                    validate_sample(spreadsheet_sample)
                     spreadsheet_sample.save()
 
                     print("Row replaced")
@@ -279,3 +281,38 @@ class Command(BaseCommand):
                     same_objects = False
 
         return same_objects
+
+
+def validate_sampling_method(sample):
+    event = sample.event
+    project = sample.project
+
+    if event.sampling_method in project.sampling_methods.all():
+        return (True, None)
+    else:
+        return (False, "Sample: {} has a sampling method {} not used by the project: {}".format(sample.expedition_sample_code,
+                                                                                               event.sampling_method,
+                                                                                               project.number))
+
+
+def validate_event_outcome(sample):
+    event = sample.event
+
+    if event.outcome != "Success":
+        return (False, "Sample: {} has the event: {} with outcome: {}".format(sample.expedition_sample_code,
+                                                                              event.number,
+                                                                              event.outcome))
+    else:
+        return (True, None)
+
+
+def validate_sample(sample):
+    validators = [validate_sampling_method, validate_event_outcome]
+
+    for validator in validators:
+        result = validator(sample)
+
+        if result[0] == False:
+            print("ERROR importing sample, will abort")
+            print(result[1])
+            exit(1)
