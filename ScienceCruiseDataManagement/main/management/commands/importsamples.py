@@ -324,11 +324,11 @@ def validate_julian_date_sample(sample):
     sample_date = julian_day_to_date(julian_day)
     sample_date = utils.set_utc(sample_date)
 
-    if leg.start_time > sample_date:
+    if leg.start_time.date() > sample_date.date():
         return(False, "Sample: {} has a julian day: {} represents the date: {} that is before the leg starting date: {}".format(
             sample.expedition_sample_code, sample.julian_day, sample_date, leg.start_time))
 
-    if leg.end_time is not None and leg.end_time < sample_date:
+    if leg.end_time.date() is not None and leg.end_time.date() < sample_date.date():
         return (False, "Sample: {} has a julian day: {} represents the date: {} that is after the leg ending date: {}".format(
             sample.expedition_sample_code, sample.julian_day, sample_date, leg.end_time))
 
