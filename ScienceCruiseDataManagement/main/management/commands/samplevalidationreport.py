@@ -8,7 +8,7 @@ class Command(BaseCommand):
     help = 'Validates samples that are in the database'
 
     def add_arguments(self, parser):
-        parser.add_argument('--project', type=int)
+        parser.add_argument('--project', type=int, help="Project number to analyse samples from")
 
     def handle(self, *args, **options):
         validate_samples(options['project'])
