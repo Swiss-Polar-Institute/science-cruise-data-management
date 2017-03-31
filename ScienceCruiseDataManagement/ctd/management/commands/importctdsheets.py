@@ -70,6 +70,19 @@ def row_for_depth(all_file):
     assert False
 
 
+def calculate_column_index_for_comment(all_file):
+    headers_row = row_for_depth(all_file)
+
+    row = all_file[headers_row-1]
+
+    for (i, cell) in enumerate(row):
+        if cell == "Comments":
+            return i
+
+    print("Comments column not found")
+    assert False
+
+
 def column_for_niskin_number(all_file):
     headers_row = row_for_depth(all_file)
 
@@ -83,6 +96,7 @@ def column_for_niskin_number(all_file):
         column = chr(ord(column)+1)
 
     return column
+
 
 def first_column_data(all_file):
     headers_row = row_for_depth(all_file)
@@ -126,7 +140,10 @@ def import_ctd_sample_variables(all_file, ctd_cast):
 
         depth_triggered = all_file[row][col_letter_to_index('A')]
         depth_planned = all_file[row][col_letter_to_index('B')]
-        comment = all_file[row][col_letter_to_index('W')]
+
+        column_index_for_comment = calculate_column_index_for_comment(all_file)
+
+        comment = all_file[row][column_index_for_comment]
 
         try:
             depth = int(depth_triggered)
@@ -199,6 +216,7 @@ def last_str_row_col(all_file, row, col):
 
     return all_file[row-1][col_letter_to_index(col)].split(" ")[-1]
 
+
 def str_row_col(all_file, row, col):
     assert row-1 >= 0
     assert col_letter_to_index(col) >= 0
@@ -226,6 +244,8 @@ def name_to_person(name):
         name_last = "Henry"
     elif name == "mnh":
         name_last = "Houssais"
+    elif name == "Jenny":
+        name_last = "Hutchings"
     elif name == "":
         return None
     else:
@@ -260,10 +280,11 @@ def create_ctd_cast(all_file, filename):
     ctd_cast.ctd_operator = name_to_person(find_string(all_file, "CTD Operator"))
 
     ctd_cast.ctd_file_name = find_string(all_file, "CTD file:", none_if_not_found=True)
-
-    if "Leg2" in filename:
+    if "leg1" in filename.lower():
+        ctd_cast.leg_number = Leg.objects.all().get(number=1)
+    if "leg2" in filename.lower():
         ctd_cast.leg_number = Leg.objects.all().get(number=2)
-    elif "Leg3" in filename:
+    elif "leg3" in filename.lower():
         ctd_cast.leg_number = Leg.objects.all().get(number=3)
     else:
         assert False

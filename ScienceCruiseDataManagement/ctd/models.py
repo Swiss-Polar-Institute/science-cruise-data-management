@@ -27,7 +27,7 @@ class CtdVariable(models.Model):
 
 class CtdSampleVolume(models.Model):
     ctd_variable = models.ForeignKey(CtdVariable)
-    volume = models.FloatField(blank=True, null=True)
+    volume = models.FloatField(blank=True, null=True, help_text="Blank if unknown")
     ctd_bottle_trigger = models.ForeignKey(CtdBottleTrigger)
 
     class Meta:
