@@ -305,9 +305,39 @@ def validate_event_outcome(sample):
     else:
         return (True, None)
 
+def julian_day_to_date(julian_day):
+    # This is adjusted to the ACE 2016 voyage: we started in December and
+    # finished in April so Julian days after 300 are considered from the year 2016
+    if julian_day > 300:
+        initial_date = datetime.datetime(2016, 1, 1)
+    else:
+        initial_date = datetime.datetime(2017, 1, 1)
+
+    date = initial_date + datetime.timedelta(days=julian_day-1)
+
+    print("Julian day: {} Date: {}".format(julian_day, date))
+
+    return date
+
+def validate_julian_date_sample(sample):
+    julian_day = sample.julian_day
+    leg = sample.leg
+
+    sample_date = julian_day_to_date(julian_day)
+    sample_date = utils.set_utc(sample_date)
+
+    if leg.start_time > sample_date:
+        return(False, "Sample: {} has a julian day: {} represents the date: {} that is before the leg starting date: {}".format(
+            sample.expedition_sample_code, sample.julian_day, sample_date, leg.start_time))
+
+    if leg.end_time is not None and leg.end_time < sample_date:
+        return (False, "Sample: {} has a julian day: {} represents the date: {} that is after the leg ending date: {}".format(
+            sample.expedition_sample_code, sample.julian_day, sample_date, leg.end_time))
+
+    return (True, None)
 
 def validate_sample(sample):
-    validators = [validate_sampling_method, validate_event_outcome]
+    validators = [validate_sampling_method, validate_event_outcome, validate_julian_date_sample]
 
     for validator in validators:
         result = validator(sample)
