@@ -1,25 +1,32 @@
 from main.management.commands import importsamples
 
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Sample
+from main.models import Sample, Project
 
 
 class Command(BaseCommand):
     help = 'Validates samples that are in the database'
 
     def add_arguments(self, parser):
-        pass
-        #parser.add_argument('validate', type=str)
+        parser.add_argument('--project', type=int)
 
     def handle(self, *args, **options):
-        validate_samples()
+        validate_samples(options['project'])
 
 
-def validate_samples():
+def validate_samples(project):
     samples_analyzed = 0
     number_of_valid_samples = 0
-    total_number_of_samples = Sample.objects.all().count()
-    for sample in Sample.objects.all():
+
+    if project is None:
+        samples_to_analyse = Sample.objects.all()
+    else:
+        project = Project.objects.get(number=project)
+        samples_to_analyse = Sample.objects.filter(project=project)
+
+    total_number_of_samples = len(samples_to_analyse)
+
+    for sample in samples_to_analyse:
         result = importsamples.validate_sample(sample, abort_if_invalid=False)
 
         if result[0] == False:
