@@ -315,8 +315,6 @@ def julian_day_to_date(julian_day):
 
     date = initial_date + datetime.timedelta(days=julian_day-1)
 
-    print("Julian day: {} Date: {}".format(julian_day, date))
-
     return date
 
 def validate_julian_date_sample(sample):
@@ -336,13 +334,18 @@ def validate_julian_date_sample(sample):
 
     return (True, None)
 
-def validate_sample(sample):
+def validate_sample(sample, abort_if_invalid=True):
     validators = [validate_sampling_method, validate_event_outcome, validate_julian_date_sample]
 
     for validator in validators:
         result = validator(sample)
 
-        if result[0] == False:
+        if result[0] == False and abort_if_invalid:
             print("ERROR importing sample, will abort")
             print(result[1])
             exit(1)
+
+        if result[0] == False and not abort_if_invalid:
+            return result
+
+    return (True, "")
