@@ -896,3 +896,9 @@ class MeasurelandQualifierFlags(models.Model):
     definition = models.TextField(null=True, blank=True)
     modified = models.DateTimeField()
     source = models.CharField(max_length=255)
+
+    def __str__(self):
+        return "{}".format(self.preferred_label)
+
+    class Meta:
+        verbose_name_plural = "Measureland Qualifier Flags"
