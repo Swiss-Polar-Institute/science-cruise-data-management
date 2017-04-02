@@ -25,7 +25,7 @@ def knots_two_points(location1, location2):
     distance = utils.calculate_distance((location1.latitude, location1.longitude),
                                         (location2.latitude, location2.longitude))
 
-    seconds = (location1.date_time - location2.date_time).seconds
+    seconds = abs((location1.date_time - location2.date_time).total_seconds())
 
     if seconds > 0:
         return (distance/seconds) * 1.9438
@@ -89,11 +89,32 @@ def compare_gps(gps1, gps2):
                 distance = "N/A"
 
 
+        warning = ""
 
-        print("{}: {} m {} knots {} knots {} {}".format(current_date, distance,
+        try:
+            kn1 = float(speed_gps1)
+            kn2 = float(speed_gps2)
+            meters = float(distance)
+
+            if kn1 > 20:
+                warning += "**** kn1"
+
+            if kn2 > 20:
+                warning += "**** kn2"
+
+            if meters < 5 or meters > 35:
+                warning += "**** meters"
+
+        except ValueError:
+            pass
+
+
+
+        print("{}: {} m {} knots {} knots {} {} {}".format(current_date, distance,
                                                                  speed_gps1, speed_gps2,
                                                                  date_time_gps1,
-                                                                 date_time_gps2))
+                                                                 date_time_gps2,
+                                                                 warning))
 
         gps1_previous_location = gps1_location
         gps2_previous_location = gps2_location
