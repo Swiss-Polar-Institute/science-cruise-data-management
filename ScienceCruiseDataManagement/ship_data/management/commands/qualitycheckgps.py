@@ -62,18 +62,20 @@ def compare_gps(gps1, gps2):
         if gps1_location is not None and gps1_previous_location is not None:
             speed_gps1 = "{:.2f}".format(knots_two_points(gps1_previous_location, gps1_location))
             date_time_gps1 = gps1_location.date_time.strftime("%Y-%m-%d %H:%M:%S")
+            position_gps1 = "({:.2f}, {:.2f})".format(gps1_location.latitude, gps1_location.longitude)
 
         else:
-            print("Date: {} no information for GPS: {}".format(current_date, gps1.name))
+            # print("Date: {} no information for GPS: {}".format(current_date, gps1.name))
             speed_gps1 = "N/A"
             date_time_gps1 = "N/A"
 
         if gps2_location is not None and gps2_previous_location is not None:
             speed_gps2 = "{:.2f}".format(knots_two_points(gps2_previous_location, gps2_location))
             date_time_gps2 = gps2_location.date_time.strftime("%Y-%m-%d %H:%M:%S")
+            position_gps2 = "({:.2f}, {:.2f})".format(gps2_location.latitude, gps2_location.longitude)
 
         else:
-            print("Date: {} no information for GPS: {}".format(current_date, gps2.name))
+            # print("Date: {} no information for GPS: {}".format(current_date, gps2.name))
             speed_gps2 = "N/A"
             date_time_gps2 = "N/A"
 
@@ -110,10 +112,12 @@ def compare_gps(gps1, gps2):
 
 
 
-        print("{}: {} m {} knots {} knots {} {} {}".format(current_date, distance,
+        print("{}: {} m\t{} knots\t{} knots\t{}\t{}\t{}\t{}\t{}".format(current_date, distance,
                                                                  speed_gps1, speed_gps2,
                                                                  date_time_gps1,
                                                                  date_time_gps2,
+                                                                 position_gps1,
+                                                                 position_gps2,
                                                                  warning))
 
         gps1_previous_location = gps1_location

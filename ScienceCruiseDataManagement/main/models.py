@@ -886,3 +886,13 @@ class ContactDetails(models.Model):
 
     class Meta:
         verbose_name_plural = "Contact details"
+
+class MeasurelandQualifierFlags(models.Model):
+    DEFAULT_PK = 1
+
+    concept_id = models.CharField(max_length=255)
+    preferred_label = models.CharField(max_length=255)
+    alt_label = models.CharField(max_length=255)
+    definition = models.TextField(null=True, blank=True)
+    modified = models.DateTimeField()
+    source = models.CharField(max_length=255)

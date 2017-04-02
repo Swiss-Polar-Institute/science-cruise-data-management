@@ -830,6 +830,7 @@ class EventsConsistencyAdmin(admin.ModelAdmin):
 class EventsConsistencyAdminV2(admin.ModelAdmin):
     list_display = ('type', )
 
+
 class ContactDetailsAdmin(admin.ModelAdmin):
     list_display = ('name', 'email', 'other')
     ordering = ['name']
@@ -840,6 +841,12 @@ class ContactDetailsAdmin(admin.ModelAdmin):
 
     def response_change(self, request, obj):
         return redirect("/contacts")
+
+
+class MeasurelandQualifierFlagsAdmin(admin.ModelAdmin):
+    list_display = ('concept_id', 'preferred_label', 'alt_label', 'definition', 'modified', 'source')
+    ordering = ('concept_id', )
+
 
 # class EventsConsistencyAdmin(admin.ModelAdmin):
 #     list_display = ('event_from_sample', 'project', 'samples_list', 'type')
@@ -899,6 +906,7 @@ admin.site.register(main.models.OnboardRole, OnboardRoleAdmin)
 admin.site.register(main.models.EventsConsistency, EventsConsistencyAdmin)
 admin.site.register(main.models.EventsConsistencyV2, EventsConsistencyAdminV2)
 admin.site.register(main.models.ContactDetails, ContactDetailsAdmin)
+admin.site.register(main.models.MeasurelandQualifierFlags, MeasurelandQualifierFlagsAdmin)
 
 ADMIN_SITE_TITLE = 'Ace Data Admin'
 ADMIN_SITE_HEADER = 'ACE Data Administration'

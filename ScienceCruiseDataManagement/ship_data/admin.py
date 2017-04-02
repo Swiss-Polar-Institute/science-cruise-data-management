@@ -33,9 +33,11 @@ class MetDataFileAdmin(import_export.admin.ExportMixin,admin.ModelAdmin):
     list_display = ('file_name', 'date_imported')
     ordering = ['file_name']
 
+
 class FerryboxAdmin(admin.ModelAdmin):
     list_display = ('date_time', 'salinity', 'conductivity', 'temperature', 'fluorimeter')
     ordering = ['-date_time']
+
 
 class MultibeamRawFileMetadataAdmin(admin.ModelAdmin):
     list_display = ('file_path', 'directory', 'swath_data_file', 'file_start_time', 'file_end_time', 'minimum_longitude', 'maximum_longitude', 'minimum_latitude', 'maximum_latitude', 'minimum_sonar_depth', 'maximum_sonar_depth')
