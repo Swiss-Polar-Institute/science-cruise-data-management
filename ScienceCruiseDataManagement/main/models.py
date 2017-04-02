@@ -506,7 +506,7 @@ class ImportedFile(models.Model):
 @receiver(post_save, sender=Sample)
 def update_expedition_sample_code(sender, instance, **kwargs):
     # It's done in the post_save because the sample_id can be part of the expedition_sample_code
-    if instance.expedition_sample_code is None:
+    if instance.expedition_sample_code is None or instance.expedition_sample_code == '':
         instance.expedition_sample_code = settings.EXPEDITION_SAMPLE_CODE(instance)
         instance.save()
 
