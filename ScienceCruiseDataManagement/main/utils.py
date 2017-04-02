@@ -316,7 +316,7 @@ def filter_open_events():
 def calculate_distance(origin, destination):
     lat1, lon1 = origin
     lat2, lon2 = destination
-    radius = 6371  # km
+    radius = 6371*1000
     dlat = math.radians(lat2 - lat1)
     dlon = math.radians(lon2 - lon1)
     a = math.sin(dlat / 2) * math.sin(dlat / 2) + math.cos(math.radians(lat1)) \

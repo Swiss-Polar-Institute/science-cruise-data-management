@@ -21,10 +21,24 @@ class Command(BaseCommand):
 
             compare_gps(gps1, gps2)
 
+def knots_two_points(location1, location2):
+    distance = utils.calculate_distance((location1.latitude, location1.longitude),
+                                        (location2.latitude, location2.longitude))
+
+    seconds = (location1.date_time - location2.date_time).seconds
+
+    if seconds > 0:
+        return (distance/seconds) * 1.9438
+    else:
+        return "N/A"
+
 
 def compare_gps(gps1, gps2):
-    earliest_date_gps1 = GpggaGpsFix.objects.filter(device=gps1).earliest().date_time
-    earliest_date_gps2 = GpggaGpsFix.objects.filter(device=gps2).earliest().date_time
+    earliest_gps1 = GpggaGpsFix.objects.filter(device=gps1).earliest()
+    earliest_gps2 = GpggaGpsFix.objects.filter(device=gps2).earliest()
+
+    earliest_date_gps1 = earliest_gps1.date_time
+    earliest_date_gps2 = earliest_gps2.date_time
 
     latest_date_gps1 = GpggaGpsFix.objects.filter(device=gps1).latest().date_time
     latest_date_gps2 = GpggaGpsFix.objects.filter(device=gps2).latest().date_time
@@ -34,7 +48,10 @@ def compare_gps(gps1, gps2):
     earliest_date = max(earliest_date_gps1, earliest_date_gps2)
     latest_date = min(latest_date_gps1, latest_date_gps2)
 
-    current_date = earliest_date
+    current_date = earliest_date + datetime.timedelta(seconds=60)
+
+    gps1_previous_location = ship_location(current_date, gps1)
+    gps2_previous_location = ship_location(current_date, gps2)
 
     while current_date < latest_date:
         current_date += delta_time
@@ -42,19 +59,55 @@ def compare_gps(gps1, gps2):
         gps1_location = ship_location(current_date, gps1)
         gps2_location = ship_location(current_date, gps2)
 
-        if gps1_location is None:
+        if gps1_location is not None and gps1_previous_location is not None:
+            speed_gps1 = "{:.2f}".format(knots_two_points(gps1_previous_location, gps1_location))
+            date_time_gps1 = gps1_location.date_time.strftime("%Y-%m-%d %H:%M:%S")
+
+        else:
             print("Date: {} no information for GPS: {}".format(current_date, gps1.name))
-            continue
+            speed_gps1 = "N/A"
+            date_time_gps1 = "N/A"
 
-        if gps2_location is None:
+        if gps2_location is not None and gps2_previous_location is not None:
+            speed_gps2 = "{:.2f}".format(knots_two_points(gps2_previous_location, gps2_location))
+            date_time_gps2 = gps2_location.date_time.strftime("%Y-%m-%d %H:%M:%S")
+
+        else:
             print("Date: {} no information for GPS: {}".format(current_date, gps2.name))
-            continue
+            speed_gps2 = "N/A"
+            date_time_gps2 = "N/A"
 
-        distance = 1000 * utils.calculate_distance((gps1_location.latitude, gps1_location.longitude),
-                                      (gps2_location.latitude, gps2_location.longitude))
 
-        print("{}: {}".format(current_date, distance))
 
+        if gps1_location is not None and gps2_location is not None:
+            distance = utils.calculate_distance((gps1_location.latitude, gps1_location.longitude),
+                                          (gps2_location.latitude, gps2_location.longitude))
+
+            if distance is not None:
+                distance = "{:.2f}".format(distance)
+            else:
+                distance = "N/A"
+
+
+
+        print("{}: {} m {} knots {} knots {} {}".format(current_date, distance,
+                                                                 speed_gps1, speed_gps2,
+                                                                 date_time_gps1,
+                                                                 date_time_gps2))
+
+        gps1_previous_location = gps1_location
+        gps2_previous_location = gps2_location
+
+
+def gpggagpsfix_to_location(gpggagpsfix):
+    location = utils.Location()
+
+    location.date_time = gpggagpsfix.date_time
+    location.latitude = gpggagpsfix.latitude
+    location.longitude = gpggagpsfix.longitude
+    location.device = gpggagpsfix.device
+
+    return location
 
 def ship_location(date_time, device):
     # It uses objects.raw so Mysql is using the right index (datetime). The CAST is what it
@@ -66,10 +119,5 @@ def ship_location(date_time, device):
     if abs(position_gps_query.date_time - date_time) > datetime.timedelta(seconds=10):
         return None
     else:
-        location = utils.Location()
-        location.date_time = position_gps_query.date_time
-        location.latitude = position_gps_query.latitude
-        location.longitude = position_gps_query.longitude
-        location.device = device
-
+        location = gpggagpsfix_to_location(position_gps_query)
         return location
