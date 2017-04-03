@@ -43,7 +43,7 @@ def compare_gps(gps1, gps2):
     latest_date_gps1 = GpggaGpsFix.objects.filter(device=gps1).latest().date_time
     latest_date_gps2 = GpggaGpsFix.objects.filter(device=gps2).latest().date_time
 
-    delta_time = datetime.timedelta(seconds=600)
+    delta_time = datetime.timedelta(seconds=60)
 
     earliest_date = max(earliest_date_gps1, earliest_date_gps2)
     latest_date = min(latest_date_gps1, latest_date_gps2)
@@ -104,7 +104,7 @@ def compare_gps(gps1, gps2):
             if kn2 > 20:
                 warning += "**** kn2"
 
-            if meters < 5 or meters > 35:
+            if (meters < 5 or meters > 35) and (meters > 0.0001 and meters < 0.0001):
                 warning += "**** meters"
 
         except ValueError:

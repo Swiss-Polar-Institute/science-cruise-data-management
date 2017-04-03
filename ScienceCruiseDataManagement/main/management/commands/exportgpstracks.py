@@ -181,6 +181,6 @@ def which_gps(date_time_str):
     for interval in gps_bridge_working_intervals:
         if interval['starts'] < date_time_str <= interval['stops']:
         # if date_time_str > interval['starts'] and date_time_str <= interval['stops']:
-            return "bridge"
+            return "GPS Bridge1"
 
-    return "trimble"
+    return "Trimble GPS"
