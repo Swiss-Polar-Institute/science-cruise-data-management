@@ -20,6 +20,54 @@ class Command(BaseCommand):
             gps2 = SamplingMethod.objects.get(name=options["gps2"])
 
             compare_gps(gps1, gps2)
+        elif options['action'] == "analysegps":
+            gps = SamplingMethod.objects.get(name=options["gps1"])
+
+            analyse(gps)
+
+
+def analyse(gps):
+    print("gps:", gps)
+
+    earliest = GpggaGpsFix.objects.filter(device=gps).earliest()
+    latest_date_time = GpggaGpsFix.objects.filter(device=gps).latest().date_time
+
+    current_date = earliest.date_time
+
+    count = 0
+    previous_position = gpggagpsfix_to_location(earliest)
+
+    while current_date <= latest_date_time:
+        print("Analysing 24 hours from:", current_date)
+        day_after = current_date + datetime.timedelta(days=1)
+
+        positions = GpggaGpsFix.objects.filter(date_time__gte=current_date).filter(date_time__lt=day_after).order_by("date_time")
+
+        for position in positions:
+            current_position = gpggagpsfix_to_location(position)
+
+            knots = knots_two_points(previous_position, current_position)
+
+            error_message = ""
+
+            if knots == "N/A":
+                error_message = "No speed?"
+            elif knots >= 20:
+                error_message += "**** Too fast"
+
+            if error_message != "":
+                print("{}           ({:.2f} {:.2f})".format(previous_position.date_time,
+                                                           current_position.latitude, current_position.longitude))
+
+                print("{} {} knots  ({:.2f} {:.2f})".format(current_position.date_time, knots,
+                                                           current_position.latitude, current_position.longitude))
+
+            previous_position = current_position
+
+        current_date = day_after
+
+    print("Total:", count)
+
 
 def knots_two_points(location1, location2):
     distance = utils.calculate_distance((location1.latitude, location1.longitude),
