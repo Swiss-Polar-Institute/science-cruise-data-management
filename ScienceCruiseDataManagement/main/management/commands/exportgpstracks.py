@@ -113,8 +113,12 @@ def process_day(date_time_process, seconds, csv_writer):
     # 64: GPS Bridge
     # 63: GPS Trimble
 
+    previous_date_time_string = ""
     for gps_info in query_set.iterator():
         date_time_string = gps_info.date_time.strftime("%Y-%m-%d %H:%M:%S")
+
+        if date_time_string == previous_date_time_string:
+            continue
 
         if which_gps(date_time_string) == "GPS Bridge1":
             if gps_info.device_id == 64:
@@ -128,6 +132,7 @@ def process_day(date_time_process, seconds, csv_writer):
                                      "{:.4f}".format(gps_info.latitude),
                                      "{:.4f}".format(gps_info.longitude)])
 
+        previous_date_time_string = date_time_string
 
 def delete_files(files):
     for file in files:
