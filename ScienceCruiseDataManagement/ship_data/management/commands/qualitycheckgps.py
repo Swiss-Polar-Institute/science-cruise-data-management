@@ -41,7 +41,7 @@ def analyse(gps):
         print("Analysing 24 hours from:", current_date)
         day_after = current_date + datetime.timedelta(days=1)
 
-        positions = GpggaGpsFix.objects.filter(date_time__gte=current_date).filter(date_time__lt=day_after).order_by("date_time")
+        positions = GpggaGpsFix.objects.filter(device=gps).filter(date_time__gte=current_date).filter(date_time__lt=day_after).order_by("date_time")
 
         for position in positions:
             current_position = gpggagpsfix_to_location(position)
