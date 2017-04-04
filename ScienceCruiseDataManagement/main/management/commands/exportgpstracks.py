@@ -122,17 +122,22 @@ def process_day(date_time_process, seconds, csv_writer):
 
         if which_gps(date_time_string) == "GPS Bridge1":
             if gps_info.device_id == 64:
-                csv_writer.writerow([gps_info.date_time.strftime("%Y-%m-%d %H:%M:%S"),
+                l = [gps_info.date_time.strftime("%Y-%m-%d %H:%M:%S"),
                                      "{:.4f}".format(gps_info.latitude),
-                                     "{:.4f}".format(gps_info.longitude)])
+                                     "{:.4f}".format(gps_info.longitude)]
+                # print(l)
+                csv_writer.writerow(l)
+                previous_date_time_string = date_time_string
 
         else:
             if gps_info.device_id == 63:
-                csv_writer.writerow([gps_info.date_time.strftime("%Y-%m-%d %H:%M:%S"),
+                l = [gps_info.date_time.strftime("%Y-%m-%d %H:%M:%S"),
                                      "{:.4f}".format(gps_info.latitude),
-                                     "{:.4f}".format(gps_info.longitude)])
+                                     "{:.4f}".format(gps_info.longitude)]
+                # print(l)
+                csv_writer.writerow(l)
 
-        previous_date_time_string = date_time_string
+                previous_date_time_string = date_time_string
 
 def delete_files(files):
     for file in files:
