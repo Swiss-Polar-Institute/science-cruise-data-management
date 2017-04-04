@@ -32,7 +32,9 @@ def analyse(gps):
     earliest = GpggaGpsFix.objects.filter(device=gps).earliest()
     latest_date_time = GpggaGpsFix.objects.filter(device=gps).latest().date_time
 
-    current_date = earliest.date_time
+    # current_date = earliest.date_time
+    current_date = datetime.datetime(2016, 12, 21, 6, 59, 10)
+    current_date = utils.set_utc(current_date)
 
     count = 0
     previous_position = gpggagpsfix_to_location(earliest)
@@ -56,10 +58,10 @@ def analyse(gps):
                 error_message += "**** Too fast"
 
             if error_message != "":
-                print("{}           ({:.2f} {:.2f})".format(previous_position.date_time,
+                print("{}           ({:.2f}, {:.2f})".format(previous_position.date_time,
                                                            current_position.latitude, current_position.longitude))
 
-                print("{} {} knots  ({:.2f} {:.2f})".format(current_position.date_time, knots,
+                print("{} {} knots  ({:.2f}, {:.2f})".format(current_position.date_time, knots,
                                                            current_position.latitude, current_position.longitude))
 
             previous_position = current_position

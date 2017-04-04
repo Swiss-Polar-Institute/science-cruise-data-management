@@ -91,22 +91,22 @@ def process_day(date_time_process, seconds, csv_writer):
     if seconds == 1:
         query_set = GpggaGpsFix.objects.filter(today_filter).order_by('date_time')
     elif seconds == 60:
-        query_set = GpggaGpsFix.objects.filter(today_filter).filter(date_time__contains=':00.').order_by('date_time')
+        query_set = GpggaGpsFix.objects.filter(today_filter).filter(date_time__contains=':01.').order_by('date_time')
     elif seconds == 300:
-        query_set = GpggaGpsFix.objects.filter(today_filter).filter(Q(date_time__contains=':00:00.') |
-                                               Q(date_time__contains=':05:00.') |
-                                               Q(date_time__contains=':10:00.') |
-                                               Q(date_time__contains=':15:00.') |
-                                               Q(date_time__contains=':20:00.') |
-                                               Q(date_time__contains=':25:00.') |
-                                               Q(date_time__contains=':30:00.') |
-                                               Q(date_time__contains=':35:00.') |
-                                               Q(date_time__contains=':40:00.') |
-                                               Q(date_time__contains=':45:00.') |
-                                               Q(date_time__contains=':50:00.') |
-                                               Q(date_time__contains=':55:00.')).order_by('date_time')
+        query_set = GpggaGpsFix.objects.filter(today_filter).filter(Q(date_time__contains=':00:01.') |
+                                               Q(date_time__contains=':05:01.') |
+                                               Q(date_time__contains=':10:01.') |
+                                               Q(date_time__contains=':15:01.') |
+                                               Q(date_time__contains=':20:01.') |
+                                               Q(date_time__contains=':25:01.') |
+                                               Q(date_time__contains=':30:01.') |
+                                               Q(date_time__contains=':35:01.') |
+                                               Q(date_time__contains=':40:01.') |
+                                               Q(date_time__contains=':45:01.') |
+                                               Q(date_time__contains=':50:01.') |
+                                               Q(date_time__contains=':55:01.')).order_by('date_time')
     elif seconds == 3600:
-        query_set = GpggaGpsFix.objects.filter(today_filter).filter(date_time__contains=':00:00').order_by('date_time')
+        query_set = GpggaGpsFix.objects.filter(today_filter).filter(date_time__contains=':00:01').order_by('date_time')
     else:
         assert False # need to add a if case for this
 
