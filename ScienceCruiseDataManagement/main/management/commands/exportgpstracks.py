@@ -113,6 +113,8 @@ def process_day(date_time_process, seconds, csv_writer):
     # 64: GPS Bridge
     # 63: GPS Trimble
 
+    query_set = query_set.filter(utils.filter_out_bad_values())
+
     previous_date_time_string = ""
     for gps_info in query_set.iterator():
         date_time_string = gps_info.date_time.strftime("%Y-%m-%d %H:%M:%S")

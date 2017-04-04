@@ -4,6 +4,7 @@ from django.conf import settings
 
 from main import utils
 
+
 class Command(BaseCommand):
     help = 'Updates locations of latitude longitude of Event Actions'
 
@@ -59,6 +60,9 @@ class Command(BaseCommand):
             print("{} event_action: {}\t{} {:.4f} {:.4f} {}".format(action_text, event_action.id, event_action.time,
                                                                  ship_location.latitude, ship_location.longitude, action_text_before))
 
+        elif not ship_location.is_valid:
+            print("Event action {} location in the database is invalid. Date time: {}".format(event_action.id, event_action.time))
+            print("In the event action is: Latitude: {} Longitude: {}".format(event_action.latitude, event_action.longitude))
         else:
             print("Missing information for event action ID: {} Time: {}".format(event_action.id, event_action.time))
 

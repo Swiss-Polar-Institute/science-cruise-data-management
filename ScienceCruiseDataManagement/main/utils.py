@@ -27,6 +27,7 @@ class Location:
         self.longitude = None
         self.date_time = None
         self.device = None
+        self.is_valid = True
 
     def formatted_latitude(self):
         return "{:.4f}".format(self.latitude)
@@ -131,8 +132,9 @@ def ship_location(date_time):
 
     # It uses objects.raw so Mysql is using the right index (datetime). The CAST is what it
     # makes it to use, USE INDEX() is not needed.
-    position_main_gps_query = GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast(%s as datetime) and ship_data_gpggagpsfix.device_id=%s ORDER BY date_time LIMIT 1', [date_time, main_gps_id])
-    position_any_gps_query =  GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast(%s as datetime) ORDER BY date_time LIMIT 1', [date_time])
+    valid_measureland_ids = ",".join(valid_measureland_qualifier_ids())
+    position_main_gps_query = GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast(%s as datetime) and ship_data_gpggagpsfix.device_id=%s and ship_data_gpggagpsfix.measureland_qualifer_flags_id in ({}) ORDER BY date_time LIMIT 1'.format(valid_measureland_ids), [date_time, main_gps_id])
+    position_any_gps_query =  GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast(%s as datetime) and ship_data_gpggagpsfix.measureland_qualifer_flags_id in ({}) ORDER BY date_time LIMIT 1'.format(valid_measureland_ids), [date_time])
 
     device = None
 
@@ -170,6 +172,11 @@ def ship_location(date_time):
     if position is None:
         return Location()
     else:
+        location = Location()
+        if not is_correct_position(position):
+            location.is_valid = False
+            return location
+
         location = Location()
         location.latitude = position.latitude
         location.longitude = position.longitude
@@ -325,3 +332,30 @@ def calculate_distance(origin, destination):
     d = radius * c
     return d
 
+
+def wrong_data_measureland_qualifier_flags():
+    return ["probably bad value", "bad value", "value below detection", "value in excess", "value phenomenon uncertain"]
+
+def valid_measureland_qualifier_ids():
+    valid_ids = []
+
+    for measureland in main.models.MeasurelandQualifierFlags.objects.all():
+        if measureland.preferred_label not in wrong_data_measureland_qualifier_flags():
+            valid_ids.append(str(measureland.id))
+
+    return valid_ids
+
+
+def filter_out_bad_values():
+    q = None
+    for avoid_label in wrong_data_measureland_qualifier_flags():
+        if q is None:
+            q = ~Q(measureland_qualifer_flags__preferred_label=avoid_label)
+        else:
+            q &= ~Q(measureland_qualifer_flags__preferred_label=avoid_label)
+
+    return q
+
+
+def is_correct_position(gpgga_gps_fix):
+    return not (gpgga_gps_fix.measureland_qualifer_flags.preferred_label in wrong_data_measureland_qualifier_flags())
