@@ -170,7 +170,9 @@ def ship_location(date_time):
         position = None
 
     if position is None:
-        return Location()
+        location = Location()
+        location.is_valid = False
+        return location
     else:
         location = Location()
         if not is_correct_position(position):
