@@ -125,4 +125,8 @@ class FindDataGapsGps:
             if previous_date.day != current_date.day:
                 print("Finding gaps on: {}".format(current_date))
 
+        if 'starts' in period:
+            period['stops'] = current_date.strftime("%Y-%m-%d %H:%M:%S")
+            gps_information.append(period)
+
         return gps_information
