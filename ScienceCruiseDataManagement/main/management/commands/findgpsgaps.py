@@ -118,15 +118,15 @@ class FindDataGapsGps:
         list_sections = []
 
         for value in GpggaGpsFix.objects.filter(utils.filter_in_bad_values()).filter(device_id=self.device_id).order_by('date_time'):
-            if previous_date_time is not None and (value.date_time-previous_date_time).total_seconds() > 10:
-                if list_sections != []:
-                    list_sections[-1]['stop'] = previous_date_time.strftime("%Y-%m-%d %H:%M:%S")
-
+            if previous_date_time == None:
                 list_sections.append({'start': value.date_time.strftime("%Y-%m-%d %H:%M:%S")})
+            elif previous_date_time is not None and (value.date_time-previous_date_time).total_seconds() > 10:
+                    list_sections[-1]['stop'] = previous_date_time.strftime("%Y-%m-%d %H:%M:%S")
+                    list_sections.append({'start': value.date_time.strftime("%Y-%m-%d %H:%M:%S")})
 
             previous_date_time = value.date_time
 
-
+        list_sections[-1]['stop'] = previous_date_time.strftime("%Y-%m-%d %H:%M:%S")
         return list_sections
 
     def find_gps_missings(self):
