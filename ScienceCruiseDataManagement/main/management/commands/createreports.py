@@ -194,7 +194,7 @@ class ReportSampleWithEvents():
         csv_writer.writerow(["ace_sample_number", "project_sample_number", "station_number", "event_number", "sampling_method",
                             "start_time (UTC)", "start_latitude", "start_longitude",
                             "end_time (UTC)", "end_latitude", "end_longitude",
-                            "event_comments", "contents", "specific_contents",
+                            "event_comments", "contents", "specific_contents", "crate_number", "storage_type",
                             "offloading_port", "destination"])
 
         for sample in samples:
@@ -202,6 +202,8 @@ class ReportSampleWithEvents():
             project_sample_number = sample.project_sample_number
             event_number = sample.event_id
             contents = sample.contents
+            crate_number = sample.crate_number
+            storage_type = sample.storage_type
             specific_contents = sample.specific_contents
             sampling_method = sample.event.sampling_method
             event_start_action = self.event_start_action(sample.event.number)
@@ -229,6 +231,7 @@ class ReportSampleWithEvents():
                                  start_time, start_latitude, start_longitude,
                                  end_time, end_latitude, end_longitude,
                                  event_comments, contents, specific_contents,
+                                 crate_number, storage_type,
                                  offloading_port, destination])
 
         f.close()

@@ -118,12 +118,12 @@ class FindDataGapsGps:
 
         list_sections = []
 
-        for value in GpggaGpsFix.objects.filter(utils.filter_in_bad_values()):
+        for value in GpggaGpsFix.objects.filter(utils.filter_in_bad_values()).filter(device_id=self.device_id).order_by('date_time'):
             if value.id-1 != previous_id:
                 if list_sections != []:
                     list_sections[-1]['stop'] = previous_date_time.strftime("%Y-%m-%d %H:%M:%S")
-                else:
-                    list_sections.append({'start': value.date_time.strftime("%Y-%m-%d %H:%M:%S")})
+
+                list_sections.append({'start': value.date_time.strftime("%Y-%m-%d %H:%M:%S")})
 
             previous_id = value.id
             previous_date_time = value.date_time
