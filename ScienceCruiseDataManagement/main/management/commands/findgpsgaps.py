@@ -12,7 +12,7 @@ from ship_data.models import GpggaGpsFix
 
 
 class Command(BaseCommand):
-    help = 'Outputs the track in CSV format.'
+    help = 'Find gaps in the GPS track and outputs reports for bad values (if marked in the database).'
 
     def add_arguments(self, parser):
         parser.add_argument('gps', type=str, help="Gps device name (SamplingMethod) to find the gaps (e.g. 'GPS Bridge1' or 'GPS Trimble'")
@@ -23,6 +23,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         find_data_gaps_gps = FindDataGapsGps(options['gps'], options['start'], options['end'])
+        find_data_gaps_gps.save_gps_bad_values(options['output_directory'], 'badvalues')
         find_data_gaps_gps.save(options['output_directory'], options['basefilename'])
 
 
@@ -55,7 +56,36 @@ class FindDataGapsGps:
         self.last_date = last_date
         self.last_date_str = last_date.strftime("%Y-%m-%d %H:%M:%S")
 
+    def save_gps_bad_values(self, output_directory, basefilename):
+        # Needs refactoring with save
+        first_only_date = self.first_date.strftime("%Y%m%d")
+        last_only_date = self.last_date.strftime("%Y%m%d")
+        filename = "{}-{}-{}.json".format(basefilename, first_only_date, last_only_date)
+
+        files_to_delete = glob.glob(os.path.join(output_directory, "{}-{}-*.json".format(basefilename, first_only_date)))
+
+        filename_tmp = "{}.tmp".format(filename)
+        file_path = os.path.join(output_directory, filename)
+        file_path_tmp = os.path.join(output_directory, filename_tmp)
+
+        fp = open(file_path_tmp, "w")
+
+        bad_values = self.find_bad_values()
+
+        json.dump(bad_values, fp, indent=2, sort_keys=True)
+
+        fp.close()
+        shutil.move(file_path_tmp, file_path)
+        print("Will delete these files")
+        print(files_to_delete)
+
+        for file_to_delete in files_to_delete:
+            os.remove(file_to_delete)
+
+        print("Output results with the gps saved in: {}".format(file_path))
+
     def save(self, output_directory, basefilename):
+        # Needs refactoring with save_gps_bad_values_report
         first_only_date = self.first_date.strftime("%Y%m%d")
         last_only_date = self.last_date.strftime("%Y%m%d")
         filename = "{}-{}-{}.json".format(basefilename, first_only_date, last_only_date)
@@ -81,6 +111,25 @@ class FindDataGapsGps:
             os.remove(file_to_delete)
 
         print("Output results with the gps saved in: {}".format(file_path))
+
+    def find_bad_values(self):
+        previous_id = 0
+        previous_date_time = None
+
+        list_sections = []
+
+        for value in GpggaGpsFix.objects.filter(utils.filter_in_bad_values()):
+            if value.id-1 != previous_id:
+                if list_sections != []:
+                    list_sections[-1]['stop'] = previous_date_time.strftime("%Y-%m-%d %H:%M:%S")
+                else:
+                    list_sections.append({'start': value.date_time.strftime("%Y-%m-%d %H:%M:%S")})
+
+            previous_id = value.id
+            previous_date_time = value.date_time
+
+
+        return list_sections
 
     def find_gps_missings(self):
         """ Used to find missing gaps in the GPS information. """

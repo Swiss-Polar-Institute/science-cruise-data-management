@@ -347,6 +347,16 @@ def valid_measureland_qualifier_ids():
 
     return valid_ids
 
+def filter_in_bad_values():
+    q = None
+    for label in wrong_data_measureland_qualifier_flags():
+        if q is None:
+            q = Q(measureland_qualifer_flags__preferred_label=label)
+        else:
+            q |= Q(measureland_qualifer_flags__preferred_label=label)
+
+    return q
+
 
 def filter_out_bad_values():
     q = None
