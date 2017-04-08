@@ -120,7 +120,7 @@ class FindDataGapsGps:
         for value in GpggaGpsFix.objects.filter(utils.filter_in_bad_values()).filter(device_id=self.device_id).order_by('date_time'):
             if previous_date_time == None:
                 list_sections.append({'start': value.date_time.strftime("%Y-%m-%d %H:%M:%S")})
-            elif previous_date_time is not None and (value.date_time-previous_date_time).total_seconds() > 10:
+            elif previous_date_time is not None and (value.date_time-previous_date_time).total_seconds() > 60:
                     list_sections[-1]['stop'] = previous_date_time.strftime("%Y-%m-%d %H:%M:%S")
                     list_sections.append({'start': value.date_time.strftime("%Y-%m-%d %H:%M:%S")})
 
