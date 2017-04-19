@@ -2,6 +2,18 @@ from django.core.management.base import BaseCommand, CommandError
 from main.models import Project, Sample, EventsConsistencyV2
 import re
 
+# This file is part of https://github.com/cpina/science-cruise-data-management
+#
+# This project was programmed in a hurry without any prior Django experience,
+# while circumnavigating the Antarctic on the ACE expedition, without proper
+# Internet access, with 150 scientists using the system and doing at the same
+# cruise other data management and system administration tasks.
+#
+# Sadly there aren't unit tests and we didn't have time to refactor the code
+# during the cruise, which is really needed.
+#
+# Carles Pina (carles@pina.cat) and Jen Thomas (jenny_t152@yahoo.co.uk), 2016-2017.
+
 def get_information_line(string, project_sample_number):
     if string in project_sample_number:
         m = re.match(".*{}([0-9]+).*".format(string), project_sample_number)
