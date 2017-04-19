@@ -23,6 +23,6 @@ No good documentation has been written for this project: it was developed during
 # Screenshots
 No good documentation has been written but a few screenshots have been taken to have a feel of how the application looks like:
 
-[[https://github.com/cpina/science-data-management/blob/master/documentation/screenshots/homepage.png|alt=homepage]]
+![Homepage](screenshots/homepage.png)
 
 Carles Pina (carles@pina.cat) and Jen Thomas (jenny_t152@yahoo.co.uk), 2016-2017.
