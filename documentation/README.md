@@ -23,6 +23,28 @@ No good documentation has been written for this project: it was developed during
 # Screenshots
 No good documentation has been written but a few screenshots have been taken to have a feel of how the application looks like:
 
+Homepage of the intranet:
 ![Homepage](screenshots/homepage.png)
+
+In the admin area the scientists can enter and visualise events:
+![Event report](screenshots/event_report.png)
+
+Utility to input the ship time and receive the UTC time:
+![Ship to UTC](screenshots/ship_to_utc.png)
+
+Utility to input the ship time and know the location (based on the GPS track):
+![Location](screenshots/location.png)
+
+Utility to convert from different coordinate formats:
+![Coordinates](screenshots/coordinates.png)
+
+Map (it had the track and events during the cruise):
+![Map](screenshots/map.png)
+
+Ferrybox in real time:
+![Ferrybox](screenshots/ferrybox.png)
+
+Page with instructions to access data:
+![Accessing data](screenshots/accessing_data.png)
 
 Carles Pina (carles@pina.cat) and Jen Thomas (jenny_t152@yahoo.co.uk), 2016-2017.
