@@ -19,6 +19,7 @@ No good documentation has been written for this project: it was developed during
 * quality checker for Ferrybox data
 * quality checker for GPS data (e.g. compare two GPS, generate tracks per GPS to be displayed by qgis or some GIS software)
 * imports multi beam raw files from MBSystem JSON output
+and some more things.
 
 # Screenshots
 No good documentation has been written but a few screenshots have been taken to have a feel of how the application looks like:

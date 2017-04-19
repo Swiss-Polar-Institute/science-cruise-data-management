@@ -13,4 +13,6 @@ I wouldn't use this code as it comes but as a prototype or starting point for a 
 
 Some parts like the GPS importer could be improved but it uses interesting techniques to import GPS files in real time into the database.
 
+[Documentation](https://github.com/cpina/science-cruise-data-management/tree/master/documentation) with a list of features and screenshots.
+
 Carles Pina (carles@pina.cat) and Jen Thomas (jenny_t152@yahoo.co.uk), ACE 2016-2017.
