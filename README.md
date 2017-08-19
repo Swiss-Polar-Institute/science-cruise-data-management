@@ -15,4 +15,4 @@ Some parts like the GPS importer could be improved but it uses interesting techn
 
 [Documentation](https://github.com/cpina/science-cruise-data-management/tree/master/documentation) with a list of features and screenshots.
 
-Carles Pina (carles@pina.cat) and Jen Thomas (jenny_t152@yahoo.co.uk), ACE 2016-2017.
+Carles Pina (carles@pina.cat) and Jen Thomas (jenny_t152@yahoo.co.uk, jenny.thomas@epfl.ch), ACE 2016-2017.
