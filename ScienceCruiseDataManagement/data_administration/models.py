@@ -1,7 +1,6 @@
 from django.db import models
 from main.models import Person, Project
 import django.utils.timezone
-from django.contrib.auth.models import User
 
 # This file is part of https://github.com/Swiss-Polar-Institute/science-cruise-data-management
 

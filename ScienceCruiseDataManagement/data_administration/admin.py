@@ -7,4 +7,3 @@ class PostCruiseDataContactAdmin(admin.ModelAdmin):
 
 # Register your models here.
 admin.site.register(data_administration.models.PostCruiseDataContact, PostCruiseDataContactAdmin)
-
