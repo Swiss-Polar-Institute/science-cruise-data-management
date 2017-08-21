@@ -65,7 +65,8 @@ INSTALLED_APPS = [
     'main',  # ScienceCruiseManagement main app
     'metadata',
     'ctd',
-    'underway_sampling'
+    'underway_sampling',
+    'data_administration'
 ]
 
 MIDDLEWARE = [
