@@ -283,7 +283,6 @@ class EventResource(import_export.resources.ModelResource):
 
     data = import_export.fields.Field(column_name = 'data', attribute='data')
     samples = import_export.fields.Field(column_name = 'samples', attribute='samples')
-    outcome = import_export.fields.Field(column_name = 'outcome', attribute='outcome')
 
     class Meta:
         fields = ('number', 'sampling_method', 'station', 'data', 'samples', )
@@ -713,6 +712,19 @@ class PersonAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, adm
         return ", ".join([str(leg.number) for leg in legs])
 
 
+class PersonRoleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+    list_display = ('person', 'project', 'onboard_role', 'leg_list')
+    ordering = ['person']
+    search_fields = ('person', 'project', 'onboard_role', 'leg')
+    list_filter = (LegFilter, ProjectFilter, OnBoardRoleFilter)
+
+
+    def leg_list(self, obj):
+        legs = obj.leg.all()
+
+        return ", ".join([str(leg.number) for leg in legs])
+
+
 # This is for the import_export
 class EmailResource(import_export.resources.ModelResource):
     person_name_first = import_export.fields.Field(
@@ -900,6 +912,7 @@ admin.site.register(main.models.SpeciesClassification, SpeciesClassificationAdmi
 admin.site.register(main.models.Sample, SampleAdmin)
 admin.site.register(main.models.ImportedFile, ImportedFileAdmin)
 admin.site.register(main.models.Person, PersonAdmin)
+admin.site.register(main.models.PersonRole, PersonRoleAdmin)
 admin.site.register(main.models.Email, EmailAdmin)
 admin.site.register(main.models.Organisation, OrganisationAdmin)
 admin.site.register(main.models.Data, DataAdmin)

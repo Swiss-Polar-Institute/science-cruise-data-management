@@ -299,7 +299,7 @@ class Person(models.Model):
     name_first = models.CharField(max_length=255)
     name_middle = models.CharField(max_length=255, blank=True, null=True)
     name_last = models.CharField(max_length=255)
-    initials = models.CharField(max_length=5, unique=True)
+    initials = models.CharField(max_length=5)
     project = models.ForeignKey('Project', null=True, blank=True)
     onboard_role = models.ForeignKey(OnboardRole, null=True, blank=True)
     organisation = models.ManyToManyField(Organisation)
@@ -320,7 +320,18 @@ class Person(models.Model):
 
     class Meta:
         verbose_name_plural="People"
-        unique_together = (('name_first', 'name_last'),)
+        unique_together = (('name_first', 'name_last', 'project'),)
+
+
+class PersonRole(models.Model):
+    person = models.ForeignKey(Person)
+    project = models.ForeignKey('Project', null=True, blank=True)
+    onboard_role = models.ForeignKey(OnboardRole, blank=True)
+    leg = models.ManyToManyField(Leg, blank=True)
+
+    class Meta:
+        verbose_name_plural="People Roles"
+        unique_together = (('person', 'project', 'onboard_role'),)
 
 
 class Email(models.Model):
