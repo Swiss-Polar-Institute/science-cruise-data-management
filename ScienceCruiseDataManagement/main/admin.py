@@ -713,11 +713,10 @@ class PersonAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, adm
 
 
 class PersonRoleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('person', 'project', 'onboard_role', 'leg_list')
-    ordering = ['person']
-    search_fields = ('person', 'project', 'onboard_role', 'leg')
+    list_display = ('person', 'project', 'onboard_role', 'principal_investigator', 'leg_list')
+    ordering = ['person', 'project']
+    search_fields = ('person', 'project', 'onboard_role', 'principal_investigator', 'leg')
     list_filter = (LegFilter, ProjectFilter, OnBoardRoleFilter)
-
 
     def leg_list(self, obj):
         legs = obj.leg.all()

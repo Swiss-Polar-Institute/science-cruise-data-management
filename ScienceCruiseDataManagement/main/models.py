@@ -326,7 +326,8 @@ class Person(models.Model):
 class PersonRole(models.Model):
     person = models.ForeignKey(Person)
     project = models.ForeignKey('Project', null=True, blank=True)
-    onboard_role = models.ForeignKey(OnboardRole, blank=True)
+    onboard_role = models.ForeignKey(OnboardRole, null=True, blank=True)
+    principal_investigator = models.BooleanField(default=False)
     leg = models.ManyToManyField(Leg, blank=True)
 
     class Meta:
