@@ -359,7 +359,7 @@ class EmailOversizeNotified(models.Model):
 class Mission(models.Model):
     name = models.CharField(max_length=255, unique=True)
     acronym = models.CharField(max_length=255)
-    institution = models.CharField(max_length=255)
+    institution = models.ForeignKey(Organisation)
     description = models.TextField()
 
     def __str__(self):
