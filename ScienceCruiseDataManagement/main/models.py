@@ -904,7 +904,7 @@ class TimeChange(models.Model):
 
 
 class ContactDetails(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.ForeignKey(Person)
     email = models.CharField(max_length=255, null=True, blank=True)
     other = models.TextField(null=True, blank=True)
 
