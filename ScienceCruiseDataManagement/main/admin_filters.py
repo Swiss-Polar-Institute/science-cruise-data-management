@@ -90,16 +90,16 @@ class OutcomeFilter(OptionFilter):
         return queryset.filter(outcome=self.value())
 
 
-class OnBoardRoleFilter(OptionFilter):
-    title = "Onboard role"
-    parameter_name = "onboard_role"
-    template = "admin/options_filter_onboard_role.html"
+class RoleFilter(OptionFilter):
+    title = "Role"
+    parameter_name = "role"
+    template = "admin/options_filter_role.html"
 
     def filter(self, request, queryset):
-        return queryset.filter(onboard_role_id=self.value())
+        return queryset.filter(role_id=self.value())
 
     def lookups(self, request, model_admin):
-        return self._prepare_filter_lookups(main.models.OnboardRole, 'role', query_by_id=True)
+        return self._prepare_filter_lookups(main.models.Role, 'role', query_by_id=True)
 
 
 class LegFilter(OptionFilter):

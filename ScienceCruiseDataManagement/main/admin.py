@@ -13,7 +13,7 @@ import main.utils
 from main.admin_filters import OutcomeFilter, StationReportFilter, ProjectReportFilter, \
     SamplingMethodFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter,\
     OffloadingPortFilter, EventFilter, LegFilter, DeviceTypeFilter, ContactFilter, ProjectFilter, UsedLegFilter,\
-    LegNumberFilter, StationTypeFilter, PrincipalInvestigatorFilter, PersonLegFilter, OnBoardRoleFilter,\
+    LegNumberFilter, StationTypeFilter, PrincipalInvestigatorFilter, PersonLegFilter, RoleFilter,\
     OtherFilters
 import main.utils_event
 import ctd.admin
@@ -696,27 +696,21 @@ class ImportedFileAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class PersonAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'project', 'onboard_role', 'organisation_list', 'email_address', 'principal_investigator','leg_list')
+    list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'organisation_list', 'email_address')
     ordering = ['name_last']
     search_fields = ('name_first', 'name_middle', 'name_last')
-    list_filter = (LegFilter, ProjectFilter, OnBoardRoleFilter, PrincipalInvestigatorFilter, )
 
     def organisation_list(self, obj):
         organisations = obj.organisation.all()
 
         return ", ".join([organisation.name for organisation in organisations])
 
-    def leg_list(self, obj):
-        legs = obj.leg.all()
-
-        return ", ".join([str(leg.number) for leg in legs])
-
 
 class PersonRoleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('person_name_last', 'project', 'onboard_role', 'principal_investigator', 'leg_list')
-    ordering = ['person', 'project']
-    search_fields = ('person', 'project', 'onboard_role', 'principal_investigator', 'leg')
-    list_filter = (LegFilter, ProjectFilter, OnBoardRoleFilter)
+    list_display = ('person_name_last', 'project', 'role', 'principal_investigator', 'leg_list')
+    ordering = ['person', 'project', 'leg']
+    search_fields = ('person__name_first', 'person__name_last')
+    list_filter = (LegFilter, ProjectFilter, RoleFilter)
 
     def person_name_last(self, obj):
         return "{}, {}".format(obj.person.name_last, obj.person.name_first)
@@ -764,6 +758,7 @@ class EmailAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     def person_name_last(self, obj):
         return obj.person.name_last
 
+
 class EmailOversizeNotifiedAdmin(admin.ModelAdmin):
     list_display = ('from_email', 'to_email_address', 'date_string', 'size_kb', 'subject', 'imap_uuid', 'added')
 
@@ -778,7 +773,7 @@ class OrganisationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['name']
 
 
-class OnboardRoleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+class RoleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('role', 'description')
     ordering = ['role']
     search_fields = ('role',)
@@ -931,7 +926,7 @@ admin.site.register(main.models.EmailOversizeNotified, EmailOversizeNotifiedAdmi
 admin.site.register(main.models.Device, DeviceAdmin)
 admin.site.register(main.models.CtdCast, CtdCastAdmin)
 admin.site.register(main.models.TmrCast, TmrCastAdmin)
-admin.site.register(main.models.OnboardRole, OnboardRoleAdmin)
+admin.site.register(main.models.Role, RoleAdmin)
 admin.site.register(main.models.EventsConsistency, EventsConsistencyAdmin)
 admin.site.register(main.models.EventsConsistencyV2, EventsConsistencyAdminV2)
 admin.site.register(main.models.ContactDetails, ContactDetailsAdmin)

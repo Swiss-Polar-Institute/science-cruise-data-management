@@ -279,7 +279,7 @@ class Ship(models.Model):
         return "{}".format(self.name)
 
 
-class OnboardRole(models.Model):
+class Role(models.Model):
     role = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
 
@@ -300,12 +300,8 @@ class Person(models.Model):
     name_middle = models.CharField(max_length=255, blank=True, null=True)
     name_last = models.CharField(max_length=255)
     initials = models.CharField(max_length=5)
-    project = models.ForeignKey('Project', null=True, blank=True)
-    onboard_role = models.ForeignKey(OnboardRole, null=True, blank=True)
     organisation = models.ManyToManyField(Organisation)
     email_address = models.CharField(max_length=255, null=True, blank=True)
-    principal_investigator = models.BooleanField()
-    leg = models.ManyToManyField(Leg, blank=True)
 
     def __str__(self):
         organisations = self.organisation.all()
@@ -320,19 +316,19 @@ class Person(models.Model):
 
     class Meta:
         verbose_name_plural="People"
-        unique_together = (('name_first', 'name_last', 'project'),)
+        unique_together = (('name_first', 'name_last'),)
 
 
 class PersonRole(models.Model):
     person = models.ForeignKey(Person)
     project = models.ForeignKey('Project', null=True, blank=True)
-    onboard_role = models.ForeignKey(OnboardRole, null=True, blank=True)
+    role = models.ForeignKey(Role, null=True, blank=True)
     principal_investigator = models.BooleanField(default=False)
     leg = models.ManyToManyField(Leg, blank=True)
 
     class Meta:
         verbose_name_plural="People Roles"
-        unique_together = (('person', 'project', 'onboard_role'),)
+        unique_together = (('person', 'project', 'role'),)
 
 
 class Email(models.Model):
