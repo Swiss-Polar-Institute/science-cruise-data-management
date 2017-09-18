@@ -44,6 +44,7 @@ class CompareSampleLists():
 
         sample_numbers = []
 
+        # reads in the file and lists the sample codes
         with open(data_filename, 'r') as file:
             reader = csv.reader(file, delimiter=',')
 
@@ -55,6 +56,32 @@ class CompareSampleLists():
             return sample_numbers
 
 # Put in here a thing to normalise the sample numbers (with the julian day)
+    @staticmethod
+    def normalise_expedition_sample_code(sample_numbers):
+        '''This function takes an input list of expedition sample codes and normalises the sample codes within it, ensuring each section of the code is in the correct format (in particular the julian day)'''
+
+        normalised_sample_codes = []
+
+        for sample_code in sample_numbers: 
+
+            # splits the input sample code into constituent parts
+            ship_string = sample_code.split('/')[0]
+            mission_acronym_string = sample_code.split('/')[1]
+            leg_string = sample_code.split('/')[2]
+            project_number_string = sample_code.split('/')[3]
+            julian_day = "{0:03d}".format(int(sample_code.split('/')[4]))
+            event_number_string = sample_code.split('/')[5]
+            pi_initials_string = sample_code.split('/')[6]
+            project_sample_code_string = sample_code.split('/')[7]
+
+            # puts the expedition sample code back together once it has been normalised
+            normalised_expedition_sample_code =ship_string + "/" + mission_acronym_string + "/" + leg_string + "/" + project_number_string + "/" + julian_day + "/" + event_number_string + "/" + pi_initials_string + "/" + project_sample_code_string
+
+            # appends the normalised sample codes back to the list
+            normalised_sample_codes.append(normalised_expedition_sample_code)
+
+        return sorted(normalised_sample_codes)
+
 
     @staticmethod
     def compare_lists(lista, listb):
@@ -93,7 +120,13 @@ class CompareSampleLists():
 
         database_sample_list = CompareSampleLists.create_sample_list_from_database(sampling_method_name, project_number)
 
-        data_sample_list = CompareSampleLists.get_list_of_data_samples(data_file_directory, data_filename)
+        file_sample_list = CompareSampleLists.get_list_of_data_samples(data_file_directory, data_filename)
 
-        CompareSampleLists.compare_lists(database_sample_list, data_sample_list)
+        normalised_database_sample_list = CompareSampleLists.normalise_expedition_sample_code(database_sample_list)
+        print("NORMALISED SAMPLE LIST FROM DATABASE (total:", len(normalised_database_sample_list), "):", normalised_database_sample_list)
+
+        normalised_file_sample_list = CompareSampleLists.normalise_expedition_sample_code(file_sample_list)
+        print("NORMALISED SAMPLE LIST FROM FILE (total:", len(normalised_file_sample_list), "):", normalised_file_sample_list)
+
+        CompareSampleLists.compare_lists(normalised_database_sample_list, normalised_file_sample_list)
 
