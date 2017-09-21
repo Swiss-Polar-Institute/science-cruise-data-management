@@ -893,11 +893,14 @@ class NetworkHost(models.Model):
 
 
 class TimeChange(models.Model):
-    date_changed_utc = models.DateField(unique=True)
+    date_changed_utc = models.DateField()
     date_changed_ship_time = models.DateField(blank=True, null=True)
     difference_to_utc_after_change = models.CharField(max_length=255)
     data_source = models.CharField(max_length=255)
     comments = models.TextField(blank=True, null=True)
+
+    class Meta:
+        unique_together = (('date_changed_utc', 'date_changed_ship_time'),)
 
     def __str__(self):
         return "{}".format(self.date_changed_utc)
