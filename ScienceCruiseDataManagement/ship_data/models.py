@@ -48,7 +48,7 @@ class GpggaGpsFix(models.Model):
     altitude_units = models.CharField(max_length=1)
     geoid_height = models.FloatField(null=True, blank=True)
     geoid_height_units = models.CharField(null=True, blank=True, max_length=1)
-    measureland_qualifer_flags = models.ForeignKey(MeasurelandQualifierFlags, null=True, blank=True,
+    measureland_qualifier_flags = models.ForeignKey(MeasurelandQualifierFlags, null=True, blank=True,
                                                    default=MeasurelandQualifierFlags.DEFAULT_PK)
 
     def __str__(self):
