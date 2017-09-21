@@ -9,6 +9,7 @@ from django.db.models.signals import post_save
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.conf import settings
+from django.contrib.auth.models import User
 #import data_storage_management.models
 
 cannot_change = (("cannot_change_special", "Cannot change (special)"),)
@@ -893,7 +894,10 @@ class NetworkHost(models.Model):
 
 class TimeChange(models.Model):
     date_changed_utc = models.DateField(unique=True)
+    date_changed_ship_time = models.DateField(blank=True, null=True)
     difference_to_utc_after_change = models.CharField(max_length=255)
+    data_source = models.CharField(max_length=255)
+    comments = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return "{}".format(self.date_changed_utc)

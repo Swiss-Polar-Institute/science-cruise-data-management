@@ -838,7 +838,7 @@ class MessageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class TimeChangeAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('date_changed_utc', 'difference_to_utc_after_change')
+    list_display = ('date_changed_utc', 'date_changed_ship_time', 'difference_to_utc_after_change', 'data_source', 'comments')
     ordering = ['date_changed_utc']
 
 
