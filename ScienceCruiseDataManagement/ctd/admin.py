@@ -34,7 +34,7 @@ class CtdBottleTriggerAdmin(admin.ModelAdmin):
 
 
 class CtdVariableAdmin(admin.ModelAdmin):
-    list_display = ('name', )
+    list_display = ('name', 'description', 'principal_investigator', )
     ordering = ['-name']
 
 

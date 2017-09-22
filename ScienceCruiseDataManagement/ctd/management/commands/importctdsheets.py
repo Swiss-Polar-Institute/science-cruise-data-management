@@ -8,6 +8,8 @@ import glob
 import os
 import re
 
+# Note that this script will no longer work in the way that the CTD.Ctdvariable model is now set up (2017-09-21).The model has been changed to add in foreign keys in an effort to remove the names from the sample variable column, therefore this script will need altering to take the PI names and get that from the main.person table, and the variable from the list of variables which have had the duplication removed from the list.
+
 # This file is part of https://github.com/cpina/science-cruise-data-management
 #
 # This project was programmed in a hurry without any prior Django experience,

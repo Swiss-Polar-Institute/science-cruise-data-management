@@ -1,5 +1,6 @@
 from django.db import models
 from main.models import CtdCast
+from main.models import Person
 
 # This file is part of https://github.com/cpina/science-cruise-data-management
 #
@@ -30,7 +31,12 @@ class CtdBottleTrigger(models.Model):
 
 
 class CtdVariable(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    principal_investigator = models.ForeignKey(Person, blank=True, null=True)
+
+    class Meta:
+        unique_together = (('name', 'principal_investigator'),)
 
     def __str__(self):
         return "{}".format(self.name)
