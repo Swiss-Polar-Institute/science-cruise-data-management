@@ -1,8 +1,6 @@
 from django.contrib import admin
 import underway_sampling.models
 
-# Note that the script that enters data into these database tables may no longer work because additional fields have been added to the tables.  
-
 # This file is part of https://github.com/cpina/science-cruise-data-management
 #
 # This project was programmed in a hurry without any prior Django experience,
