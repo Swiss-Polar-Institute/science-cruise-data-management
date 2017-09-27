@@ -66,7 +66,7 @@ INSTALLED_APPS = [
     'metadata',
     'ctd',
     'underway_sampling',
-    'data_administration'
+    'data_administration',
     'ace_reporting'
 ]
 
