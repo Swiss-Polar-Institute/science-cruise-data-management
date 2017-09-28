@@ -6,7 +6,10 @@ import django.utils.timezone
 from django.contrib.auth.models import User
 
 # This application contains information that has been reported by the expedition participants.
+
 class AudienceSize(models.Model):
+    '''Details of the audience involved.'''
+
     number_people = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
 
@@ -15,6 +18,7 @@ class AudienceSize(models.Model):
 
 
 class AudienceType(models.Model):
+    '''Details of the audience type involved.'''
     type = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
 
@@ -23,6 +27,8 @@ class AudienceType(models.Model):
 
 
 class MediaType(models.Model):
+    '''Details of the types of media involved.'''
+
     type = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
 
@@ -31,6 +37,8 @@ class MediaType(models.Model):
 
 
 class OutreachActivity(models.Model):
+    '''This model brings together full information about outreach activities.'''
+
     project = models.ManyToManyField(Project, help_text="Please select the project(s) to which your outreach activity was related. If it was about the expedition in general, please select all projects.")
     person = models.ManyToManyField(Person, help_text="Please enter the people that were involved in your outreach activity. If they are not listed here, please add them to the database.")
     activity_date = models.DateField(help_text="Please enter the date on which your activity took place.")
@@ -49,3 +57,6 @@ class OutreachActivity(models.Model):
 
     def __str__(self):
         return "{}".format(self.activity_title)
+
+    class Meta:
+        verbose_name_plural = "Outreach Activities"
