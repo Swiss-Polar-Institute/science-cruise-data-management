@@ -27,6 +27,12 @@ class OutreachActivityAdmin(admin.ModelAdmin):
     ordering = ['project', 'person', 'activity_title', 'media_type', 'audience_size', 'audience_type']
     search_fields = ('project', 'person', 'activity_title', 'media_type', 'audience_size', 'audience_type')
     filter_vertical = ('project', 'person')
+    exclude = ('created_by',)
+
+    def save_model(self, request, obj, form, change):
+        if getattr(obj, 'created_by', None) is None:
+            obj.created_by = request.user
+        obj.save()
 
     def project_list(self, obj):
         projects = obj.project.all()
