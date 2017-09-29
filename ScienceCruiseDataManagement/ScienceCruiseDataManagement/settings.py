@@ -117,8 +117,11 @@ WSGI_APPLICATION = 'ScienceCruiseDataManagement.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+        'HOST': '127.0.0.1',
+        'NAME': 'ace',
+        'USER': 'ace',
+        'PASSWORD': 'ace',
         'OPTIONS': {
-            'read_default_file': '/etc/mysql/ace.cnf',
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
     }

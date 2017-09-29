@@ -15,3 +15,4 @@ pyparsing==2.1.10
 six==1.10.0
 sqlparse==0.2.2
 tablib==0.12.1
+lxml==4.0.0
