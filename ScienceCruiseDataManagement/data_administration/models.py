@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 class PostCruiseDataContact(models.Model):
     person = models.ForeignKey(Person)
     project = models.ForeignKey(Project)
+    system_user_created = models.BooleanField()
     created_on = models.DateTimeField(default=django.utils.timezone.now)
     created_by = models.ForeignKey(User, null=True, blank=True)
 
