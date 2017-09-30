@@ -39,7 +39,7 @@ class MediaType(models.Model):
 class OutreachActivity(models.Model):
     '''This model brings together full information about outreach activities.'''
 
-    project = models.ManyToManyField(Project, help_text="Please select the project(s) to which your outreach activity was related. If it was about the expedition in general, please select all projects.")
+    project = models.ManyToManyField(Project, blank=True, help_text="Please select the project(s) to which your outreach activity was related. If it was about the expedition in general, please select all projects.")
     person = models.ManyToManyField(Person, help_text="Please enter the people that were involved in your outreach activity. If they are not listed here, please add them to the database.")
     activity_date = models.DateField(help_text="Please enter the date on which your activity took place.")
     activity_title = models.TextField(help_text="Please give the title of your outreach activity.")
