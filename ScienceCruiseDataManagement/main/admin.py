@@ -37,7 +37,7 @@ class MissionAdmin(admin.ModelAdmin):
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('number', 'title', 'alternative_title', 'principal_investigator', 'abstract', 'sampling_methods_list')
+    list_display = ('number', 'title', 'alternative_title', 'principal_investigator', 'abstract', 'sampling_methods_list', 'mission')
     ordering = ['number']
 
     def sampling_methods_list(self, obj):
