@@ -114,16 +114,16 @@ class LegFilter(OptionFilter):
         return self._prepare_filter_lookups(main.models.Leg, 'number', query_by_id=True)
 
 
-#class PersonFilter(OptionFilter):
-#    title = "Person"
-#    parameter_name = "person"
-#    template = "admin/options_filter_person.html"
+class PersonFilter(OptionFilter):
+    title = "Person"
+    parameter_name = "person"
+    template = "admin/options_filter_person.html"
 
-#    def filter(self, request, queryset):
-#        return queryset.filter(person__id=self.value())
+    def filter(self, request, queryset):
+        return queryset.filter(person__id=self.value())
 
-#    def lookups(self, request, model_admin):
-#        return self._prepare_filter_lookups(main.models.Person, 'name_last', query_by_id=True)
+    def lookups(self, request, model_admin):
+        return self._prepare_filter_lookups(main.models.Person, 'name_last', query_by_id=True)
 
 
 class PersonLegFilter(LegFilter):
