@@ -370,6 +370,7 @@ class Project(models.Model):
     principal_investigator = models.ForeignKey(Person, related_name="Principal_investigator", null=True, blank=True)
     abstract = models.TextField(null=True, blank=True)
     sampling_methods = models.ManyToManyField(SamplingMethod)
+    mission = models.ForeignKey(Mission)
 
     def __str__(self):
         return "{} - {}".format(self.number, self.title)
@@ -530,13 +531,6 @@ def update_expedition_sample_code(sender, instance, **kwargs):
     if instance.expedition_sample_code is None or instance.expedition_sample_code == '':
         instance.expedition_sample_code = settings.EXPEDITION_SAMPLE_CODE(instance)
         instance.save()
-
-
-class Data(models.Model):
-    event = models.ForeignKey('Event', related_name="Event01")
-    project = models.ForeignKey(Project)
-    storage_location = models.CharField(max_length=255)
-    checked = models.BooleanField()
 
 
 class Event(models.Model):

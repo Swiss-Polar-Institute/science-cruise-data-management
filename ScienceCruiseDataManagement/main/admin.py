@@ -779,11 +779,6 @@ class RoleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     search_fields = ('role',)
 
 
-class DataAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('event', 'project', 'storage_location', 'checked')
-    ordering = ['event']
-
-
 class FilesStorageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('relative_path', 'kilobytes')
 
@@ -914,7 +909,6 @@ admin.site.register(main.models.Person, PersonAdmin)
 admin.site.register(main.models.PersonRole, PersonRoleAdmin)
 admin.site.register(main.models.Email, EmailAdmin)
 admin.site.register(main.models.Organisation, OrganisationAdmin)
-admin.site.register(main.models.Data, DataAdmin)
 admin.site.register(main.models.FilesStorage, FilesStorageAdmin)
 admin.site.register(main.models.StorageCrate, StorageCrateAdmin)
 admin.site.register(main.models.NetworkHost, NetworkHostAdmin)
