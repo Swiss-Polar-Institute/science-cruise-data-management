@@ -664,11 +664,6 @@ class PreservationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['name']
 
 
-class SpeciesClassificationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('phylum', 'class2', 'order', 'family', 'genus', 'species')
-    ordering = ['phylum']
-
-
 class SampleContentAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('type', 'description')
     ordering = ['type']
@@ -902,7 +897,6 @@ admin.site.register(main.models.TimeUncertainty, TimeUncertaintyAdmin)
 admin.site.register(main.models.TimeSource, TimeSourceAdmin)
 admin.site.register(main.models.PositionSource, PositionSourceAdmin)
 admin.site.register(main.models.Preservation, PreservationAdmin)
-admin.site.register(main.models.SpeciesClassification, SpeciesClassificationAdmin)
 admin.site.register(main.models.Sample, SampleAdmin)
 admin.site.register(main.models.ImportedFile, ImportedFileAdmin)
 admin.site.register(main.models.Person, PersonAdmin)

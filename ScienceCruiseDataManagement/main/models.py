@@ -199,23 +199,6 @@ class Storage(models.Model):
         return "{}".format(self.name)
 
 
-class SpeciesClassification(models.Model):
-    phylum = models.CharField(max_length=255)
-    class2 = models.CharField('Class', db_column='class', max_length=255)
-    order = models.CharField(max_length=255)
-    family = models.CharField(max_length=255)
-    genus = models.CharField(max_length=255)
-    species = models.CharField(max_length=255)
-
-    def __str__(self):
-        return "{}-{}-{}-{}-{}-{}".format(
-            self.species, self.genus, self.family, self.order, self.class2, self.phylum)
-
-    class Meta:
-        verbose_name_plural="Species classification"
-        unique_together= (('phylum', 'class2', 'order', 'family', 'genus', 'species'),)
-
-
 class SampleContent(models.Model):
     type = models.CharField(max_length=255, unique=True)
     description = models.TextField()
