@@ -621,7 +621,7 @@ class IslandLandingsAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMi
     save_as = True
 
 
-class StorageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
+class StorageTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('name', 'description')
     ordering = ['name']
 
@@ -884,7 +884,7 @@ admin.site.register(main.models.EventReport, EventReportAdmin)
 admin.site.register(main.models.Country, CountryAdmin)
 admin.site.register(main.models.Island, IslandAdmin)
 admin.site.register(main.models.IslandLandings, IslandLandingsAdmin)
-admin.site.register(main.models.Storage, StorageAdmin)
+admin.site.register(main.models.StorageType, StorageTypeAdmin)
 admin.site.register(main.models.FilesStorageGeneral, FileStorageGeneralAdmin)
 admin.site.register(main.models.Port, PortAdmin)
 admin.site.register(main.models.PositionUncertainty, PositionUncertaintyAdmin)

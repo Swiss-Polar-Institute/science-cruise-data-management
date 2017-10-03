@@ -191,9 +191,11 @@ class Leg(models.Model):
         return "{}".format(self.number)
 
 
-class Storage(models.Model):
+class StorageType(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
+    created_on = models.DateTimeField(default=timezone.now)
+    created_by = models.ForeignKey(User, null=True, blank=True)
 
     def __str__(self):
         return "{}".format(self.name)
