@@ -780,11 +780,6 @@ class FilesStorageAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     ordering = ['relative_path']
 
 
-class StorageCrateAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name', 'location', 'description', 'comment')
-    ordering = ['name']
-
-
 class NetworkHostAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('ip', 'hostname', 'location', 'comment')
     ordering = ['ip']
@@ -904,7 +899,6 @@ admin.site.register(main.models.PersonRole, PersonRoleAdmin)
 admin.site.register(main.models.Email, EmailAdmin)
 admin.site.register(main.models.Organisation, OrganisationAdmin)
 admin.site.register(main.models.FilesStorage, FilesStorageAdmin)
-admin.site.register(main.models.StorageCrate, StorageCrateAdmin)
 admin.site.register(main.models.NetworkHost, NetworkHostAdmin)
 admin.site.register(main.models.Platform, PlatformAdmin)
 admin.site.register(main.models.PlatformType, PlatformTypeAdmin)

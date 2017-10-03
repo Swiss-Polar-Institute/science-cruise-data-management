@@ -642,13 +642,6 @@ class TmrCast(models.Model):
         unique_together = (('tmr_cast_number', 'leg_number'),)
 
 
-class StorageCrate(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    location = models.CharField(max_length=255)
-    description = models.CharField(max_length=255, null=True, blank=True)
-    comment = models.TextField(null=True, blank=True)
-
-
 class EventAction(models.Model):
     event = models.ForeignKey(Event, help_text="""Select the event from the list for which you want to enter an action.<br>
                                                If your event is not in the list check the event's outcome: should be success or failure. And check that the event hasn't been completed either<br>
