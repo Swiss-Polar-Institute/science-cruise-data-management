@@ -477,7 +477,7 @@ class Sample(models.Model):
     project_sample_number = models.CharField(max_length=255, null=True, blank=True)
     contents = models.CharField(max_length=255)
     crate_number = models.CharField(max_length=255, null=True, blank=True)
-    storage_type = models.CharField(max_length=255, null=True, blank=True)
+    storage_type = models.ForeignKey(StorageType, null=True, blank=True)
     storage_location = models.CharField(max_length=255, null=True, blank=True)
     offloading_port = models.CharField(max_length=255)
     destination = models.CharField(max_length=255, null=True, blank=True)

@@ -622,7 +622,8 @@ class IslandLandingsAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMi
 
 
 class StorageTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name', 'description')
+    list_display = ('name', 'description', 'created_on', 'created_by')
+    exclude = ('created_by',)
     ordering = ['name']
 
 
