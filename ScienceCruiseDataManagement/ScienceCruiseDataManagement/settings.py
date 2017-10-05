@@ -59,14 +59,15 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django_extensions',
     'selectable',   # auto-completion
-    'smart_selects', # foreign keys depending on other foreign keys
+    'smart_selects',  # foreign keys depending on other foreign keys
     'ship_data',
     'data_storage_management',
     'main',  # ScienceCruiseManagement main app
     'metadata',
     'ctd',
     'underway_sampling',
-    'data_administration'
+    'data_administration',
+    'django_tequila',
 ]
 
 MIDDLEWARE = [
@@ -78,6 +79,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_tequila.middleware.TequilaMiddleware',
 ]
 
 ROOT_URLCONF = 'ScienceCruiseDataManagement.urls'
@@ -97,6 +99,16 @@ TEMPLATES = [
         },
     },
 ]
+
+AUTHENTICATION_BACKENDS = ('django_tequila.django_backend.TequilaBackend',)
+
+TEQUILA_SERVICE_NAME = "Science Cruise Data Management"
+
+LOGIN_URL = "/login"
+LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_IF_NOT_ALLOWED = "/not_allowed"
+LOGOUT_URL = '/'
+TEQUILA_NEW_USER_INACTIVE = True
 
 WSGI_APPLICATION = 'ScienceCruiseDataManagement.wsgi.application'
 

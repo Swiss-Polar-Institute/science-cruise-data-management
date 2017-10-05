@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+from django.contrib.auth.decorators import login_required
 from django.conf.urls import url, include
 from django.contrib import admin
 from data_storage_management.views import HardDiskJson
@@ -20,12 +21,13 @@ from main.views import MainMenuView, MainMapView, PositionsJson, LatestShipPosit
     InteractiveMapView, EventListView, ImportPortsFromGpx, DocumentsView, AccessingDataView, PositionFromDateTime,\
     CoordinatesConversion, TrackJson, MailState, ShipTimeToUtc, ImageReloaderView, LatestImage, StatsView,\
     ContactDetailsListView
-from metadata.views import ProjectListView, MetadataEntryListView, MetadataEntryView, MetadataEntryAsWord,\
+from metadata.views import MetadataEntryListView, MetadataEntryView, MetadataEntryAsWord,\
     MetadataEntryAsDif
 from ship_data.views import FerryboxView
-from data_storage_management.views import HardDiskJson, DirectoryUpdateJson
+# from data_storage_management.views import DirectoryUpdateJson
 from django.conf import settings
 from django.conf.urls.static import static
+
 
 # This file is part of https://github.com/cpina/science-cruise-data-management
 #
@@ -40,40 +42,50 @@ from django.conf.urls.static import static
 # Carles Pina (carles@pina.cat) and Jen Thomas (jenny_t152@yahoo.co.uk), 2016-2017.
 
 urlpatterns = [
-    url(r'^$', MainMenuView.as_view()),
-    url(r'^map/$', MainMapView.as_view()),
-    url(r'^api/positions.geojson', PositionsJson.as_view()),
-    url(r'^api/track.geojson', TrackJson.as_view()),
-    url(r'api/latest_ship_position.json', LatestShipPosition.as_view()),
-    url(r'api/data_storage/hard_disk.json', HardDiskJson.as_view()),
-    url(r'api/data_storage/add_directory_update.json', DirectoryUpdateJson.as_view()),
+    url(r'^$', login_required(MainMenuView.as_view())),
+    url(r'^map/$', login_required(MainMapView.as_view())),
+    url(r'^api/positions.geojson', login_required(PositionsJson.as_view())),
+    # url(r'^api/track.geojson', TrackJson.as_view()),
+    url(r'api/latest_ship_position.json', login_required(LatestShipPosition.as_view())),
+    # url(r'api/data_storage/hard_disk.json', HardDiskJson.as_view()),
+    # url(r'api/data_storage/add_directory_update.json', DirectoryUpdateJson.as_view()),
     # url(r'^api/positions$', PositionsJson.as_view()),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^chaining/', include('smart_selects.urls')),
-    url(r'^country/list$', CountryListView.as_view(), name='article-list'),
-    url(r'^storage/', FileStorageView.as_view()),
-    url(r'^map/interactive/$', InteractiveMapView.as_view()),
-    url(r'^reports/events/$', EventListView.as_view()),
+    url(r'^country/list$', login_required(CountryListView.as_view()), name='article-list'),
+    # url(r'^storage/', FileStorageView.as_view()),
+    url(r'^map/interactive/$', login_required(InteractiveMapView.as_view())),
+    url(r'^reports/events/$', login_required(EventListView.as_view())),
     url(r'^selectable/', include('selectable.urls')),
-    url(r'^import_ports_from_gpx/', ImportPortsFromGpx.as_view()),
-    url(r'^documents/', DocumentsView.as_view()),
-    url(r'^accessing_data/', AccessingDataView.as_view()),
-    url(r'^position_from_date_time/', PositionFromDateTime.as_view()),
-    url(r'^ship_time_to_utc/', ShipTimeToUtc.as_view()),
-    url(r'^coordinates_conversion/', CoordinatesConversion.as_view()),
-    url(r'^mail_state/', MailState.as_view()),
-    url(r'^ferrybox/', FerryboxView.as_view()),
-    url(r'^metadata/$', MetadataEntryListView.as_view()),
-    url(r'^metadata/([0-9]+)/$', MetadataEntryView.as_view()),
-    url(r'^metadata/export/word/([0-9]+)$', MetadataEntryAsWord.as_view()),
-    url(r'^metadata/export/dif/([0-9]+)$', MetadataEntryAsDif.as_view()),
-    url(r'^window/$', ImageReloaderView.as_view()),
-    url(r'^latest_image.jpg$', LatestImage.as_view()),
-    url(r'^stats/$', StatsView.as_view()),
-    url(r'^contacts/$', ContactDetailsListView.as_view()),
+    # url(r'^import_ports_from_gpx/', ImportPortsFromGpx.as_view()),
+    # url(r'^documents/', DocumentsView.as_view()),
+    url(r'^accessing_data/', login_required(AccessingDataView.as_view())),
+    url(r'^position_from_date_time/', login_required(PositionFromDateTime.as_view())),
+    url(r'^ship_time_to_utc/', login_required(ShipTimeToUtc.as_view())),
+    url(r'^coordinates_conversion/', login_required(CoordinatesConversion.as_view())),
+    # url(r'^mail_state/', MailState.as_view()),
+    url(r'^ferrybox/', login_required(FerryboxView.as_view())),
+    url(r'^metadata/$', login_required(MetadataEntryListView.as_view())),
+    url(r'^metadata/([0-9]+)/$', login_required(MetadataEntryView.as_view())),
+    url(r'^metadata/export/word/([0-9]+)$', login_required(MetadataEntryAsWord.as_view())),
+    url(r'^metadata/export/dif/([0-9]+)$', login_required(MetadataEntryAsDif.as_view())),
+    url(r'^window/$', login_required(ImageReloaderView.as_view())),
+    url(r'^latest_image.jpg$', login_required(LatestImage.as_view())),
+    url(r'^stats/$', login_required(StatsView.as_view())),
+    url(r'^contacts/$', login_required(ContactDetailsListView.as_view())),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) \
-  + static("/documents_storage/", document_root=settings.DOCUMENTS_DIRECTORY) \
-  + static("/ethz_forecast_data/", document_root=settings.FORECAST_DIRECTORY)
+  #+ static("/documents_storage/", document_root=settings.DOCUMENTS_DIRECTORY) \
+  #+ static("/ethz_forecast_data/", document_root=settings.FORECAST_DIRECTORY)
+
+
+from django_tequila.urls import urlpatterns as django_tequila_urlpatterns
+
+urlpatterns += django_tequila_urlpatterns
+
+from django.contrib import admin
+from django_tequila.admin import TequilaAdminSite
+admin.autodiscover()
+admin.site.__class__ = TequilaAdminSite
 
 if settings.DEBUG:
     import debug_toolbar
