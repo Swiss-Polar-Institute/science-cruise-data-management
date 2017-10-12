@@ -23,7 +23,7 @@ class MediaTypeAdmin(admin.ModelAdmin):
 
 
 class OutreachActivityAdmin(admin.ModelAdmin):
-    list_display = ('project_list', 'person_list', 'activity_date', 'activity_title', 'activity_description', 'activity_location_event', 'activity_location_event_link',
+    list_display = ('activity_title', 'project_list', 'person_list', 'activity_date', 'activity_description', 'activity_location_event', 'activity_location_event_link',
                     'activity_location_organisation_list', 'audience_size', 'audience_type_list', 'media_type_list', 'link', 'outreach_doi_name', 'created_on', 'created_by')
     list_filter = (ProjectFilter, PersonFilter,)
     ordering = ['project', 'person', 'activity_title', 'media_type', 'audience_size', 'audience_type']
