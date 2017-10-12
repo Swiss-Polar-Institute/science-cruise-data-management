@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.forms import ModelMultipleChoiceField
 import expedition_reporting.models
+import import_export
 from main.admin_filters import ProjectFilter, PersonFilter
 
 
@@ -22,7 +23,7 @@ class MediaTypeAdmin(admin.ModelAdmin):
     search_fields = ('type',)
 
 
-class OutreachActivityAdmin(admin.ModelAdmin):
+class OutreachActivityAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('activity_title', 'project_list', 'person_list', 'activity_date', 'activity_description', 'activity_location_event', 'activity_location_event_link',
                     'activity_location_organisation_list', 'audience_size', 'audience_type_list', 'media_type_list', 'link', 'outreach_doi_name', 'created_on', 'created_by')
     list_filter = (ProjectFilter, PersonFilter,)

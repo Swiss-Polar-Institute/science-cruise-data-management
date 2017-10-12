@@ -46,7 +46,7 @@ class OutreachActivity(models.Model):
     activity_description = models.TextField(help_text="Please give a brief description of your activity. Please complete the information in the other fields if there is a suitable space to put it.")
     activity_location_event = models.CharField(max_length=255, help_text="Please give the name of the event at which your outreach activity took place, if applicable.", blank=True, null=True)
     activity_location_event_link = models.TextField(help_text="Please give a weblink to the outreach activity if available.", blank=True, null=True)
-    activity_location_organisation = models.ManyToManyField(Organisation, help_text="Please list the organisation(s) at which the outreach activity took place.")
+    activity_location_organisation = models.ManyToManyField(Organisation, help_text="Please list the organisation(s) at which the outreach activity took place.", blank=True)
     audience_size = models.ForeignKey(AudienceSize, help_text="Please estimate the size of the audience reached by your outreach activity.")
     audience_type = models.ManyToManyField(AudienceType, help_text="Please give an idea of the type of audience at which your activity was aimed.")
     media_type = models.ManyToManyField(MediaType, help_text="Please select the main types of media used during your outreach activity.")
