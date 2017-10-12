@@ -113,6 +113,15 @@ class LegFilter(OptionFilter):
     def lookups(self, request, model_admin):
         return self._prepare_filter_lookups(main.models.Leg, 'number', query_by_id=True)
 
+def person_filter_lookups():
+    people = main.models.Person.objects.all().order_by('name_last')
+
+    filter_lookup = []
+    for person in people:
+        filter_lookup.append((person.id, "{} {}".format(person.name_first, person.name_last)))
+
+    return filter_lookup
+
 
 class PersonFilter(OptionFilter):
     title = "Person"
@@ -123,7 +132,7 @@ class PersonFilter(OptionFilter):
         return queryset.filter(person__id=self.value())
 
     def lookups(self, request, model_admin):
-        return self._prepare_filter_lookups(main.models.Person, 'name_last', query_by_id=True)
+        return person_filter_lookups()
 
 
 class PersonLegFilter(LegFilter):
