@@ -14,7 +14,7 @@ exec(open(activate_this).read(), dict(__file__=activate_this))
 
 path = '/var/www/vhosts/scdm.epfl.ch/private/ScienceCruiseDataManagement'
 if path not in sys.path:
-sys.path.append(path)
+    sys.path.append(path)
 
 from django.core.wsgi import get_wsgi_application
 
