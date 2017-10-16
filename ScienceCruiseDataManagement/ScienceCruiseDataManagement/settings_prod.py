@@ -7,7 +7,7 @@ STATIC_ROOT = '/var/www/vhosts/scdm.epfl.ch/htdocs/static/'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'mysql-sc-51.epfl.ch',
+        'HOST': '<set_on_server>',
         'NAME': 'scdm',
         'USER': 'scdm',
         'PASSWORD': '<set_on_server>',
