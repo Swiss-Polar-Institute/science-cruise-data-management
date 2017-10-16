@@ -8,6 +8,7 @@ https://docs.djangoproject.com/en/1.10/howto/deployment/wsgi/
 """
 
 import os
+import sys
 
 activate_this = '/var/www/vhosts/scdm.epfl.ch/private/virtenv/scdm-env/bin/activate_this.py'
 exec(open(activate_this).read(), dict(__file__=activate_this))
