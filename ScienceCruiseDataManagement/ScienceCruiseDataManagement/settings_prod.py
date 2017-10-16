@@ -1,5 +1,9 @@
 from .settings import *
 
+DEBUG = False
+
+STATIC_ROOT = '/var/www/vhosts/scdm.epfl.ch/htdocs/static/'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
