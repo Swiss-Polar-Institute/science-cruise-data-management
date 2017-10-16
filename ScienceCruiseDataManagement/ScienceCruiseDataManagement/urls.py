@@ -21,8 +21,8 @@ from main.views import MainMenuView, MainMapView, PositionsJson, LatestShipPosit
     InteractiveMapView, EventListView, ImportPortsFromGpx, DocumentsView, AccessingDataView, PositionFromDateTime,\
     CoordinatesConversion, TrackJson, MailState, ShipTimeToUtc, ImageReloaderView, LatestImage, StatsView,\
     ContactDetailsListView
-#from metadata.views import MetadataEntryListView, MetadataEntryView, MetadataEntryAsWord,\
-#    MetadataEntryAsDif
+from metadata.views import MetadataEntryListView, MetadataEntryView, MetadataEntryAsWord,\
+    MetadataEntryAsDif
 from ship_data.views import FerryboxView
 # from data_storage_management.views import DirectoryUpdateJson
 from django.conf import settings
@@ -65,10 +65,10 @@ urlpatterns = [
     url(r'^coordinates_conversion/', login_required(CoordinatesConversion.as_view())),
     # url(r'^mail_state/', MailState.as_view()),
     url(r'^ferrybox/', login_required(FerryboxView.as_view())),
-    # url(r'^metadata/$', login_required(MetadataEntryListView.as_view())),
-    # url(r'^metadata/([0-9]+)/$', login_required(MetadataEntryView.as_view())),
-    # url(r'^metadata/export/word/([0-9]+)$', login_required(MetadataEntryAsWord.as_view())),
-    # url(r'^metadata/export/dif/([0-9]+)$', login_required(MetadataEntryAsDif.as_view())),
+    url(r'^metadata/$', login_required(MetadataEntryListView.as_view())),
+    url(r'^metadata/([0-9]+)/$', login_required(MetadataEntryView.as_view())),
+    url(r'^metadata/export/word/([0-9]+)$', login_required(MetadataEntryAsWord.as_view())),
+    url(r'^metadata/export/dif/([0-9]+)$', login_required(MetadataEntryAsDif.as_view())),
     url(r'^window/$', login_required(ImageReloaderView.as_view())),
     url(r'^latest_image.jpg$', login_required(LatestImage.as_view())),
     url(r'^stats/$', login_required(StatsView.as_view())),
