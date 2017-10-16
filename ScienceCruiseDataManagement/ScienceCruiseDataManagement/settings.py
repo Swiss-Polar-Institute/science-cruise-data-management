@@ -86,7 +86,7 @@ ROOT_URLCONF = 'ScienceCruiseDataManagement.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'main', 'templates'), os.path.join(BASE_DIR, 'metadata', 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'main', 'templates'), os.path.join(BASE_DIR, 'metadata', 'templates'), os.path.join(BASE_DIR, 'expedition_reporting', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
