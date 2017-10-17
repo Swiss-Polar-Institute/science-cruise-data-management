@@ -13,4 +13,4 @@ pip install -r /var/www/vhosts/scdm.epfl.ch/private/requirements.txt
 
 python /var/www/vhosts/scdm.epfl.ch/private/ScienceCruiseDataManagement/manage.py collectstatic
 
-sudo systemctl restart httpd24-http
+sudo systemctl restart httpd24-httpd
