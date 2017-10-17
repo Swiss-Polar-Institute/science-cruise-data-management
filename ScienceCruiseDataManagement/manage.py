@@ -15,7 +15,7 @@ import sys
 # Carles Pina (carles@pina.cat) and Jen Thomas (jenny_t152@yahoo.co.uk), 2016-2017.
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ScienceCruiseDataManagement.default_settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ScienceCruiseDataManagement.default")
     try:
         from django.core.management import execute_from_command_line
     except ImportError:
