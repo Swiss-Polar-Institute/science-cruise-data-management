@@ -1,4 +1,4 @@
-rsync -r -l -z -t --delete --delete-excluded --filter='+ */' --filter='- *.pyc' ScienceCruiseDataManagement/ /var/www/vhosts/scdm.epfl.ch/private/ScienceCruiseDataManagement/ScienceCruiseDataManagement
+rsync -r -l -z -t --delete --delete-excluded --filter='+ */' --filter='- *.pyc' ScienceCruiseDataManagement/ /var/www/vhosts/scdm.epfl.ch/private/ScienceCruiseDataManagement/
 
 rsync -r -l -z -t --delete --delete-excluded --filter='+ */' --filter='- *.pyc' requirements.txt /var/www/vhosts/scdm.epfl.ch/private/requirements.txt
 
