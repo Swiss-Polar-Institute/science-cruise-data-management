@@ -10,6 +10,8 @@ from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.conf import settings
 from django.contrib.auth.models import User
+import spi_admin.models
+
 #import data_storage_management.models
 
 cannot_change = (("cannot_change_special", "Cannot change (special)"),)
@@ -288,6 +290,7 @@ class Person(models.Model):
     initials = models.CharField(max_length=5)
     organisation = models.ManyToManyField(Organisation)
     email_address = models.CharField(max_length=255, null=True, blank=True)
+    mailing_list = models.ManyToManyField(spi_admin.models.MailingList, blank=True)
 
     def __str__(self):
         organisations = self.organisation.all()
@@ -298,7 +301,15 @@ class Person(models.Model):
 
         organisation_str = ";".join(organisation_names)
 
-        return "{} {} - {}".format(self.name_first, self.name_last, organisation_str)
+        mailing_lists = self.mailing_list.all()
+        mailing_list_names = []
+
+        for mailing_list in mailing_lists:
+            mailing_list_names.append(mailing_list.name)
+
+        mailing_list_str = ";".join(mailing_list_names)
+
+        return "{} {} - {}, {}".format(self.name_first, self.name_last, organisation_str, mailing_list_str)
 
     class Meta:
         verbose_name_plural="People"

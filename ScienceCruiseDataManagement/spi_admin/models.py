@@ -1,5 +1,5 @@
 from django.db import models
-from main.models import Person, PersonRole, Mission, Project
+import main.models
 
 # Create your models here.
 

@@ -692,7 +692,7 @@ class ImportedFileAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class PersonAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'organisation_list', 'email_address')
+    list_display = ('name_title', 'name_first', 'name_middle', 'name_last', 'organisation_list', 'email_address', 'mailing_list_list')
     ordering = ['name_last']
     search_fields = ('name_first', 'name_middle', 'name_last')
 
@@ -701,6 +701,10 @@ class PersonAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, adm
 
         return ", ".join([organisation.name for organisation in organisations])
 
+    def mailing_list_list(self, obj):
+        mailing_lists = obj.mailing_list.all()
+
+        return ", ".join([mailing_list.name for mailing_list in mailing_lists])
 
 class PersonRoleAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('person_name_last', 'project', 'role', 'principal_investigator', 'leg_list')
