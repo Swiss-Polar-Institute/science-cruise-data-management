@@ -214,7 +214,7 @@ UPDATE_LOCATION_POSITION_EXCEPTION_EVENT_ACTION_TYPE_ENDS_EXCEPTIONS = ["Sonobuo
 
 MAP_RESOLUTION_SECONDS = 1800
 
-TRACK_MAP_FILEPATH = "/mnt/data_admin/geojson_track/geojson.track"
+TRACK_MAP_FILEPATH = "/home/jen/projects/ace_data_management/data_requests/2017-11-06_walton_distance_travelled/geojson_track/geojson.track"
 IMAGE_RELOAD_FILEPATH = "/mnt/data_admin/latest_image/latest_image.jpg"
 
 # For default options
