@@ -68,7 +68,8 @@ INSTALLED_APPS = [
     'underway_sampling',
     'data_administration',
     'expedition_reporting',
-    'spi_admin'
+    'spi_admin', 
+    'data_management'
 ]
 
 MIDDLEWARE = [
