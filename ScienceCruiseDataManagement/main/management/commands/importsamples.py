@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Sample, Ship, Mission, Leg, Project, Person, Event, Preservation, ImportedFile
+from main.models import Sample, Ship, Mission, Leg, Project, Person, Event, Preservation, ImportedFile, StorageType
 import csv
 import glob
 import codecs
@@ -7,6 +7,7 @@ import os
 import datetime
 from main import utils
 import io
+from django.db.models import Q
 
 # This file is part of https://github.com/cpina/science-cruise-data-management
 #
@@ -156,8 +157,15 @@ class Command(BaseCommand):
             sample.project_sample_number = row['project_sample_number']
             sample.contents = row['contents']
             sample.crate_number = row['crate_number']
-            sample.storage_type = row['storage_type']
             sample.storage_location = row['storage_location']
+
+            query = Q(name=row['storage_type'])
+            storage_types = StorageType.objects.filter(query)
+
+            assert(len(storage_types) == 1)
+            storage_type = storage_types[0]
+
+            sample.storage_type = storage_type
             sample.offloading_port = row['offloading_port']
             sample.destination = row['destination']
             sample.comments = row.get('comments', None)
