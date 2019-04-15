@@ -121,7 +121,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
-            'read_default_file': '/etc/mysql/ace.cnf',
+            'read_default_file': '/etc/mysql/glace.cnf',
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
     }
