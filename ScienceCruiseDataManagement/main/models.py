@@ -75,8 +75,8 @@ class Island(models.Model):
 
 
 class IslandLandings(models.Model):
-    island = models.ForeignKey(Island)
-    person = models.ForeignKey('Person')
+    island = models.ForeignKey(Island, on_delete=models.CASCADE)
+    person = models.ForeignKey('Person', on_delete=models.CASCADE)
     date = models.DateField()
 
     def __str__(self):
@@ -156,7 +156,7 @@ class Port(models.Model):
     url = models.CharField(max_length=255, null=True, blank=True)
     code = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255, unique=True)
-    country = models.ForeignKey(Country)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
     latitude = models.FloatField()
     longitude = models.FloatField()
     version = models.CharField(max_length=255, null=True, blank=True)
@@ -171,10 +171,10 @@ class Port(models.Model):
 class Leg(models.Model):
     number = models.IntegerField(unique=True)
     start_time = models.DateTimeField(help_text="TIME IN UTC", verbose_name="Start time (UTC)")
-    start_port = models.ForeignKey(Port, related_name='start_port')
+    start_port = models.ForeignKey(Port, related_name='start_port', on_delete=models.CASCADE)
 
     end_time = models.DateTimeField(blank=True, null=True, help_text="TIME IN UTC", verbose_name="End time (UTC)")
-    end_port = models.ForeignKey(Port, related_name='end_port')
+    end_port = models.ForeignKey(Port, related_name='end_port', on_delete=models.CASCADE)
 
     @staticmethod
     def current_active_leg():
@@ -197,7 +197,7 @@ class StorageType(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
     created_on = models.DateTimeField(default=timezone.now)
-    created_by = models.ForeignKey(User, null=True, blank=True)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return "{}".format(self.name)
@@ -215,7 +215,7 @@ class Organisation(models.Model):
     name = models.CharField(max_length=255, unique=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     city = models.CharField(max_length=255, blank=True, null=True)
-    country = models.ForeignKey(Country, null=True)
+    country = models.ForeignKey(Country, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return "{}".format(self.name)
@@ -241,8 +241,8 @@ class Platform(models.Model):
     short_name = models.CharField(max_length=255, null=True)    # TODO: make short_name unique after migration
     uuid = models.CharField(max_length=255, default=None,       # TODO: make uuid unique after migration
                             help_text="Used for the Metadata Record")
-    country = models.ForeignKey(Country, null=True, blank=True)
-    platform_type = models.ForeignKey(PlatformType)
+    country = models.ForeignKey(Country, null=True, blank=True, on_delete=models.CASCADE)
+    platform_type = models.ForeignKey(PlatformType, on_delete=models.CASCADE)
     source = models.CharField(max_length=255, choices=settings.VOCAB_SOURCES)
 
     def __str__(self):
@@ -250,7 +250,7 @@ class Platform(models.Model):
 
 
 class Ship(models.Model):
-    name = models.ForeignKey(Platform)
+    name = models.ForeignKey(Platform, on_delete=models.CASCADE)
     shortened_name = models.CharField(max_length=255, unique=True)
     imo = models.CharField(max_length=255, null=True, blank=True)
     callsign = models.CharField(max_length=255, null=True, blank=True)
@@ -317,9 +317,9 @@ class Person(models.Model):
 
 
 class PersonRole(models.Model):
-    person = models.ForeignKey(Person)
-    project = models.ForeignKey('Project', null=True, blank=True)
-    role = models.ForeignKey(Role, null=True, blank=True)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    project = models.ForeignKey('Project', null=True, blank=True, on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, null=True, blank=True, on_delete=models.CASCADE)
     principal_investigator = models.BooleanField(default=False)
     leg = models.ManyToManyField(Leg, blank=True)
 
@@ -329,7 +329,7 @@ class PersonRole(models.Model):
 
 
 class Email(models.Model):
-    person = models.ForeignKey(Person)
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
     email_address = models.CharField(max_length=255, unique=True)
     username = models.CharField(max_length=255, unique=False)
     webmail_password = models.CharField(max_length=6)
@@ -341,7 +341,7 @@ class Email(models.Model):
 
 class EmailOversizeNotified(models.Model):
     from_email = models.CharField(max_length=1024)
-    to_email = models.ForeignKey(Email)
+    to_email = models.ForeignKey(Email, on_delete=models.CASCADE)
     date_string = models.CharField(max_length=255, help_text="Date as it comes from the IMAP header", null=True)
     size = models.IntegerField()
     subject = models.CharField(max_length=1024)
@@ -352,7 +352,7 @@ class EmailOversizeNotified(models.Model):
 class Mission(models.Model):
     name = models.CharField(max_length=255, unique=True)
     acronym = models.CharField(max_length=255)
-    institution = models.ForeignKey(Organisation)
+    institution = models.ForeignKey(Organisation, on_delete=models.CASCADE)
     description = models.TextField()
 
     def __str__(self):
@@ -363,10 +363,10 @@ class Project(models.Model):
     number = models.IntegerField(unique=True)
     title = models.CharField(max_length=255, unique=True)
     alternative_title = models.CharField(null=True, blank=True, max_length=255)
-    principal_investigator = models.ForeignKey(Person, related_name="Principal_investigator", null=True, blank=True)
+    principal_investigator = models.ForeignKey(Person, related_name="Principal_investigator", null=True, blank=True, on_delete=models.CASCADE)
     abstract = models.TextField(null=True, blank=True)
     sampling_methods = models.ManyToManyField(SamplingMethod)
-    mission = models.ForeignKey(Mission)
+    mission = models.ForeignKey(Mission, on_delete=models.CASCADE)
 
     def __str__(self):
         return "{} - {}".format(self.number, self.title)
@@ -390,11 +390,11 @@ class SpecificDevice(models.Model):
     # correctly (reserved word in Python)
     type_choices = (("serial number", "serial number"), ("no identifying mark", "no identifying mark"), ("mark handwritten on", "mark handwritten on"))
 
-    type_of_device = models.ForeignKey(Device, verbose_name="Type", help_text="Choose the type of device")
+    type_of_device = models.ForeignKey(Device, verbose_name="Type", help_text="Choose the type of device", on_delete=models.CASCADE)
     full_name = models.CharField(max_length=255, null=True, blank=True, help_text="Full name of the device as it is known.")
     shortened_name = models.CharField(max_length=255, null=True, blank=True, help_text="Shortened name or acronym of the device by which it is known.")
     description = models.TextField(null=True, blank=True, help_text="Give a full description of the device which includes some information about what it is used for, how it can be used and any specific details that separate it from similar instruments. If you have a URL about the device, please include it here.")
-    sampling_method = models.ForeignKey(SamplingMethod, related_name="sampling_method_device", null=True,blank=True, help_text="Link each device to a sampling method so that the data can be linked to events.")
+    sampling_method = models.ForeignKey(SamplingMethod, related_name="sampling_method_device", null=True,blank=True, help_text="Link each device to a sampling method so that the data can be linked to events.", on_delete=models.CASCADE)
     directory = models.ManyToManyField('data_storage_management.Item', blank=True)
     identifying_mark = models.CharField(max_length=255, null=True, blank=True, help_text="If the device has an identifying number (prefereably a serial number), entering it here. This mark should distinguish from another instrument of the same type.")
     type_of_identifying_mark = models.CharField(max_length=50, choices=type_choices, help_text="Choose the type of identifying mark on the instrument.")
@@ -430,16 +430,16 @@ class Station(models.Model):
     outcome_choices = (("Not yet happened", "Not yet happened"), ("Success", "Success"), ("Cancelled", "Cancelled"))
 
     name = models.IntegerField(unique=True)
-    type = models.ForeignKey(StationType)
+    type = models.ForeignKey(StationType, on_delete=models.CASCADE)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    leg = models.ForeignKey(Leg)
+    leg = models.ForeignKey(Leg, on_delete=models.CASCADE)
     arrival_time = models.DateTimeField(null=True, blank=True, help_text="TIME IN UTC", verbose_name="Arrival time (UTC)")
     departure_time = models.DateTimeField(null=True, blank=True, help_text="TIME IN UTC",verbose_name="Departure time (UTC)")
-    time_source = models.ForeignKey(TimeSource, related_name='station_device_time_source', null=True, blank=True)
-    time_uncertainty = models.ForeignKey(TimeUncertainty, null=True, blank=True)
-    position_source = models.ForeignKey(PositionSource, related_name='station_position_time_source', null=True, blank=True)
-    position_uncertainty = models.ForeignKey(PositionUncertainty, null=True,blank=True)
+    time_source = models.ForeignKey(TimeSource, related_name='station_device_time_source', null=True, blank=True, on_delete=models.CASCADE)
+    time_uncertainty = models.ForeignKey(TimeUncertainty, null=True, blank=True, on_delete=models.CASCADE)
+    position_source = models.ForeignKey(PositionSource, related_name='station_position_time_source', null=True, blank=True, on_delete=models.CASCADE)
+    position_uncertainty = models.ForeignKey(PositionUncertainty, null=True, blank=True, on_delete=models.CASCADE)
     water_depth = models.FloatField(null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
     outcome = models.CharField(max_length=20, choices=outcome_choices, help_text="Select the option that best describes the outcome of the event. If the event did not happen because of weather or a decision to not do it, it should be marked as invalid.", default="Success")
@@ -488,18 +488,18 @@ class Sample(models.Model):
     project_sample_number = models.CharField(max_length=255, null=True, blank=True)
     contents = models.CharField(max_length=255)
     crate_number = models.CharField(max_length=255, null=True, blank=True)
-    storage_type = models.ForeignKey(StorageType, null=True, blank=True)
+    storage_type = models.ForeignKey(StorageType, null=True, blank=True, on_delete=models.CASCADE)
     storage_location = models.CharField(max_length=255, null=True, blank=True)
     offloading_port = models.CharField(max_length=255)
     destination = models.CharField(max_length=255, null=True, blank=True)
-    ship = models.ForeignKey(Ship, default=default_ship_id)
-    mission = models.ForeignKey('Mission', default=default_mission_id)
-    leg = models.ForeignKey('Leg', default=current_active_leg_id)
-    project = models.ForeignKey('Project')
+    ship = models.ForeignKey(Ship, null=True, blank=True, on_delete=models.CASCADE)
+    mission = models.ForeignKey('Mission', default=default_mission_id, on_delete=models.CASCADE)
+    leg = models.ForeignKey('Leg', default=current_active_leg_id, on_delete=models.CASCADE)
+    project = models.ForeignKey('Project', on_delete=models.CASCADE)
     julian_day = models.IntegerField()
-    event = models.ForeignKey('Event')
-    pi_initials = models.ForeignKey('Person')
-    preservation = models.ForeignKey(Preservation, blank=True, null=True)
+    event = models.ForeignKey('Event', on_delete=models.CASCADE)
+    pi_initials = models.ForeignKey('Person', on_delete=models.CASCADE)
+    preservation = models.ForeignKey(Preservation, blank=True, null=True, on_delete=models.CASCADE)
     description = models.CharField(max_length=255, blank=True, null=True)
     file = models.CharField(max_length=255, blank=True, null=True)
     specific_contents = models.CharField(max_length=255, null=True, blank=True)
@@ -533,7 +533,7 @@ class Event(models.Model):
     type_choices = (("Not yet happened", "Not yet happened"), ("Success", "Success"), ("Failure", "Failure"), ("Invalid", "Invalid"))
 
     number = models.AutoField(primary_key=True)
-    sampling_method = models.ForeignKey(SamplingMethod, related_name="sampling_method_event", help_text="Choose the instrument or method used for sampling")
+    sampling_method = models.ForeignKey(SamplingMethod, related_name="sampling_method_event", help_text="Choose the instrument or method used for sampling", on_delete=models.CASCADE)
     specific_devices = ChainedManyToManyField(
         SpecificDevice,
         chained_field='linked_device',
@@ -543,11 +543,11 @@ class Event(models.Model):
         help_text="Choose any devices that are attached to your instrument"
     )
     #    models.ManyToManyField(SpecificDevice)
-    station = models.ForeignKey(Station, null=True, blank=True, help_text="Only choose a station name where the ship has stopped")
+    station = models.ForeignKey(Station, null=True, blank=True, help_text="Only choose a station name where the ship has stopped", on_delete=models.CASCADE)
     data = models.BooleanField(help_text="Tick this box if raw data will be produced DURING this event (not after post-cruise processing).")
     samples = models.BooleanField(help_text="Tick this box if samples will be collected during this event.")
     outcome = models.CharField(max_length=20, choices=type_choices, help_text="Select the option that best describes the outcome of the station. If the event did not happen because of weather or a decision to not do it, it should be marked as invalid.", default="Not yet happened")
-    imported_from_file = models.ForeignKey(ImportedFile, null=True, blank=True)
+    imported_from_file = models.ForeignKey(ImportedFile, null=True, blank=True, on_delete=models.CASCADE)
     comments = models.TextField(null=True, blank=True)
 
     def __str__(self):
@@ -592,9 +592,9 @@ class EventsConsistencyV2(models.Model):
 
     type = models.CharField(max_length=255, choices=choice_types)
     event_from_project_code = models.IntegerField()
-    event_from_expedition_code = models.ForeignKey(Event, related_name="Event_02")
-    project = models.ForeignKey(Project)
-    sample = models.ForeignKey(Sample)
+    event_from_expedition_code = models.ForeignKey(Event, related_name="Event_02", on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    sample = models.ForeignKey(Sample, on_delete=models.CASCADE)
 
     def __str__(self):
         return "Type: {} event from project code: {} event from expedition code: {} project: {} sample: {}".format(
@@ -608,8 +608,8 @@ class EventsConsistency(models.Model):
 
     type = models.CharField(max_length=255, choices=choice_types)
     thing = models.CharField(max_length=255)
-    event_from_sample = models.ForeignKey(Event)
-    project = models.ForeignKey(Project)
+    event_from_sample = models.ForeignKey(Event, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     samples = models.ManyToManyField(Sample)
 
     def __str__(self):
@@ -624,9 +624,9 @@ class EventsConsistency(models.Model):
 
 class CtdCast(models.Model):
     ctd_cast_number = models.IntegerField()
-    event_number = models.OneToOneField(Event)
-    leg_number = models.ForeignKey(Leg)
-    ctd_operator = models.ForeignKey(Person, null=True, blank=True)
+    event_number = models.OneToOneField(Event, on_delete=models.CASCADE)
+    leg_number = models.ForeignKey(Leg, on_delete=models.CASCADE)
+    ctd_operator = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
     ctd_file_name = models.CharField(max_length=255, null=True, blank=True)
     ice_coverage = models.CharField(max_length=255, null=True, blank=True)
     sea_state = models.CharField(max_length=255, null=True, blank=True)
@@ -645,8 +645,8 @@ class CtdCast(models.Model):
 
 class TmrCast(models.Model):
     tmr_cast_number = models.IntegerField()
-    event_number = models.OneToOneField(Event)
-    leg_number = models.ForeignKey(Leg)
+    event_number = models.OneToOneField(Event, on_delete=models.CASCADE)
+    leg_number = models.ForeignKey(Leg, on_delete=models.CASCADE)
 
     def __str__(self):
         return "{}".format(self.tmr_cast_number)
@@ -658,7 +658,8 @@ class TmrCast(models.Model):
 class EventAction(models.Model):
     event = models.ForeignKey(Event, help_text="""Select the event from the list for which you want to enter an action.<br>
                                                If your event is not in the list check the event's outcome: should be success or failure. And check that the event hasn't been completed either<br>
-                                               (e.g. it should not have an 'ends' or 'tinstant' event action")""")
+                                               (e.g. it should not have an 'ends' or 'tinstant' event action")""",
+                              on_delete=models.CASCADE)
 
     # If changing the order modify tbegin, tends and tinstant
     # Perhaps this could be done creating the tuple out of a dictionary
@@ -705,16 +706,16 @@ class EventAction(models.Model):
             assert False
 
     type = models.CharField(choices=type_choices, max_length=255, help_text="Select the description of the time that you are entering", verbose_name= "Time description")
-    description = models.ForeignKey(EventActionDescription, verbose_name="Description of event action", help_text="Select the description that describes the event action")
+    description = models.ForeignKey(EventActionDescription, verbose_name="Description of event action", help_text="Select the description that describes the event action", on_delete=models.CASCADE)
 
     time = models.DateTimeField(default=timezone.now, help_text="TIME IN UTC", verbose_name="Time of event action (UTC)")
-    time_source = models.ForeignKey(TimeSource)
-    time_uncertainty = models.ForeignKey(TimeUncertainty)
+    time_source = models.ForeignKey(TimeSource, on_delete=models.CASCADE)
+    time_uncertainty = models.ForeignKey(TimeUncertainty, on_delete=models.CASCADE)
 
     latitude = models.FloatField(null=True, blank=True, help_text="Format: decimal degrees, i.e. -63.334. Note that south is negative. Only enter position for terrestrial work. Events at sea will automatically get their position from the ship's GPS.")
     longitude = models.FloatField(null=True, blank=True, help_text="Format: decimal degrees, i.e. -145.54. Note that west is negative. Only enter position for terrestrial work. Events at sea will automatically get their position from the ship's GPS.")
-    position_source = models.ForeignKey(PositionSource, null=True, blank=True, help_text="Only enter position for terrestrial work. Events at sea will automatically get their position from the ship's GPS.")
-    position_uncertainty = models.ForeignKey(PositionUncertainty, null=True, blank=True, help_text="Only enter position for terrestrial work. Events at sea will automatically get their position from the ship's GPS.")
+    position_source = models.ForeignKey(PositionSource, null=True, blank=True, help_text="Only enter position for terrestrial work. Events at sea will automatically get their position from the ship's GPS.", on_delete=models.CASCADE)
+    position_uncertainty = models.ForeignKey(PositionUncertainty, null=True, blank=True, help_text="Only enter position for terrestrial work. Events at sea will automatically get their position from the ship's GPS.", on_delete=models.CASCADE)
 
     water_depth = models.FloatField(null=True, blank=True)
     general_comments = models.TextField(null=True, blank=True)
@@ -890,7 +891,7 @@ class TimeChange(models.Model):
 
 
 class ContactDetails(models.Model):
-    name = models.ForeignKey(Person)
+    name = models.ForeignKey(Person, on_delete=models.CASCADE)
     email = models.CharField(max_length=255, null=True, blank=True)
     other = models.TextField(null=True, blank=True)
 

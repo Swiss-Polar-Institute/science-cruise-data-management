@@ -47,13 +47,13 @@ class OutreachActivity(models.Model):
     activity_location_event = models.CharField(max_length=255, help_text="Please give the name of the event at which your outreach activity took place, if applicable.", blank=True, null=True)
     activity_location_event_link = models.TextField(help_text="Please give a weblink to the outreach activity if available.", blank=True, null=True)
     activity_location_organisation = models.ManyToManyField(Organisation, help_text="Please list the organisation(s) at which the outreach activity took place.", blank=True)
-    audience_size = models.ForeignKey(AudienceSize, help_text="Please estimate the size of the audience reached by your outreach activity.")
+    audience_size = models.ForeignKey(AudienceSize, help_text="Please estimate the size of the audience reached by your outreach activity.", on_delete=models.CASCADE)
     audience_type = models.ManyToManyField(AudienceType, help_text="Please give an idea of the type of audience at which your activity was aimed.")
     media_type = models.ManyToManyField(MediaType, help_text="Please select the main types of media used during your outreach activity.")
     link = models.TextField(blank=True, null=True, help_text="Please enter the weblink the outreach material if available. If this is a DOI, please enter it in the Outreach DOI name field.")
     outreach_doi_name = models.CharField(max_length=255, blank=True, null=True, help_text="Please enter the DOI name of the outreach activity if applicable.")
     created_on = models.DateTimeField(default=django.utils.timezone.now)
-    created_by = models.ForeignKey(User, null=True, blank=True)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return "{}".format(self.activity_title)

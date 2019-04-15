@@ -48,7 +48,7 @@ urlpatterns = [
     url(r'api/data_storage/hard_disk.json', HardDiskJson.as_view()),
     url(r'api/data_storage/add_directory_update.json', DirectoryUpdateJson.as_view()),
     # url(r'^api/positions$', PositionsJson.as_view()),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^chaining/', include('smart_selects.urls')),
     url(r'^country/list$', CountryListView.as_view(), name='article-list'),
     url(r'^storage/', FileStorageView.as_view()),
