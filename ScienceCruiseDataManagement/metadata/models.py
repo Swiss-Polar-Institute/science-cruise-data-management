@@ -231,16 +231,13 @@ class DataciteContributorType(models.Model):
         return "{}".format(self.contributor_type)
 
 
-def data_set_citation_publisher_default():
-    return text_to_ids([settings.METADATA_DEFAULT_CITATION_PUBLISHER], Provider, 'short_name')[0]
-
 ############## MAIN DIF METADATA MODELS ###############
 
 class DataSetCitation(models.Model):
     dataset_creator = models.ManyToManyField(Person, blank=True)
     dataset_title = models.CharField(max_length=220, null=True, blank=True)
-    dataset_release_date = models.DateField(null=True,blank=True)
-    dataset_publisher = models.ForeignKey(Provider, default=data_set_citation_publisher_default, null=True, blank=True)
+    dataset_release_date = models.DateField(null=True, blank=True)
+    dataset_publisher = models.ForeignKey(Provider, null=True, blank=True)
     version = models.CharField(max_length=10, default="1.0", null=True, blank=True)
     other_citation_details = models.CharField(max_length=255, null=True, blank=True,help_text='Additional free-text citation information. Put here about other grants and acknowledgements.')
 
@@ -431,23 +428,6 @@ def text_to_ids(parameters, model, field):
 
     return output
 
-
-def metadata_entry_platform_defaults():
-    return text_to_ids(settings.METADATA_DEFAULT_PLATFORM_SHORT_NAME, Platform, 'short_name')
-
-
-def metadata_entry_project_defaults():
-    return text_to_ids(settings.METADATA_DEFAULT_PROJECT_SHORT_NAME, Project, 'short_name')
-
-
-def metadata_entry_data_center_defaults():
-    return text_to_ids(settings.METADATA_DEFAULT_DATA_CENTER, Provider, 'short_name')
-
-
-def metadata_entry_idn_node_defaults():
-    return text_to_ids(settings.METADATA_DEFAULT_IDN_NODE, IdnNode, 'idn_node_short_name')
-
-
 ##### Full metadata entry ######
 class MetadataEntry(models.Model):
     entry_id = models.CharField(max_length=255, unique=True, help_text="Unique document identifier of the metadata record. The identifier is case insensitive. The <Entry_ID> consists of 1 to 80 alphanumeric characters of the UTF-8 set, including underbar (_), hyphen (-) and period (.).")
@@ -472,17 +452,17 @@ class MetadataEntry(models.Model):
     spatial_coverage = models.ManyToManyField(SpatialCoverage, blank=True)
     location = models.ManyToManyField(Location, blank=True)
     data_resolution = models.ManyToManyField(DataResolution, blank=True)
-    project = models.ManyToManyField(Project, blank=True, default=metadata_entry_project_defaults())
+    project = models.ManyToManyField(Project, blank=True)
     quality = models.CharField(max_length=255, null=True, blank=True, help_text="This field allows the author to provide information about the quality of the data or any quality assurance procedures followed in producing the data. Include indicators of data quality or quality flags. Include recognized or potential problems with quality. Established quality control mechanisms should be included. Established quantitative quality measurements should be included.")
     access_constraints = models.TextField(null=True, blank=True, help_text="This field allows the author to provide information about any constraints for accessing the data set. This includes any special restrictions, legal prerequisites, limitations and/or warnings on obtaining the data set.")
     use_constraints = models.TextField(null=True, blank=True, help_text="This field allows the author to describe how the data may or may not be used after access is granted to assure the protection of privacy or intellectual property.  This includes any special restrictions, legal prerequisites, terms and conditions, and/or limitations on using the data set.  Data providers may request acknowledgement of the data from users and claim no responsibility for quality and completeness of data.")
     data_set_language = models.CharField(max_length=255, default=settings.DEFAULT_DATA_SET_LANGUAGE, null=True, blank=True, help_text="DEFAULT=English")
     originating_center = models.ForeignKey(Provider, related_name='originating_centre_provider', null=True, blank=True, help_text="The data center or data producer who originally generated the dataset.")
-    data_centers = models.ManyToManyField(DataCenter, default=metadata_entry_data_center_defaults, related_name='data_center_provider', help_text="The <Data Center> is the data center, organization, or institution responsible for distributing the data.")
+    data_centers = models.ManyToManyField(DataCenter, related_name='data_center_provider', help_text="The <Data Center> is the data center, organization, or institution responsible for distributing the data.")
     summary = models.ForeignKey(Summary, help_text="This field provides a brief description of the data set along with the purpose of the data. This allows potential users to determine if the data set is useful for their needs.")
     parent_difs = models.ManyToManyField('MetadataEntry', blank=True, related_name='parent_difs_accessor')
     related_difs = models.ManyToManyField('MetadataEntry', blank=True, related_name='related_difs_accessor')
-    idn_node = models.ManyToManyField(IdnNode, default=metadata_entry_idn_node_defaults)
+    idn_node = models.ManyToManyField(IdnNode)
     metadata_name = models.CharField(max_length=255, default=settings.DEFAULT_METADATA_NAME, help_text="DEFAULT=CEOS IDN DIF")
     metadata_version = models.CharField(max_length=80, default=settings.DEFAULT_METADATA_VERSION, help_text="DEFAULT=VERSION 9.9")
     dif_creation_date = models.DateField(null=True, blank=True)

@@ -459,10 +459,6 @@ class ProposedStation(models.Model):
     def __str__(self):
         return "{} - {}".format(self.name, self.comment)
 
-def default_ship_id():
-    platform = Platform.objects.get(name=settings.DEFAULT_PLATFORM_NAME)
-    return Ship.objects.get(name=platform).id
-
 
 def default_mission_id():
     return Mission.objects.get(name=settings.DEFAULT_MISSION_NAME).id
@@ -492,7 +488,7 @@ class Sample(models.Model):
     storage_location = models.CharField(max_length=255, null=True, blank=True)
     offloading_port = models.CharField(max_length=255)
     destination = models.CharField(max_length=255, null=True, blank=True)
-    ship = models.ForeignKey(Ship, default=default_ship_id)
+    ship = models.ForeignKey(Ship, null=True, blank=True)
     mission = models.ForeignKey('Mission', default=default_mission_id)
     leg = models.ForeignKey('Leg', default=current_active_leg_id)
     project = models.ForeignKey('Project')
