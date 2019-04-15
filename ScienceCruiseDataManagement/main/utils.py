@@ -17,6 +17,7 @@ from django.contrib.auth.models import User
 from django.contrib.admin.options import get_content_type_for_model
 from django.forms.models import model_to_dict
 from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 
 import csv
 
@@ -61,7 +62,11 @@ def can_user_change_events(path, user):
 
 
 def latest_ship_position():
-    gps = SamplingMethod.objects.get(name=settings.MAIN_GPS)
+    try:
+        gps = SamplingMethod.objects.get(name=settings.MAIN_GPS)
+    except ObjectDoesNotExist:
+        return Location()
+
     positions = GpggaGpsFix.objects.filter(device=gps).order_by('-date_time')
 
     if positions.exists():
