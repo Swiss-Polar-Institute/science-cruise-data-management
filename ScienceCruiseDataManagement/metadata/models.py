@@ -237,7 +237,7 @@ class DataSetCitation(models.Model):
     dataset_creator = models.ManyToManyField(Person, blank=True)
     dataset_title = models.CharField(max_length=220, null=True, blank=True)
     dataset_release_date = models.DateField(null=True, blank=True)
-    dataset_publisher = models.ForeignKey(Provider, null=True, blank=True)
+    dataset_publisher = models.ForeignKey(Provider, null=True, blank=True, on_delete=models.CASCADE)
     version = models.CharField(max_length=10, default="1.0", null=True, blank=True)
     other_citation_details = models.CharField(max_length=255, null=True, blank=True,help_text='Additional free-text citation information. Put here about other grants and acknowledgements.')
 
@@ -248,7 +248,7 @@ class DataSetCitation(models.Model):
 class Personnel(models.Model):
     dataset_role = models.ManyToManyField('DatasetRole')
     datacite_contributor_type = models.ManyToManyField('DataciteContributorType')
-    person = models.ForeignKey(Person, null=True, blank=True)
+    person = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         dataset_roles = self.dataset_role.all()
@@ -328,11 +328,11 @@ class Location(models.Model):
 class DataResolution(models.Model):
     latitude_resolution = models.CharField(max_length=20, null=True, blank=True, help_text='The minimum difference between two adjacent latitude values.')
     longitude_resolution = models.CharField(max_length=20, null=True, blank=True, help_text='The minimum difference between two adjacent longitude values.')
-    horizontal_resolution_range = models.ForeignKey('HorizontalResolutionRange', null=True, blank=True, help_text='The range should be selected based on the <Latitude_Resolution> and <Longitude_Resolution>.')
+    horizontal_resolution_range = models.ForeignKey('HorizontalResolutionRange', null=True, blank=True, help_text='The range should be selected based on the <Latitude_Resolution> and <Longitude_Resolution>.', on_delete=models.CASCADE)
     vertical_resolution = models.CharField(max_length=20, null=True, blank=True, help_text='The minimum difference possible between two adjacent vertical values.')
-    vertical_resolution_range = models.ForeignKey('VerticalResolutionRange', null=True, blank=True, help_text='The range should be selected based on the specified <Vertical_Resolution>.')
+    vertical_resolution_range = models.ForeignKey('VerticalResolutionRange', null=True, blank=True, help_text='The range should be selected based on the specified <Vertical_Resolution>.', on_delete=models.CASCADE)
     temporal_resolution = models.CharField(max_length=20, null=True, blank=True, help_text='the frequency of data sampled.')
-    temporal_resolution_range = models.ForeignKey('TemporalResolutionRange', null=True, blank=True, help_text='The range should be selected based on the specified <Temporal_Resolution>.')
+    temporal_resolution_range = models.ForeignKey('TemporalResolutionRange', null=True, blank=True, help_text='The range should be selected based on the specified <Temporal_Resolution>.', on_delete=models.CASCADE)
 
     @staticmethod
     def _append(label, content, data_list):
@@ -354,7 +354,7 @@ class DataResolution(models.Model):
 
 
 class DataCenter(models.Model):
-    data_center_name = models.ForeignKey('DataCenterName')
+    data_center_name = models.ForeignKey('DataCenterName', on_delete=models.CASCADE)
     data_set_id = models.CharField(max_length=80, null=True, blank=True, help_text="This is a data set identifier assigned by the data center (may or may not be the same as the <Entry_ID>.")
     personnel = models.ManyToManyField(Personnel, help_text="Contact information for the data.")
 
@@ -375,8 +375,8 @@ class DataCenterName(models.Model):
 
 
 class Distribution(models.Model):
-    metadata_entry = models.ForeignKey('MetadataEntry', null=True)
-    distribution_media = models.ForeignKey('DistributionMedia', null=True, blank=True, help_text="The media options for the user receiving the data.")
+    metadata_entry = models.ForeignKey('MetadataEntry', null=True, on_delete=models.CASCADE)
+    distribution_media = models.ForeignKey('DistributionMedia', null=True, blank=True, help_text="The media options for the user receiving the data.", on_delete=models.CASCADE)
     distribution_size = models.CharField(max_length=80, null=True, blank=True, help_text = "An approximate size (in KB, MB or GB) for the entire data set. Specify if data are compressed and the method of compression.")
     distribution_format = models.ManyToManyField('DistributionFormat', blank=True, help_text="The data format used to distribute the data.")
     fees = models.CharField(max_length=80, default="No cost", null=True, blank=True, help_text="Cost of <Distribution_Media> or distribution costs if any. Specify if there are no costs.")
@@ -432,7 +432,7 @@ def text_to_ids(parameters, model, field):
 class MetadataEntry(models.Model):
     entry_id = models.CharField(max_length=255, unique=True, help_text="Unique document identifier of the metadata record. The identifier is case insensitive. The <Entry_ID> consists of 1 to 80 alphanumeric characters of the UTF-8 set, including underbar (_), hyphen (-) and period (.).")
     entry_title = models.CharField(max_length=220, help_text="Title of the data set described by the metadata. For example, <Entry_Title>......collected in the Southern Ocean during the austral summer (January - February 2017) as part of the Antarctic Circumnavigation Experiment (ACE; leg 2 of 3). </Entry_Title> provides an adequate amount of information to guide the user.")
-    data_set_citation = models.ForeignKey(DataSetCitation, null=True, blank=True)
+    data_set_citation = models.ForeignKey(DataSetCitation, null=True, blank=True, on_delete=models.CASCADE)
     personnel = models.ManyToManyField(Personnel, help_text="The point of contact for more information about the data set or the metadata.")
     parameters = models.ManyToManyField(Parameter)
 
@@ -448,7 +448,7 @@ class MetadataEntry(models.Model):
 
     sampling_methods = models.ManyToManyField(SamplingMethod, blank=True)
     temporal_coverage = models.ManyToManyField(TemporalCoverage, blank=True)
-    data_set_progress = models.ForeignKey(DatasetProgress, null=True, blank=True)
+    data_set_progress = models.ForeignKey(DatasetProgress, null=True, blank=True, on_delete=models.CASCADE)
     spatial_coverage = models.ManyToManyField(SpatialCoverage, blank=True)
     location = models.ManyToManyField(Location, blank=True)
     data_resolution = models.ManyToManyField(DataResolution, blank=True)
@@ -457,9 +457,9 @@ class MetadataEntry(models.Model):
     access_constraints = models.TextField(null=True, blank=True, help_text="This field allows the author to provide information about any constraints for accessing the data set. This includes any special restrictions, legal prerequisites, limitations and/or warnings on obtaining the data set.")
     use_constraints = models.TextField(null=True, blank=True, help_text="This field allows the author to describe how the data may or may not be used after access is granted to assure the protection of privacy or intellectual property.  This includes any special restrictions, legal prerequisites, terms and conditions, and/or limitations on using the data set.  Data providers may request acknowledgement of the data from users and claim no responsibility for quality and completeness of data.")
     data_set_language = models.CharField(max_length=255, default=settings.DEFAULT_DATA_SET_LANGUAGE, null=True, blank=True, help_text="DEFAULT=English")
-    originating_center = models.ForeignKey(Provider, related_name='originating_centre_provider', null=True, blank=True, help_text="The data center or data producer who originally generated the dataset.")
+    originating_center = models.ForeignKey(Provider, related_name='originating_centre_provider', null=True, blank=True, help_text="The data center or data producer who originally generated the dataset.", on_delete=models.CASCADE)
     data_centers = models.ManyToManyField(DataCenter, related_name='data_center_provider', help_text="The <Data Center> is the data center, organization, or institution responsible for distributing the data.")
-    summary = models.ForeignKey(Summary, help_text="This field provides a brief description of the data set along with the purpose of the data. This allows potential users to determine if the data set is useful for their needs.")
+    summary = models.ForeignKey(Summary, help_text="This field provides a brief description of the data set along with the purpose of the data. This allows potential users to determine if the data set is useful for their needs.", on_delete=models.CASCADE)
     parent_difs = models.ManyToManyField('MetadataEntry', blank=True, related_name='parent_difs_accessor')
     related_difs = models.ManyToManyField('MetadataEntry', blank=True, related_name='related_difs_accessor')
     idn_node = models.ManyToManyField(IdnNode)

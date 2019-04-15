@@ -15,7 +15,7 @@ from main.models import Person
 # Carles Pina (carles@pina.cat) and Jen Thomas (jenny_t152@yahoo.co.uk), 2016-2017.
 
 class CtdBottleTrigger(models.Model):
-    ctd_cast = models.ForeignKey(CtdCast)
+    ctd_cast = models.ForeignKey(CtdCast, on_delete=models.CASCADE)
     depth = models.IntegerField()
     niskin = models.IntegerField()
     comment = models.CharField(max_length=255, blank=True, null=True)
@@ -33,7 +33,7 @@ class CtdBottleTrigger(models.Model):
 class CtdVariable(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    principal_investigator = models.ForeignKey(Person, blank=True, null=True)
+    principal_investigator = models.ForeignKey(Person, blank=True, null=True, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (('name', 'principal_investigator'),)
@@ -43,9 +43,9 @@ class CtdVariable(models.Model):
 
 
 class CtdSampleVolume(models.Model):
-    ctd_variable = models.ForeignKey(CtdVariable)
+    ctd_variable = models.ForeignKey(CtdVariable, on_delete=models.CASCADE)
     volume = models.FloatField(blank=True, null=True, help_text="Blank if unknown")
-    ctd_bottle_trigger = models.ForeignKey(CtdBottleTrigger)
+    ctd_bottle_trigger = models.ForeignKey(CtdBottleTrigger, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (('ctd_variable', 'ctd_bottle_trigger'),)

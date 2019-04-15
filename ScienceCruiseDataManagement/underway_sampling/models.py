@@ -33,6 +33,6 @@ class When(models.Model):
         return self.frequency
 
 class UnderwaySampling(models.Model):
-    project = models.ForeignKey(Project)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
     when = models.ManyToManyField(When)
     what = models.ManyToManyField(UnderwaySamplingVariable)

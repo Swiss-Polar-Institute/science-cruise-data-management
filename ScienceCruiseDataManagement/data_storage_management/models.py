@@ -19,7 +19,7 @@ from django.db.models import Q
 class HardDisk(models.Model):
     uuid = models.CharField(max_length=255, unique=True)
     label = models.CharField(max_length=255, null=True)
-    person = models.ForeignKey(Person, null=True, blank=True)
+    person = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
     added_date_time = models.DateTimeField(default=django.utils.timezone.now)
     comment = models.TextField(null=True, blank=True)
 
@@ -31,7 +31,7 @@ class SharedResource(models.Model):
     ip = models.GenericIPAddressField()
     shared_resource = models.CharField(max_length=255)
     added_date_time = models.DateTimeField(default=django.utils.timezone.now)
-    person = models.ForeignKey(Person, null=True, blank=True)
+    person = models.ForeignKey(Person, null=True, blank=True, on_delete=models.CASCADE)
     username = models.CharField(max_length=255)
     password = models.CharField(max_length=255, null=True, blank=True)
     comment = models.TextField(null=True, blank=True)
@@ -60,9 +60,9 @@ class Item(models.Model):
     destination_directory = models.CharField(max_length=255, help_text="Can't start with /, it's a relative path")
 
     # A directory should come from only one of these sources
-    hard_disk = models.ForeignKey(HardDisk, null=True, blank=True)
-    shared_resource = models.ForeignKey(SharedResource, null=True, blank=True)
-    nas_resource = models.ForeignKey(NASResource, null=True, blank=True)
+    hard_disk = models.ForeignKey(HardDisk, null=True, blank=True, on_delete=models.CASCADE)
+    shared_resource = models.ForeignKey(SharedResource, null=True, blank=True, on_delete=models.CASCADE)
+    nas_resource = models.ForeignKey(NASResource, null=True, blank=True, on_delete=models.CASCADE)
 
     added_date_time = models.DateTimeField(default=django.utils.timezone.now)
 
@@ -110,7 +110,7 @@ class File(Item):
 
 
 class DirectoryImportLog(models.Model):
-    directory = models.ForeignKey(Directory)
+    directory = models.ForeignKey(Directory, on_delete=models.CASCADE)
     updated_time = models.DateTimeField(default=django.utils.timezone.now)
     success = models.BooleanField()
 
@@ -120,8 +120,8 @@ class DataManagementProgress(models.Model):
                     ("In progress", "In progress"),
                     ("Not started", "Not started"))
 
-    project = models.ForeignKey(Project)
-    leg = models.ForeignKey(Leg)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    leg = models.ForeignKey(Leg, on_delete=models.CASCADE)
     event_recording = models.CharField(max_length=255, choices=type_choices)
     events_complete = models.BooleanField()
     sample_recording = models.CharField(max_length=255, choices=type_choices)
