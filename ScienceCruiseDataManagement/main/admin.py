@@ -200,7 +200,7 @@ class EventActionForm(ModelForm):
 
 
 class EventActionAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('event', 'sampling_method', 'type', 'description', 'time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
+    list_display = ('event', 'sampling_method', 'type', 'description', 'date_time', 'time_source', 'time_uncertainty', 'latitude', 'longitude', 'position_source', 'position_uncertainty', 'water_depth', 'general_comments', 'data_source_comments')
     ordering = ['-event_id', '-id']
 
     form = EventActionForm
@@ -234,7 +234,7 @@ class EventActionDescriptionAdmin(admin.ModelAdmin):
 
 
 class LegAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('number', 'start_time', 'start_port', 'end_time', 'end_port', 'active_leg')
+    list_display = ('number', 'start_date_time', 'start_port', 'end_date_time', 'end_port', 'active_leg')
     ordering = ['number']
 
     def active_leg(self, obj):
@@ -256,7 +256,7 @@ class TmrCastAdmin(admin.ModelAdmin):
 
 
 class StationAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name', 'type', 'latitude', 'longitude', 'leg', 'arrival_time', 'departure_time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'outcome', 'comment')
+    list_display = ('name', 'type', 'latitude', 'longitude', 'leg', 'arrival_date_time', 'departure_date_time', 'time_source', 'time_uncertainty', 'position_source', 'position_uncertainty', 'water_depth', 'outcome', 'comment')
     ordering = ['-name']
     list_filter = (StationTypeFilter, LegFilter, OutcomeFilter)
 
@@ -622,14 +622,14 @@ class IslandLandingsAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMi
 
 
 class StorageTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name', 'description', 'created_on', 'created_by')
+    list_display = ('name', 'description', 'created_on_date_time', 'created_by')
     exclude = ('created_by',)
     ordering = ['name']
 
 
 class FileStorageGeneralAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('time', 'used', 'free', 'percentage')
-    ordering = ['time']
+    list_display = ('date_time', 'used', 'free', 'percentage')
+    ordering = ['date_time']
 
     def percentage(self, obj):
         return "{0:.2f}%".format((obj.used / (obj.used+obj.free)) * 100)
@@ -687,7 +687,7 @@ class SampleAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, adm
 
 
 class ImportedFileAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ("file_name", "date_imported")
+    list_display = ("file_name", "imported_date_time")
     ordering = ['file_name']
 
 
@@ -760,7 +760,7 @@ class EmailAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class EmailOversizeNotifiedAdmin(admin.ModelAdmin):
-    list_display = ('from_email', 'to_email_address', 'date_string', 'size_kb', 'subject', 'imap_uuid', 'added')
+    list_display = ('from_email', 'to_email_address', 'date_string', 'size_kb', 'subject', 'imap_uuid', 'added_date_time')
 
     def to_email_address(self, obj):
         return obj.to_email.email_address
@@ -796,7 +796,7 @@ class PlatformTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class DeviceTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('url', 'code', 'name', 'definition', 'version', 'deprecated', 'date', 'source')
+    list_display = ('url', 'code', 'name', 'definition', 'version', 'deprecated', 'date_time', 'source')
     ordering = ['name']
 
 
@@ -857,7 +857,7 @@ class ContactDetailsAdmin(admin.ModelAdmin):
 
 
 class MeasurelandQualifierFlagsAdmin(admin.ModelAdmin):
-    list_display = ('concept_id', 'preferred_label', 'alt_label', 'definition', 'modified', 'source')
+    list_display = ('concept_id', 'preferred_label', 'alt_label', 'definition', 'modified_date_time', 'source')
     ordering = ('concept_id', )
 
 

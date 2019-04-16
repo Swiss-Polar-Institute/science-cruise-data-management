@@ -48,7 +48,7 @@ class FilesStorage(models.Model):
 class FilesStorageGeneral(models.Model):
     used = models.BigIntegerField()
     free = models.BigIntegerField()
-    time = models.DateTimeField(default=timezone.now)
+    date_time = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return "{}-{}".format(self.used, self.free)
@@ -93,7 +93,7 @@ class DeviceType(models.Model):
     definition = models.TextField(help_text = "Give a full description of the device, including it's make, model, how it is used and a URL describing the device where possible.")
     version = models.CharField(max_length=255, null=True, blank=True, help_text = "If adding a new device leave this field blank.")
     deprecated = models.CharField(max_length=255, null=True, blank=True, help_text = "If adding a new device leave this field blank.")
-    date = models.DateTimeField(null=True, blank=True, help_text = "If adding a new device leave this field blank.")
+    date_time = models.DateTimeField(null=True, blank=True, help_text = "If adding a new device leave this field blank.")
     source = models.CharField(choices=settings.VOCAB_SOURCES, default = settings.DEVICE_SOURCE_DEFAULT, max_length=255, help_text = "Use the default or speak to the data management team if generated for ACE does not apply.")
 
     def __str__(self):
@@ -170,10 +170,10 @@ class Port(models.Model):
 
 class Leg(models.Model):
     number = models.IntegerField(unique=True)
-    start_time = models.DateTimeField(help_text="TIME IN UTC", verbose_name="Start time (UTC)")
+    start_date_time = models.DateTimeField(help_text="TIME IN UTC", verbose_name="Start time (UTC)")
     start_port = models.ForeignKey(Port, related_name='start_port', on_delete=models.CASCADE)
 
-    end_time = models.DateTimeField(blank=True, null=True, help_text="TIME IN UTC", verbose_name="End time (UTC)")
+    end_date_time = models.DateTimeField(blank=True, null=True, help_text="TIME IN UTC", verbose_name="End time (UTC)")
     end_port = models.ForeignKey(Port, related_name='end_port', on_delete=models.CASCADE)
 
     @staticmethod
@@ -196,7 +196,7 @@ class Leg(models.Model):
 class StorageType(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField()
-    created_on = models.DateTimeField(default=timezone.now)
+    created_on_date_time = models.DateTimeField(default=timezone.now)
     created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -228,7 +228,7 @@ class PlatformType(models.Model):
     definition = models.CharField(max_length=255)
     version = models.CharField(max_length=255, null=True, blank=True)
     deprecated = models.CharField(max_length=255, null=True, blank=True)
-    date = models.DateTimeField(max_length=255, null=True, blank=True)
+    date_time = models.DateTimeField(max_length=255, null=True, blank=True)
     source = models.CharField(max_length=255, choices=settings.VOCAB_SOURCES)
 
     def __str__(self):
@@ -346,7 +346,7 @@ class EmailOversizeNotified(models.Model):
     size = models.IntegerField()
     subject = models.CharField(max_length=1024)
     imap_uuid = models.CharField(max_length=50)
-    added = models.DateTimeField(default=timezone.now)
+    added_date_time = models.DateTimeField(default=timezone.now)
 
 
 class Mission(models.Model):
@@ -434,8 +434,8 @@ class Station(models.Model):
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
     leg = models.ForeignKey(Leg, on_delete=models.CASCADE)
-    arrival_time = models.DateTimeField(null=True, blank=True, help_text="TIME IN UTC", verbose_name="Arrival time (UTC)")
-    departure_time = models.DateTimeField(null=True, blank=True, help_text="TIME IN UTC",verbose_name="Departure time (UTC)")
+    arrival_date_time = models.DateTimeField(null=True, blank=True, help_text="TIME IN UTC", verbose_name="Arrival time (UTC)")
+    departure_date_time = models.DateTimeField(null=True, blank=True, help_text="TIME IN UTC",verbose_name="Departure time (UTC)")
     time_source = models.ForeignKey(TimeSource, related_name='station_device_time_source', null=True, blank=True, on_delete=models.CASCADE)
     time_uncertainty = models.ForeignKey(TimeUncertainty, null=True, blank=True, on_delete=models.CASCADE)
     position_source = models.ForeignKey(PositionSource, related_name='station_position_time_source', null=True, blank=True, on_delete=models.CASCADE)
@@ -507,7 +507,7 @@ class Sample(models.Model):
 
 class ImportedFile(models.Model):
     file_name = models.CharField(max_length=255)
-    date_imported = models.DateTimeField()
+    imported_date_time = models.DateTimeField()
     object_type = models.CharField(max_length=255, help_text="From where this was imported")
 
     def __str__(self):
@@ -704,7 +704,7 @@ class EventAction(models.Model):
     type = models.CharField(choices=type_choices, max_length=255, help_text="Select the description of the time that you are entering", verbose_name= "Time description")
     description = models.ForeignKey(EventActionDescription, verbose_name="Description of event action", help_text="Select the description that describes the event action", on_delete=models.CASCADE)
 
-    time = models.DateTimeField(default=timezone.now, help_text="TIME IN UTC", verbose_name="Time of event action (UTC)")
+    date_time = models.DateTimeField(default=timezone.now, help_text="TIME IN UTC", verbose_name="Time of event action (UTC)")
     time_source = models.ForeignKey(TimeSource, on_delete=models.CASCADE)
     time_uncertainty = models.ForeignKey(TimeUncertainty, on_delete=models.CASCADE)
 
@@ -901,7 +901,7 @@ class MeasurelandQualifierFlags(models.Model):
     preferred_label = models.CharField(max_length=255)
     alt_label = models.CharField(max_length=255)
     definition = models.TextField(null=True, blank=True)
-    modified = models.DateTimeField()
+    modified_date_time = models.DateTimeField()
     source = models.CharField(max_length=255)
 
     def __str__(self):

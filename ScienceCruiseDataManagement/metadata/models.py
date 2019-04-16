@@ -23,8 +23,8 @@ class HorizontalResolutionRange(models.Model):
     horizontal_resolution_range	= models.CharField(max_length=255, unique=True)
     uuid = models.CharField(max_length=255, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
-    keyword_revision_date= models.DateTimeField(null=True, blank=True)
-    download_date = models.DateTimeField(null=True, blank=True)
+    keyword_revision_date_time = models.DateTimeField(null=True, blank=True)
+    download_date_time = models.DateTimeField(null=True, blank=True)
     in_gcmd = models.BooleanField()
 
     def __str__(self):
@@ -40,8 +40,8 @@ class Instrument(models.Model):
     long_name = models.CharField(max_length=255, null=True, blank=True)
     uuid = models.CharField(max_length=255, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
-    keyword_revision_date = models.DateTimeField(null=True, blank=True)
-    download_date = models.DateTimeField(null=True, blank=True)
+    keyword_revision_date_time = models.DateTimeField(null=True, blank=True)
+    download_date_time = models.DateTimeField(null=True, blank=True)
     in_gcmd = models.BooleanField()
 
     def __str__(self):
@@ -59,8 +59,8 @@ class Platform(models.Model):
     detailed_platform = models.CharField(max_length=255, null=True, blank=True)
     uuid = models.CharField(max_length=255, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
-    keyword_revision_date = models.DateTimeField(null=True, blank=True)
-    download_date = models.DateTimeField(null=True, blank=True)
+    keyword_revision_date_time = models.DateTimeField(null=True, blank=True)
+    download_date_time = models.DateTimeField(null=True, blank=True)
     in_gcmd = models.BooleanField()
 
     def __str__(self):
@@ -76,8 +76,8 @@ class Project(models.Model):
     long_name = models.CharField(max_length=255, null=True, blank=True)
     uuid = models.CharField(max_length=255, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
-    keyword_revision_date = models.DateTimeField(null=True, blank=True)
-    download_date = models.DateTimeField(null=True, blank=True)
+    keyword_revision_date_time = models.DateTimeField(null=True, blank=True)
+    download_date_time = models.DateTimeField(null=True, blank=True)
     in_gcmd = models.BooleanField()
 
     def __str__(self):
@@ -97,8 +97,8 @@ class Provider(models.Model):
     data_center_url = models.CharField(max_length=255, null=True, blank=True)
     uuid = models.CharField(max_length=255, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
-    keyword_revision_date = models.DateTimeField(null=True, blank=True)
-    download_date = models.DateTimeField(null=True, blank=True)
+    keyword_revision_date_time = models.DateTimeField(null=True, blank=True)
+    download_date_time = models.DateTimeField(null=True, blank=True)
     in_gcmd = models.BooleanField()
 
     def __str__(self):
@@ -113,8 +113,8 @@ class RUContentType(models.Model):
     subtype = models.CharField(max_length=255, null=True, blank=True)
     uuid = models.CharField(max_length=255, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
-    keyword_revision_date = models.DateTimeField(null=True, blank=True)
-    download_date = models.DateTimeField(null=True, blank=True)
+    keyword_revision_date_time = models.DateTimeField(null=True, blank=True)
+    download_date_time = models.DateTimeField(null=True, blank=True)
     in_gcmd = models.BooleanField()
 
     def __str__(self):
@@ -128,8 +128,8 @@ class TemporalResolutionRange(models.Model):
     temporal_resolution_range = models.CharField(max_length=255, unique=True)
     uuid = models.CharField(max_length=255, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
-    keyword_revision_date = models.DateTimeField(null=True, blank=True)
-    download_date = models.DateTimeField(null=True, blank=True)
+    keyword_revision_date_time = models.DateTimeField(null=True, blank=True)
+    download_date_time = models.DateTimeField(null=True, blank=True)
     in_gcmd = models.BooleanField()
 
     def __str__(self):
@@ -140,8 +140,8 @@ class VerticalResolutionRange(models.Model):
     vertical_resolution_range = models.CharField(max_length=255, unique=True)
     uuid = models.CharField(max_length=255, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
-    keyword_revision_date = models.DateTimeField(null=True, blank=True)
-    download_date = models.DateTimeField(null=True, blank=True)
+    keyword_revision_date_time = models.DateTimeField(null=True, blank=True)
+    download_date_time = models.DateTimeField(null=True, blank=True)
     in_gcmd = models.BooleanField()
 
     def __str__(self):
@@ -163,7 +163,7 @@ class DatasetRole(models.Model):
 class DatasetProgress(models.Model):
     type = models.CharField(max_length=31, unique=True)
     description = models.CharField(max_length=255)
-    download_date = models.DateTimeField()
+    download_date_time = models.DateTimeField()
     in_gcmd = models.BooleanField()
 
     def __str__(self):
@@ -176,7 +176,7 @@ class DatasetProgress(models.Model):
 class DistributionMedia(models.Model):
     media_type = models.CharField(max_length=80)
     distribution_media = models.CharField(max_length=80)
-    download_date = models.DateTimeField()
+    download_date_time = models.DateTimeField()
     in_gcmd = models.BooleanField()
 
     def __str__(self):
@@ -189,7 +189,7 @@ class DistributionMedia(models.Model):
 class DistributionFormat(models.Model):
     distribution_format = models.CharField(max_length=80, null=True, blank=True)
     description = models.CharField(max_length=80)
-    download_date = models.DateTimeField()
+    download_date_time = models.DateTimeField()
     in_gcmd = models.BooleanField()
 
     def __str__(self):
@@ -204,9 +204,9 @@ class IdnNode(models.Model):
     idn_node_use_description = models.CharField(max_length=255, null=True, blank=True)
     idn_node_long_name = models.CharField(max_length=255, null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True,blank=True)
-    revision_date = models.DateTimeField(null=True, blank=True)
+    revision_date_time = models.DateTimeField(null=True, blank=True)
     keyword_status = models.CharField(max_length=255, null=True, blank=True)
-    download_date = models.DateTimeField(null=True, blank=True)
+    download_date_time = models.DateTimeField(null=True, blank=True)
     in_gcmd = models.BooleanField()
 
     def __str__(self):
@@ -270,9 +270,9 @@ class Parameter(models.Model):
     variable_level_3 = models.CharField(max_length=255, null=True, blank=True)
     detailed_variable = models.CharField(max_length=255, null=True, blank=True)
     uuid = models.CharField(max_length=255, null=True, blank=True)
-    download_date = models.DateTimeField(null=True, blank=True)
+    download_date_time = models.DateTimeField(null=True, blank=True)
     keyword_version = models.CharField(max_length=255, null=True, blank=True)
-    keyword_revision_date = models.DateTimeField(null=True, blank=True)
+    keyword_revision_date_time = models.DateTimeField(null=True, blank=True)
     in_gcmd = models.BooleanField()
 
     def __str__(self):

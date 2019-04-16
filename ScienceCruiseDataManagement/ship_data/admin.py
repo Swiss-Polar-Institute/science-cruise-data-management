@@ -41,7 +41,7 @@ class MetDataWindAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 
 
 class MetDataFileAdmin(import_export.admin.ExportMixin,admin.ModelAdmin):
-    list_display = ('file_name', 'date_imported')
+    list_display = ('file_name', 'imported_date_time')
     ordering = ['file_name']
 
 
@@ -51,7 +51,7 @@ class FerryboxAdmin(admin.ModelAdmin):
 
 
 class MultibeamRawFileMetadataAdmin(admin.ModelAdmin):
-    list_display = ('file_path', 'directory', 'swath_data_file', 'file_start_time', 'file_end_time', 'minimum_longitude', 'maximum_longitude', 'minimum_latitude', 'maximum_latitude', 'minimum_sonar_depth', 'maximum_sonar_depth')
+    list_display = ('file_path', 'directory', 'swath_data_file', 'file_start_date_time', 'file_end_date_time', 'minimum_longitude', 'maximum_longitude', 'minimum_latitude', 'maximum_latitude', 'minimum_sonar_depth', 'maximum_sonar_depth')
     ordering = ['swath_data_file']
 
 # Register your models here.

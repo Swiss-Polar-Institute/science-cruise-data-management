@@ -163,7 +163,7 @@ class MetDataWind(models.Model):
 
 class MetDataFile(models.Model):
     file_name = models.CharField(max_length=255)
-    date_imported = models.DateTimeField(max_length=255)
+    imported_date_time = models.DateTimeField(max_length=255)
 
     def __str__(self):
         return "{}".format(self.file_name)
@@ -173,8 +173,8 @@ class MultibeamRawFileMetadata(models.Model):
     file_path = models.CharField(max_length=300)
     directory = models.CharField(max_length=30)
     swath_data_file = models.CharField(max_length=40)
-    file_start_time = models.DateTimeField()
-    file_end_time = models.DateTimeField()
+    file_start_date_time = models.DateTimeField()
+    file_end_date_time = models.DateTimeField()
     minimum_longitude = models.FloatField()
     maximum_longitude = models.FloatField()
     minimum_latitude = models.FloatField()
