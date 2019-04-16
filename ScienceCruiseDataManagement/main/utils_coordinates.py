@@ -166,7 +166,7 @@ def process(coordinates, template_information):
 
         formats.remove(name_coordinate)
 
-        if name_coordinate == None:
+        if name_coordinate is None:
             template_information["error"] = "Invalid type of coordinate: {}. Aborted.".format(coordinate)
             return
         if previous_name_coordinate is not None and name_coordinate != previous_name_coordinate:
@@ -183,9 +183,6 @@ def process(coordinates, template_information):
                                                             "output1": " ".join(convert_to(coordinate, formats[0])),
                                                             "output2": " ".join(convert_to(coordinate, formats[1]))
                                                             })
-
-    print("Coordinates:", coordinates)
-
 
 def cmp(a, b):
     return (a > b) - (a < b)
