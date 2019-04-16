@@ -4,6 +4,8 @@ from ship_data.models import Ferrybox
 from django.db.models import Q
 from django.forms.models import model_to_dict
 from main import utils
+from django.core.exceptions import ObjectDoesNotExist
+
 
 import datetime
 import json
@@ -22,7 +24,12 @@ import json
 
 class FerryboxView(TemplateView):
     def get(self, request, *args, **kwargs):
-        latest_information = Ferrybox.objects.latest()
+
+        try:
+            latest_information = Ferrybox.objects.latest()
+        except ObjectDoesNotExist:
+            return render(request, "ferrybox_no_data.html")
+
         temperatures = get_ferrybox_data_24_hours('temperature')
         salinities = get_ferrybox_data_24_hours('salinity')
         fluorimeters = get_ferrybox_data_24_hours('fluorimeter')
