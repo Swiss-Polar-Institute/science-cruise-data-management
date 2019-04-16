@@ -52,10 +52,6 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
-ScienceCruiseDataManagement/main/migrations/
-ScienceCruiseDataManagement/data_storage_management/migrations/
-ScienceCruiseDataManagement/ship_data/migrations/
-ScienceCruiseDataManagement/metadata/migrations/
 
 # Flask stuff:
 instance/
