@@ -353,7 +353,7 @@ class FileStorageView(TemplateView):
             number *= conversion_from_kb
             return "{0:.2f}".format(number)
         else:
-            raise
+            raise NotImplementedError
 
     def get_context_data(self, **kwargs):
         context = super(FileStorageView, self).get_context_data(**kwargs)
@@ -564,13 +564,3 @@ def ship_date_times_to_utc(ship_date_times):
                        })
 
     return output
-
-
-class ContactDetailsListView(ListView):
-    model = ContactDetails
-    template_name = "list_of_contacts.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(ContactDetailsListView, self).get_context_data(**kwargs)
-
-        return context
