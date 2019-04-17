@@ -27,35 +27,51 @@
 {% if not exporting %}
 
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
-      <a class="navbar-brand" href="#">Navbar</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
 
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      <div class="collapse navbar-collapse justify-content-center" id="navbarsExampleDefault">
+        <ul class="nav navbar-nav navbar-center">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
+            <a class="nav-link" href="/map">Map</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link disabled" href="#">Disabled</a>
+            <a class="nav-link" href="/ferrybox">Ferrybox</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/ship_time_to_utc">Ship to UTC</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="/position_from_date_time">Find location</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="/coordinates_conversion">Coord conversion</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="/accessing_data">Accessing data</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="/documents">Documents</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="/ethz_forecast_data/navitool_maxi_ace.html">ETHZ forecast</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="http://192.168.20.40">Mail</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="/admin">Admin</a>
+          </li>
+
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="http://example.com/" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+            <a class="nav-link dropdown-toggle" href="http://example.com/" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Other</a>
             <div class="dropdown-menu" aria-labelledby="dropdown01">
-              <a class="dropdown-item" href="#">Action</a>
-              <a class="dropdown-item" href="#">Another action</a>
-              <a class="dropdown-item" href="#">Something else here</a>
+              <a class="dropdown-item" href="/something">Something...</a>
+              <a class="dropdown-item" href="/else">...else</a>
             </div>
           </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
       </div>
     </nav>
 
