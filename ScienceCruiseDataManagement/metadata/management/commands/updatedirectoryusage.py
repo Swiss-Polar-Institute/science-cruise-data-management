@@ -73,7 +73,7 @@ class DistributionSizeUpdater:
     @staticmethod
     def absolute_directory(directory):
         if directory.path_storage is None:
-            data_root = "/mnt/ace_data"
+            data_root = "/mnt/glace_data"
         else:
             data_root = directory.path_storage
 

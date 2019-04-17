@@ -170,7 +170,7 @@ DATETIME_FORMAT = "Y-m-d H:i:s"
 STATIC_URL = '/static/'
 
 # Should be moved out from here, just for development at the moment
-BASE_STORAGE_DIRECTORY = '/mnt/ace_data'
+BASE_STORAGE_DIRECTORY = '/mnt/glace_data'
 
 # Added for the importer-exporter module
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -193,8 +193,8 @@ VALIDITY_OPTIONS = (("valid", "valid"), ("redundant", "redundant"))
 USE_DJANGO_JQUERY = False
 JQUERY_URL = '/static/js/external/jquery-1.12.0.min.js'
 
-ADMIN_SITE_TITLE = 'ACE Data Admin'
-ADMIN_SITE_HEADER = 'ACE Data Administration'
+ADMIN_SITE_TITLE = 'GLACE Data Admin'
+ADMIN_SITE_HEADER = 'GLACE Data Administration'
 
 # This can be a symbolik link
 DOCUMENTS_DIRECTORY = os.path.join(os.getenv("HOME"), "intranet_documents")
@@ -202,7 +202,7 @@ FORECAST_DIRECTORY = os.path.join(os.getenv("HOME"), "ethz_forecast_data")
 
 MAIN_GPS = "GPS Bridge1"
 
-NAS_STAGING_MOUNT_POINT = "/mnt/ace_data"
+NAS_STAGING_MOUNT_POINT = "/mnt/glace_data"
 
 NAS_IP = "192.168.20.2"
 
@@ -257,7 +257,7 @@ DEFAULT_METADATA_VERSION = "VERSION 9.9"
 DEFAULT_DATA_SET_LANGUAGE = "English"
 
 METADATA_DEFAULT_PLATFORM_SHORT_NAME = ["R/V AT"]
-METADATA_DEFAULT_PROJECT_SHORT_NAME = ["SPI-ACE"]
+METADATA_DEFAULT_PROJECT_SHORT_NAME = ["SPI-GLACE"]
 METADATA_DEFAULT_DATA_CENTER = ["SPI"]
 METADATA_DEFAULT_IDN_NODE = ["AMD", "SOOS"]
 METADATA_DEFAULT_CITATION_PUBLISHER = "SPI"

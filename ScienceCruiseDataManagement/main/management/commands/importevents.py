@@ -339,7 +339,7 @@ data_source_comments: {data_source_comments}
         #                             extrasaction="ignore")
 
 
-        csv_writer = csv.DictWriter(output_file, ["ace_sample_number", "project_sample_number", "event_number",
+        csv_writer = csv.DictWriter(output_file, ["glace_sample_number", "project_sample_number", "event_number",
                                                   "julian_day", "leg", "contents", "specific_contents",
                                                   "crate_number", "storage_type", "storage_location",
                                                   "preservation", "offloading_port", "destination"],
@@ -360,7 +360,7 @@ data_source_comments: {data_source_comments}
             else:
                 leg_number = 3
 
-            row['ace_sample_number'] = '="AT/ACE/{}/19/"&D{}&"/"&C{}&"/PR/"&B{}'.format(leg_number, counter+1, counter+1, counter+1)
+            row['glace_sample_number'] = '="AT/GLACE/{}/19/"&D{}&"/"&C{}&"/PR/"&B{}'.format(leg_number, counter+1, counter+1, counter+1)
             csv_writer.writerow(row)
             counter += 1
 

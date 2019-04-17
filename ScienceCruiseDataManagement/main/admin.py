@@ -919,8 +919,8 @@ admin.site.register(main.models.EventsConsistencyV2, EventsConsistencyAdminV2)
 admin.site.register(main.models.ContactDetails, ContactDetailsAdmin)
 admin.site.register(main.models.MeasurelandQualifierFlags, MeasurelandQualifierFlagsAdmin)
 
-ADMIN_SITE_TITLE = 'Ace Data Admin'
-ADMIN_SITE_HEADER = 'ACE Data Administration'
+ADMIN_SITE_TITLE = 'GLACE Data Admin'
+ADMIN_SITE_HEADER = 'GLACE Data Administration'
 
 admin.site.site_title = settings.ADMIN_SITE_TITLE
 admin.site.site_header = settings.ADMIN_SITE_HEADER
