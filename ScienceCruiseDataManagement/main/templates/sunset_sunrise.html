@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Sunset sunrise{% endblock %}
+{% load static %}
+
+{% block content %}
+Enter the position to calculate the sunset/sunrise:
+<form action="/sunset_sunrise/" method="post">
+    {% csrf_token %}
+    <table>
+    {{ form }}
+    </table>
+    <input type="submit" value="Submit" />
+    
+</form>
+{% endblock %}

@@ -1,6 +1,7 @@
 import glob
 import json
 import datetime
+import astral
 
 import geojson
 import os
@@ -15,7 +16,7 @@ from django.core.exceptions import ObjectDoesNotExist
 import main.import_gpx_to_stations
 import main.models
 from main import import_gpx_to_stations
-from main.forms import InputShipDateTime, InputCoordinates, InputShipTimes
+from main.forms import InputShipDateTime, InputCoordinates, InputShipTimes, InputPosition
 from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station,\
     Message, SamplingMethod, ProposedStation, Leg, Depth, Sample, Person, ContactDetails
 from ctd.models import CtdSampleVolume
@@ -432,6 +433,27 @@ class ImportPortsFromGpx(View):
         return render(request, "import_ports_from_gpx_exec.html", template_information)
 
 
+class SunsetSunrise(TemplateView):
+    def get(self, request, *args, **kwargs):
+        form = InputPosition()
+        return render(request, "sunset_sunrise.html", {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        template_information = {}
+        template_information['latitude'] = request.POST['latitude']
+        template_information['longitude'] = request.POST['longitude']
+
+        place = astral.Location()
+        place.latitude = float(request.POST['latitude'])
+        place.longitude = float(request.POST['longitude'])
+
+        template_information['sunrise'] = place.sunrise()
+        template_information['dawn'] = place.dawn()
+        template_information['dusk'] = place.dusk()
+        template_information['sunset'] = place.sunset()
+
+        return render(request, "sunset_sunrise_exec.html", template_information)
+
 class CoordinatesConversion(TemplateView):
     def get(self, request, *args, **kwargs):
         form = InputCoordinates()
@@ -517,6 +539,7 @@ def latest_ship_speed():
         return speed.ground_speed_kts
     else:
         return None
+
 
 def ship_date_times_to_utc(ship_date_times):
     output = []

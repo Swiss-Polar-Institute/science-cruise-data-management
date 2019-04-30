@@ -16,10 +16,18 @@ class UtilsCoordinates(SimpleTestCase):
         self.assertTrue("error" in template_information)
         self.assertTrue("Aborts" in template_information["error"])
 
+    def test_utils_coordinates_negative(self):
+        template_information = {}
+
+        main.utils_coordinates.process("-43.424 51.2424", template_information)
+
+        self.assertEqual(template_information, {'output_format_name1': 'Degrees and decimal minutes', 'output_format_name2': 'Degrees, minutes and decimal seconds', 'input_format_name': 'Decimal degrees', 'list_of_coordinates': [{'output2': '43 25 26.400 S 51 14 26.400 E', 'input': '-43.424 51.2424', 'output1': '43 25.440 S 51 14.544 E'}]})
+
     def test_utils_coordinates(self):
         template_information = {}
 
         main.utils_coordinates.process("41 23 00.00 N 2 200 00.00 E", template_information)
+
         self.assertDictEqual(template_information,
                              {'output_format_name2': 'Degrees and decimal minutes',
                               'input_format_name': 'Degrees, minutes and decimal seconds',

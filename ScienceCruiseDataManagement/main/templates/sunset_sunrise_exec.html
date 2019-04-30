@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Sunset sunrise{% endblock %}
+{% load static %}
+
+{% block content %}
+<table border=1>
+<tr><td>Latitude</td><td>{{ latitude }}</td></tr>
+<tr><td>Longitude</td><td>{{ longitude }}</td></tr>
+<tr><td>Sunrise</td><td>{{ sunrise }}</td></tr>
+<tr><td>Dawn</td><td>{{ dawn }}</td></tr>
+<tr><td>Sunset</td><td>{{ sunset }}</td></tr>
+<tr><td>Dusk</td><td>{{ dusk }}</td></tr>
+</table>
+
+{% endblock %}
