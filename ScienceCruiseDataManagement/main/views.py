@@ -442,15 +442,29 @@ class SunsetSunrise(TemplateView):
         template_information = {}
         template_information['latitude'] = request.POST['latitude']
         template_information['longitude'] = request.POST['longitude']
+        template_information['date'] = request.POST['date']
+
+        error = ""
+
+        if request.POST['date'] != "":
+            try:
+                date = datetime.datetime.strptime(request.POST['date'], "%Y-%m-%d").date()
+            except ValueError:
+                date = datetime.datetime.today()
+                error = "Invalid date time"
+        else:
+            date = datetime.datetime.today()
 
         place = astral.Location()
         place.latitude = float(request.POST['latitude'])
         place.longitude = float(request.POST['longitude'])
 
-        template_information['sunrise'] = place.sunrise()
-        template_information['dawn'] = place.dawn()
-        template_information['dusk'] = place.dusk()
-        template_information['sunset'] = place.sunset()
+        template_information['sunrise'] = place.sunrise(date=date)
+        template_information['dawn'] = place.dawn(date=date)
+        template_information['dusk'] = place.dusk(date=date)
+        template_information['sunset'] = place.sunset(date=date)
+        template_information['date_parsed'] = date.strftime("%Y-%m-%d")
+        template_information['error'] = error
 
         return render(request, "sunset_sunrise_exec.html", template_information)
 

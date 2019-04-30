@@ -3,9 +3,12 @@
 {% load static %}
 
 {% block content %}
+{{ error }}<br>
+<b><font color="red">ALL TIMES UTC</font></b>
 <table border=1>
 <tr><td>Latitude</td><td>{{ latitude }}</td></tr>
 <tr><td>Longitude</td><td>{{ longitude }}</td></tr>
+<tr><td>Date</td><td>{{ date_parsed }}</td></tr>
 <tr><td>Sunrise</td><td>{{ sunrise }}</td></tr>
 <tr><td>Dawn</td><td>{{ dawn }}</td></tr>
 <tr><td>Sunset</td><td>{{ sunset }}</td></tr>

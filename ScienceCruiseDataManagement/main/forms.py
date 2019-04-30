@@ -1,6 +1,8 @@
 from django import forms
 from django.utils import timezone
 
+import datetime
+
 # This file is part of https://github.com/cpina/science-cruise-data-management
 #
 # This project was programmed in a hurry without any prior Django experience,
@@ -53,3 +55,7 @@ class InputPosition(forms.Form):
                                 required=True,
                                 label="Longitude")
 
+    date = forms.DateField(initial=datetime.date.today,
+                           help_text="Empty if it's for today",
+                           required=False,
+                           label="Date")
