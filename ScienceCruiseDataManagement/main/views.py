@@ -473,6 +473,10 @@ class SunsetSunrise(TemplateView):
 
         template_information['error'] = error
 
+        template_information['form'] = InputPositionDate(initial={'latitude': place.latitude,
+                                                                  'longitude': place.longitude})
+
+
         return render(request, "sunset_sunrise_exec.html", template_information)
 
 class CoordinatesConversion(TemplateView):
