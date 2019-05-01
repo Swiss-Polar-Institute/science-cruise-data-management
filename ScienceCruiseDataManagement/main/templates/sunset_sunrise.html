@@ -3,6 +3,12 @@
 {% load static %}
 
 {% block content %}
+
+{% if error_message %}
+<b><font color="red">Error: {{ error_message }}</font></b>
+{% endif %}
+<br>
+
 Enter the position to calculate the sunset/sunrise:
 <form action="/sunset_sunrise/" method="post">
     {% csrf_token %}
