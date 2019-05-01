@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 import datetime
+import pytz
 
 # This file is part of https://github.com/cpina/science-cruise-data-management
 #
@@ -153,7 +154,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
-
+SHIP_TIME_ZONE = pytz.timezone("Etc/GMT-2")
 USE_I18N = True
 
 # So DATETIME_FORMAT is honored

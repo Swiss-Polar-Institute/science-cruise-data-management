@@ -16,7 +16,7 @@ from django.core.exceptions import ObjectDoesNotExist
 import main.import_gpx_to_stations
 import main.models
 from main import import_gpx_to_stations
-from main.forms import InputShipDateTime, InputCoordinates, InputShipTimes, InputPosition
+from main.forms import InputShipDateTime, InputCoordinates, InputShipTimes, InputPositionDate
 from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station,\
     Message, SamplingMethod, ProposedStation, Leg, Depth, Sample, Person, ContactDetails
 from ctd.models import CtdSampleVolume
@@ -435,7 +435,7 @@ class ImportPortsFromGpx(View):
 
 class SunsetSunrise(TemplateView):
     def get(self, request, *args, **kwargs):
-        form = InputPosition()
+        form = InputPositionDate()
         return render(request, "sunset_sunrise.html", {"form": form})
 
     def post(self, request, *args, **kwargs):
@@ -459,11 +459,18 @@ class SunsetSunrise(TemplateView):
         place.latitude = float(request.POST['latitude'])
         place.longitude = float(request.POST['longitude'])
 
-        template_information['sunrise'] = place.sunrise(date=date)
-        template_information['dawn'] = place.dawn(date=date)
-        template_information['dusk'] = place.dusk(date=date)
-        template_information['sunset'] = place.sunset(date=date)
+        template_information['sunrise_utc'] = place.sunrise(date=date)
+        template_information['dawn_utc'] = place.dawn(date=date)
+        template_information['dusk_utc'] = place.dusk(date=date)
+        template_information['sunset_utc'] = place.sunset(date=date)
         template_information['date_parsed'] = date.strftime("%Y-%m-%d")
+
+        template_information['sunrise_ship_time'] = utils.format_date_time(utils.date_utc_to_ship_time(place.sunrise(date=date)))
+        template_information['dawn_ship_time'] = utils.format_date_time(utils.date_utc_to_ship_time(place.dawn(date=date)))
+        template_information['dusk_ship_time'] = utils.format_date_time(utils.date_utc_to_ship_time(place.dusk(date=date)))
+        template_information['sunset_ship_time'] = utils.format_date_time(utils.date_utc_to_ship_time(place.sunset(date=date)))
+        template_information['date_parsed'] = date.strftime("%Y-%m-%d")
+
         template_information['error'] = error
 
         return render(request, "sunset_sunrise_exec.html", template_information)
@@ -553,7 +560,6 @@ def latest_ship_speed():
         return speed.ground_speed_kts
     else:
         return None
-
 
 def ship_date_times_to_utc(ship_date_times):
     output = []

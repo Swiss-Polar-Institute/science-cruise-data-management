@@ -387,3 +387,10 @@ def filter_out_bad_values():
 
 def is_correct_position(gpgga_gps_fix):
     return not (gpgga_gps_fix.measureland_qualifier_flags.preferred_label in wrong_data_measureland_qualifier_flags())
+
+
+def date_utc_to_ship_time(date):
+    return date.astimezone(settings.SHIP_TIME_ZONE)
+
+def format_date_time(date):
+    return date.strftime("%Y-%m-%d %H:%M:%S")
