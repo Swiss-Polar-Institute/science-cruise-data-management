@@ -3,7 +3,6 @@ import astral
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from sunset_sunrise.forms import InputPositionDate
-import main.utils as utils
 
 import datetime
 
@@ -42,16 +41,10 @@ class SunsetSunrise(TemplateView):
         place.latitude = latitude
         place.longitude = longitude
 
-        template_information['sunrise_utc'] = place.sunrise(date=date)
-        template_information['dawn_utc'] = place.dawn(date=date)
-        template_information['dusk_utc'] = place.dusk(date=date)
-        template_information['sunset_utc'] = place.sunset(date=date)
-        template_information['date_parsed'] = date.strftime("%Y-%m-%d")
-
-        template_information['sunrise_ship_time'] = utils.format_date_time(utils.date_utc_to_ship_time(place.sunrise(date=date)))
-        template_information['dawn_ship_time'] = utils.format_date_time(utils.date_utc_to_ship_time(place.dawn(date=date)))
-        template_information['dusk_ship_time'] = utils.format_date_time(utils.date_utc_to_ship_time(place.dusk(date=date)))
-        template_information['sunset_ship_time'] = utils.format_date_time(utils.date_utc_to_ship_time(place.sunset(date=date)))
+        template_information['sunrise'] = place.sunrise(date=date)
+        template_information['dawn'] = place.dawn(date=date)
+        template_information['dusk'] = place.dusk(date=date)
+        template_information['sunset'] = place.sunset(date=date)
         template_information['date_parsed'] = date.strftime("%Y-%m-%d")
 
         template_information['error_message'] = error_message

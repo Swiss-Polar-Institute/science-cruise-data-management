@@ -3,6 +3,10 @@
 {% load static %}
 
 {% block content %}
+
+{% load date_formatting %}
+
+
 <div class="container">
     <div class="row">
         <div class="col-md-6">
@@ -11,10 +15,10 @@
             <tr><td>Latitude</td><td>{{ latitude }}</td></tr>
             <tr><td>Longitude</td><td>{{ longitude }}</td></tr>
             <tr><td>Date</td><td>{{ date_parsed }}</td></tr>
-            <tr><td>Dawn</td><td>{{ dawn_utc }}</td></tr>
-            <tr><td>Sunrise</td><td>{{ sunrise_utc }}</td></tr>
-            <tr><td>Sunset</td><td>{{ sunset_utc }}</td></tr>
-            <tr><td>Dusk</td><td>{{ dusk_utc }}</td></tr>
+            <tr><td>Dawn</td><td>{{ dawn }}</td></tr>
+            <tr><td>Sunrise</td><td>{{ sunrise }}</td></tr>
+            <tr><td>Sunset</td><td>{{ sunset }}</td></tr>
+            <tr><td>Dusk</td><td>{{ dusk }}</td></tr>
             </table>
         </div>
         <div class="col-md-6">
@@ -23,10 +27,10 @@
             <tr><td>Latitude</td><td>{{ latitude }}</td></tr>
             <tr><td>Longitude</td><td>{{ longitude }}</td></tr>
             <tr><td>Date</td><td>{{ date_parsed }}</td></tr>
-            <tr><td>Dawn</td><td>{{ dawn_ship_time }}</td></tr>
-            <tr><td>Sunrise</td><td>{{ sunrise_ship_time }}</td></tr>
-            <tr><td>Sunset</td><td>{{ sunset_ship_time }}</td></tr>
-            <tr><td>Dusk</td><td>{{ dusk_ship_time }}</td></tr>
+            <tr><td>Dawn</td><td>{{ dawn|to_ship_timezone }}</td></tr>
+            <tr><td>Sunrise</td><td>{{ sunrise|to_ship_timezone }}</td></tr>
+            <tr><td>Sunset</td><td>{{ sunset|to_ship_timezone }}</td></tr>
+            <tr><td>Dusk</td><td>{{ dusk|to_ship_timezone }}</td></tr>
             </table>
         </div>
     </div>
