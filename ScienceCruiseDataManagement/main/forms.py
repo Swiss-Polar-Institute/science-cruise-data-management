@@ -45,16 +45,3 @@ class InputCoordinates(forms.Form):
                                   label="List of coordinates",
                                   widget=forms.Textarea(attrs={"cols": "40", "rows": "20", }))
 
-
-class InputPositionDate(forms.Form):
-    latitude = forms.CharField(help_text="Latitude where the sunset/sunrise is going to be calculated",
-                               required=True,
-                               label="Latitude")
-
-    longitude = forms.CharField(help_text="Longitude where the sunset/sunrise is going to be calculated",
-                                required=True,
-                                label="Longitude")
-
-    date = forms.DateField(initial=datetime.date.today,
-                           required=False,
-                           label="Date")
