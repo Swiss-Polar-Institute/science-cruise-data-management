@@ -3,7 +3,7 @@ from django.test import SimpleTestCase
 import main.utils_coordinates
 
 
-class UtilsCoordinates(SimpleTestCase):
+class UtilsCoordinatesTest(SimpleTestCase):
     def setUp(self):
         pass
 
