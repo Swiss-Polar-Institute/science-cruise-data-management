@@ -31,6 +31,7 @@ import ctd.models
 #
 # Carles Pina (carles@pina.cat) and Jen Thomas (jenny_t152@yahoo.co.uk), 2016-2017.
 
+
 class MissionAdmin(admin.ModelAdmin):
     list_display = ('name', 'acronym', 'institution', 'description')
     ordering = ['name']

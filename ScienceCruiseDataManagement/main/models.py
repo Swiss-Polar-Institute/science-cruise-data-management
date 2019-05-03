@@ -137,12 +137,14 @@ class TimeUncertainty(models.Model):
     class Meta:
         verbose_name_plural = "Time uncertainties"
 
+
 class TimeSource(models.Model):
     name = models.CharField(max_length=255, unique=True)
     definition = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return "{}-{}".format(self.name, self.definition)
+
 
 class PositionSource(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -233,6 +235,7 @@ class PlatformType(models.Model):
 
     def __str__(self):
         return "{}".format(self.name)
+
 
 class Platform(models.Model):
     url = models.CharField(max_length=255, null=True, blank=True)
@@ -446,6 +449,7 @@ class Station(models.Model):
 
     def __str__(self):
         return "{}".format(self.name)
+
 
 class ProposedStation(models.Model):
     type_choices = (("Marine", "Marine"), ("Terrestrial", "Terrestrial"))
@@ -893,6 +897,7 @@ class ContactDetails(models.Model):
 
     class Meta:
         verbose_name_plural = "Contact details"
+
 
 class MeasurelandQualifierFlags(models.Model):
     DEFAULT_PK = 1

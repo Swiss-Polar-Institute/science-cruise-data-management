@@ -2,8 +2,6 @@ import datetime
 import unicodedata
 import math
 
-from django.db.models.query import EmptyQuerySet
-from django.db import connection
 from django.conf import settings
 import main.models
 import shutil
@@ -354,6 +352,7 @@ def calculate_distance(origin, destination):
 def wrong_data_measureland_qualifier_flags():
     return ["probably bad value", "bad value", "value below detection", "value in excess", "value phenomenon uncertain"]
 
+
 def valid_measureland_qualifier_ids():
     valid_ids = []
 
@@ -362,6 +361,7 @@ def valid_measureland_qualifier_ids():
             valid_ids.append(str(measureland.id))
 
     return valid_ids
+
 
 def filter_in_bad_values():
     q = None
@@ -391,6 +391,7 @@ def is_correct_position(gpgga_gps_fix):
 
 def date_utc_to_ship_time(date):
     return date.astimezone(settings.SHIP_TIME_ZONE)
+
 
 def format_date_time(date):
     return date.strftime("%Y-%m-%d %H:%M:%S")
