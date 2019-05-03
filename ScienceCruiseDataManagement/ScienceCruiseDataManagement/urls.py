@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from data_storage_management.views import HardDiskJson
-from main.views import MainMenuView, MainMapView, PositionsJson, LatestShipPosition, CountryListView, FileStorageView,\
+from main.views import MainMenuView, MainMapView, PositionsJson, LatestShipPosition, FileStorageView,\
     InteractiveMapView, EventListView, DocumentsView, AccessingDataView, PositionFromDateTime,\
     CoordinatesConversion, TrackJson, MailState, ShipTimeToUtc, ImageReloaderView, LatestImage, StatsView
 from metadata.views import ProjectListView, MetadataEntryListView, MetadataEntryView, MetadataEntryAsWord,\
@@ -49,8 +49,6 @@ urlpatterns = [
     url(r'api/data_storage/add_directory_update.json', DirectoryUpdateJson.as_view()),
     # url(r'^api/positions$', PositionsJson.as_view()),
     url(r'^admin/', admin.site.urls),
-    url(r'^chaining/', include('smart_selects.urls')),
-    url(r'^country/list$', CountryListView.as_view(), name='article-list'),
     url(r'^storage/', FileStorageView.as_view()),
     url(r'^map/interactive/$', InteractiveMapView.as_view()),
     url(r'^reports/events/$', EventListView.as_view()),

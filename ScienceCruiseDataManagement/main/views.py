@@ -2,7 +2,6 @@ import glob
 import json
 import datetime
 
-import geojson
 import os
 from django.conf import settings
 from django.db.models import Q
@@ -12,9 +11,7 @@ from django.utils import timezone
 from django.views.generic import TemplateView, View, ListView
 from django.core.exceptions import ObjectDoesNotExist
 
-import main.import_gpx_to_stations
 import main.models
-from main import import_gpx_to_stations
 from main.forms import InputShipDateTime, InputCoordinates, InputShipTimes
 from main.models import Event, EventAction, Country, FilesStorage, FilesStorageGeneral, Port, Station,\
     Message, SamplingMethod, ProposedStation, Leg, Depth, Sample, Person, ContactDetails
@@ -265,15 +262,6 @@ class LatestShipPosition(View):
         information['date_time'] = location.date_time
 
         return JsonResponse(information)
-
-
-class CountryListView(ListView):
-    model = Country
-
-    def get_context_data(self, **kwargs):
-        context = super(CountryListView, self).get_context_data(**kwargs)
-        context['now'] = timezone.now()
-        return context
 
 
 class EventListView(ListView):
