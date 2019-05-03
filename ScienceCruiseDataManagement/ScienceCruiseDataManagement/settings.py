@@ -70,7 +70,8 @@ INSTALLED_APPS = [
     'expedition_reporting',
     'spi_admin', 
     'data_management',
-    'sunset_sunrise'
+    'sunset_sunrise',
+    'samples'
 ]
 
 MIDDLEWARE = [
@@ -225,7 +226,7 @@ IMAGE_RELOAD_FILEPATH = "/mnt/data_admin/latest_image/latest_image.jpg"
 
 # For default options
 DEFAULT_PLATFORM_NAME = "Akademik Treshnikov"
-DEFAULT_MISSION_NAME = "Antarctic Circumnavigation Expedition"
+DEFAULT_MISSION_NAME = "GLACE"
 DEFAULT_CTD_OPERATOR_FIRSTNAME = "Marie-Noelle"
 DEFAULT_CTD_OPERATOR_LASTNAME = "Houssais"
 

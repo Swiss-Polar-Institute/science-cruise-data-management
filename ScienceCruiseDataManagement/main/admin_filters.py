@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.utils.encoding import force_text
 from django.forms.models import model_to_dict
 import main.models
+import samples.models
 import main.utils
 from django.db.models import Q
 
@@ -229,7 +230,7 @@ class SampleContentsFilter(OptionFilter):
         return queryset.filter(contents=self.value())
 
     def lookups(self, request, model_admin):
-        return self._prepare_filter_lookups(main.models.Sample, 'contents', query_by_id=False)
+        return self._prepare_filter_lookups(samples.models.Sample, 'contents', query_by_id=False)
 
 
 class TypeOfStorageFilter(OptionFilter):
@@ -241,7 +242,7 @@ class TypeOfStorageFilter(OptionFilter):
         return queryset.filter(storage_type=self.value())
 
     def lookups(self, request, model_admin):
-        return self._prepare_filter_lookups(main.models.Sample, 'storage_type', query_by_id=False)
+        return self._prepare_filter_lookups(samples.models.Sample, 'storage_type', query_by_id=False)
 
 
 class StorageLocationFilter(OptionFilter):
@@ -253,7 +254,7 @@ class StorageLocationFilter(OptionFilter):
         return queryset.filter(storage_location=self.value())
 
     def lookups(self, request, model_admin):
-        return self._prepare_filter_lookups(main.models.Sample, 'storage_location', query_by_id=False)
+        return self._prepare_filter_lookups(samples.models.Sample, 'storage_location', query_by_id=False)
 
 
 class OffloadingPortFilter(OptionFilter):
@@ -265,7 +266,7 @@ class OffloadingPortFilter(OptionFilter):
         return queryset.filter(offloading_port=self.value())
 
     def lookups(self, request, model_admin):
-        return self._prepare_filter_lookups(main.models.Sample, 'offloading_port', query_by_id=False)
+        return self._prepare_filter_lookups(samples.models.Sample, 'offloading_port', query_by_id=False)
 
 
 class EventFilter(OptionFilter):
@@ -277,7 +278,7 @@ class EventFilter(OptionFilter):
         return queryset.filter(event_id=self.value())
 
     def lookups(self, request, model_admin):
-        return self._prepare_filter_lookups(main.models.Sample, 'event', query_by_id=False)
+        return self._prepare_filter_lookups(samples.models.Sample, 'event', query_by_id=False)
 
 
 class DeviceTypeFilter(OptionFilter):

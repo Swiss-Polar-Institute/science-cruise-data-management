@@ -96,8 +96,8 @@ def read_tracks(input_filename):
 
 def write_tracks(output_filename, tracks):
     csv_writer = csv.DictWriter(open(output_filename, "w"),
-                                ['sampling_method', 'data', 'samples', 'start_time', 'type', 'what_happened_start',
-                                 'end_time', 'type', 'what_happened_end', 'time_source', 'time_uncertainty',
+                                ['sampling_method', 'data', 'samples', 'start_date_time', 'type', 'what_happened_start',
+                                 'end_date_time', 'type', 'what_happened_end', 'time_source', 'time_uncertainty',
                                  'general_comments', 'start_latitude', 'start_longitude', 'end_latitude',
                                  'end_longitude', 'position_source', 'position_uncertainty'])
 
@@ -112,10 +112,10 @@ def write_tracks(output_filename, tracks):
         d['sampling_method'] = track.sampling_method
         d['data'] = 'True'
         d['samples'] = 'False'
-        d['start_time'] = track.start_time
+        d['start_date_time'] = track.start_time
         d['type'] = 'Begins'
         d['what_happened_start'] = 'started'
-        d['end_time'] = track.end_time
+        d['end_date_time'] = track.end_time
         d['type'] = 'Ends'
         d['what_happened_end'] = 'stopped'
         d['time_source'] = 'Spider track instrument'

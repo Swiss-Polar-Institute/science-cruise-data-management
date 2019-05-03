@@ -13,8 +13,9 @@ rm -rf data_management/migrations/
 rm -rf data_storage_management/migrations/
 rm -rf spi_admin/migrations/
 rm -rf expedition_reporting/migrations/
+rm -rf samples/migrations/
 
-python3 manage.py makemigrations metadata ship_data data_storage_management ctd underway_sampling main expedition_reporting data_administration data_management spi_admin
+python3 manage.py makemigrations metadata ship_data data_storage_management ctd underway_sampling main expedition_reporting data_administration data_management spi_admin samples
 python3 manage.py migrate 
 
 echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', 'admin')" | python manage.py shell

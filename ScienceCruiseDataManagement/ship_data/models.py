@@ -1,6 +1,5 @@
 from django.db import models
 from main.models import SamplingMethod, MeasurelandQualifierFlags
-import main.models
 
 # This file is part of https://github.com/cpina/science-cruise-data-management
 #

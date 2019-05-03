@@ -47,7 +47,7 @@ class Command(BaseCommand):
 
         csv_writer = csv.writer(open(new_filepath, "w"))
 
-        csv_writer.writerow(['parent_device', 'data', 'samples', 'start_time', 'type', 'what_happened_start', 'end_time', 'type', 'what_happened_end', 'time_source', 'time_uncertainty', 'general_comments'])
+        csv_writer.writerow(['parent_device', 'data', 'samples', 'start_date_time', 'type', 'what_happened_start', 'end_date_time', 'type', 'what_happened_end', 'time_source', 'time_uncertainty', 'general_comments'])
 
         input_spreadsheet = []
         for line in csv_reader:

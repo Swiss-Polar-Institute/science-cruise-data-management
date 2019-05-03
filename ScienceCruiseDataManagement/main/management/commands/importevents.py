@@ -164,7 +164,7 @@ class Command(BaseCommand):
 
                 # Save event action begin
                 event_action_begin = EventAction()
-                event_action_begin.time = utils.string_to_date_time(row['start_time'])
+                event_action_begin.time = utils.string_to_date_time(row['start_date_time'])
 
                 if event_action_begin.time == previous_event_time:
                     print("This event will be ignored in the creation: it has the same start event time as the previous")
@@ -192,7 +192,7 @@ class Command(BaseCommand):
 
                 # Save event action end
                 event_action_end = EventAction()
-                event_action_end.time = utils.string_to_date_time(row['end_time'])
+                event_action_end.time = utils.string_to_date_time(row['end_date_time'])
                 event_action_end.description = description_end
                 event_action_end.type = EventAction.tends()
                 event_action_end.latitude = row.get('end_latitude', None)

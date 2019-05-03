@@ -41,10 +41,10 @@ def create_event(starts, ends, parent_device):
     event['parent_device'] = parent_device
     event['data'] = "True"
     event['samples'] = "False"
-    event['start_time'] = starts
+    event['start_date_time'] = starts
     event['type'] = "Begins"
     event['what_happened_start'] = "started"
-    event['end_time'] = ends
+    event['end_date_time'] = ends
     event['type'] = "ends"
     event['what_happened_end'] = "stopped"
     event['time_source'] = "Ship's GPS"
@@ -61,8 +61,8 @@ def convert(file_path, parent_device):
 
     json_file = open(file_path, "r")
     event_file = open(event_file_name, "w")
-    event_sheet = csv.DictWriter(event_file, ['parent_device', 'data', 'samples', 'start_time', 'type',
-                                              'what_happened_start', 'end_time', 'type', 'what_happened_end',
+    event_sheet = csv.DictWriter(event_file, ['parent_device', 'data', 'samples', 'start_date_time', 'type',
+                                              'what_happened_start', 'end_date_time', 'type', 'what_happened_end',
                                               'time_source', 'time_uncertainty', 'general_comments'])
 
     d = json.load(json_file)

@@ -9,6 +9,7 @@ from django.shortcuts import redirect
 
 import main.lookups
 import main.models
+import samples.models
 import main.utils
 from main.admin_filters import OutcomeFilter, StationReportFilter, ProjectReportFilter, \
     SamplingMethodFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter,\
@@ -301,8 +302,8 @@ class EventReportResource(import_export.resources.ModelResource):
                                                attribute='sampling_method',
                                                widget=import_export.widgets.ForeignKeyWidget(main.models.SamplingMethod, 'name'))
 
-    start_time = import_export.fields.Field(column_name='start_time',
-                                            attribute='start_time')
+    start_date_time = import_export.fields.Field(column_name='start_date_time',
+                                            attribute='start_date_time')
 
     start_latitude = import_export.fields.Field(column_name='start_latitude',
                                                 attribute='start_latitude')
@@ -310,8 +311,8 @@ class EventReportResource(import_export.resources.ModelResource):
     start_longitude = import_export.fields.Field(column_name='start_longitude',
                                                  attribute='start_longitude')
 
-    end_time = import_export.fields.Field(column_name='end_time',
-                                          attribute='end_time')
+    end_date_time = import_export.fields.Field(column_name='end_date_time',
+                                          attribute='end_date_time')
 
     end_latitude = import_export.fields.Field(column_name='end_latitude',
                                               attribute='end_latitude')
@@ -343,12 +344,13 @@ class EventReportResource(import_export.resources.ModelResource):
         return EventReportAdmin.end_longitude(event)
 
     class Meta:
-        fields = ('number', 'station', 'sampling_method', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome', 'event_comments')
+        fields = ('number', 'station', 'sampling_method', 'start_date_time', 'start_latitude', 'start_longitude', 'end_date_time', 'end_latitude', 'end_longitude', 'outcome', 'event_comments')
         export_order = fields
 
 
 class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('number', 'station_name', 'device_name', 'start_time', 'start_latitude', 'start_longitude', 'end_time', 'end_latitude', 'end_longitude', 'outcome', 'comments')
+    # TODO 2019 list_display = ('number', 'station_name', 'device_name', 'start_date_time', 'start_latitude', 'start_longitude', 'end_date_time', 'end_latitude', 'end_longitude', 'outcome', 'comments')
+    list_display = ('number', 'station_name', 'device_name', 'start_latitude', 'start_longitude', 'end_latitude', 'end_longitude', 'outcome', 'comments')
     list_filter = (SamplingMethodFilter, OutcomeFilter, StationReportFilter, ProjectReportFilter, OtherFilters, )
     search_fields = ('number',)
 
@@ -622,12 +624,6 @@ class IslandLandingsAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMi
     save_as = True
 
 
-class StorageTypeAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('name', 'description', 'created_on_date_time', 'created_by')
-    exclude = ('created_by',)
-    ordering = ['name']
-
-
 class FileStorageGeneralAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('date_time', 'used', 'free', 'percentage')
     ordering = ['date_time']
@@ -669,22 +665,6 @@ class PreservationAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
 class SampleContentAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
     list_display = ('type', 'description')
     ordering = ['type']
-
-
-class SampleForm(ModelForm):
-    class Meta:
-        model = main.models.Sample
-        fields = '__all__'
-
-
-class SampleAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('expedition_sample_code', 'project_sample_number', 'contents', 'crate_number', 'storage_type', 'storage_location', 'offloading_port', 'destination', 'ship', 'mission', 'leg', 'project', 'julian_day', 'event', 'pi_initials', 'preservation', 'file', 'specific_contents')
-    fields = list_display
-    ordering = ['expedition_sample_code']
-    readonly_fields = ('expedition_sample_code', )
-    list_filter = (ProjectFilter, LegFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter, OffloadingPortFilter, EventFilter)
-    search_fields = ('expedition_sample_code', 'project_sample_number', 'contents', 'crate_number', 'storage_location', 'offloading_port', 'destination', 'julian_day', 'event__number', 'pi_initials__initials', 'preservation__name', 'file', 'specific_contents')
-    form = SampleForm
 
 
 class ImportedFileAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
@@ -890,15 +870,13 @@ admin.site.register(main.models.EventReport, EventReportAdmin)
 admin.site.register(main.models.Country, CountryAdmin)
 admin.site.register(main.models.Island, IslandAdmin)
 admin.site.register(main.models.IslandLandings, IslandLandingsAdmin)
-admin.site.register(main.models.StorageType, StorageTypeAdmin)
 admin.site.register(main.models.FilesStorageGeneral, FileStorageGeneralAdmin)
 admin.site.register(main.models.Port, PortAdmin)
 admin.site.register(main.models.PositionUncertainty, PositionUncertaintyAdmin)
 admin.site.register(main.models.TimeUncertainty, TimeUncertaintyAdmin)
 admin.site.register(main.models.TimeSource, TimeSourceAdmin)
 admin.site.register(main.models.PositionSource, PositionSourceAdmin)
-admin.site.register(main.models.Preservation, PreservationAdmin)
-admin.site.register(main.models.Sample, SampleAdmin)
+admin.site.register(samples.models.Preservation, PreservationAdmin)
 admin.site.register(main.models.ImportedFile, ImportedFileAdmin)
 admin.site.register(main.models.Person, PersonAdmin)
 admin.site.register(main.models.PersonRole, PersonRoleAdmin)
@@ -915,8 +893,8 @@ admin.site.register(main.models.Device, DeviceAdmin)
 admin.site.register(main.models.CtdCast, CtdCastAdmin)
 admin.site.register(main.models.TmrCast, TmrCastAdmin)
 admin.site.register(main.models.Role, RoleAdmin)
-admin.site.register(main.models.EventsConsistency, EventsConsistencyAdmin)
-admin.site.register(main.models.EventsConsistencyV2, EventsConsistencyAdminV2)
+# admin.site.register(main.models.EventsConsistency, EventsConsistencyAdmin)
+# admin.site.register(main.models.EventsConsistencyV2, EventsConsistencyAdminV2)
 admin.site.register(main.models.ContactDetails, ContactDetailsAdmin)
 admin.site.register(main.models.MeasurelandQualifierFlags, MeasurelandQualifierFlagsAdmin)
 

@@ -1,11 +1,15 @@
 from django.db import models
+import django.core.exceptions
 from django.core.exceptions import ValidationError
 from django.db.models import Max
 from django.utils import timezone
 from django.conf import settings
 from django.db.models import Q
-from smart_selects.db_fields import ChainedManyToManyField
-from django.db.models.signals import post_save
+
+# Disabled, not maintained anymore, needs to be changed
+# with an alternative
+#from smart_selects.db_fields import ChainedManyToManyField
+
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.conf import settings
@@ -180,8 +184,8 @@ class Leg(models.Model):
 
     @staticmethod
     def current_active_leg():
-        legs = Leg.objects.all().order_by('start_time')
-
+        legs = Leg.objects.all().order_by('start_date_time')
+        leg = None
         for leg in legs:
             if leg.end_time == None and leg.start_time< timezone.now():
                 return leg
@@ -193,16 +197,6 @@ class Leg(models.Model):
 
     def __str__(self):
         return "{}".format(self.number)
-
-
-class StorageType(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField()
-    created_on_date_time = models.DateTimeField(default=timezone.now)
-    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "{}".format(self.name)
 
 
 class SampleContent(models.Model):
@@ -465,48 +459,17 @@ class ProposedStation(models.Model):
 
 
 def default_mission_id():
-    return Mission.objects.get(name=settings.DEFAULT_MISSION_NAME).id
+    try:
+        return Mission.objects.get(name=settings.DEFAULT_MISSION_NAME).id
+    except django.core.exceptions.ObjectDoesNotExist:
+        return None
 
 
 def current_active_leg_id():
-    return Leg.current_active_leg().id
-
-
-class Preservation(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return "{}".format(self.name)
-
-
-class Sample(models.Model):
-    # It's updated by the function update_expedition_sample_code. But it's null for a moment while we get the
-    # ID since the expedition_sample_code has the primary key of this table. So it needs to be stored
-    # and then updated.
-    expedition_sample_code = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    project_sample_number = models.CharField(max_length=255, null=True, blank=True)
-    contents = models.CharField(max_length=255)
-    crate_number = models.CharField(max_length=255, null=True, blank=True)
-    storage_type = models.ForeignKey(StorageType, null=True, blank=True, on_delete=models.CASCADE)
-    storage_location = models.CharField(max_length=255, null=True, blank=True)
-    offloading_port = models.CharField(max_length=255)
-    destination = models.CharField(max_length=255, null=True, blank=True)
-    ship = models.ForeignKey(Ship, null=True, blank=True, on_delete=models.CASCADE)
-    mission = models.ForeignKey('Mission', default=default_mission_id, on_delete=models.CASCADE)
-    leg = models.ForeignKey('Leg', default=current_active_leg_id, on_delete=models.CASCADE)
-    project = models.ForeignKey('Project', on_delete=models.CASCADE)
-    julian_day = models.IntegerField()
-    event = models.ForeignKey('Event', on_delete=models.CASCADE)
-    pi_initials = models.ForeignKey('Person', on_delete=models.CASCADE)
-    preservation = models.ForeignKey(Preservation, blank=True, null=True, on_delete=models.CASCADE)
-    description = models.CharField(max_length=255, blank=True, null=True)
-    file = models.CharField(max_length=255, blank=True, null=True)
-    specific_contents = models.CharField(max_length=255, null=True, blank=True)
-    comments = models.CharField(max_length=255, null=True, blank=True)
-
-    def __str__(self):
-        return "{}".format(self.expedition_sample_code)
+    if Leg.current_active_leg() is not None:
+        return Leg.current_active_leg().id
+    else:
+        return None
 
 
 class ImportedFile(models.Model):
@@ -521,27 +484,19 @@ class ImportedFile(models.Model):
         unique_together = (('file_name', 'object_type'))
 
 
-@receiver(post_save, sender=Sample)
-def update_expedition_sample_code(sender, instance, **kwargs):
-    # It's done in the post_save because the sample_id can be part of the expedition_sample_code
-    if instance.expedition_sample_code is None or instance.expedition_sample_code == '':
-        instance.expedition_sample_code = settings.EXPEDITION_SAMPLE_CODE(instance)
-        instance.save()
-
-
 class Event(models.Model):
     type_choices = (("Not yet happened", "Not yet happened"), ("Success", "Success"), ("Failure", "Failure"), ("Invalid", "Invalid"))
 
     number = models.AutoField(primary_key=True)
     sampling_method = models.ForeignKey(SamplingMethod, related_name="sampling_method_event", help_text="Choose the instrument or method used for sampling", on_delete=models.CASCADE)
-    specific_devices = ChainedManyToManyField(
-        SpecificDevice,
-        chained_field='linked_device',
-        chained_model_field='possible_parents',
-        blank=True,
-        verbose_name="Attached devices",
-        help_text="Choose any devices that are attached to your instrument"
-    )
+    # specific_devices = ChainedManyToManyField(
+    #     SpecificDevice,
+    #     chained_field='linked_device',
+    #     chained_model_field='possible_parents',
+    #     blank=True,
+    #     verbose_name="Attached devices",
+    #     help_text="Choose any devices that are attached to your instrument"
+    # )
     #    models.ManyToManyField(SpecificDevice)
     station = models.ForeignKey(Station, null=True, blank=True, help_text="Only choose a station name where the ship has stopped", on_delete=models.CASCADE)
     data = models.BooleanField(help_text="Tick this box if raw data will be produced DURING this event (not after post-cruise processing).")
@@ -585,41 +540,41 @@ class EventActionDescription(models.Model):
     def __str__(self):
         return "{}".format(self.name)
 
-
-class EventsConsistencyV2(models.Model):
-    choice_types = (("CTD", "CTD"),
-                    ("UW", "UW"))
-
-    type = models.CharField(max_length=255, choices=choice_types)
-    event_from_project_code = models.IntegerField()
-    event_from_expedition_code = models.ForeignKey(Event, related_name="Event_02", on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    sample = models.ForeignKey(Sample, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return "Type: {} event from project code: {} event from expedition code: {} project: {} sample: {}".format(
-                        self.type, self.event_from_project_code, self.event_from_expedition_code,
-                        self.project, self.sample)
-
-
-class EventsConsistency(models.Model):
-    choice_types = (("CTD", "CTD"),
-                    ("UW", "UW"))
-
-    type = models.CharField(max_length=255, choices=choice_types)
-    thing = models.CharField(max_length=255)
-    event_from_sample = models.ForeignKey(Event, on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    samples = models.ManyToManyField(Sample)
-
-    def __str__(self):
-        return "Project thing: {} Event: {} Project number: {} Type: {}".format(self.thing,
-                                                                         self.event_from_sample,
-                                                                         self.project.number,
-                                                                         self.type)
-
-    class Meta:
-        unique_together = (('event_from_sample', 'project', 'type', 'thing'),)
+#
+# class EventsConsistencyV2(models.Model):
+#     choice_types = (("CTD", "CTD"),
+#                     ("UW", "UW"))
+#
+#     type = models.CharField(max_length=255, choices=choice_types)
+#     event_from_project_code = models.IntegerField()
+#     event_from_expedition_code = models.ForeignKey(Event, related_name="Event_02", on_delete=models.CASCADE)
+#     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+#     sample = models.ForeignKey(Sample, on_delete=models.CASCADE)
+#
+#     def __str__(self):
+#         return "Type: {} event from project code: {} event from expedition code: {} project: {} sample: {}".format(
+#                         self.type, self.event_from_project_code, self.event_from_expedition_code,
+#                         self.project, self.sample)
+#
+#
+# class EventsConsistency(models.Model):
+#     choice_types = (("CTD", "CTD"),
+#                     ("UW", "UW"))
+#
+#     type = models.CharField(max_length=255, choices=choice_types)
+#     thing = models.CharField(max_length=255)
+#     event_from_sample = models.ForeignKey(Event, on_delete=models.CASCADE)
+#     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+#     samples = models.ManyToManyField(Sample)
+#
+#     def __str__(self):
+#         return "Project thing: {} Event: {} Project number: {} Type: {}".format(self.thing,
+#                                                                          self.event_from_sample,
+#                                                                          self.project.number,
+#                                                                          self.type)
+#
+#     class Meta:
+#         unique_together = (('event_from_sample', 'project', 'type', 'thing'),)
 
 
 class CtdCast(models.Model):
