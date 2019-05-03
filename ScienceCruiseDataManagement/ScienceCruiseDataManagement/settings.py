@@ -68,7 +68,6 @@ INSTALLED_APPS = [
     'underway_sampling',
     'data_administration',
     'expedition_reporting',
-    'spi_admin', 
     'data_management',
     'sunset_sunrise',
     'samples'
