@@ -1,8 +1,10 @@
 from django.core.management.base import BaseCommand, CommandError
-from main.models import Sample, Ship, Mission, Leg, Project, Person, Event, Preservation, ImportedFile, StorageType
+from main.models import Ship, Mission, Leg, Project, Person, Event, ImportedFile
+from samples.models import Sample, Preservation, StorageType
+import colorama
 import csv
+import sys
 import glob
-import codecs
 import os
 import datetime
 from main import utils
@@ -21,6 +23,7 @@ from django.db.models import Q
 #
 # Carles Pina (carles@pina.cat) and Jen Thomas (jenny_t152@yahoo.co.uk), 2016-2017.
 
+
 class Command(BaseCommand):
     help = 'Adds data to the sample table'
 
@@ -28,17 +31,31 @@ class Command(BaseCommand):
         parser.add_argument('directory_name', type=str)
 
     def handle(self, *args, **options):
-        #print(options['directory_name'])
-        self.import_data_from_directory(options['directory_name'])
+        sample_importer = SampleImporter()
+        sample_importer.import_data_from_directory(options['directory_name'])
+
+
+class SampleImporter(object):
+    def __init__(self):
+        pass
 
     def import_data_from_directory(self, directory_name):
-        for file in glob.glob(directory_name + "/*.csv"):
+        if not os.path.isdir(directory_name):
+            print_error("Directory expected. {} is not a directory. Aborts.".format(directory_name))
+            sys.exit(1)
+
+        file_paths = glob.glob(directory_name + "/*.csv")
+        if len(file_paths) == 0:
+            print_error("Directory {} contains no *.csv files. Nothing done.".format(directory_name))
+
+        for file in file_paths:
             basename = os.path.basename(file)
-            if ImportedFile.objects.filter(file_name=basename).filter(object_type="Samples").exists():
-                print("File already imported: ", basename)
+            if ImportedFile.objects.filter(file_name=basename).exists():
+            # if ImportedFile.objects.filter(file_name=basename).filter(object_type="Samples").exists():
+                print("File already imported: ", basename, ". Skipping this file.")
             else:
-                print("PROCESSING FILES: " + directory_name + "/*.csv")
-                success = self.import_data_from_csv(file)
+                print("PROCESSING FILE: " + file)
+                success = self._import_data_from_csv(file)
 
                 if success:
                     utils.add_imported(file, "Samples")
@@ -46,8 +63,8 @@ class Command(BaseCommand):
                     print(basename, "NOT MOVED because some errors processing it")
 
 
-    def foreign_key_querysets(self, code_string, mission_acronym_string, leg_string, project_number_string,
-                              pi_initials_string, event_number_string, preservation):
+    def _foreign_key_querysets(self, code_string, mission_acronym_string, leg_string, project_number_string,
+                               pi_initials_string, event_number_string, preservation):
         querysets = {}
         querysets['ship'] = Ship.objects.filter(shortened_name=code_string)
         querysets['mission'] = Mission.objects.filter(acronym=mission_acronym_string)
@@ -59,47 +76,60 @@ class Command(BaseCommand):
 
         return querysets
 
-    def check_foreign_keys(self, row, code_string, mission_acronym_string, leg_string, project_number_string, pi_initials_string, event_number_string, preservation):
-        qs = self.foreign_key_querysets(code_string, mission_acronym_string, leg_string, project_number_string,
-                                        pi_initials_string, event_number_string, preservation)
+    def _check_foreign_keys(self, row, code_string, mission_acronym_string, leg_string, project_number_string, pi_initials_string, event_number_string, preservation):
+        qs = self._foreign_key_querysets(code_string, mission_acronym_string, leg_string, project_number_string,
+                                         pi_initials_string, event_number_string, preservation)
 
         how_many_errors_have_ocurred = 0
 
         if len(qs['event']) != 1:
-            self.report_error(row, qs['event'], 'event', event_number_string)
+            self._report_error(row, qs['event'], 'event', event_number_string)
             how_many_errors_have_ocurred += 1
 
         if len(qs['ship']) != 1:
-            self.report_error(row, qs['ship'], 'ship', code_string)
+            self._report_error(row, qs['ship'], 'ship', code_string)
             how_many_errors_have_ocurred += 1
 
         if len(qs['mission']) != 1:
-            self.report_error(row, qs['mission'], 'mission', mission_acronym_string)
+            self._report_error(row, qs['mission'], 'mission', mission_acronym_string)
             how_many_errors_have_ocurred += 1
 
         if len(qs['leg']) != 1:
-            self.report_error(row, qs['leg'], 'leg', leg_string)
+            self._report_error(row, qs['leg'], 'leg', leg_string)
             how_many_errors_have_ocurred += 1
 
         if len(qs['project']) != 1:
-            self.report_error(row, qs['project'], 'project', project_number_string)
+            self._report_error(row, qs['project'], 'project', project_number_string)
             how_many_errors_have_ocurred += 1
 
         if len(qs['person']) != 1:
-            self.report_error(row, qs['person'], 'person', pi_initials_string)
+            self._report_error(row, qs['person'], 'person', pi_initials_string)
             how_many_errors_have_ocurred += 1
 
         if 'preservation' in row and preservation != '' and len(qs['preservation']) != 1:
-            self.report_error(row, qs['preservation'], 'preservation', row['preservation'])
+            self._report_error(row, qs['preservation'], 'preservation', row['preservation'])
             how_many_errors_have_ocurred += 1
 
         return how_many_errors_have_ocurred == 0
 
-    def remove_spaces_columns(self, row):
-        for key in row.keys():
-            row[key] = row[key].strip()
 
-    def import_data_from_csv(self, filepath):
+    def _remove_spaces_columns(self, row):
+        for key in row.keys():
+            if row[key] is not None:
+                row[key] = row[key].strip()
+
+    def _verify_header(self, fieldnames, file_path):
+        mandatory = ["glace_sample_number", "contents", "project_sample_number", "contents", "crate_number", "storage_location", "storage_type", "offloading_port", "destination"]
+
+        for field in fieldnames:
+            if field in mandatory:
+                mandatory.remove(field)
+
+        if len(mandatory) > 0:
+            print_error("Error in file: {}. Some mandatory fields don't exist: {}".format(file_path, mandatory))
+            sys.exit(1)
+
+    def _import_data_from_csv(self, filepath):
         reader = csv.DictReader(io.StringIO(utils.normalised_csv_file(filepath)))
         basename = os.path.basename(filepath)
 
@@ -112,8 +142,14 @@ class Command(BaseCommand):
 
         previous_event_time = None
 
+        header_is_ok = self._verify_header(reader.fieldnames, filepath)
+
+        line_number = 1  # header
+
         for row in reader:
-            self.remove_spaces_columns(row)
+            line_number += 1
+
+            self._remove_spaces_columns(row)
 
             print("Processing row from file: ", filepath)
             print("Row:", row)
@@ -133,13 +169,24 @@ class Command(BaseCommand):
                     skipped += 1
                     continue
 
-            original_sample_code = row['ace_sample_number']
+            original_sample_code = row['glace_sample_number']
+
+            expected_slashes = 8
+            actual_slashes = original_sample_code.count("/")
+            if actual_slashes != expected_slashes:
+                print_error("Error: File: {} Line number: {} original sample code: '{}' not having expected '/'. Actual: {} Expected: {}. Aborting".format(filepath, line_number, original_sample_code, actual_slashes, expected_slashes))
+                sys.exit(1)
 
             code_string = original_sample_code.split('/')[0]
             mission_acronym_string = original_sample_code.split('/')[1]
             leg_string = original_sample_code.split('/')[2]
             project_number_string = original_sample_code.split('/')[3]
-            julian_day = "{0:03d}".format(int(original_sample_code.split('/')[4]))
+
+            original_julian_day = original_sample_code.split('/')[4]
+            try:
+                julian_day = "{0:03d}".format(int(original_julian_day))
+            except ValueError:
+                print_error("Error: file {} Line number: {} julian day invalid: ".format(filepath, line_number, original_julian_day))
             event_number_string = original_sample_code.split('/')[5]
             pi_initials_string = original_sample_code.split('/')[6]
             project_id_string = original_sample_code.split('/')[7]
@@ -190,17 +237,17 @@ class Command(BaseCommand):
             else:
                 preservation = None
 
-            while not self.check_foreign_keys(row, code_string, mission_acronym_string, leg_string,
-                                          project_number_string, pi_initials_string, event_number_string,
-                                          preservation) != 0:
+            while not self._check_foreign_keys(row, code_string, mission_acronym_string, leg_string,
+                                               project_number_string, pi_initials_string, event_number_string,
+                                               preservation) != 0:
                 print("Please fix the broken foreign keys and press ENTER. This row will be retested")
                 input()
 
             rows += 1
 
-            qs = self.foreign_key_querysets(code_string, mission_acronym_string, leg_string,
-                                            project_number_string, pi_initials_string, event_number_string,
-                                            preservation)
+            qs = self._foreign_key_querysets(code_string, mission_acronym_string, leg_string,
+                                             project_number_string, pi_initials_string, event_number_string,
+                                             preservation)
 
             # Here it updates foreign keys only
             event = qs['event'][0]
@@ -214,14 +261,14 @@ class Command(BaseCommand):
             sample.mission = mission
             sample.leg = leg
             sample.project = project
-            sample.julian_day = int(julian_day) # So when we compare is the same as what it comes from the database
+            sample.julian_day = int(julian_day)  # So when we compare is the same as what it comes from the database
             sample.event = event
             sample.pi_initials = pi_initials
 
             if 'preservation' in row and preservation != '':
                 sample.preservation = qs['preservation'][0]
 
-            outcome = self.update_database(sample)
+            outcome = self._update_database(sample)
             if outcome == "skipped":
                 skipped += 1
             elif outcome == "inserted":
@@ -235,9 +282,12 @@ class Command(BaseCommand):
 
         print("TOTAL ROWS PROCESSED= ", rows, "; Inserted = ", inserted, "; Identical = ", identical, "; Skipped = ", skipped, "; Replaced = ", replaced)
 
-        return rows_with_errors == 0
+        if rows == 0:
+            print_error("Error: no rows found in the file: {}".format(filepath))
 
-    def report_error(self, row, query_set, object_type, lookup_value):
+        return rows_with_errors == 0 and rows > 0
+
+    def _report_error(self, row, query_set, object_type, lookup_value):
         """ Shows an error printing the line and an error message. """
         print("error in line:", row)
         if len(query_set) == 0:
@@ -247,7 +297,7 @@ class Command(BaseCommand):
             print("There are too many {} objects".format(object_type))
             print(format(object_type), ": ", query_set)
 
-    def find_sample(self, key):
+    def _find_sample(self, key):
         """Find a sample relating to a key"""
         sample_queryset = Sample.objects.filter(expedition_sample_code=key)
         if sample_queryset.exists():
@@ -255,15 +305,15 @@ class Command(BaseCommand):
         else:
             return None
 
-    def update_database(self, spreadsheet_sample):
-        existing_sample = self.find_sample(spreadsheet_sample.expedition_sample_code)
+    def _update_database(self, spreadsheet_sample):
+        existing_sample = self._find_sample(spreadsheet_sample.expedition_sample_code)
 
         if existing_sample is None:
             validate_sample(spreadsheet_sample)
             spreadsheet_sample.save()
             return "inserted"
         else:
-            comparison = self.compare_samples(existing_sample, spreadsheet_sample)
+            comparison = self._compare_samples(existing_sample, spreadsheet_sample)
             if comparison == True:
                 print("Identical row already in database: ", spreadsheet_sample.expedition_sample_code)
                 return "identical"
@@ -289,7 +339,7 @@ class Command(BaseCommand):
         else:
             return value
 
-    def compare_samples(self, sample1, sample2):
+    def _compare_samples(self, sample1, sample2):
         same_objects = True
         for field in sample1.__dict__.keys():
             if field != '_state' and field != 'id' and field != 'file':
@@ -324,17 +374,13 @@ def validate_event_outcome(sample):
     else:
         return (True, None)
 
-def julian_day_to_date(julian_day):
-    # This is adjusted to the ACE 2016 voyage: we started in December and
-    # finished in April so Julian days after 300 are considered from the year 2016
-    if julian_day > 300:
-        initial_date = datetime.datetime(2016, 1, 1)
-    else:
-        initial_date = datetime.datetime(2017, 1, 1)
 
+def julian_day_to_date(julian_day):
+    initial_date = datetime.datetime(2019, 7, 30)
     date = initial_date + datetime.timedelta(days=julian_day-1)
 
     return date
+
 
 def validate_julian_date_sample(sample):
     julian_day = sample.julian_day
@@ -353,6 +399,7 @@ def validate_julian_date_sample(sample):
 
     return (True, None)
 
+
 def validate_sample(sample, abort_if_invalid=True):
     validators = [validate_sampling_method, validate_event_outcome, validate_julian_date_sample]
 
@@ -368,3 +415,9 @@ def validate_sample(sample, abort_if_invalid=True):
             return result
 
     return (True, "")
+
+
+def print_error(log):
+    colorama.init()
+    print(colorama.Fore.RED + colorama.Style.BRIGHT + log, end="")
+    print(colorama.Style.RESET_ALL)

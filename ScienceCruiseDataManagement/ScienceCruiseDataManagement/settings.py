@@ -59,7 +59,7 @@ INSTALLED_APPS = [
     'import_export',    # to export as CSV
     'debug_toolbar',
     'django_extensions',
-    'selectable',   # auto-completion
+    'django_mysql',
     'ship_data',
     'data_storage_management',
     'main',  # ScienceCruiseManagement main app
@@ -78,7 +78,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',     TODO: reenable, test data_storage_management/views.py and the script
+    # 'django.middleware.csrf.CsrfViewMiddleware',     # TODO: reenable, test data_storage_management/views.py and the script
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -127,7 +127,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
             'read_default_file': '/etc/mysql/glace.cnf',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',
         },
     }
 }

@@ -47,8 +47,12 @@ class Instrument(models.Model):
     def __str__(self):
         return "{} - {} - {} - {} - {} - {}".format(self.category, self.instrument_class, self.type, self.subtype, self.short_name, self.long_name)
 
-    class Meta:
-        unique_together = (('category','instrument_class','type', 'subtype', 'short_name', 'long_name'))
+    # Carles: removing this unique_together because the index is too long
+    # The manager.py migrate returns an exception with this error:
+    # django.db.utils.OperationalError: (1071, 'Specified key was too long; max key length is 3072 bytes')
+
+    #class Meta:
+    #    unique_together = (('category','instrument_class','type', 'subtype', 'short_name', 'long_name'))
 
 
 class Platform(models.Model):
@@ -66,8 +70,12 @@ class Platform(models.Model):
     def __str__(self):
         return "{} - {} - {} - {} - {}".format(self.category, self.series_entity, self.short_name, self.long_name, self.detailed_platform)
 
-    class Meta:
-        unique_together = (('category', 'series_entity', 'short_name', 'long_name', 'detailed_platform', 'uuid'))
+    # Carles: removing this unique_together because the index is too long
+    # The manager.py migrate returns an exception with this error:
+    # django.db.utils.OperationalError: (1071, 'Specified key was too long; max key length is 3072 bytes')
+
+    #class Meta:
+    #    unique_together = (('category', 'series_entity', 'short_name', 'long_name', 'detailed_platform', 'uuid'))
 
 
 class Project(models.Model):
@@ -83,8 +91,12 @@ class Project(models.Model):
     def __str__(self):
         return "{}".format(self.short_name)
 
-    class Meta:
-        unique_together = (('bucket', 'short_name', 'long_name'))
+    # Carles: removing this unique_together because the index is too long
+    # The manager.py migrate returns an exception with this error:
+    # django.db.utils.OperationalError: (1071, 'Specified key was too long; max key length is 3072 bytes')
+
+    #class Meta:
+    #    unique_together = (('bucket', 'short_name', 'long_name'))
 
 
 class Provider(models.Model):
@@ -104,8 +116,12 @@ class Provider(models.Model):
     def __str__(self):
         return "{} - {}".format(self.short_name, self.long_name)
 
-    class Meta:
-        unique_together = (('bucket_Level0', 'bucket_Level1', 'bucket_Level2', 'bucket_Level3', 'short_name', 'long_name'))
+    # Carles: removing this unique_together because the index is too long
+    # The manager.py migrate returns an exception with this error:
+    # django.db.utils.OperationalError: (1071, 'Specified key was too long; max key length is 3072 bytes')
+
+    #class Meta:
+    #    unique_together = (('bucket_Level0', 'bucket_Level1', 'bucket_Level2', 'bucket_Level3', 'short_name', 'long_name'))
 
 
 class RUContentType(models.Model):
@@ -120,8 +136,12 @@ class RUContentType(models.Model):
     def __str__(self):
         return "{}".format(self.type)
 
-    class Meta:
-        unique_together = (('type', 'subtype'))
+    # Carles: removing this unique_together because the index is too long
+    # The manager.py migrate returns an exception with this error:
+    # django.db.utils.OperationalError: (1071, 'Specified key was too long; max key length is 3072 bytes')
+
+    #class Meta:
+    #     unique_together = (('type', 'subtype'))
 
 
 class TemporalResolutionRange(models.Model):
@@ -182,8 +202,12 @@ class DistributionMedia(models.Model):
     def __str__(self):
         return "{} - {}".format(self.media_type, self.distribution_media)
 
-    class Meta:
-        unique_together = (('media_type', 'distribution_media'))
+    # Carles: removing this unique_together because the index is too long
+    # The manager.py migrate returns an exception with this error:
+    # django.db.utils.OperationalError: (1071, 'Specified key was too long; max key length is 3072 bytes')
+
+    #class Meta:
+    #    unique_together = (('media_type', 'distribution_media'))
 
 
 class DistributionFormat(models.Model):
@@ -195,8 +219,12 @@ class DistributionFormat(models.Model):
     def __str__(self):
         return "{} ({})".format(self.distribution_format, self.description)
 
-    class Meta:
-        unique_together = (('distribution_format', 'description'))
+    # Carles: removing this unique_together because the index is too long
+    # The manager.py migrate returns an exception with this error:
+    # django.db.utils.OperationalError: (1071, 'Specified key was too long; max key length is 3072 bytes')
+
+    #class Meta:
+    #    unique_together = (('distribution_format', 'description'))
 
 
 class IdnNode(models.Model):
@@ -212,8 +240,12 @@ class IdnNode(models.Model):
     def __str__(self):
         return "{} - {} - {}".format(self.idn_node_short_name, self.idn_node_long_name, self.idn_node_use_description)
 
-    class Meta:
-        unique_together = (('idn_node_short_name', 'idn_node_use_description', 'idn_node_long_name'))
+    # Carles: removing this unique_together because the index is too long
+    # The manager.py migrate returns an exception with this error:
+    # django.db.utils.OperationalError: (1071, 'Specified key was too long; max key length is 3072 bytes')
+
+    # class Meta:
+    #    unique_together = (('idn_node_short_name', 'idn_node_use_description', 'idn_node_long_name'))
 
 
 ###### Datacite controlled vocabularies
@@ -278,8 +310,12 @@ class Parameter(models.Model):
     def __str__(self):
         return "{} - {} - {} - {} - {} - {} - {}".format(self.category, self.topic, self.term, self.variable_level_1, self.variable_level_2, self.variable_level_3, self.detailed_variable)
 
-    class Meta:
-        unique_together = (('category', 'topic', 'term', 'variable_level_1', 'variable_level_2', 'variable_level_3', 'detailed_variable'))
+    # Carles: removing this unique_together because the index is too long
+    # The manager.py migrate returns an exception with this error:
+    # django.db.utils.OperationalError: (1071, 'Specified key was too long; max key length is 3072 bytes')
+
+    #class Meta:
+    #    unique_together = (('category', 'topic', 'term', 'variable_level_1', 'variable_level_2', 'variable_level_3', 'detailed_variable'))
 
 
 class TemporalCoverage(models.Model):
@@ -321,8 +357,11 @@ class Location(models.Model):
         return "{} - {} - {} - {} - {} - {}".format(self.location_category, self.location_type, self.location_subregion1,
                                           self.location_subregion2, self.location_subregion3, self.detailed_location)
 
-    class Meta:
-        unique_together = (('location_category', 'location_type', 'location_subregion1', 'location_subregion2', 'location_subregion3', 'detailed_location'))
+    # Carles: removing this unique_together because the index is too long
+    # The manager.py migrate returns an exception with this error:
+    # django.db.utils.OperationalError: (1071, 'Specified key was too long; max key length is 3072 bytes')
+    #class Meta:
+    #    unique_together = (('location_category', 'location_type', 'location_subregion1', 'location_subregion2', 'location_subregion3', 'detailed_location'))
 
 
 class DataResolution(models.Model):
