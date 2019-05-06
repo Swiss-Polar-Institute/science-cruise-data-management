@@ -239,7 +239,7 @@ def expedition_sample_code(sample):
     information['leg'] = sample.leg.number
     information['project_number'] = sample.project.number
     information['event_number'] = sample.event.number
-    information['owner'] = sample.pi_initials.initials
+    information['owner'] = sample.pi.initials
     information['number_of_sample'] = sample.id
 
     padded_julian_day = "{:03}".format(sample.julian_day)

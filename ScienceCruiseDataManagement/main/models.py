@@ -3,7 +3,6 @@ import django.core.exceptions
 from django.core.exceptions import ValidationError
 from django.db.models import Max
 from django.utils import timezone
-from django.conf import settings
 from django.db.models import Q
 
 # Disabled, not maintained anymore, needs to be changed
@@ -186,9 +185,9 @@ class Leg(models.Model):
         legs = Leg.objects.all().order_by('start_date_time')
         leg = None
         for leg in legs:
-            if leg.end_time == None and leg.start_time< timezone.now():
+            if leg.end_date_time is None and leg.start_date_time < timezone.now():
                 return leg
-            elif (leg.start_time < timezone.now() and (leg.end_time > timezone.now())):
+            elif leg.start_date_time < timezone.now() and leg.end_date_time > timezone.now():
                 return leg
 
         # Returns the last leg
@@ -307,7 +306,7 @@ class Person(models.Model):
         return "{} {} - {}, {}".format(self.name_first, self.name_last, organisation_str, mailing_list_str)
 
     class Meta:
-        verbose_name_plural="People"
+        verbose_name_plural = "People"
         unique_together = (('name_first', 'name_last'),)
 
 
