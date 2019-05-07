@@ -1,0 +1,20 @@
+# This is only for Mysql 8
+#
+version: '3'
+services:
+  mysql:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: glace
+      MYSQL_USER: glace
+      MYSQL_PASSWORD: glace
+      MYSQL_DATABASE: glace
+    volumes:
+      - science_data_management_var_lib_mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
+
+volumes:
+  science_data_management_var_lib_mysql: {}
