@@ -34,7 +34,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         sample_importer = SampleImporter()
-        sample_importer.import_data_from_directory(options['directory_name'])
+        errors = sample_importer.import_data_from_directory(options['directory_name'])
+
+        for error in errors:
+            print_error(error)
 
 
 class SampleImporter(object):
@@ -43,12 +46,11 @@ class SampleImporter(object):
 
     def import_data_from_directory(self, directory_name):
         if not os.path.isdir(directory_name):
-            print_error("Directory expected. {} is not a directory. Aborts.".format(directory_name))
-            sys.exit(1)
+            return ["Directory expected. {} is not a directory. Aborts.".format(directory_name)]
 
         file_paths = glob.glob(directory_name + "/*.csv")
         if len(file_paths) == 0:
-            print_error("Directory {} contains no *.csv files. Nothing done.".format(directory_name))
+            return["Directory {} contains no *.csv files. Nothing done.".format(directory_name)]
 
         for file in file_paths:
             basename = os.path.basename(file)
@@ -136,8 +138,7 @@ class SampleImporter(object):
                 mandatory.remove(field)
 
         if len(mandatory) > 0:
-            print_error("Error in file: {}. Some mandatory fields don't exist: {}".format(file_path, mandatory))
-            sys.exit(1)
+            return ["Error in file: {}. Some mandatory fields don't exist: {}".format(file_path, mandatory)]
 
     def _import_data_from_csv(self, filepath):
         reader = csv.DictReader(io.StringIO(utils.normalised_csv_file(filepath)))
@@ -184,8 +185,7 @@ class SampleImporter(object):
             expected_slashes = 8
             actual_slashes = original_sample_code.count("/")
             if actual_slashes != expected_slashes:
-                print_error("Error: File: {} Line number: {} original sample code: '{}' not having expected '/'. Actual: {} Expected: {}. Aborting".format(filepath, line_number, original_sample_code, actual_slashes, expected_slashes))
-                sys.exit(1)
+                return["Error: File: {} Line number: {} original sample code: '{}' not having expected '/'. Actual: {} Expected: {}. Aborting".format(filepath, line_number, original_sample_code, actual_slashes, expected_slashes)]
 
             code_string = original_sample_code.split('/')[0]
             mission_acronym_string = original_sample_code.split('/')[1]
@@ -196,7 +196,8 @@ class SampleImporter(object):
             try:
                 julian_day = "{0:03d}".format(int(original_julian_day))
             except ValueError:
-                print_error("Error: file {} Line number: {} julian day invalid: ".format(filepath, line_number, original_julian_day))
+                return ["Error: file {} Line number: {} julian day invalid: ".format(filepath, line_number, original_julian_day)]
+
             event_number_string = original_sample_code.split('/')[5]
             pi_initials_string = original_sample_code.split('/')[6]
             project_id_string = original_sample_code.split('/')[7]
@@ -293,7 +294,7 @@ class SampleImporter(object):
         print("TOTAL ROWS PROCESSED= ", rows, "; Inserted = ", inserted, "; Identical = ", identical, "; Skipped = ", skipped, "; Replaced = ", replaced)
 
         if rows == 0:
-            print_error("Error: no rows found in the file: {}".format(filepath))
+            return["Error: no rows found in the file: {}".format(filepath)]
 
         return rows_with_errors == 0 and rows > 0
 

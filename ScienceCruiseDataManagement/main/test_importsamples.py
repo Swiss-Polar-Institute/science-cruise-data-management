@@ -3,140 +3,51 @@ from django.test import TransactionTestCase
 from main.models import Ship, Mission, Leg, Project, Person, Event, ImportedFile, Organisation, Country, Leg, Port,\
     SamplingMethod, Platform, PlatformType
 
+from main.management.commands.importsamples import SampleImporter
 from django.core.exceptions import ObjectDoesNotExist
 
 import datetime
-
+import tempfile
+import shutil
 
 class ImportSamplesTest(TransactionTestCase):
     def setUp(self):
-        try:
-            country = Country.objects.get(name="Switzerland")
-        except ObjectDoesNotExist:
-            country = Country()
-            country.name = "Switzerland"
-            country.save()
+        self.country = Country.objects.create(name="Switzerland")
+        self.organisation = Organisation.objects.create(name="SPI", country=self.country)
+        self.mission = Mission.objects.create(name="GLACE", institution=self.organisation)
 
-        try:
-            organisation = Organisation.objects.get(name="SPI")
-        except ObjectDoesNotExist:
-            organisation = Organisation()
-            organisation.name = "SPI"
-            organisation.country = country
-            organisation.save()
+        self.start_port_country = Country.objects.create(name="Germany")
+        self.start_port = Port.objects.create(name="Kiel", code="KIE", country=self.start_port_country, latitude=53, longitude=10)
 
-        try:
-            mission = Mission.objects.get(name="GLACE")
-        except ObjectDoesNotExist:
-            mission = Mission()
-            mission.name = "GLACE"
-            mission.institution = organisation
-            mission.save()
+        self.end_port_country = Country.objects.create(name="Iceland")
+        self.end_port = Port.objects.create(name="Reykjavik", code="REY", country=self.end_port_country, latitude=65, longitude=-3)
 
-        # sample.mission = mission
+        self.leg = Leg.objects.create(number=1, start_date_time=datetime.datetime(2019, 7, 25), start_port=self.start_port, end_port=self.end_port)
+        self.project = Project.objects.create(number=1, mission=self.mission)
 
-        try:
-            start_port_country = Country.objects.get(name="Germany")
-        except ObjectDoesNotExist:
-            start_port_country = Country()
-            start_port_country.name = "Germany"
-            start_port_country.save()
+        self.sampling_method = SamplingMethod.objects.create(name="Getting soil")
 
-        try:
-            start_port = Port.objects.get(name="Kiel")
-        except ObjectDoesNotExist:
-            start_port = Port()
-            start_port.name = "Kiel"
-            start_port.country = start_port_country
-            start_port.latitude = 53
-            start_port.longitude = 10
-            start_port.save()
+        self.event = Event.objects.create(sampling_method=self.sampling_method, data=False, samples=True)
 
-        try:
-            end_port = Port.objects.get(name="Kiel")
-        except ObjectDoesNotExist:
-            end_port = Port()
-            end_port.name = "Reijkavik"
-            end_port.country = start_port_country
-            end_port.save()
+        self.pi = Person.objects.create(name_first="Jen", name_last="Thomas")
 
-        try:
-            leg = Leg.objects.get(number=1)
-        except ObjectDoesNotExist:
-            leg = Leg()
-            leg.number = 1
-            leg.start_date_time = datetime.datetime(2019, 7, 25)
-            leg.start_port = start_port
-            leg.end_port = end_port
-            leg.save()
+        self.platform_type = PlatformType.objects.create(name="Ship")
+        self.platform = Platform.objects.create(name="AT", uuid="008c5a33-12f7-4027-a531-60baa8073618", platform_type=self.platform_type)
 
-        # sample.leg = leg
+        self.ship = Ship.objects.create(shortened_name="AT", name=self.platform)
 
-        try:
-            project = Project.objects.get(number=1)
-        except ObjectDoesNotExist:
-            project = Project()
-            project.number = 1
-            project.mission = mission
-            project.save()
+    def test_import_csv_directory_does_not_exist(self):
+        sample_importer = SampleImporter()
+        errors = sample_importer.import_data_from_directory("/tmp/this_does_not_exist1010")
 
-        # sample.project = project
+        self.assertEqual(errors, ["Directory expected. /tmp/this_does_not_exist1010 is not a directory. Aborts."])
 
-        # sample.julian_day = 180
+    def test_import_csv_directory_does_not_contain_csv(self):
+        temp_directory = tempfile.mkdtemp()
 
-        try:
-            sampling_method = SamplingMethod.objects.get(name="Getting soil")
-        except ObjectDoesNotExist:
-            sampling_method = SamplingMethod()
-            sampling_method.name = "Getting soil"
-            sampling_method.save()
+        sample_importer = SampleImporter()
+        errors = sample_importer.import_data_from_directory(temp_directory)
 
-        event = Event()
-        event.sampling_method = sampling_method
-        event.data = False
-        event.samples = True
-        event.save()
+        self.assertEqual(errors, ["Directory {} contains no *.csv files. Nothing done.".format(temp_directory)])
 
-        try:
-            pi = Person.objects.get(name_first="Jen", name_last="Thomas")
-        except ObjectDoesNotExist:
-            pi = Person()
-            pi.name_first = "Jen"
-            pi.name_last = "Thomas"
-            pi.save()
-
-        # sample.pi = pi
-        # sample.event = event
-
-        try:
-            platform_type = PlatformType.objects.get(name="Ship")
-        except ObjectDoesNotExist:
-            platform_type = PlatformType()
-            platform_type.name = "Ship"
-            platform_type.save()
-
-        try:
-            platform = Platform.objects.get(name="AT")
-        except ObjectDoesNotExist:
-            platform = Platform()
-            platform.name = "AT"
-            platform.uuid = "askdkasdkf"
-            platform.platform_type = platform_type
-            platform.save()
-
-        try:
-            ship = Ship.objects.get(shortened_name="AT")
-        except ObjectDoesNotExist:
-            ship = Ship()
-            ship.shortened_name = "AT"
-            ship.name = platform
-            ship.save()
-
-        # sample.ship = ship
-        # sample.contents = "This is the first test"
-
-        # d = {"color": "red", "temperature_collection": 55}
-        # sample.other_data = d
-
-    def test_utils_coordinates_process_invalid_coordinates(self):
-        template_information = {}
+        shutil.rmtree(temp_directory)
