@@ -4,7 +4,6 @@ from main.models import Ship, Mission, Leg, Project, Person, Event, ImportedFile
     SamplingMethod, Platform, PlatformType
 
 from samples.management.commands.importsamples import SampleImporter, InvalidSampleFileException
-from django.core.exceptions import ObjectDoesNotExist
 
 import datetime
 import tempfile
@@ -56,7 +55,7 @@ class ImportSamplesTest(TransactionTestCase):
 
         shutil.rmtree(temp_directory)
 
-    def test_import_csv_invalid_header2(self):
+    def test_import_csv_invalid_header(self):
         temp_directory = tempfile.mkdtemp()
 
         my_data_path = os.path.join(THIS_DIR, 'test_files/empty.csv')
@@ -64,9 +63,33 @@ class ImportSamplesTest(TransactionTestCase):
         shutil.copy(my_data_path, temp_directory)
 
         file_imported = os.path.join(temp_directory, "empty.csv")
-        expected_exception_message = "Error in file: {}. Some mandatory fields don't exist: ['glace_sample_number', 'contents', 'project_sample_number', 'contents', 'crate_number', 'storage_location', 'storage_type', 'offloading_port', 'destination']".format(
+        expected_exception_message = "Error in file: {}. Some mandatory fields don't exist: ['glace_sample_number', 'project_sample_number', 'contents', 'crate_number', 'storage_location', 'storage_type', 'offloading_port', 'destination']".format(
                                  file_imported)
 
+        with self.assertRaisesMessage(InvalidSampleFileException, expected_exception_message):
+            self.sample_importer.import_data_from_directory(temp_directory)
+
+        shutil.rmtree(temp_directory)
+
+    def test_import_csv_valid_header(self):
+        temp_directory = tempfile.mkdtemp()
+
+        my_data_path = os.path.join(THIS_DIR, "test_files/valid_headers.csv")
+
+        shutil.copy(my_data_path, temp_directory)
+
+        self.sample_importer.import_data_from_directory(temp_directory)
+
+        shutil.rmtree(temp_directory)
+
+    def test_import_one_row(self):
+        temp_directory = tempfile.mkdtemp()
+
+        my_data_path = os.path.join(THIS_DIR, "test_files/one_row.csv")
+
+        shutil.copy(my_data_path, temp_directory)
+
+        expected_exception_message = "Storage type: {} not available in the database".format("-20 deg freezer")
         with self.assertRaisesMessage(InvalidSampleFileException, expected_exception_message):
             self.sample_importer.import_data_from_directory(temp_directory)
 

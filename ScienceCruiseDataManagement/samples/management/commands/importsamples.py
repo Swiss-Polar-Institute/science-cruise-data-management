@@ -11,6 +11,7 @@ import datetime
 from main import utils
 import io
 from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 
 
 # This file is part of https://github.com/cpina/science-cruise-data-management
@@ -48,6 +49,7 @@ class Command(BaseCommand):
 class InvalidSampleFileException(RuntimeError):
    def __init__(self, message):
       self.message = message
+
 
 class SampleImporter(object):
     def __init__(self):
@@ -133,7 +135,7 @@ class SampleImporter(object):
                 row[key] = row[key].strip()
 
     def _verify_header(self, fieldnames, file_path):
-        mandatory = ["glace_sample_number", "contents", "project_sample_number", "contents", "crate_number", "storage_location", "storage_type", "offloading_port", "destination"]
+        mandatory = ["glace_sample_number", "project_sample_number", "contents", "crate_number", "storage_location", "storage_type", "offloading_port", "destination"]
 
         if fieldnames is None:
             fieldnames = []
@@ -189,10 +191,10 @@ class SampleImporter(object):
 
             original_sample_code = row['glace_sample_number']
 
-            expected_slashes = 8
+            expected_slashes = 7
             actual_slashes = original_sample_code.count("/")
             if actual_slashes != expected_slashes:
-                raise InvalidSampleFileException("Error: File: {} Line number: {} original sample code: '{}' not having expected '/'. Actual: {} Expected: {}. Aborting".format(filepath, line_number, original_sample_code, actual_slashes, expected_slashes))
+                raise InvalidSampleFileException("File: {} Line number: {} original sample code: '{}' not having expected '/'. Actual: {} Expected: {}. Aborting".format(filepath, line_number, original_sample_code, actual_slashes, expected_slashes))
 
             code_string = original_sample_code.split('/')[0]
             mission_acronym_string = original_sample_code.split('/')[1]
@@ -224,11 +226,10 @@ class SampleImporter(object):
             sample.crate_number = row['crate_number']
             sample.storage_location = row['storage_location']
 
-            query = Q(name=row['storage_type'])
-            storage_types = StorageType.objects.filter(query)
-
-            assert(len(storage_types) == 1)
-            storage_type = storage_types[0]
+            try:
+                storage_type = StorageType.objects.get(name=row["storage_type"])
+            except ObjectDoesNotExist:
+                raise InvalidSampleFileException("Storage type: {} not available in the database".format(row["storage_type"]))
 
             sample.storage_type = storage_type
             sample.offloading_port = row['offloading_port']
