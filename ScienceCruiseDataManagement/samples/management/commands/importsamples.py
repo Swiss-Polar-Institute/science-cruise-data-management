@@ -34,11 +34,20 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         sample_importer = SampleImporter()
-        errors = sample_importer.import_data_from_directory(options['directory_name'])
+
+        errors = []
+        try:
+            errors = sample_importer.import_data_from_directory(options['directory_name'])
+        except InvalidSampleFileException as e:
+            print("Error:", print_error(e.message))
 
         for error in errors:
             print_error(error)
 
+
+class InvalidSampleFileException(RuntimeError):
+   def __init__(self, message):
+      self.message = message
 
 class SampleImporter(object):
     def __init__(self):
@@ -59,10 +68,6 @@ class SampleImporter(object):
                 print("File already imported: ", basename, ". Skipping this file.")
             else:
                 print("PROCESSING FILE: " + file)
-
-                sample = Sample()
-
-                sample.save()
 
                 success = self._import_data_from_csv(file)
 
@@ -138,7 +143,8 @@ class SampleImporter(object):
                 mandatory.remove(field)
 
         if len(mandatory) > 0:
-            return ["Error in file: {}. Some mandatory fields don't exist: {}".format(file_path, mandatory)]
+            raise InvalidSampleFileException("Error in file: {}. Some mandatory fields don't exist: {}".format(file_path, mandatory))
+
 
     def _import_data_from_csv(self, filepath):
         reader = csv.DictReader(io.StringIO(utils.normalised_csv_file(filepath)))
@@ -153,7 +159,8 @@ class SampleImporter(object):
 
         previous_event_time = None
 
-        header_is_ok = self._verify_header(reader.fieldnames, filepath)
+
+        self._verify_header(reader.fieldnames, filepath)
 
         line_number = 1  # header
 

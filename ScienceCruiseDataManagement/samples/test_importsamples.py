@@ -3,12 +3,15 @@ from django.test import TransactionTestCase
 from main.models import Ship, Mission, Leg, Project, Person, Event, ImportedFile, Organisation, Country, Leg, Port,\
     SamplingMethod, Platform, PlatformType
 
-from main.management.commands.importsamples import SampleImporter
+from samples.management.commands.importsamples import SampleImporter, InvalidSampleFileException
 from django.core.exceptions import ObjectDoesNotExist
 
 import datetime
 import tempfile
 import shutil
+import os
+
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class ImportSamplesTest(TransactionTestCase):
     def setUp(self):
@@ -36,18 +39,36 @@ class ImportSamplesTest(TransactionTestCase):
 
         self.ship = Ship.objects.create(shortened_name="AT", name=self.platform)
 
+        self.sample_importer = SampleImporter()
+
+
     def test_import_csv_directory_does_not_exist(self):
         sample_importer = SampleImporter()
-        errors = sample_importer.import_data_from_directory("/tmp/this_does_not_exist1010")
+        errors = self.sample_importer.import_data_from_directory("/tmp/this_does_not_exist1010")
 
         self.assertEqual(errors, ["Directory expected. /tmp/this_does_not_exist1010 is not a directory. Aborts."])
 
     def test_import_csv_directory_does_not_contain_csv(self):
         temp_directory = tempfile.mkdtemp()
 
-        sample_importer = SampleImporter()
-        errors = sample_importer.import_data_from_directory(temp_directory)
+        errors = self.sample_importer.import_data_from_directory(temp_directory)
 
         self.assertEqual(errors, ["Directory {} contains no *.csv files. Nothing done.".format(temp_directory)])
+
+        shutil.rmtree(temp_directory)
+
+    def test_import_csv_invalid_header2(self):
+        temp_directory = tempfile.mkdtemp()
+
+        my_data_path = os.path.join(THIS_DIR, 'test_files/empty.csv')
+
+        shutil.copy(my_data_path, temp_directory)
+
+        file_imported = os.path.join(temp_directory, "empty.csv")
+        expected_exception_message = "Error in file: {}. Some mandatory fields don't exist: ['glace_sample_number', 'contents', 'project_sample_number', 'contents', 'crate_number', 'storage_location', 'storage_type', 'offloading_port', 'destination']".format(
+                                 file_imported)
+
+        with self.assertRaisesMessage(InvalidSampleFileException, expected_exception_message):
+            self.sample_importer.import_data_from_directory(temp_directory)
 
         shutil.rmtree(temp_directory)
