@@ -1,3 +1,2 @@
 glace_sample_number,ship,expedition,leg_number,project_number,julian_day,event_number,project_pi_initials,project_sample_number,contents,specific_contents,crate_number,storage_type,offloading_port,destination,preservation,storage_location
-AT/ACE/3/15/059/2263/ME/Nut_5m,AT,ACE,3,15,59,2263,ME,Nut_5m,sterile seawater,,,-20 deg freezer,"Bremerhaven, Germany","Alfred Wegener Institute, Bremerhaven, Germany",frozen,
-AT/ACE/3/15/059/2263/ME/Nut_20m,AT,ACE,3,15,59,2263,ME,Nut_20m,sterile seawater,,,-20 deg freezer,"Bremerhaven, Germany","Alfred Wegener Institute, Bremerhaven, Germany",frozen,
+AT/GLACE/1/15/059/2263/JT/Nut_5m,AT,GLACE,1,15,59,2263,ME,Nut_5m,sterile seawater,,,-20 deg freezer,"Bremerhaven, Germany","Alfred Wegener Institute, Bremerhaven, Germany",frozen,
