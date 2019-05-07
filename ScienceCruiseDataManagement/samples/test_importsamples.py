@@ -43,6 +43,10 @@ class ImportSamplesTest(TransactionTestCase):
 
         self.temp_directory = tempfile.mkdtemp()
 
+
+    def tearDown(self):
+        shutil.rmtree(self.temp_directory)
+
     def copy_file_to_tmp_dir(self, file_name):
         file_path = os.path.join(THIS_DIR, 'test_files', file_name)
         shutil.copy(file_path, self.temp_directory)
