@@ -13,6 +13,7 @@ import os
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
+
 class ImportSamplesTest(TransactionTestCase):
     def setUp(self):
         self.country = Country.objects.create(name="Switzerland")
@@ -41,19 +42,17 @@ class ImportSamplesTest(TransactionTestCase):
 
         self.sample_importer = SampleImporter()
 
-
     def test_import_csv_directory_does_not_exist(self):
-        sample_importer = SampleImporter()
-        errors = self.sample_importer.import_data_from_directory("/tmp/this_does_not_exist1010")
-
-        self.assertEqual(errors, ["Directory expected. /tmp/this_does_not_exist1010 is not a directory. Aborts."])
+        expected_exception_message = "Directory expected. /tmp/this_does_not_exist1010 is not a directory. Aborts."
+        with self.assertRaisesMessage(InvalidSampleFileException, expected_exception_message):
+            self.sample_importer.import_data_from_directory("/tmp/this_does_not_exist1010")
 
     def test_import_csv_directory_does_not_contain_csv(self):
         temp_directory = tempfile.mkdtemp()
 
-        errors = self.sample_importer.import_data_from_directory(temp_directory)
-
-        self.assertEqual(errors, ["Directory {} contains no *.csv files. Nothing done.".format(temp_directory)])
+        expected_exception_message = "Directory {} contains no *.csv files. Nothing done.".format(temp_directory)
+        with self.assertRaisesMessage(InvalidSampleFileException, expected_exception_message):
+            self.sample_importer.import_data_from_directory(temp_directory)
 
         shutil.rmtree(temp_directory)
 
