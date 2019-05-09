@@ -127,6 +127,19 @@ class ImportSamplesTest(TestCase):
 
         self.assertEqual(Sample.objects.count(), 1)
 
+        sample = Sample.objects.all()[0]
+
+        self.assertEqual(sample.expedition_sample_code, "AT/GLACE/1/15/216/2264/JT/Nut_5m")
+        self.assertEqual(sample.event.number, 2264)
+        self.assertEqual(sample.storage_type, StorageType.objects.get(name="-20 deg freezer"))
+        self.assertEqual(sample.contents, "sterile seawater")
+        self.assertEqual(sample.destination, 'Alfred Wegener Institute, Bremerhaven, Germany')
+        self.assertEqual(sample.file, "one_row_2264.csv")
+        self.assertEqual(sample.julian_day, 216)
+        self.assertEqual(sample.leg.number, 1)
+        self.assertEqual(sample.mission.acronym, "GLACE")
+        self.assertEqual(sample.project_sample_number, "Nut_5m")
+
     def test_import_one_row_failure_warning(self):
         file_path = self._copy_file_to_tmp_dir("one_row_2263_no_contents.csv")
 

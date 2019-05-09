@@ -37,14 +37,15 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         sample_importer = SampleImporter()
 
-        errors = []
         try:
             sample_importer.import_data_from_directory(options['directory_name'])
         except InvalidSampleFileException as e:
             print_error(e.message)
 
-        for error in errors:
-            print_error(error)
+        print_error("ATTENTION: SAMPLES NOT IMPORTED!")
+
+        for warning in sample_importer.warning_messages:
+            print_error(warning)
 
 
 class InvalidSampleFileException(RuntimeError):
