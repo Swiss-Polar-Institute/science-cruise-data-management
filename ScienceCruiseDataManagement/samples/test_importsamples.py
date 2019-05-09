@@ -4,7 +4,7 @@ from django.test import TransactionTestCase, TestCase
 from main.models import Ship, Mission, Leg, Project, Person, Event, ImportedFile, Organisation, Country, Leg, Port,\
     SamplingMethod, Platform, PlatformType
 
-from samples.models import StorageType, Preservation
+from samples.models import StorageType, Preservation, Sample
 
 from samples.management.commands.importsamples import SampleImporter, InvalidSampleFileException
 
@@ -56,8 +56,6 @@ class ImportSamplesTest(TestCase):
         self.temp_directory = tempfile.mkdtemp()
         self.sample_importer = SampleImporter()
 
-
-
     def tearDown(self):
         shutil.rmtree(self.temp_directory)
 
@@ -97,8 +95,9 @@ class ImportSamplesTest(TestCase):
 
         expected_exception_message = "Storage type: {} not available in the database".format("-20 deg freezer")
 
-        with self.assertRaisesMessage(InvalidSampleFileException, expected_exception_message):
-            self.sample_importer.import_data_from_directory(self.temp_directory)
+        self.sample_importer.import_data_from_directory(self.temp_directory)
+
+        self.assertIn(expected_exception_message, self.sample_importer.warning_messages)
 
     def test_import_one_row_event_not_finished(self):
         file_path = self._copy_file_to_tmp_dir("one_row_2263.csv")
@@ -118,8 +117,39 @@ class ImportSamplesTest(TestCase):
 
         StorageType.objects.create(name="-20 deg freezer")
 
+        self.assertEqual(Sample.objects.count(), 0)
+
         sampling_method = SamplingMethod.objects.get(name="Getting soil")
 
         Event.objects.create(number=2264, sampling_method=sampling_method, data=False, samples=True, outcome="Success")
 
         self.sample_importer.import_data_from_directory(self.temp_directory)
+
+        self.assertEqual(Sample.objects.count(), 1)
+
+    def test_import_one_row_failure_warning(self):
+        file_path = self._copy_file_to_tmp_dir("one_row_2263_no_contents.csv")
+
+        StorageType.objects.create(name="-20 deg freezer")
+
+        self.assertEqual(Sample.objects.count(), 0)
+
+        sampling_method = SamplingMethod.objects.get(name="Getting soil")
+
+        Event.objects.create(number=2264, sampling_method=sampling_method, data=False, samples=True, outcome="Success")
+
+        self.sample_importer.import_data_from_directory(self.temp_directory)
+
+        self.assertEqual(Sample.objects.count(), 0)
+
+        self._assertOneItemContains("Row with empty contents", self.sample_importer.warning_messages)
+
+
+    def _assertOneItemContains(self, string, items):
+        found = False
+
+        for item in items:
+            if string in item:
+                found = True
+
+        self.assertTrue(found)

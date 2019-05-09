@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
+from django.db import transaction
 from main.models import Ship, Mission, Leg, Project, Person, Event, ImportedFile, Organisation, Country, Leg, Port,\
     SamplingMethod, Platform, PlatformType
 from samples.models import Sample, Preservation, StorageType
@@ -53,8 +54,10 @@ class InvalidSampleFileException(RuntimeError):
 
 class SampleImporter(object):
     def __init__(self):
+        self.warning_messages = []
         pass
 
+    @transaction.atomic
     def import_data_from_directory(self, directory_name):
         if not os.path.isdir(directory_name):
             raise InvalidSampleFileException("Directory expected. {} is not a directory. Aborts.".format(directory_name))
@@ -67,7 +70,7 @@ class SampleImporter(object):
             basename = os.path.basename(file)
             if ImportedFile.objects.filter(file_name=basename).exists():
             # if ImportedFile.objects.filter(file_name=basename).filter(object_type="Samples").exists():
-                print("File already imported: ", basename, ". Skipping this file.")
+                self.warning_messages.append("File already imported: {}. Skipping this file.".format(basename))
             else:
                 print("PROCESSING FILE: " + file)
 
@@ -76,7 +79,12 @@ class SampleImporter(object):
                 if success:
                     utils.add_imported(file, "Samples")
                 else:
-                    print(basename, "NOT MOVED because some errors processing it")
+                    self.warning_messages.append("{} NOT MOVED because some errors processing it".format(basename))
+
+
+        if len(self.warning_messages) != 0:
+            # Cancel everything!
+            transaction.set_rollback(True)
 
 
     def _foreign_key_querysets(self, code_string, mission_acronym_string, leg_string, project_number_string,
@@ -171,30 +179,35 @@ class SampleImporter(object):
 
             self._remove_spaces_columns(row)
 
-            print("Processing row from file: ", filepath)
+            print("Processing row from file: {}".format(filepath))
             print("Row:", row)
 
-            if row['contents'] == '':
-                print("Row with 'contents' field empty")
-                print("Do you want to: \n1: Keep processing the row\n2: Skip this row?")
-                print("Type 1 or 2")
-                answer = input()
+            if row["contents"] == "":
+                self.warning_messages.append("Row with empty contents: {}".format(repr(row)))
 
-                if answer == "1":
-                    # It will continue processing the rows
-                    pass
-                else:
-                    # Skips to the next row
-                    rows +=1
-                    skipped += 1
-                    continue
+            # if row['contents'] == '':
+            #     print("Row with 'contents' field empty")
+            #     print("Do you want to: \n1: Keep processing the row\n2: Skip this row?")
+            #     print("Type 1 or 2")
+            #     answer = input()
+            #
+            #     if answer == "1":
+            #         # It will continue processing the rows
+            #         pass
+            #     else:
+            #         # Skips to the next row
+            #         rows +=1
+            #         skipped += 1
+            #         continue
 
             original_sample_code = row['glace_sample_number']
 
             expected_slashes = 7
             actual_slashes = original_sample_code.count("/")
             if actual_slashes != expected_slashes:
-                raise InvalidSampleFileException("File: {} Line number: {} original sample code: '{}' not having expected '/'. Actual: {} Expected: {}. Aborting".format(filepath, line_number, original_sample_code, actual_slashes, expected_slashes))
+                self.warning_messages.append("File: {} Line number: {} original sample code: '{}' not having expected '/'. Actual: {} Expected: {}. Aborting".format(filepath, line_number, original_sample_code, actual_slashes, expected_slashes))
+                continue
+                # raise InvalidSampleFileException("File: {} Line number: {} original sample code: '{}' not having expected '/'. Actual: {} Expected: {}. Aborting".format(filepath, line_number, original_sample_code, actual_slashes, expected_slashes))
 
             code_string = original_sample_code.split('/')[0]
             mission_acronym_string = original_sample_code.split('/')[1]
@@ -205,7 +218,9 @@ class SampleImporter(object):
             try:
                 julian_day = "{0:03d}".format(int(original_julian_day))
             except ValueError:
-                raise InvalidSampleFileException("Error: file {} Line number: {} julian day invalid: ".format(filepath, line_number, original_julian_day))
+                self.warning_messages.append("Error: file {} Line number: {} julian day invalid: ".format(filepath, line_number, original_julian_day))
+                # raise InvalidSampleFileException("Error: file {} Line number: {} julian day invalid: ".format(filepath, line_number, original_julian_day))
+                continue
 
             event_number_string = original_sample_code.split('/')[5]
             pi_initials_string = original_sample_code.split('/')[6]
@@ -229,7 +244,9 @@ class SampleImporter(object):
             try:
                 storage_type = StorageType.objects.get(name=row["storage_type"])
             except ObjectDoesNotExist:
-                raise InvalidSampleFileException("Storage type: {} not available in the database".format(row["storage_type"]))
+                self.warning_messages.append("Storage type: {} not available in the database".format(row["storage_type"]))
+                continue
+                # raise InvalidSampleFileException("Storage type: {} not available in the database".format(row["storage_type"]))
 
             sample.storage_type = storage_type
             sample.offloading_port = row['offloading_port']
@@ -256,11 +273,13 @@ class SampleImporter(object):
             else:
                 preservation = None
 
-            while not self._check_foreign_keys(row, code_string, mission_acronym_string, leg_string,
+            if not self._check_foreign_keys(row, code_string, mission_acronym_string, leg_string,
                                                project_number_string, pi_initials_string, event_number_string,
                                                preservation) != 0:
-                print("Please fix the broken foreign keys and press ENTER. This row will be retested")
-                input()
+                continue
+                # self.warning_messages.append("Please fix the broken foreign keys and press ENTER. This row will be retested")
+                # print("Please fix the broken foreign keys and press ENTER. This row will be retested")
+                # input()
 
             rows += 1
 
@@ -308,13 +327,13 @@ class SampleImporter(object):
 
     def _report_error(self, row, query_set, object_type, lookup_value):
         """ Shows an error printing the line and an error message. """
-        print("error in line:", row)
         if len(query_set) == 0:
-            print("Cannot insert row: {} '{}' does not exist in the database".format(object_type, lookup_value))
+            self.warning_messages.append("Cannot insert row: {} '{}' does not exist in the database".format(object_type, lookup_value))
             # print(format(object_type), ": ", query_set)
         elif len(query_set) > 1:
-            print("There are too many {} objects".format(object_type))
-            print(format(object_type), ": ", query_set)
+            self.warning_messages.append("There are too many {} objects".format(object_type))
+            # print("There are too many {} objects".format(object_type))
+            # print(format(object_type), ": ", query_set)
 
     def _find_sample(self, key):
         """Find a sample relating to a key"""
@@ -328,7 +347,7 @@ class SampleImporter(object):
         existing_sample = self._find_sample(spreadsheet_sample.expedition_sample_code)
 
         if existing_sample is None:
-            validate_sample(spreadsheet_sample)
+            self.validate_sample(spreadsheet_sample)
             spreadsheet_sample.save()
             return "inserted"
         else:
@@ -344,7 +363,7 @@ class SampleImporter(object):
 
                 if answer == "1":
                     spreadsheet_sample.pk = existing_sample.pk
-                    validate_sample(spreadsheet_sample)
+                    self.validate_sample(spreadsheet_sample)
                     spreadsheet_sample.save()
 
                     print("Row replaced")
@@ -371,70 +390,67 @@ class SampleImporter(object):
         return same_objects
 
 
-def validate_sampling_method(sample):
-    event = sample.event
-    project = sample.project
+    def validate_sampling_method(self, sample):
+        event = sample.event
+        project = sample.project
 
-    if event.sampling_method in project.sampling_methods.all():
+        if event.sampling_method in project.sampling_methods.all():
+            return (True, None)
+        else:
+            return (False, "Sample: {} has a sampling method {} not used by the project: {}".format(sample.expedition_sample_code,
+                                                                                                   event.sampling_method,
+                                                                                                   project.number))
+
+
+    def validate_event_outcome(self, sample):
+        event = sample.event
+
+        if event.outcome != "Success":
+            return (False, "Sample: {} has the event: {} with outcome: {}".format(sample.expedition_sample_code,
+                                                                                  event.number,
+                                                                                  event.outcome))
+        else:
+            return (True, None)
+
+
+    def julian_day_to_date(self, julian_day):
+        initial_date = datetime.datetime(2019, 1, 1)
+        date = initial_date + datetime.timedelta(days=julian_day-1)
+
+        return date
+
+
+    def validate_julian_date_sample(self, sample):
+        julian_day = sample.julian_day
+        leg = sample.leg
+
+        sample_date = self.julian_day_to_date(julian_day)
+        sample_date = utils.set_utc(sample_date)
+
+        if leg.start_date_time.date() > sample_date.date():
+            return(False, "Sample: {} has a julian day: {} represents the date: {} that is before the leg starting date: {}".format(
+                sample.expedition_sample_code, sample.julian_day, sample_date, leg.start_time))
+
+        if leg.end_date_time.date() is not None and leg.end_date_time.date() < sample_date.date():
+            return (False, "Sample: {} has a julian day: {} represents the date: {} that is after the leg ending date: {}".format(
+                sample.expedition_sample_code, sample.julian_day, sample_date, leg.end_date_time))
+
         return (True, None)
-    else:
-        return (False, "Sample: {} has a sampling method {} not used by the project: {}".format(sample.expedition_sample_code,
-                                                                                               event.sampling_method,
-                                                                                               project.number))
 
 
-def validate_event_outcome(sample):
-    event = sample.event
+    def validate_sample(self, sample, abort_if_invalid=True):
+        validators = [self.validate_sampling_method, self.validate_event_outcome, self.validate_julian_date_sample]
 
-    if event.outcome != "Success":
-        return (False, "Sample: {} has the event: {} with outcome: {}".format(sample.expedition_sample_code,
-                                                                              event.number,
-                                                                              event.outcome))
-    else:
-        return (True, None)
+        for validator in validators:
+            result = validator(sample)
 
+            if result[0] == False and abort_if_invalid:
+                raise InvalidSampleFileException("ERROR importing sample: {}".format(result[1]))
 
-def julian_day_to_date(julian_day):
-    initial_date = datetime.datetime(2019, 1, 1)
-    date = initial_date + datetime.timedelta(days=julian_day-1)
+            if result[0] == False and not abort_if_invalid:
+                return result
 
-    return date
-
-
-def validate_julian_date_sample(sample):
-    julian_day = sample.julian_day
-    leg = sample.leg
-
-    sample_date = julian_day_to_date(julian_day)
-    sample_date = utils.set_utc(sample_date)
-
-    if leg.start_date_time.date() > sample_date.date():
-        return(False, "Sample: {} has a julian day: {} represents the date: {} that is before the leg starting date: {}".format(
-            sample.expedition_sample_code, sample.julian_day, sample_date, leg.start_time))
-
-    print("leg.end_date_time:", leg.end_date_time)
-    print("sample_date:", sample_date)
-
-    if leg.end_date_time.date() is not None and leg.end_date_time.date() < sample_date.date():
-        return (False, "Sample: {} has a julian day: {} represents the date: {} that is after the leg ending date: {}".format(
-            sample.expedition_sample_code, sample.julian_day, sample_date, leg.end_date_time))
-
-    return (True, None)
-
-
-def validate_sample(sample, abort_if_invalid=True):
-    validators = [validate_sampling_method, validate_event_outcome, validate_julian_date_sample]
-
-    for validator in validators:
-        result = validator(sample)
-
-        if result[0] == False and abort_if_invalid:
-            raise InvalidSampleFileException("ERROR importing sample: {}".format(result[1]))
-
-        if result[0] == False and not abort_if_invalid:
-            return result
-
-    return (True, "")
+        return (True, "")
 
 
 def print_error(log):
