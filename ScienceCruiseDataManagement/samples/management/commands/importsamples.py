@@ -395,7 +395,7 @@ def validate_event_outcome(sample):
 
 
 def julian_day_to_date(julian_day):
-    initial_date = datetime.datetime(2019, 7, 30)
+    initial_date = datetime.datetime(2019, 1, 1)
     date = initial_date + datetime.timedelta(days=julian_day-1)
 
     return date
@@ -408,13 +408,16 @@ def validate_julian_date_sample(sample):
     sample_date = julian_day_to_date(julian_day)
     sample_date = utils.set_utc(sample_date)
 
-    if leg.start_time.date() > sample_date.date():
+    if leg.start_date_time.date() > sample_date.date():
         return(False, "Sample: {} has a julian day: {} represents the date: {} that is before the leg starting date: {}".format(
             sample.expedition_sample_code, sample.julian_day, sample_date, leg.start_time))
 
-    if leg.end_time.date() is not None and leg.end_time.date() < sample_date.date():
+    print("leg.end_date_time:", leg.end_date_time)
+    print("sample_date:", sample_date)
+
+    if leg.end_date_time.date() is not None and leg.end_date_time.date() < sample_date.date():
         return (False, "Sample: {} has a julian day: {} represents the date: {} that is after the leg ending date: {}".format(
-            sample.expedition_sample_code, sample.julian_day, sample_date, leg.end_time))
+            sample.expedition_sample_code, sample.julian_day, sample_date, leg.end_date_time))
 
     return (True, None)
 
@@ -426,9 +429,7 @@ def validate_sample(sample, abort_if_invalid=True):
         result = validator(sample)
 
         if result[0] == False and abort_if_invalid:
-            print("ERROR importing sample, will abort")
-            print(result[1])
-            exit(1)
+            raise InvalidSampleFileException("ERROR importing sample: {}".format(result[1]))
 
         if result[0] == False and not abort_if_invalid:
             return result

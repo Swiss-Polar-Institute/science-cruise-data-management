@@ -237,10 +237,10 @@ def add_imported(filepath, object_type):
 
     file = main.models.ImportedFile()
     file.file_name = basename
-    file.date_imported = datetime.datetime.utcnow()
+    file.imported_date_time = datetime.datetime.utcnow()
 
     utc = datetime.timezone(datetime.timedelta(0))
-    file.date_imported = file.date_imported.replace(tzinfo=utc)
+    file.imported_date_time= file.imported_date_time.replace(tzinfo=utc)
 
     file.object_type = object_type
 

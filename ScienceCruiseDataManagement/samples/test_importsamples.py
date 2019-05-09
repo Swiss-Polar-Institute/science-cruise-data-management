@@ -1,4 +1,5 @@
-from django.test import TransactionTestCase
+from dateutil.tz import tzfile
+from django.test import TransactionTestCase, TestCase
 
 from main.models import Ship, Mission, Leg, Project, Person, Event, ImportedFile, Organisation, Country, Leg, Port,\
     SamplingMethod, Platform, PlatformType
@@ -11,45 +12,58 @@ import datetime
 import tempfile
 import shutil
 import os
+import pytz
+
+# python3 manage.py test -v 2 samples.test_importsamples.ImportSamplesTest.test_import_one_row_event_success
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-class ImportSamplesTest(TransactionTestCase):
+class ImportSamplesTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(ImportSamplesTest, cls).setUpClass()
+
+        country = Country.objects.create(name="Switzerland")
+        organisation = Organisation.objects.create(name="SPI", country=country)
+        mission = Mission.objects.create(name="Greenland Circumnavigation Expedition", acronym="GLACE", institution=organisation)
+
+        start_port_country = Country.objects.create(name="Germany")
+        start_port = Port.objects.create(name="Kiel", code="KIE", country=start_port_country, latitude=53, longitude=10)
+
+        end_port_country = Country.objects.create(name="Iceland")
+        end_port = Port.objects.create(name="Reykjavik", code="REY", country=end_port_country, latitude=65, longitude=-3)
+
+        sampling_method = SamplingMethod.objects.create(name="Getting soil")
+
+        leg = Leg.objects.create(number=1, start_date_time=datetime.datetime(2019, 7, 25, tzinfo=pytz.UTC), start_port=start_port, end_port=end_port,
+                                      end_date_time=datetime.datetime(2019, 8, 22, tzinfo=pytz.UTC))
+        project = Project.objects.create(number=15, mission=mission)
+        project.sampling_methods.add(sampling_method)
+
+        preservation = Preservation.objects.create(name="frozen")
+
+        # self.event = Event.objects.create(sampling_method=self.sampling_method, data=False, samples=True)
+
+        pi = Person.objects.create(name_first="Jen", name_last="Thomas", initials="JT")
+
+        platform_type = PlatformType.objects.create(name="Ship")
+        platform = Platform.objects.create(name="AT", uuid="008c5a33-12f7-4027-a531-60baa8073618", platform_type=platform_type)
+
+        ship = Ship.objects.create(shortened_name="AT", name=platform)
+
     def setUp(self):
-        self.country = Country.objects.create(name="Switzerland")
-        self.organisation = Organisation.objects.create(name="SPI", country=self.country)
-        self.mission = Mission.objects.create(name="Greenland Circumnavigation Expedition", acronym="GLACE", institution=self.organisation)
-
-        self.start_port_country = Country.objects.create(name="Germany")
-        self.start_port = Port.objects.create(name="Kiel", code="KIE", country=self.start_port_country, latitude=53, longitude=10)
-
-        self.end_port_country = Country.objects.create(name="Iceland")
-        self.end_port = Port.objects.create(name="Reykjavik", code="REY", country=self.end_port_country, latitude=65, longitude=-3)
-
-        self.leg = Leg.objects.create(number=1, start_date_time=datetime.datetime(2019, 7, 25), start_port=self.start_port, end_port=self.end_port)
-        self.project = Project.objects.create(number=15, mission=self.mission)
-
-        self.sampling_method = SamplingMethod.objects.create(name="Getting soil")
-        self.preservation = Preservation.objects.create(name="frozen")
-
-        self.event = Event.objects.create(sampling_method=self.sampling_method, data=False, samples=True)
-
-        self.pi = Person.objects.create(name_first="Jen", name_last="Thomas", initials="JT")
-
-        self.platform_type = PlatformType.objects.create(name="Ship")
-        self.platform = Platform.objects.create(name="AT", uuid="008c5a33-12f7-4027-a531-60baa8073618", platform_type=self.platform_type)
-
-        self.ship = Ship.objects.create(shortened_name="AT", name=self.platform)
-
+        self.temp_directory = tempfile.mkdtemp()
         self.sample_importer = SampleImporter()
 
-        self.temp_directory = tempfile.mkdtemp()
+
 
     def tearDown(self):
         shutil.rmtree(self.temp_directory)
 
     def _copy_file_to_tmp_dir(self, file_name):
+        # When copying files creates a new one
+        self.temp_directory = tempfile.mkdtemp()
         file_path = os.path.join(THIS_DIR, 'test_files', file_name)
         shutil.copy(file_path, self.temp_directory)
 
@@ -79,17 +93,33 @@ class ImportSamplesTest(TransactionTestCase):
         self.sample_importer.import_data_from_directory(self.temp_directory)
 
     def test_import_one_row_no_storage_type(self):
-        file_path = self._copy_file_to_tmp_dir("one_row.csv")
+        file_path = self._copy_file_to_tmp_dir("one_row_2263.csv")
 
         expected_exception_message = "Storage type: {} not available in the database".format("-20 deg freezer")
 
         with self.assertRaisesMessage(InvalidSampleFileException, expected_exception_message):
             self.sample_importer.import_data_from_directory(self.temp_directory)
 
-    def test_import_one_row(self):
-        StorageType.objects.create(name="-20 deg freezer")
-        Event.objects.create(number=2263, sampling_method=self.sampling_method, data=False, samples=True)
+    def test_import_one_row_event_not_finished(self):
+        file_path = self._copy_file_to_tmp_dir("one_row_2263.csv")
 
-        file_path = self._copy_file_to_tmp_dir("one_row.csv")
+        StorageType.objects.create(name="-20 deg freezer")
+
+        sampling_method = SamplingMethod.objects.get(name="Getting soil")
+
+        Event.objects.create(number=2263, sampling_method=sampling_method, data=False, samples=True)
+
+        expected_exception_message = "ERROR importing sample: Sample: AT/GLACE/1/15/216/2263/JT/Nut_5m has the event: 2263 with outcome: Not yet happened"
+        with self.assertRaisesMessage(InvalidSampleFileException, expected_exception_message):
+            self.sample_importer.import_data_from_directory(self.temp_directory)
+
+    def test_import_one_row_event_success(self):
+        file_path = self._copy_file_to_tmp_dir("one_row_2264.csv")
+
+        StorageType.objects.create(name="-20 deg freezer")
+
+        sampling_method = SamplingMethod.objects.get(name="Getting soil")
+
+        Event.objects.create(number=2264, sampling_method=sampling_method, data=False, samples=True, outcome="Success")
 
         self.sample_importer.import_data_from_directory(self.temp_directory)
