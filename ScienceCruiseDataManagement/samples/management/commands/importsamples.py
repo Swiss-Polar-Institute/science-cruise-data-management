@@ -54,19 +54,37 @@ class InvalidSampleFileException(RuntimeError):
 
 
 class SpreadsheetRow(object):
+    _mandatory_headers = ["contents", "ship", "expedition", "leg_number", "project_number", "julian_day",
+                          "event_number", "project_pi_initials", "project_sample_number", "storage_location",
+                          "offloading_port", "destination", "glace_sample_number", "crate_number", "storage_type",
+                          "preservation"]
+
+    _optional_headers = ["comments", "specific_contents"]
+
     def __init__(self, row):
-        self._mandatory_headers = ["contents", "ship", "expedition", "leg_number", "project_number", "julian_day", "event_number",
-                         "project_pi_initials", "project_sample_number", "storage_location", "offloading_port",
-                         "destination", "glace_sample_number", "crate_number", "storage_type", "preservation"]
-
-        self._optional_headers = ["comments", "specific_contents"]
-
         self._row = row
         self._remove_spaces_expedition_columns(row)
 
 
     def __str__(self):
         return str(self._row)
+
+    @classmethod
+    def verify_header(cls, fieldnames, file_path):
+        """ Raise an exception if a mandatory header is missing. """
+
+        mandatory_fields = SpreadsheetRow._mandatory_headers[:]
+
+        if fieldnames is None:
+            fieldnames = []
+
+        for field in fieldnames:
+            if field in mandatory_fields:
+                mandatory_fields.remove(field)
+
+        if len(mandatory_fields) > 0:
+            mandatory_fields.sort()
+            raise InvalidSampleFileException("Error in file: {}. Some mandatory fields don't exist: {}".format(file_path, mandatory_fields))
 
     def _remove_spaces_expedition_columns(self, row):
         for key in self._mandatory_headers:
@@ -77,10 +95,12 @@ class SpreadsheetRow(object):
                 row[key] = row[key].strip()
 
 
-    def _header_for_field(self, field):
+    @classmethod
+    def _header_for_field(cls, field):
         # Makes sure to list all the used headers - this is
         # important for the "other_data"
-        assert (field in self._mandatory_headers or field in self._optional_headers)
+
+        assert ((field in cls._mandatory_headers) or (field in cls._optional_headers))
         return field
 
     def contents(self):
@@ -229,21 +249,6 @@ class SampleImporter(object):
 
         return how_many_errors_have_occurred == 0
 
-
-    def _verify_header(self, fieldnames, file_path):
-        """ Raise an exception if the header is not valid. """
-        mandatory = ["glace_sample_number", "project_sample_number", "contents", "crate_number", "storage_location", "storage_type", "offloading_port", "destination"]
-
-        if fieldnames is None:
-            fieldnames = []
-
-        for field in fieldnames:
-            if field in mandatory:
-                mandatory.remove(field)
-
-        if len(mandatory) > 0:
-            raise InvalidSampleFileException("Error in file: {}. Some mandatory fields don't exist: {}".format(file_path, mandatory))
-
     def _row_dictionary_to_model(self, row):
         pass
 
@@ -258,7 +263,7 @@ class SampleImporter(object):
         replaced = 0
         rows_with_errors = 0
 
-        self._verify_header(reader.fieldnames, filepath)
+        SpreadsheetRow.verify_header(reader.fieldnames, filepath)
 
         line_number = 1  # header
 
@@ -266,9 +271,6 @@ class SampleImporter(object):
             line_number += 1
 
             spreadsheet_row = SpreadsheetRow(row)
-
-            print("Processing row from file: {}".format(filepath))
-            print("Row:", spreadsheet_row)
 
             if spreadsheet_row.contents() == "":
                 self.warning_messages.append("Row with empty contents: {}".format(spreadsheet_row))

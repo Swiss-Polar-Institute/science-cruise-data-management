@@ -80,7 +80,7 @@ class ImportSamplesTest(TestCase):
     def test_import_csv_invalid_header(self):
         file_path = self._copy_file_to_tmp_dir("empty.csv")
 
-        expected_exception_message = "Error in file: {}. Some mandatory fields don't exist: ['glace_sample_number', 'project_sample_number', 'contents', 'crate_number', 'storage_location', 'storage_type', 'offloading_port', 'destination']".format(
+        expected_exception_message = "Error in file: {}. Some mandatory fields don't exist: ['contents', 'crate_number', 'destination', 'event_number', 'expedition', 'glace_sample_number', 'julian_day', 'leg_number', 'offloading_port', 'preservation', 'project_number', 'project_pi_initials', 'project_sample_number', 'ship', 'storage_location', 'storage_type']".format(
                                  file_path)
 
         with self.assertRaisesMessage(InvalidSampleFileException, expected_exception_message):
