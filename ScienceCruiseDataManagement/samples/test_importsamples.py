@@ -161,7 +161,7 @@ class ImportSamplesTest(TestCase):
         self.assertEqual(sample.comments, "Important")
         self.assertEqual(sample.preservation.name, "frozen")
 
-        # self.assertEqual(sample.other_data, {"color": "blue", "collection_temperature": "-4"})
+        self.assertEqual(sample.other_data, {"color": "blue", "collection_temperature": "-4"})
 
     def test_import_one_row_failure_warning(self):
         file_path = self._copy_file_to_tmp_dir("one_row_2263_no_contents.csv")

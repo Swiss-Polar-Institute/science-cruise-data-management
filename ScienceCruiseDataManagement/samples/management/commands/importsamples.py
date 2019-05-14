@@ -55,12 +55,27 @@ class InvalidSampleFileException(RuntimeError):
 
 class SpreadsheetRow(object):
     def __init__(self, row):
-        self._row = row
         self._mandatory_headers = ["contents", "ship", "expedition", "leg_number", "project_number", "julian_day", "event_number",
                          "project_pi_initials", "project_sample_number", "storage_location", "offloading_port",
                          "destination", "glace_sample_number", "crate_number", "storage_type", "preservation"]
 
         self._optional_headers = ["comments", "specific_contents"]
+
+        self._row = row
+        self._remove_spaces_expedition_columns(row)
+
+
+    def __str__(self):
+        return str(self._row)
+
+    def _remove_spaces_expedition_columns(self, row):
+        for key in self._mandatory_headers:
+            row[key] = row[key].strip()
+
+        for key in self._optional_headers:
+            if key in row and row[key] is not None:
+                row[key] = row[key].strip()
+
 
     def _header_for_field(self, field):
         # Makes sure to list all the used headers - this is
@@ -121,6 +136,14 @@ class SpreadsheetRow(object):
 
     def preservation(self):
         return self._row.get(self._header_for_field("preservation"))
+
+    def other_data(self):
+        data = {}
+        for header in self._row.keys():
+            if header not in self._mandatory_headers and header not in self._optional_headers:
+                data[header] = self._row[header]
+
+        return data
 
 
 class SampleImporter(object):
@@ -207,11 +230,6 @@ class SampleImporter(object):
         return how_many_errors_have_occurred == 0
 
 
-    def _remove_spaces_columns(self, row):
-        for key in row.keys():
-            if row[key] is not None:
-                row[key] = row[key].strip()
-
     def _verify_header(self, fieldnames, file_path):
         """ Raise an exception if the header is not valid. """
         mandatory = ["glace_sample_number", "project_sample_number", "contents", "crate_number", "storage_location", "storage_type", "offloading_port", "destination"]
@@ -244,20 +262,18 @@ class SampleImporter(object):
 
         line_number = 1  # header
 
-        for r in reader:
+        for row in reader:
             line_number += 1
 
-            self._remove_spaces_columns(r)
-
-            spreadsheetRow = SpreadsheetRow(r)
+            spreadsheet_row = SpreadsheetRow(row)
 
             print("Processing row from file: {}".format(filepath))
-            print("Row:", r)
+            print("Row:", spreadsheet_row)
 
-            if spreadsheetRow.contents() == "":
-                self.warning_messages.append("Row with empty contents: {}".format(repr(r)))
+            if spreadsheet_row.contents() == "":
+                self.warning_messages.append("Row with empty contents: {}".format(spreadsheet_row))
 
-            original_sample_code = spreadsheetRow.glace_sample_number()
+            original_sample_code = spreadsheet_row.glace_sample_number()
 
             expected_slashes = 7
             actual_slashes = original_sample_code.count("/")
@@ -265,57 +281,57 @@ class SampleImporter(object):
                 self.warning_messages.append("File: {} Line number: {} original sample code: '{}' not having expected '/'. Actual: {} Expected: {}. Aborting".format(filepath, line_number, original_sample_code, actual_slashes, expected_slashes))
                 continue
 
-            code_string = spreadsheetRow.ship()
-            mission_acronym_string = spreadsheetRow.expedition()
-            leg_string = spreadsheetRow.leg()
-            project_number_string = spreadsheetRow.project_number()
+            code_string = spreadsheet_row.ship()
+            mission_acronym_string = spreadsheet_row.expedition()
+            leg_string = spreadsheet_row.leg()
+            project_number_string = spreadsheet_row.project_number()
 
-            julian_day_string = spreadsheetRow.julian_day()
+            julian_day_string = spreadsheet_row.julian_day()
             try:
                 julian_day_formatted = "{0:03d}".format(int(julian_day_string))
             except ValueError:
                 self.warning_messages.append("Error: file {} Line number: {} julian day invalid: ".format(filepath, line_number, julian_day_string))
                 continue
 
-            event_number_string = spreadsheetRow.event_number()
+            event_number_string = spreadsheet_row.event_number()
 
-            pi_initials_string = spreadsheetRow.project_pi_initials()
-            project_id_string = spreadsheetRow.project_sample_number()
+            pi_initials_string = spreadsheet_row.project_pi_initials()
+            project_id_string = spreadsheet_row.project_sample_number()
 
             generated_expedition_sample_code = "/".join((code_string, mission_acronym_string, leg_string,
                                            project_number_string, julian_day_formatted, event_number_string,
                                            pi_initials_string, project_id_string))
 
-            if generated_expedition_sample_code != spreadsheetRow.glace_sample_number():
-                self.warning_messages.append("Error: file {} Line number: {} generated_expedition_sample_code != spreadsheet sample code: {} != {}".format(filepath, line_number, generated_expedition_sample_code, spreadsheetRow.glace_sample_number()))
+            if generated_expedition_sample_code != spreadsheet_row.glace_sample_number():
+                self.warning_messages.append("Error: file {} Line number: {} generated_expedition_sample_code != spreadsheet sample code: {} != {}".format(filepath, line_number, generated_expedition_sample_code, spreadsheet_row.glace_sample_number()))
                 continue
 
             sample = Sample()
 
             sample.expedition_sample_code = generated_expedition_sample_code
-            sample.project_sample_number = spreadsheetRow.project_sample_number()
-            sample.contents = spreadsheetRow.contents()
-            sample.crate_number = spreadsheetRow.crate_number()
-            sample.storage_location = spreadsheetRow.storage_location()
+            sample.project_sample_number = spreadsheet_row.project_sample_number()
+            sample.contents = spreadsheet_row.contents()
+            sample.crate_number = spreadsheet_row.crate_number()
+            sample.storage_location = spreadsheet_row.storage_location()
 
             try:
-                storage_type = StorageType.objects.get(name=spreadsheetRow.storage_type())
+                storage_type = StorageType.objects.get(name=spreadsheet_row.storage_type())
             except ObjectDoesNotExist:
-                self.warning_messages.append("Storage type: {} not available in the database".format(spreadsheetRow.storage_type()))
+                self.warning_messages.append("Storage type: {} not available in the database".format(spreadsheet_row.storage_type()))
                 continue
 
             sample.storage_type = storage_type
-            sample.offloading_port = spreadsheetRow.offloading_port()
-            sample.destination = spreadsheetRow.destination()
-            sample.comments = spreadsheetRow.comments()
+            sample.offloading_port = spreadsheet_row.offloading_port()
+            sample.destination = spreadsheet_row.destination()
+            sample.comments = spreadsheet_row.comments()
 
-            sample.specific_contents = spreadsheetRow.specific_contents()
+            sample.specific_contents = spreadsheet_row.specific_contents()
 
             sample.file = basename
 
-            preservation = spreadsheetRow.preservation()
+            preservation = spreadsheet_row.preservation()
 
-            if not self._check_foreign_keys(r, code_string, mission_acronym_string, leg_string,
+            if not self._check_foreign_keys(spreadsheet_row, code_string, mission_acronym_string, leg_string,
                                             project_number_string, pi_initials_string, event_number_string,
                                             preservation) != 0:
                 self.warning_messages.append("Problems with foreign keys in row")
@@ -344,6 +360,8 @@ class SampleImporter(object):
             sample.julian_day = int(julian_day_string)  # So when we compare is the same as what it comes from the database
             sample.event = event
             sample.pi = pi_initials
+
+            sample.other_data = spreadsheet_row.other_data()
 
             outcome = self._update_database(sample)
             if outcome == "skipped":
