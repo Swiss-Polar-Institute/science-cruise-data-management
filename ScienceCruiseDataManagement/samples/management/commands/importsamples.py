@@ -144,6 +144,7 @@ class SampleImporter(object):
                 row[key] = row[key].strip()
 
     def _verify_header(self, fieldnames, file_path):
+        """ Raise an exception if the header is not valid. """
         mandatory = ["glace_sample_number", "project_sample_number", "contents", "crate_number", "storage_location", "storage_type", "offloading_port", "destination"]
 
         if fieldnames is None:

@@ -139,6 +139,11 @@ class ImportSamplesTest(TestCase):
         self.assertEqual(sample.leg.number, 1)
         self.assertEqual(sample.mission.acronym, "GLACE")
         self.assertEqual(sample.project_sample_number, "Nut_5m")
+        self.assertEqual(sample.crate_number, "67")
+        self.assertEqual(sample.storage_location, "hull")
+        self.assertEqual(sample.offloading_port, "Bremerhaven, Germany")
+        self.assertEqual(sample.comments, "Important")
+        # self.assertEqual(sample.other_data, {"color": "blue", "collection_temperature": "-4"})
 
     def test_import_one_row_failure_warning(self):
         file_path = self._copy_file_to_tmp_dir("one_row_2263_no_contents.csv")
@@ -156,6 +161,7 @@ class ImportSamplesTest(TestCase):
         self.assertEqual(Sample.objects.count(), 0)
 
         self._assertOneItemContains("Row with empty contents", self.sample_importer.warning_messages)
+
 
 
     def _assertOneItemContains(self, string, items):
