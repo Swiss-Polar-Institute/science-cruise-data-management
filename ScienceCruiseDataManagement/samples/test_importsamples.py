@@ -143,6 +143,8 @@ class ImportSamplesTest(TestCase):
         self.assertEqual(sample.storage_location, "hull")
         self.assertEqual(sample.offloading_port, "Bremerhaven, Germany")
         self.assertEqual(sample.comments, "Important")
+        self.assertEqual(sample.preservation.name, "frozen")
+
         # self.assertEqual(sample.other_data, {"color": "blue", "collection_temperature": "-4"})
 
     def test_import_one_row_failure_warning(self):

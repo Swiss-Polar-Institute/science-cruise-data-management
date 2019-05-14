@@ -157,6 +157,8 @@ class SampleImporter(object):
         if len(mandatory) > 0:
             raise InvalidSampleFileException("Error in file: {}. Some mandatory fields don't exist: {}".format(file_path, mandatory))
 
+    def _row_dictionary_to_model(self, row):
+        pass
 
     def _import_data_from_csv(self, filepath):
         reader = csv.DictReader(io.StringIO(utils.normalised_csv_file(filepath)))
@@ -168,9 +170,6 @@ class SampleImporter(object):
         identical = 0
         replaced = 0
         rows_with_errors = 0
-
-        previous_event_time = None
-
 
         self._verify_header(reader.fieldnames, filepath)
 
@@ -187,21 +186,6 @@ class SampleImporter(object):
             if row["contents"] == "":
                 self.warning_messages.append("Row with empty contents: {}".format(repr(row)))
 
-            # if row['contents'] == '':
-            #     print("Row with 'contents' field empty")
-            #     print("Do you want to: \n1: Keep processing the row\n2: Skip this row?")
-            #     print("Type 1 or 2")
-            #     answer = input()
-            #
-            #     if answer == "1":
-            #         # It will continue processing the rows
-            #         pass
-            #     else:
-            #         # Skips to the next row
-            #         rows +=1
-            #         skipped += 1
-            #         continue
-
             original_sample_code = row['glace_sample_number']
 
             expected_slashes = 7
@@ -209,35 +193,31 @@ class SampleImporter(object):
             if actual_slashes != expected_slashes:
                 self.warning_messages.append("File: {} Line number: {} original sample code: '{}' not having expected '/'. Actual: {} Expected: {}. Aborting".format(filepath, line_number, original_sample_code, actual_slashes, expected_slashes))
                 continue
-                # raise InvalidSampleFileException("File: {} Line number: {} original sample code: '{}' not having expected '/'. Actual: {} Expected: {}. Aborting".format(filepath, line_number, original_sample_code, actual_slashes, expected_slashes))
 
-            code_string = original_sample_code.split('/')[0]
-            mission_acronym_string = original_sample_code.split('/')[1]
-            leg_string = original_sample_code.split('/')[2]
-            project_number_string = original_sample_code.split('/')[3]
+            code_string = row["ship"]
+            mission_acronym_string = row["expedition"]
+            leg_string = row["leg_number"]
+            project_number_string = row["project_number"]
 
-            original_julian_day = original_sample_code.split('/')[4]
+            original_julian_day = row["julian_day"]
             try:
-                julian_day = "{0:03d}".format(int(original_julian_day))
+                julian_day_string = "{0:03d}".format(int(original_julian_day))
             except ValueError:
                 self.warning_messages.append("Error: file {} Line number: {} julian day invalid: ".format(filepath, line_number, original_julian_day))
-                # raise InvalidSampleFileException("Error: file {} Line number: {} julian day invalid: ".format(filepath, line_number, original_julian_day))
                 continue
 
-            event_number_string = original_sample_code.split('/')[5]
-            pi_initials_string = original_sample_code.split('/')[6]
-            project_id_string = original_sample_code.split('/')[7]
+            event_number_string = row["event_number"]
 
-            sample_code_string = "/".join((code_string, mission_acronym_string, leg_string,
-                                           project_number_string, julian_day, event_number_string,
+            pi_initials_string = row["project_pi_initials"]
+            project_id_string = row["project_sample_number"]
+
+            generated_expedition_sample_code = "/".join((code_string, mission_acronym_string, leg_string,
+                                           project_number_string, julian_day_string, event_number_string,
                                            pi_initials_string, project_id_string))
-
-            # Julian day can be different otherwise we could have:
-            # assert original_sample_code == sample_code_string
 
             sample = Sample()
 
-            sample.expedition_sample_code = sample_code_string
+            sample.expedition_sample_code = generated_expedition_sample_code
             sample.project_sample_number = row['project_sample_number']
             sample.contents = row['contents']
             sample.crate_number = row['crate_number']
