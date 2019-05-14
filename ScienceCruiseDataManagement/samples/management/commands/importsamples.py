@@ -82,7 +82,6 @@ class SampleImporter(object):
                 else:
                     self.warning_messages.append("{} NOT MOVED because some errors processing it".format(basename))
 
-
         if len(self.warning_messages) != 0:
             # Cancel everything!
             transaction.set_rollback(True)
@@ -105,37 +104,37 @@ class SampleImporter(object):
         qs = self._foreign_key_querysets(code_string, mission_acronym_string, leg_string, project_number_string,
                                          pi_initials_string, event_number_string, preservation)
 
-        how_many_errors_have_ocurred = 0
+        how_many_errors_have_occurred = 0
 
         if len(qs['event']) != 1:
             self._report_error(row, qs['event'], 'event', event_number_string)
-            how_many_errors_have_ocurred += 1
+            how_many_errors_have_occurred += 1
 
         if len(qs['ship']) != 1:
             self._report_error(row, qs['ship'], 'ship', code_string)
-            how_many_errors_have_ocurred += 1
+            how_many_errors_have_occurred += 1
 
         if len(qs['mission']) != 1:
             self._report_error(row, qs['mission'], 'mission', mission_acronym_string)
-            how_many_errors_have_ocurred += 1
+            how_many_errors_have_occurred += 1
 
         if len(qs['leg']) != 1:
             self._report_error(row, qs['leg'], 'leg', leg_string)
-            how_many_errors_have_ocurred += 1
+            how_many_errors_have_occurred += 1
 
         if len(qs['project']) != 1:
             self._report_error(row, qs['project'], 'project', project_number_string)
-            how_many_errors_have_ocurred += 1
+            how_many_errors_have_occurred += 1
 
         if len(qs['person']) != 1:
             self._report_error(row, qs['person'], 'person', pi_initials_string)
-            how_many_errors_have_ocurred += 1
+            how_many_errors_have_occurred += 1
 
-        if 'preservation' in row and preservation != '' and len(qs['preservation']) != 1:
+        if len(qs['preservation']) != 1:
             self._report_error(row, qs['preservation'], 'preservation', row['preservation'])
-            how_many_errors_have_ocurred += 1
+            how_many_errors_have_occurred += 1
 
-        return how_many_errors_have_ocurred == 0
+        return how_many_errors_have_occurred == 0
 
 
     def _remove_spaces_columns(self, row):
@@ -199,11 +198,11 @@ class SampleImporter(object):
             leg_string = row["leg_number"]
             project_number_string = row["project_number"]
 
-            original_julian_day = row["julian_day"]
+            julian_day_string = row["julian_day"]
             try:
-                julian_day_string = "{0:03d}".format(int(original_julian_day))
+                julian_day_formatted = "{0:03d}".format(int(julian_day_string))
             except ValueError:
-                self.warning_messages.append("Error: file {} Line number: {} julian day invalid: ".format(filepath, line_number, original_julian_day))
+                self.warning_messages.append("Error: file {} Line number: {} julian day invalid: ".format(filepath, line_number, julian_day_string))
                 continue
 
             event_number_string = row["event_number"]
@@ -212,8 +211,12 @@ class SampleImporter(object):
             project_id_string = row["project_sample_number"]
 
             generated_expedition_sample_code = "/".join((code_string, mission_acronym_string, leg_string,
-                                           project_number_string, julian_day_string, event_number_string,
+                                           project_number_string, julian_day_formatted, event_number_string,
                                            pi_initials_string, project_id_string))
+
+            if generated_expedition_sample_code != row["glace_sample_number"]:
+                self.warning_messages.append("Error: file {} Line number: {} generated_expedition_sample_code != spreadsheet sample code: {} != {}".format(filepath, line_number, generated_expedition_sample_code, row["glace_sample_number"]))
+                continue
 
             sample = Sample()
 
@@ -228,7 +231,6 @@ class SampleImporter(object):
             except ObjectDoesNotExist:
                 self.warning_messages.append("Storage type: {} not available in the database".format(row["storage_type"]))
                 continue
-                # raise InvalidSampleFileException("Storage type: {} not available in the database".format(row["storage_type"]))
 
             sample.storage_type = storage_type
             sample.offloading_port = row['offloading_port']
@@ -236,32 +238,18 @@ class SampleImporter(object):
             sample.comments = row.get('comments', None)
 
             if 'specific_contents' in row:
-                # This is an "optional" column: it was ignored until 0b2d3b83cc38d52
-                # now only used if it's there
+                # Not a mandatory column
                 sample.specific_contents = row['specific_contents']
 
             sample.file = basename
 
-            code_string = sample.expedition_sample_code.split('/')[0]
-            mission_acronym_string = sample.expedition_sample_code.split('/')[1]
-            leg_string = sample.expedition_sample_code.split('/')[2]
-            project_number_string = sample.expedition_sample_code.split('/')[3]
-            julian_day = "{0:03d}".format(int(sample.expedition_sample_code.split('/')[4]))
-            pi_initials_string = sample.expedition_sample_code.split('/')[6]
-            event_number_string = sample.expedition_sample_code.split('/')[5]
-
-            if 'preservation' in row:
-                preservation = row['preservation']
-            else:
-                preservation = None
+            preservation = row["preservation"]
 
             if not self._check_foreign_keys(row, code_string, mission_acronym_string, leg_string,
-                                               project_number_string, pi_initials_string, event_number_string,
-                                               preservation) != 0:
+                                            project_number_string, pi_initials_string, event_number_string,
+                                            preservation) != 0:
+                self.warning_messages.append("Problems with foreign keys in row")
                 continue
-                # self.warning_messages.append("Please fix the broken foreign keys and press ENTER. This row will be retested")
-                # print("Please fix the broken foreign keys and press ENTER. This row will be retested")
-                # input()
 
             rows += 1
 
@@ -276,17 +264,16 @@ class SampleImporter(object):
             leg = qs['leg'][0]
             project = qs['project'][0]
             pi_initials = qs['person'][0]
+            sample.preservation = qs['preservation'][0]
 
+            # Updates the rest
             sample.ship = ship
             sample.mission = mission
             sample.leg = leg
             sample.project = project
-            sample.julian_day = int(julian_day)  # So when we compare is the same as what it comes from the database
+            sample.julian_day = int(julian_day_string)  # So when we compare is the same as what it comes from the database
             sample.event = event
             sample.pi = pi_initials
-
-            if 'preservation' in row and preservation != '':
-                sample.preservation = qs['preservation'][0]
 
             outcome = self._update_database(sample)
             if outcome == "skipped":
@@ -317,7 +304,8 @@ class SampleImporter(object):
             # print("There are too many {} objects".format(object_type))
             # print(format(object_type), ": ", query_set)
 
-    def _find_sample(self, key):
+    @staticmethod
+    def _find_sample(key):
         """Find a sample relating to a key"""
         sample_queryset = Sample.objects.filter(expedition_sample_code=key)
         if sample_queryset.exists():
@@ -334,7 +322,7 @@ class SampleImporter(object):
             return "inserted"
         else:
             comparison = self._compare_samples(existing_sample, spreadsheet_sample)
-            if comparison == True:
+            if comparison is True:
                 print("Identical row already in database: ", spreadsheet_sample.expedition_sample_code)
                 return "identical"
             else:

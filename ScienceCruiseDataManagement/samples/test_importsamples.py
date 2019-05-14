@@ -180,7 +180,22 @@ class ImportSamplesTest(TestCase):
 
         self._assertOneItemContains("Row with empty contents", self.sample_importer.warning_messages)
 
+    def test_code_generated_spreadsheet_not_matching(self):
+        file_path = self._copy_file_to_tmp_dir("one_row_code_not_matching.csv")
 
+        StorageType.objects.create(name="-20 deg freezer")
+
+        self.assertEqual(Sample.objects.count(), 0)
+
+        sampling_method = SamplingMethod.objects.get(name="Getting soil")
+
+        Event.objects.create(number=2270, sampling_method=sampling_method, data=False, samples=True, outcome="Success")
+
+        self.sample_importer.import_data_from_directory(self.temp_directory)
+
+        self.assertEqual(Sample.objects.count(), 0)
+
+        self._assertOneItemContains("generated_expedition_sample_code != spreadsheet sample code", self.sample_importer.warning_messages)
 
     def _assertOneItemContains(self, string, items):
         found = False
