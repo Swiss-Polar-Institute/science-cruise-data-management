@@ -53,6 +53,76 @@ class InvalidSampleFileException(RuntimeError):
       self.message = message
 
 
+class SpreadsheetRow(object):
+    def __init__(self, row):
+        self._row = row
+        self._mandatory_headers = ["contents", "ship", "expedition", "leg_number", "project_number", "julian_day", "event_number",
+                         "project_pi_initials", "project_sample_number", "storage_location", "offloading_port",
+                         "destination", "glace_sample_number", "crate_number", "storage_type", "preservation"]
+
+        self._optional_headers = ["comments", "specific_contents"]
+
+    def _header_for_field(self, field):
+        # Makes sure to list all the used headers - this is
+        # important for the "other_data"
+        assert (field in self._mandatory_headers or field in self._optional_headers)
+        return field
+
+    def contents(self):
+        return self._row[self._header_for_field("contents")]
+
+    def ship(self):
+        return self._row[self._header_for_field("ship")]
+
+    def expedition(self):
+        return self._row[self._header_for_field("expedition")]
+
+    def leg(self):
+        return self._row[self._header_for_field("leg_number")]
+
+    def project_number(self):
+        return self._row[self._header_for_field("project_number")]
+
+    def julian_day(self):
+        return self._row[self._header_for_field("julian_day")]
+
+    def event_number(self):
+        return self._row[self._header_for_field("event_number")]
+
+    def project_pi_initials(self):
+        return self._row[self._header_for_field("project_pi_initials")]
+
+    def project_sample_number(self):
+        return self._row[self._header_for_field("project_sample_number")]
+
+    def storage_location(self):
+        return self._row[self._header_for_field("storage_location")]
+
+    def offloading_port(self):
+        return self._row[self._header_for_field("offloading_port")]
+
+    def destination(self):
+        return self._row[self._header_for_field("destination")]
+
+    def comments(self):
+        return self._row.get(self._header_for_field("comments"), None)
+
+    def glace_sample_number(self):
+        return self._row.get(self._header_for_field("glace_sample_number"))
+
+    def crate_number(self):
+        return self._row.get(self._header_for_field("crate_number"))
+
+    def storage_type(self):
+        return self._row.get(self._header_for_field("storage_type"))
+
+    def specific_contents(self):
+        return self._row.get(self._header_for_field("specific_contents"), None)
+
+    def preservation(self):
+        return self._row.get(self._header_for_field("preservation"))
+
+
 class SampleImporter(object):
     def __init__(self):
         self.warning_messages = []
@@ -174,18 +244,20 @@ class SampleImporter(object):
 
         line_number = 1  # header
 
-        for row in reader:
+        for r in reader:
             line_number += 1
 
-            self._remove_spaces_columns(row)
+            self._remove_spaces_columns(r)
+
+            spreadsheetRow = SpreadsheetRow(r)
 
             print("Processing row from file: {}".format(filepath))
-            print("Row:", row)
+            print("Row:", r)
 
-            if row["contents"] == "":
-                self.warning_messages.append("Row with empty contents: {}".format(repr(row)))
+            if spreadsheetRow.contents() == "":
+                self.warning_messages.append("Row with empty contents: {}".format(repr(r)))
 
-            original_sample_code = row['glace_sample_number']
+            original_sample_code = spreadsheetRow.glace_sample_number()
 
             expected_slashes = 7
             actual_slashes = original_sample_code.count("/")
@@ -193,59 +265,57 @@ class SampleImporter(object):
                 self.warning_messages.append("File: {} Line number: {} original sample code: '{}' not having expected '/'. Actual: {} Expected: {}. Aborting".format(filepath, line_number, original_sample_code, actual_slashes, expected_slashes))
                 continue
 
-            code_string = row["ship"]
-            mission_acronym_string = row["expedition"]
-            leg_string = row["leg_number"]
-            project_number_string = row["project_number"]
+            code_string = spreadsheetRow.ship()
+            mission_acronym_string = spreadsheetRow.expedition()
+            leg_string = spreadsheetRow.leg()
+            project_number_string = spreadsheetRow.project_number()
 
-            julian_day_string = row["julian_day"]
+            julian_day_string = spreadsheetRow.julian_day()
             try:
                 julian_day_formatted = "{0:03d}".format(int(julian_day_string))
             except ValueError:
                 self.warning_messages.append("Error: file {} Line number: {} julian day invalid: ".format(filepath, line_number, julian_day_string))
                 continue
 
-            event_number_string = row["event_number"]
+            event_number_string = spreadsheetRow.event_number()
 
-            pi_initials_string = row["project_pi_initials"]
-            project_id_string = row["project_sample_number"]
+            pi_initials_string = spreadsheetRow.project_pi_initials()
+            project_id_string = spreadsheetRow.project_sample_number()
 
             generated_expedition_sample_code = "/".join((code_string, mission_acronym_string, leg_string,
                                            project_number_string, julian_day_formatted, event_number_string,
                                            pi_initials_string, project_id_string))
 
-            if generated_expedition_sample_code != row["glace_sample_number"]:
-                self.warning_messages.append("Error: file {} Line number: {} generated_expedition_sample_code != spreadsheet sample code: {} != {}".format(filepath, line_number, generated_expedition_sample_code, row["glace_sample_number"]))
+            if generated_expedition_sample_code != spreadsheetRow.glace_sample_number():
+                self.warning_messages.append("Error: file {} Line number: {} generated_expedition_sample_code != spreadsheet sample code: {} != {}".format(filepath, line_number, generated_expedition_sample_code, spreadsheetRow.glace_sample_number()))
                 continue
 
             sample = Sample()
 
             sample.expedition_sample_code = generated_expedition_sample_code
-            sample.project_sample_number = row['project_sample_number']
-            sample.contents = row['contents']
-            sample.crate_number = row['crate_number']
-            sample.storage_location = row['storage_location']
+            sample.project_sample_number = spreadsheetRow.project_sample_number()
+            sample.contents = spreadsheetRow.contents()
+            sample.crate_number = spreadsheetRow.crate_number()
+            sample.storage_location = spreadsheetRow.storage_location()
 
             try:
-                storage_type = StorageType.objects.get(name=row["storage_type"])
+                storage_type = StorageType.objects.get(name=spreadsheetRow.storage_type())
             except ObjectDoesNotExist:
-                self.warning_messages.append("Storage type: {} not available in the database".format(row["storage_type"]))
+                self.warning_messages.append("Storage type: {} not available in the database".format(spreadsheetRow.storage_type()))
                 continue
 
             sample.storage_type = storage_type
-            sample.offloading_port = row['offloading_port']
-            sample.destination = row['destination']
-            sample.comments = row.get('comments', None)
+            sample.offloading_port = spreadsheetRow.offloading_port()
+            sample.destination = spreadsheetRow.destination()
+            sample.comments = spreadsheetRow.comments()
 
-            if 'specific_contents' in row:
-                # Not a mandatory column
-                sample.specific_contents = row['specific_contents']
+            sample.specific_contents = spreadsheetRow.specific_contents()
 
             sample.file = basename
 
-            preservation = row["preservation"]
+            preservation = spreadsheetRow.preservation()
 
-            if not self._check_foreign_keys(row, code_string, mission_acronym_string, leg_string,
+            if not self._check_foreign_keys(r, code_string, mission_acronym_string, leg_string,
                                             project_number_string, pi_initials_string, event_number_string,
                                             preservation) != 0:
                 self.warning_messages.append("Problems with foreign keys in row")
