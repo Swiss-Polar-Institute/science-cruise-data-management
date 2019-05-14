@@ -99,6 +99,20 @@ class ImportSamplesTest(TestCase):
 
         self.assertIn(expected_exception_message, self.sample_importer.warning_messages)
 
+    def test_import_invalid_pi(self):
+        file_path = self._copy_file_to_tmp_dir("one_row_invalid_pi.csv")
+
+        StorageType.objects.create(name="-20 deg freezer")
+
+        sampling_method = SamplingMethod.objects.get(name="Getting soil")
+
+        Event.objects.create(number=2265, sampling_method=sampling_method, data=False, samples=True)
+
+        self.sample_importer.import_data_from_directory(self.temp_directory)
+
+        # self.assertIn(self.sample_importer.warning_messages, "Cannot insert row: person 'ME' does not exist in the database")
+        self.assertIn("Cannot insert row: person 'ME' does not exist in the database", self.sample_importer.warning_messages)
+
     def test_import_one_row_event_not_finished(self):
         file_path = self._copy_file_to_tmp_dir("one_row_2263.csv")
 
@@ -111,6 +125,8 @@ class ImportSamplesTest(TestCase):
         expected_exception_message = "ERROR importing sample: Sample: AT/GLACE/1/15/216/2263/JT/Nut_5m has the event: 2263 with outcome: Not yet happened"
         with self.assertRaisesMessage(InvalidSampleFileException, expected_exception_message):
             self.sample_importer.import_data_from_directory(self.temp_directory)
+
+        self.assertEqual(self.sample_importer.warning_messages, [])
 
     def test_import_one_row_event_success(self):
         file_path = self._copy_file_to_tmp_dir("one_row_2264.csv")
