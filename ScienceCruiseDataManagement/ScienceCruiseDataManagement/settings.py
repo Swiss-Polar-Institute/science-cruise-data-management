@@ -200,7 +200,7 @@ ADMIN_SITE_HEADER = 'ACE Data Administration'
 DOCUMENTS_DIRECTORY = os.path.join(os.getenv("HOME"), "intranet_documents")
 FORECAST_DIRECTORY = os.path.join(os.getenv("HOME"), "ethz_forecast_data")
 
-MAIN_GPS = "GPS Bridge1"
+MAIN_GPS = "GLONASS"
 
 NAS_STAGING_MOUNT_POINT = "/mnt/ace_data"
 
