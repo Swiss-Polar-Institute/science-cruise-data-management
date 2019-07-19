@@ -180,15 +180,14 @@ DATETIME_FORMAT = "Y-m-d H:i:s"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
-
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Should be moved out from here, just for development at the moment
 BASE_STORAGE_DIRECTORY = '/mnt/ace_data'
 
 # Added for the importer-exporter module
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
-STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 # Users that can add events should be in this Group (it's created by the command createdjangousers
 ADD_EVENTS_GROUP = "Add events"
