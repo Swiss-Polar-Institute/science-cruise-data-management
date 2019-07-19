@@ -28,4 +28,4 @@ volumes:
 
 secrets:
   spi_media_gallery_mysql.conf:
-    file: ${SPI_MEDIA_GALLERY_MYSQL_CONF_PATH}
+    file: ${SCIENCE_CRUISE_DATA_MANAGEMENT_MYSQL_CONF_PATH}

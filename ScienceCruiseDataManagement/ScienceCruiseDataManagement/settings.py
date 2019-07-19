@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 import datetime
+import pathlib
 
 # This file is part of https://github.com/cpina/science-cruise-data-management
 #
@@ -117,11 +118,24 @@ WSGI_APPLICATION = 'ScienceCruiseDataManagement.wsgi.application'
 # }
 #
 
+def secrets_file(file_name):
+    """ First try $HOME/.file_name, else tries /run/secrets/file_name, else raises an exception """
+    file_path_in_home_directory = os.path.join(str(pathlib.Path.home()), "." + file_name)
+    if os.path.exists(file_path_in_home_directory):
+        return file_path_in_home_directory
+
+    file_path_in_run_secrets = os.path.join("/run/secrets", file_name)
+    if os.path.exists(file_path_in_run_secrets):
+        return file_path_in_run_secrets
+
+    raise "Configuration for {} doesn't exist".format(file_name)
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
-            'read_default_file': '/etc/mysql/ace.cnf',
+            'read_default_file': secrets_file("science_cruise_data_management_mysql.conf"),
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
     }
