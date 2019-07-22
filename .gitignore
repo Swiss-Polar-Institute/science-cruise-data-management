@@ -1,3 +1,6 @@
+# Specific this project
+init-docker-variables
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
