@@ -34,8 +34,9 @@ class Command(BaseCommand):
         files = glob.glob(os.path.join(cruisetrack_filepath, "*.csv"))
         files.sort()
 
-        for filename in files:
+        pending_to_be_saved = []
 
+        for filename in files:
             with open(filename) as csvfile:
                 reader = csv.DictReader(csvfile)
                 counter = 0
@@ -44,6 +45,8 @@ class Command(BaseCommand):
 
                     if counter%1000 == 0:
                         print(row)
+                        CruiseTrack.objects.bulk_create(pending_to_be_saved)
+                        pending_to_be_saved = []
 
                     device = SamplingMethod.objects.get(id=int(row['device_id']))
 
@@ -62,7 +65,10 @@ class Command(BaseCommand):
                     cruise_track.speed = float(row['speed'])
                     cruise_track.measureland_qualifier_flag_overall = int(row['measureland_qualifier_flag_overall'])
 
-                    cruise_track.save()
+                    pending_to_be_saved.append(cruise_track)
                     counter += 1
 
             print("File complete: ", filename)
+
+        CruiseTrack.objects.bulk_create(pending_to_be_saved)
+        pending_to_be_saved = []
