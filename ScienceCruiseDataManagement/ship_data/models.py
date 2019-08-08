@@ -73,6 +73,29 @@ class GpvtgVelocity(models.Model):
         get_latest_by = "date_time"
 
 
+# Quality-checked cruise track data
+class CruiseTrack(models.Model):
+    date_time = models.DateTimeField(unique=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    fix_quality = models.IntegerField(null=True, blank=True)
+    number_satellites = models.IntegerField(null=True, blank=True)
+    horiz_dilution_of_position = models.FloatField(null=True, blank=True)
+    altitude = models.FloatField(null=True, blank=True)
+    altitude_units = models.CharField(max_length=1, null=True, blank=True)
+    geoid_height = models.FloatField(null=True, blank=True)
+    geoid_height_units = models.CharField(max_length=1, null=True, blank=True)
+    device = models.ForeignKey(SamplingMethod, on_delete=models.CASCADE)
+    speed = models.FloatField(null=True, blank=True)
+    measureland_qualifier_flag_overall = models.IntegerField(null=True, blank=True)
+
+    def __str__(self):
+        return "{}".format(self.date_time)
+
+    class Meta:
+        verbose_name_plural = "Quality-checked cruise track"
+
+
 # Meteorological data
 class MetDataAll(models.Model):
     date_time = models.DateTimeField(unique=True)
