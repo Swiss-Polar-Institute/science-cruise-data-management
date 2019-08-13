@@ -7,6 +7,7 @@ from ship_data import utilities
 import datetime
 import glob
 import os
+import math
 
 # This file is part of https://github.com/cpina/science-cruise-data-management
 #
@@ -42,10 +43,10 @@ class Command(BaseCommand):
                 counter = 0
 
                 for row in reader:
-
                     if counter%1000 == 0:
                         print(row)
                         CruiseTrack.objects.bulk_create(pending_to_be_saved)
+
                         pending_to_be_saved = []
 
                     device = SamplingMethod.objects.get(id=int(row['device_id']))
@@ -59,10 +60,24 @@ class Command(BaseCommand):
                     cruise_track.horiz_dilution_of_position = float(row['horiz_dilution_of_position'])
                     cruise_track.altitude = float(row['altitude'])
                     cruise_track.altitude_units = row['altitude_units']
-                    cruise_track.geoid_height = float(row['geoid_height'])
-                    cruise_track.geoid_height_units = row['geoid_height_units']
+
+                    cruise_track_geoid_height = float(row['geoid_height'])
+
+                    if not math.isnan(cruise_track_geoid_height):
+                        cruise_track.geoid_height = cruise_track_geoid_height
+
+                    cruise_track_geoid_height_units = row['geoid_height_units']
+
+                    if cruise_track_geoid_height_units != 'NaN':
+                        cruise_track.geoid_height_units = cruise_track_geoid_height_units
+
                     cruise_track.device = device
-                    cruise_track.speed = float(row['speed'])
+
+                    cruise_track_speed = float(row['speed'])
+
+                    if not math.isnan(cruise_track_speed):
+                        cruise_track.speed = cruise_track_speed
+
                     cruise_track.measureland_qualifier_flag_overall = int(row['measureland_qualifier_flag_overall'])
 
                     pending_to_be_saved.append(cruise_track)
