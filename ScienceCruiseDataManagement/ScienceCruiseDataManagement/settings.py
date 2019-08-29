@@ -276,3 +276,9 @@ METADATA_DEFAULT_IDN_NODE = ["AMD", "SOOS"]
 METADATA_DEFAULT_CITATION_PUBLISHER = "SPI"
 
 DATE_TWO_DAYS = datetime.datetime(2017, 2, 5)
+
+try:
+    from local_settings import *
+    print('Imported local_settings')
+except ImportError:
+    pass
