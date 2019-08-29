@@ -10,6 +10,7 @@ services:
       - static_volume:/code/ScienceCruiseDataManagement/staticfiles
     expose:
       - "8000"
+    restart: always
 
   reverse-proxy:
     image: nginx:1.17
@@ -22,6 +23,7 @@ services:
       - static_volume:/code/ScienceCruiseDataManagement/staticfiles
     links:
       - science-cruise-data-management 
+    restart: always
 
 volumes:
   static_volume: {}
