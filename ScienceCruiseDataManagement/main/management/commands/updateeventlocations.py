@@ -27,6 +27,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('action', help="[update|dry-run|force-update]", type=str)
+        parser.add_argument('source', choices=["raw", "processed"], help="write the source of the data: raw or processed", type=str)
 
     def handle(self, *args, **options):
         if options['action'] == "dry-run":
@@ -35,7 +36,7 @@ class Command(BaseCommand):
             self._dry_run = False
             self._force_update = (options['action'] == "force-update")
         else:
-            print("Unknown action, should be dry-run, update or force-update")
+            print("Unknown action, should be dry-run, update or force-update.")
             exit(1)
 
         self._update_locations()
@@ -47,8 +48,17 @@ class Command(BaseCommand):
             if event_action.position_depends_on_time(self._force_update):
                 self._update(event_action)
 
-    def _update(self, event_action):
-        ship_location = utils.ship_location(event_action.time)
+    def _update(self, event_action, source):
+
+        # select the source of GPS data
+        if source == "raw":
+            ship_location = utils.ship_location(event_action.time, "raw")
+        elif source == "processed":
+            ship_location = utils.ship_location(event_action.time, "processed")
+        else:
+            print("Unknown source. It should be raw or processed.")
+            exit(1)
+
         action_text_before=""
 
         if ship_location.latitude is not None and ship_location.longitude is not None:
@@ -57,7 +67,7 @@ class Command(BaseCommand):
             else:
                 action_text_before = "(Previously: Latitude: {} Longitude: {})".format(event_action.latitude, event_action.longitude)
                 if event_action.latitude == float("{:.4f}".format(ship_location.latitude)) and event_action.longitude == float("{:.4f}".format(ship_location.longitude)):
-                    print("Was going to update {} but it's the same than before, skips".format(event_action))
+                    print("Was going to update {} but it's the same as before, skips".format(event_action))
                     return
 
                 event_action.latitude = "{:.4f}".format(ship_location.latitude)

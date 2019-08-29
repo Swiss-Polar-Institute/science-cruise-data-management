@@ -180,7 +180,7 @@ class MetDataWind(models.Model):
         return "{}".format(self.TIME)
 
     class Meta:
-        verbose_name_plural = "Meterological data - wind"
+        verbose_name_plural = "Meteorological data - wind"
         get_latest_by = "date_time"
 
 
