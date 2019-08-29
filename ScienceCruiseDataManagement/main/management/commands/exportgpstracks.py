@@ -184,7 +184,7 @@ def generate_method_1(output_directory, seconds, file_suffix):
     previous_date = current_date
 
     while current_date < last_date:
-        location = utils.ship_location(current_date)
+        location = utils.ship_location(current_date, "raw")
 
         if location.date_time != previous_date:
             if location.date_time is not None and location.latitude is not None and location.longitude is not None:

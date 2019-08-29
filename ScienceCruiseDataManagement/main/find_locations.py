@@ -108,7 +108,7 @@ def ship_location(str_datetime):
         latitude = longitude = None
         message = "The date time seems to be in the future. We don't know where we are going to be!"
     else:
-        location = utils.ship_location(ship_date_time)
+        location = utils.ship_location(ship_date_time, "raw")
         latitude = location.latitude
         longitude = location.longitude
         date_time = location.date_time

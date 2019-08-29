@@ -10,6 +10,7 @@ import shutil
 import os
 from main.models import SamplingMethod
 from ship_data.models import GpggaGpsFix
+from ship_data.models import CruiseTrack
 import re
 
 from django.contrib.admin.models import LogEntry, ADDITION
@@ -137,15 +138,19 @@ def last_midnight():
     return last_midnight_date_time
 
 
-def ship_location(date_time):
+def ship_location(date_time, source):
     main_gps = SamplingMethod.objects.get(name=settings.MAIN_GPS)
     main_gps_id = main_gps.id
 
-    # It uses objects.raw so Mysql is using the right index (datetime). The CAST is what it
-    # makes it to use, USE INDEX() is not needed.
+    # It uses objects.raw so Mysql is using the right index (datetime). The CAST is what
+    # makes it use it, USE INDEX() is not needed.
     valid_measureland_ids = ",".join(valid_measureland_qualifier_ids())
-    position_main_gps_query = GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast(%s as datetime) and ship_data_gpggagpsfix.device_id=%s and ship_data_gpggagpsfix.measureland_qualifier_flags_id in ({}) ORDER BY date_time LIMIT 1'.format(valid_measureland_ids), [date_time, main_gps_id])
-    position_any_gps_query =  GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast(%s as datetime) and ship_data_gpggagpsfix.measureland_qualifier_flags_id in ({}) ORDER BY date_time LIMIT 1'.format(valid_measureland_ids), [date_time])
+    if source == "raw":
+        position_main_gps_query = GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast(%s as datetime) and ship_data_gpggagpsfix.device_id=%s and ship_data_gpggagpsfix.measureland_qualifier_flags_id in ({}) ORDER BY date_time LIMIT 1'.format(valid_measureland_ids), [date_time, main_gps_id])
+        position_any_gps_query =  GpggaGpsFix.objects.raw('SELECT * FROM ship_data_gpggagpsfix WHERE ship_data_gpggagpsfix.date_time > cast(%s as datetime) and ship_data_gpggagpsfix.measureland_qualifier_flags_id in ({}) ORDER BY date_time LIMIT 1'.format(valid_measureland_ids), [date_time])
+    elif source == "processed":
+        position_main_gps_query = CruiseTrack.objects.raw('SELECT * FROM ship_data_cruisetrack WHERE ship_data_cruisetrack.date_time > cast(%s as datetime) and ship_data_cruise_track.device_id=%s and ship_data_cruise_track.measureland_qualifier_flag_overall in ({}) ORDER BY date_time LIMIT 1'.format(valid_measureland_ids), [date_time, main_gps_id])
+        position_any_gps_query = CruiseTrack.objects.raw('SELECT * FROM ship_data_cruisetrack WHERE ship_data_cruisetrack.date_time > cast(%s as datetime) and ship_data_cruisetrack.measureland_qualifier_flag_overall in ({}) ORDER BY date_time LIMIT 1'.format(valid_measureland_ids), [date_time])
 
     device = None
 
