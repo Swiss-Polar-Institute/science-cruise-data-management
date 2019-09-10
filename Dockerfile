@@ -6,7 +6,8 @@ RUN apt-get update && apt-get install --no-install-recommends --yes \
 	python3-pip python3-setuptools python3-wheel libpython3.7-dev \
 	gcc-7 gcc \
 	libmariadbclient-dev libmariadb-dev-compat \
-	libmariadb3 && \
+	libmariadb3  \
+	mariadb-client && \
     pip3 install -r /code/requirements.txt && \
     apt-get purge -y libpython3.7-dev \
 	libmariadbclient-dev libmariadb-dev-compat \

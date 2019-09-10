@@ -10,18 +10,23 @@ services:
       - static_volume:/code/ScienceCruiseDataManagement/staticfiles
     expose:
       - "8000"
+    networks:
+      - nginx-proxy
 
   reverse-proxy:
     image: nginx:1.17
-    ports:
-      - 8001:8001
+    secrets:
+      - science_cruise_data_management_htpasswd
     environment:
-      - NGINX_PORT=8001
+      - NGINX_PORT=80
+      - VIRTUAL_HOST=${SCIENCE_CRUISE_DATA_MANAGEMENT_DOMAIN}
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - static_volume:/code/ScienceCruiseDataManagement/staticfiles
     links:
       - science-cruise-data-management 
+    networks:
+      - nginx-proxy
 
 volumes:
   static_volume: {}
@@ -29,3 +34,10 @@ volumes:
 secrets:
   science_cruise_data_management_mysql.conf:
     file: ${SCIENCE_CRUISE_DATA_MANAGEMENT_MYSQL_CONF_PATH}
+  science_cruise_data_management_htpasswd:
+    file: ${SCIENCE_CRUISE_DATA_MANAGEMENT_HTPASSWD}
+
+networks:
+  nginx-proxy:
+    external:
+      name: nginx-proxy
