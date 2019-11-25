@@ -20,6 +20,8 @@ services:
     environment:
       - NGINX_PORT=80
       - VIRTUAL_HOST=${SCIENCE_CRUISE_DATA_MANAGEMENT_DOMAIN}
+      - LETSENCRYPT_HOST=${SCIENCE_CRUISE_DATA_MANAGEMENT_DOMAIN}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - static_volume:/code/ScienceCruiseDataManagement/staticfiles
