@@ -12,6 +12,11 @@ services:
       - "8000"
     networks:
       - nginx-proxy
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: science-cruise-data-management.django
 
   reverse-proxy:
     image: nginx:1.17
@@ -29,6 +34,11 @@ services:
       - science-cruise-data-management 
     networks:
       - nginx-proxy
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: science-cruise-data-management.nginx
 
 volumes:
   static_volume: {}
