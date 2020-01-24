@@ -12,6 +12,11 @@ services:
       - "8000"
     networks:
       - nginx-proxy
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: science-cruise-data-management.django
 
   reverse-proxy:
     image: nginx:1.17
@@ -20,6 +25,8 @@ services:
     environment:
       - NGINX_PORT=80
       - VIRTUAL_HOST=${SCIENCE_CRUISE_DATA_MANAGEMENT_DOMAIN}
+      - LETSENCRYPT_HOST=${SCIENCE_CRUISE_DATA_MANAGEMENT_DOMAIN}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - static_volume:/code/ScienceCruiseDataManagement/staticfiles
@@ -27,6 +34,11 @@ services:
       - science-cruise-data-management 
     networks:
       - nginx-proxy
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: science-cruise-data-management.nginx
 
 volumes:
   static_volume: {}
