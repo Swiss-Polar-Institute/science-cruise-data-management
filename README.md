@@ -16,3 +16,8 @@ Some parts like the GPS importer could be improved but it uses interesting techn
 [Documentation](https://github.com/cpina/science-cruise-data-management/tree/master/documentation) with a list of features and screenshots.
 
 Carles Pina (carles@pina.cat) and Jen Thomas (jenny_t152@yahoo.co.uk, jenny.thomas@epfl.ch), ACE 2016-2017.
+
+## Commands
+
+### geteventdatetimes.py
+From a csv file containing the event numbers, output another csv file containing the event numbers and datetimes associated with these. An event can have an instantaneous time, or a start and end time, so it accounts for this possibility.
