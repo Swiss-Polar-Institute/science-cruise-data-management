@@ -23,20 +23,28 @@ def process_input_file(input_filename, output_filename):
     with open(input_filename, 'r') as data_file:
         contents = csv.reader(data_file)
 
-        for line in contents:
-            #print("Line: ", line)
-            event_number = int(line[0])
-            #print("Event number: ", event_number)
+        with open(output_filename, 'w') as output_file:
+            writer = csv.writer(output_file)
 
-            #event = Event.objects.get(id=event_number)
-            event_actions = EventAction.objects.filter(event__pk=event_number)
-            if len(event_actions) == 1:
-                event_action_datetimes = [datetime_to_text(event_actions[0].time)]
-            else:
-                event_action_datetimes = [datetime_to_text(event_actions[0].time), datetime_to_text(event_actions[1].time)]
+            header = ['event_number', 'start_datetime', 'end_datetime']
+            writer.writerow(header)
 
-            event_action_datetimes.sort()
+            for line in contents:
+                # read in the event number
+                event_number = int(line[0])
 
-            print(",".join(event_action_datetimes))
+                # get the event actions (start and end details) of an event
+                event_actions = EventAction.objects.filter(event__pk=event_number)
+                if len(event_actions) == 1:
+                    event_action_datetimes = [event_actions[0].time] # some events only have an instantaneous time
+                else:
+                    event_action_datetimes = [event_actions[0].time, event_actions[1].time] # some events have a start and end time
 
+                # Convert date time to string format
+                event_action_datetimes = list(map(datetime_to_text, event_action_datetimes))
 
+                # Sort list of datetimes so that if there is more than one, the start comes before the end
+                event_action_datetimes.sort()
+
+                # Output the event number, and associated date times (there can be more than one datetime so this expands it)
+                writer.writerow([event_number, *event_action_datetimes])
