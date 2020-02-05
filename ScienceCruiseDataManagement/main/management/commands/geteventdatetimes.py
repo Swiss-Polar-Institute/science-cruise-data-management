@@ -1,9 +1,7 @@
-from django.core.management.base import BaseCommand, CommandError
-from main.models import EventAction, Event
-from django.conf import settings
-
-from main import utils
+from django.core.management.base import BaseCommand
+from main.models import EventAction
 import csv
+
 
 class Command(BaseCommand):
     help = 'Get dates and times of an event'
@@ -15,11 +13,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         process_input_file(options['input_filename'], options['output_filename'])
 
+
 def datetime_to_text(dt):
     return dt.strftime("%Y-%m-%dT%H:%M:%S")
 
-def process_input_file(input_filename, output_filename):
 
+def process_input_file(input_filename, output_filename):
     with open(input_filename, 'r') as data_file:
         contents = csv.reader(data_file)
 
@@ -36,9 +35,10 @@ def process_input_file(input_filename, output_filename):
                 # get the event actions (start and end details) of an event
                 event_actions = EventAction.objects.filter(event__pk=event_number)
                 if len(event_actions) == 1:
-                    event_action_datetimes = [event_actions[0].time] # some events only have an instantaneous time
+                    event_action_datetimes = [event_actions[0].time]  # some events only have an instantaneous time
                 else:
-                    event_action_datetimes = [event_actions[0].time, event_actions[1].time] # some events have a start and end time
+                    event_action_datetimes = [event_actions[0].time,
+                                              event_actions[1].time]  # some events have a start and end time
 
                 # Convert date time to string format
                 event_action_datetimes = list(map(datetime_to_text, event_action_datetimes))
