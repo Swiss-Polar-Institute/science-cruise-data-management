@@ -3,6 +3,7 @@ ENV PYTHONUNBUFFERED 1
 RUN mkdir /code
 COPY requirements.txt entrypoint.sh /code/
 RUN apt-get update && apt-get install --no-install-recommends --yes \
+	git \
 	python3-pip python3-setuptools python3-wheel libpython3.7-dev \
 	gcc-7 gcc \
 	libmariadbclient-dev libmariadb-dev-compat \
