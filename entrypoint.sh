@@ -13,5 +13,6 @@ gunicorn ScienceCruiseDataManagement.wsgi:application \
         --workers 3 \
         --log-level=info \
         --log-file=/srv/logs/gunicorn.log \
+	--timeout=90 \
         --access-logfile=/srv/logs/access.log
         "$@"
