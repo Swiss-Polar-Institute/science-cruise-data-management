@@ -6,6 +6,7 @@ from django.db.models import Q
 from django.forms import ModelForm, ModelChoiceField
 from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 from django.shortcuts import redirect
+from django.utils.safestring import mark_safe
 
 import main.lookups
 import main.models
@@ -173,7 +174,7 @@ class EventActionForm(ModelForm):
             self.fields['event'] = event_number_and_sampling_method
 
         rel_model = self.Meta.model
-        rel = rel_model._meta.get_field('event').rel
+        rel = rel_model._meta.get_field('event').remote_field
         self.fields['event'].widget = RelatedFieldWidgetWrapper(self.fields['event'].widget, rel, admin.site,
                                                                 can_add_related=True, can_change_related=True)
 
@@ -432,7 +433,7 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
             else:
                 formatted_time = "-"
             url = "/admin/main/eventaction/{}/change/?from_eventreport=1".format(event_action_id)
-            return '<a href="{}">{}</a>'.format(url, formatted_time)
+            return mark_safe('<a href="{}">{}</a>'.format(url, formatted_time))
 
     start_time.allow_tags = True
 
@@ -465,7 +466,7 @@ class EventReportAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin
                 formatted_time = "-"
 
             url = "/admin/main/eventaction/{}/change/?from_eventreport=1".format(event_action_id)
-            return '<a href="{}">{}</a>'.format(url, formatted_time)
+            return mark_safe('<a href="{}">{}</a>'.format(url, formatted_time))
 
     end_time.allow_tags = True
 

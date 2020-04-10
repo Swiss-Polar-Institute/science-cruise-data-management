@@ -10,7 +10,7 @@ diff-match-patch==20181111
 Django==3.0.3
 django-debug-toolbar==2.2
 django-extensions==2.2.8
-django-import-export==2.0.1
+django-import-export==2.0.2
 django-mysql==3.3.0
 -e git+https://github.com/kluchrj/django-selectable@8f7b2603b8fed0a001dce8159fbbd164d59d9391#egg=django_selectable
 -e git+https://github.com/jazzband/django-smart-selects.git@964df56675df9b661c2fbba6efea85de0fef0a75#egg=django_smart_selects

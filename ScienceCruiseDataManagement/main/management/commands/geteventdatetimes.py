@@ -34,6 +34,7 @@ def process_input_file(input_filename, output_filename):
 
                 # get the event actions (start and end details) of an event
                 event_actions = EventAction.objects.filter(event__pk=event_number)
+                print(event_number)
                 if len(event_actions) == 1:
                     event_action_datetimes = [event_actions[0].time]  # some events only have an instantaneous time
                 else:
