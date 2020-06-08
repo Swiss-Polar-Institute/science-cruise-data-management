@@ -19,7 +19,7 @@ services:
         tag: science-cruise-data-management.django
 
   reverse-proxy:
-    image: nginx:1.17
+    image: nginx:1.19
     secrets:
       - science_cruise_data_management_htpasswd
     environment:
