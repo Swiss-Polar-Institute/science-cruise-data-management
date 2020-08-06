@@ -3,7 +3,7 @@ import json
 
 from django.db.models import Q
 from django.forms.models import model_to_dict
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views import View
 from django.views.generic import TemplateView
@@ -39,7 +39,11 @@ class GetPosition(View):
         date_str = request.GET['date']
         date_str = date_str.replace(' ', '+')
 
-        date = datetime.datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S%z')
+        try:
+            date = datetime.datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S%z')
+        except ValueError:
+            return HttpResponse(status=400,
+                                content='Invalid date format, please use %Y-%m-%dT%H:%M:%S%z E.g.: 2017-01-28T21:00:00+00:00')
 
         closest_date = GetPosition.get_closest_to_dt(GpggaGpsFix.objects.all(), date)
 
