@@ -1,7 +1,6 @@
 import datetime
 import json
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
@@ -26,19 +25,30 @@ from ship_data.models import Ferrybox, GpggaGpsFix
 # Carles Pina (carles@pina.cat) and Jen Thomas (jenny_t152@yahoo.co.uk), 2016-2017.
 
 class GetPosition(View):
+    @staticmethod
+    def get_closest_to_dt(qs, date_time):
+        greater = qs.filter(date_time__gte=date_time).order_by("date_time").first()
+        less = qs.filter(date_time__lte=date_time).order_by("-date_time").first()
+
+        if greater and less:
+            return greater if abs(greater.date_time - date_time) < abs(less.date_time - date_time) else less
+        else:
+            return greater or less
+
     def get(self, request, *args, **kwargs):
         date_str = request.GET['date']
         date_str = date_str.replace(' ', '+')
 
         date = datetime.datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S%z')
 
-        try:
-            fix = GpggaGpsFix.objects.get(date_time=date)
+        closest_date = GetPosition.get_closest_to_dt(GpggaGpsFix.objects.all(), date)
 
-            position = {'latitude': fix.latitude,
-                        'longitude': fix.longitude
+        diff = closest_date.date_time - date
+        if diff.seconds <= 360:
+            position = {'latitude': closest_date.latitude,
+                        'longitude': closest_date.longitude
                         }
-        except ObjectDoesNotExist:
+        else:
             position = {'latitude': None, 'longitude': None}
 
         response = JsonResponse(status=200, data=position)
