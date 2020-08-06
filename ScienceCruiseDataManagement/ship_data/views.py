@@ -1,12 +1,17 @@
-from django.shortcuts import render
-from django.views.generic import TemplateView
-from ship_data.models import Ferrybox
-from django.db.models import Q
-from django.forms.models import model_to_dict
-from main import utils
-
 import datetime
 import json
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
+from django.forms.models import model_to_dict
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.views import View
+from django.views.generic import TemplateView
+
+from main import utils
+from ship_data.models import Ferrybox, GpggaGpsFix
+
 
 # This file is part of https://github.com/cpina/science-cruise-data-management
 #
@@ -19,6 +24,26 @@ import json
 # during the cruise, which is really needed.
 #
 # Carles Pina (carles@pina.cat) and Jen Thomas (jenny_t152@yahoo.co.uk), 2016-2017.
+
+class GetPosition(View):
+    def get(self, request, *args, **kwargs):
+        date_str = request.GET['date']
+        date_str = date_str.replace(' ', '+')
+
+        date = datetime.datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S%z')
+
+        try:
+            fix = GpggaGpsFix.objects.get(date_time=date)
+
+            position = {'latitude': fix.latitude,
+                        'longitude': fix.longitude
+                        }
+        except ObjectDoesNotExist:
+            position = {'latitude': None, 'longitude': None}
+
+        response = JsonResponse(status=200, data=position)
+        return response
+
 
 class FerryboxView(TemplateView):
     def get(self, request, *args, **kwargs):
@@ -41,6 +66,7 @@ class FerryboxView(TemplateView):
                                                  }
                       )
 
+
 def get_ferrybox_data_24_hours(field):
     result = []
     latest_data = Ferrybox.objects.latest()
@@ -51,7 +77,7 @@ def get_ferrybox_data_24_hours(field):
 
     while current_time > end_time:
         d = {}
-        d['x'] = -((start_time - current_time).seconds/3600)
+        d['x'] = -((start_time - current_time).seconds / 3600)
         ferrybox = Ferrybox.objects.filter(Q(date_time__lte=current_time)).order_by('-date_time')
 
         if not ferrybox.exists():

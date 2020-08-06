@@ -22,7 +22,7 @@ from main.views import MainMenuView, MainMapView, PositionsJson, LatestShipPosit
     ContactDetailsListView
 from metadata.views import ProjectListView, MetadataEntryListView, MetadataEntryView, MetadataEntryAsWord,\
     MetadataEntryAsDif
-from ship_data.views import FerryboxView
+from ship_data.views import FerryboxView, GetPosition
 from data_storage_management.views import HardDiskJson, DirectoryUpdateJson
 from django.conf import settings
 from django.conf.urls.static import static
@@ -47,6 +47,7 @@ urlpatterns = [
     url(r'api/latest_ship_position.json', LatestShipPosition.as_view()),
     url(r'api/data_storage/hard_disk.json', HardDiskJson.as_view()),
     url(r'api/data_storage/add_directory_update.json', DirectoryUpdateJson.as_view()),
+    url(r'^api/position$', GetPosition.as_view()),
     # url(r'^api/positions$', PositionsJson.as_view()),
     url(r'^admin/', admin.site.urls),
     url(r'^chaining/', include('smart_selects.urls')),
