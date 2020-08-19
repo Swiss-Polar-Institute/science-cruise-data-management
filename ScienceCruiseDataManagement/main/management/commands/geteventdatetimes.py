@@ -22,7 +22,7 @@ def process_input_file(input_filename, output_filename):
     with open(input_filename, 'r') as data_file:
         contents = csv.reader(data_file)
         next(contents, None) # skip header line
-        
+
         with open(output_filename, 'w') as output_file:
             writer = csv.writer(output_file)
 
