@@ -25,10 +25,18 @@ def process_input_file(input_filename, output_filename):
             header = ['expedition_sample_code']
             writer.writerow(header)
 
+            count_samples_to_check = 0
+            count_samples_missing = 0
+
             for line in contents:
                 expedition_sample_code_to_check = line[0]
+                count_samples_to_check += 1
                 #print(expedition_sample_code_to_check)
 
                 if not Sample.objects.filter(expedition_sample_code=expedition_sample_code_to_check).exists():
                     print("Sample not listed in database:", expedition_sample_code_to_check)
                     writer.writerow([expedition_sample_code_to_check])
+                    count_samples_missing += 1
+
+            print("Total samples checked: ", count_samples_to_check)
+            print("Number of samples not listed in database: ", count_samples_missing)
