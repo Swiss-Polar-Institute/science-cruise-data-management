@@ -60,12 +60,15 @@ class OptionFilter(admin.SimpleListFilter):
             }
 
     def _prepare_filter_lookups(self, model, field, query_by_id=True):
-        objects = model.objects.all().order_by(field)
+        objects = model.objects.order_by(field).values_list(field).distinct()
+
+
+        # objects = model.objects.all().order_by(field)
 
         filter_lookup = []
         filter_values = []
         for object in objects:
-            dict_of_model = model_to_dict(object)
+            dict_of_model = model_to_dict(model.objects.filter(**{field: object[0]})[0])
             if dict_of_model[field] not in filter_values:
                 if query_by_id:
                     id=dict_of_model['id']
