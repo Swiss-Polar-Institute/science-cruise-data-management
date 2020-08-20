@@ -678,13 +678,30 @@ class SampleForm(ModelForm):
 
 
 class SampleAdmin(ReadOnlyIfUserCantChange, import_export.admin.ExportMixin, admin.ModelAdmin):
-    list_display = ('expedition_sample_code', 'project_sample_number', 'contents', 'crate_number', 'storage_type', 'storage_location', 'offloading_port', 'destination', 'ship', 'mission', 'leg', 'project', 'julian_day', 'event', 'pi_initials', 'preservation', 'file', 'specific_contents')
+    list_display = ('expedition_sample_code', 'project_sample_number', 'contents', 'crate_number', 'storage_type', 'storage_location', 'offloading_port', 'destination', 'ship', 'mission', 'leg', 'project', 'julian_day', 'event', 'pi_initials_str', 'preservation', 'file', 'specific_contents')
     fields = list_display
     ordering = ['expedition_sample_code']
     readonly_fields = ('expedition_sample_code', )
     list_filter = (ProjectFilter, LegFilter, SampleContentsFilter, TypeOfStorageFilter, StorageLocationFilter, OffloadingPortFilter, EventFilter)
     search_fields = ('expedition_sample_code', 'project_sample_number', 'contents', 'crate_number', 'storage_location', 'offloading_port', 'destination', 'julian_day', 'event__number', 'pi_initials__initials', 'preservation__name', 'file', 'specific_contents')
     form = SampleForm
+
+    def pi_initials_str(self, obj):
+        return f'{obj.pi_initials.name_first} {obj.pi_initials.name_last}'
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.prefetch_related('storage_type')
+        queryset = queryset.prefetch_related('ship')
+        queryset = queryset.prefetch_related('mission')
+        queryset = queryset.prefetch_related('leg')
+        queryset = queryset.prefetch_related('project')
+        queryset = queryset.prefetch_related('event')
+        queryset = queryset.prefetch_related('pi_initials')
+        queryset = queryset.prefetch_related('pi_initials__organisation')
+        queryset = queryset.prefetch_related('preservation')
+
+        return queryset
 
 
 class ImportedFileAdmin(import_export.admin.ExportMixin, admin.ModelAdmin):
