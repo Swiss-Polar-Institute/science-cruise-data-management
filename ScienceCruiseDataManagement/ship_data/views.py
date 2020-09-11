@@ -9,7 +9,7 @@ from django.views import View
 from django.views.generic import TemplateView
 
 from main import utils
-from ship_data.models import Ferrybox, GpggaGpsFix
+from ship_data.models import Ferrybox, CruiseTrack
 
 
 # This file is part of https://github.com/cpina/science-cruise-data-management
@@ -45,7 +45,7 @@ class GetPosition(View):
             return HttpResponse(status=400,
                                 content='Invalid date format, please use %Y-%m-%dT%H:%M:%S%z E.g.: 2017-01-28T21:00:00+00:00')
 
-        closest_date = GetPosition.get_closest_to_dt(GpggaGpsFix.objects.all(), date)
+        closest_date = GetPosition.get_closest_to_dt(CruiseTrack.objects.all(), date)
 
         diff = closest_date.date_time - date
         if diff.seconds <= 360:
