@@ -40,8 +40,28 @@ services:
         fluentd-address: localhost:24224
         tag: science-cruise-data-management.nginx
 
+  database:
+    image: mariadb:10.5
+    environment:
+      - MYSQL_DATABASE=scdm
+      - MYSQL_USER=${SCDM_DB_USER}
+      - MYSQL_PASSWORD=${SCDM_DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${SCDM_ROOT_PASSWORD}
+    volumes:
+      - database:/var/lib/mysql
+    expose:
+      - "3306"
+    networks:
+      - nginx-proxy
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: scdm.mariadb
+
 volumes:
   static_volume: {}
+  database:
 
 secrets:
   science_cruise_data_management_mysql.conf:
