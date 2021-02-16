@@ -44,9 +44,9 @@ services:
     image: mariadb:10.5
     environment:
       - MYSQL_DATABASE=scdm
-      - MYSQL_USER=${SCDM_DB_USER}
-      - MYSQL_PASSWORD=${SCDM_DB_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${SCDM_ROOT_PASSWORD}
+      - MYSQL_USER=${SCIENCE_CRUISE_DATA_MANAGEMENT_DB_USER}
+      - MYSQL_PASSWORD=${SCIENCE_CRUISE_DATA_MANAGEMENT_DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${SCIENCE_CRUISE_DATA_MANAGEMENT_DB_ROOT_PASSWORD}
     volumes:
       - database:/var/lib/mysql
     expose:
