@@ -12,6 +12,8 @@ services:
       - "8000"
     networks:
       - nginx-proxy
+    links:
+      - database
     logging:
       driver: fluentd
       options:
