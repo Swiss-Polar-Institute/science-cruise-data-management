@@ -1,4 +1,4 @@
-asgiref==3.2.3
+asgiref==3.3.2
 astral==2.1
 backports.csv==1.0.7
 chardet==3.0.4
