@@ -7,7 +7,7 @@ colorama==0.4.3
 configparser==4.0.2
 defusedxml==0.6.0
 diff-match-patch==20181111
-Django==3.0.10
+Django==3.0.12
 django-debug-toolbar==2.2
 django-extensions==2.2.8
 django-import-export==2.0.2
@@ -22,7 +22,7 @@ geopy==1.21.0
 gpxpy==1.4.0
 gunicorn==20.0.4
 jdcal==1.4.1
-lxml==4.5.0
+lxml==4.6.3
 MarkupPy==1.14
 mysqlclient==1.4.6
 numpy==1.18.1
@@ -35,7 +35,7 @@ pyparsing==2.4.6
 python-dateutil==2.8.1
 python-xmp-toolkit==2.0.1
 pytz==2019.3
-PyYAML==5.3
+PyYAML==5.4
 six==1.14.0
 sqlparse==0.3.0
 tablib==1.1.0
