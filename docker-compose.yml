@@ -12,11 +12,14 @@ services:
       - "8000"
     networks:
       - nginx-proxy
+    links:
+      - database
     logging:
       driver: fluentd
       options:
         fluentd-address: localhost:24224
         tag: science-cruise-data-management.django
+    restart: unless-stopped
 
   reverse-proxy:
     image: nginx:1.19
@@ -39,14 +42,15 @@ services:
       options:
         fluentd-address: localhost:24224
         tag: science-cruise-data-management.nginx
+    restart: unless-stopped
 
   database:
     image: mariadb:10.5
     environment:
       - MYSQL_DATABASE=scdm
-      - MYSQL_USER=${SCDM_DB_USER}
-      - MYSQL_PASSWORD=${SCDM_DB_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${SCDM_ROOT_PASSWORD}
+      - MYSQL_USER=${SCIENCE_CRUISE_DATA_MANAGEMENT_DB_USER}
+      - MYSQL_PASSWORD=${SCIENCE_CRUISE_DATA_MANAGEMENT_DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${SCIENCE_CRUISE_DATA_MANAGEMENT_DB_ROOT_PASSWORD}
     volumes:
       - database:/var/lib/mysql
     expose:
@@ -58,6 +62,7 @@ services:
       options:
         fluentd-address: localhost:24224
         tag: scdm.mariadb
+    restart: unless-stopped
 
 volumes:
   static_volume: {}

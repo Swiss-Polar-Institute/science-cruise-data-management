@@ -21,6 +21,10 @@ No good documentation has been written for this project: it was developed during
 * imports multi beam raw files from MBSystem JSON output
 and some more things.
 
+# ER diagrams
+
+ER diagrams of the main apps are available but have not been updated with the latest developments. 
+
 # Screenshots
 No good documentation has been written but a few screenshots have been taken to have a feel of how the application looks like:
 
