@@ -8,7 +8,7 @@ configparser==4.0.2
 defusedxml==0.6.0
 diff-match-patch==20181111
 Django==3.0.12
-django-debug-toolbar==2.2
+django-debug-toolbar==2.2.1
 django-extensions==2.2.8
 django-import-export==2.0.2
 django-mysql==3.3.0
