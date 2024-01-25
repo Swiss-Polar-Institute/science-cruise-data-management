@@ -2,6 +2,7 @@ version: '3.5'
 
 services:
   science-cruise-data-management:
+    container_name: science-cruise-data-management
     image: science-cruise-data-management-docker:0.0.1
     secrets:
       - science_cruise_data_management_mysql.conf
@@ -22,6 +23,7 @@ services:
     restart: unless-stopped
 
   reverse-proxy:
+    container_name: science-cruise-data-management-reverse-proxy
     image: nginx:1.19
     secrets:
       - science_cruise_data_management_htpasswd
@@ -45,6 +47,7 @@ services:
     restart: unless-stopped
 
   database:
+    container_name: science-cruise-data-management-database
     image: mariadb:10.5
     environment:
       - MYSQL_DATABASE=scdm
